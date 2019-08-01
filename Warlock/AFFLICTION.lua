@@ -334,14 +334,106 @@ Interrupts = A.MakeFunctionCachedDynamic(Interrupts)
 end ]]--
 --GetAttackType = A.MakeFunctionCachedStatic(GetAttackType)
 
-local ShardsPowerType = Enum.PowerType.SoulShards
+-------------------------------------------------------------------
+---- Simulation Craft references
+-------------------------------------------------------------------
 
--- shard.max
+-- Enumerate Warlock dots tick time
+Action.Enum.TickTime = {
+  [980] = {2000, true}, -- Agony
+  [63106] = {3000, true}, -- Siphon Life
+  [172] = {2000, true}, -- Corruption
+}
+
+-- Get the spell ID.
+function Spell:ID()
+    return self.SpellID
+end
+
+-- action.foo.tick_time
+local TickTime = Action.Enum.TickTime
+function Spell:FilterTickTime(SpecID)
+    local RegisteredSpells = {}
+    local BaseTickTime = HL.Enum.TickTime
+    -- Fetch registered spells during the init
+	for Spec, Spells in pairs(Action[ACTION_CONST_WARLOCK_AFFLI][1]) do
+        local SpellID = Spell:ID()
+        local TickTimeInfo = BaseTickTime[SpellID][1]
+        if TickTimeInfo ~= nil then
+            RegisteredSpells[SpellID] = TickTimeInfo
+        end
+    end
+    TickTime = RegisteredSpells
+end
+
+function Spell:BaseTickTime()
+    local Tick = TickTime[self.SpellID]
+    if not Tick or Tick == 0 then
+        return 0
+    end
+    local TickTime = Tick[1]
+    return TickTime / 1000
+end
+
+function Spell:TickTime()
+    local BaseTickTime = self:BaseTickTime()
+    if not BaseTickTime or BaseTickTime == 0 then
+        return 0
+    end
+    local Hasted = TickTime[self.SpellID][2]
+    if Hasted then
+        return BaseTickTime * UnitSpellHaste("Player")
+    end
+    return BaseTickTime
+end
+
+-- Enumerate Warlock dots base duration
+Action.Enum.SpellDuration = {
+  [980] = {18000, 23400}, -- Agony
+  [63106] = {15000, 19500}, -- Siphon Life
+  [172] = {18000, 23400}, -- Corruption
+}
+
+-- Base Duration of a dot/hot/channel...
+local SpellDuration = Action.Enum.SpellDuration
+function Spell:CalculatedDuration()
+    return self:BaseDuration() * UnitSpellHaste("Player")
+end
+
+function Spell:BaseDuration()
+    local Duration = SpellDuration[self.SpellID]
+    if not Duration or Duration == 0 then
+        return 0
+    end
+    local BaseDuration = Duration[1]
+    return BaseDuration / 1000
+end
+
+function Spell:MaxDuration()
+    local Duration = SpellDuration[self.SpellID]
+    if not Duration or Duration == 0 then
+        return 0
+    end
+    local BaseDuration = Duration[2]
+    return BaseDuration / 1000
+end
+
+function Spell:PandemicThreshold()
+    local BaseDuration = self:BaseDuration()
+    if not BaseDuration or BaseDuration == 0 then
+        return 0
+    end
+    return BaseDuration * 0.3
+end
+
+-- SoulShards references
+local ShardsPowerType = Enum.PowerType.SoulShards
+-- "shard.max"
 local function ShardMax()
     return UnitPowerMax("player", ShardsPowerType)
 end
 
--- shard
+-- "shard"
 local function Shard()
     return UnitPower("player", ShardsPowerType)
 end
@@ -352,7 +444,34 @@ local function TimeToShard()
   if ActiveAgony == 0 then
     return 10000 
   end
-  return 1 / (0.16 / math.sqrt(ActiveAgony) * (ActiveAgony == 1 and 1.15 or 1) * ActiveAgony / S.Agony:TickTime())
+  return 1 / (0.16 / math.sqrt(ActiveAgony) * (ActiveAgony == 1 and 1.15 or 1) * ActiveAgony / A.Agony:TickTime())
+end
+
+local UnstableAfflictionDebuffs = {
+  233490,
+  233496,
+  233497,
+  233498,
+  233499
+};
+
+local function ActiveUAs ()
+  local UACount = 0
+  for _, UADebuff in pairs(UnstableAfflictionDebuffs) do
+    if Target:DebuffRemainsP(UADebuff) > 0 then UACount = UACount + 1 end
+  end
+  return UACount
+end
+
+local function Contagion()
+  local MaximumDuration = 0
+  for _, UADebuff in pairs(UnstableAfflictionDebuffs) do
+    local UARemains = Target:DebuffRemainsP(UADebuff)
+    if UARemains > MaximumDuration then
+      MaximumDuration = UARemains
+    end
+  end
+  return MaximumDuration
 end
 
 local useStormEarthAndFireFixate = false
