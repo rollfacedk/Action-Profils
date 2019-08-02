@@ -9,9 +9,10 @@ local A = Action
 A.Data.ProfileEnabled[TMW.db:GetCurrentProfile()] = true
 A.Data.ProfileUI = {    
     DateTime = "v4 (01.08.2019)",
-    [2] = {        
+    -- Class settings
+	[2] = {        
         [ACTION_CONST_WARLOCK_AFFLI] = {             
-            { -- [1]                            
+            { -- [1] 1st Row                           
                 {
                     E = "Checkbox", 
                     DB = "mouseover",
@@ -19,10 +20,12 @@ A.Data.ProfileUI = {
                     L = { 
                         enUS = "Use @mouseover", 
                         ruRU = "Использовать @mouseover", 
+						frFR = "Utiliser les fonctions @mouseover",
                     }, 
                     TT = { 
                         enUS = "Will unlock use actions for @mouseover units\nExample: Resuscitate, Healing", 
                         ruRU = "Разблокирует использование действий для @mouseover юнитов\nНапример: Воскрешение, Хилинг", 
+						frFR = "Activera les actions via @mouseover\n Exemple: Ressusciter, Soigner",
                     }, 
                     M = {},
                 },
@@ -33,193 +36,86 @@ A.Data.ProfileUI = {
                     L = { 
                         enUS = "Use AoE", 
                         ruRU = "Использовать AoE", 
+						frFR = "Utiliser l'AoE"
                     }, 
                     TT = { 
                         enUS = "Enable multiunits actions", 
                         ruRU = "Включает действия для нескольких целей", 
+						frFR = "Activer les actions multi-unités",
                     }, 
                     M = {},
                 },                    
             }, 
-            { -- [2]
+            { -- [2] 2th Row 
                 {
                     E = "Dropdown",                                                         
                     OT = {
-                        { text = "Level 2", value = 2 },
-                        { text = "Level 3", value = 3 },
-                        { text = "Level 4", value = 4 },
-                        { text = "Level 5", value = 5 },
-                        { text = "AUTO", value = 0 },
-                    },
-                    DB = "ShouldPurify",
-                    DBV = 0, 
-                    L = { 
-                        ANY = A.GetSpellInfo(119582),
-                    }, 
-                    TT = { 
-                        enUS = "Stagger level on which need\nPurifying Brew (5 super high, 1 very low)", 
-                        ruRU = "Уровень пошатывания на котором\nнужно Очищаться отваром (5 супер много, 1 очень мало)", 
-                    }, 
-                    M = {},                                    
-                },        
-                {
-                    E = "Slider",                                                     
-                    MIN = -1, 
-                    MAX = 100,                            
-                    DB = "FortifyingBrew",
-                    DBV = 100,
-                    ONOFF = true,
-                    L = { 
-                        ANY = A.GetSpellInfo(115176) .. " (%)",
-                    }, 
-                    M = {},
-                },
-            },
-            { -- [3]    
-                {
-                    E = "Slider",                                                     
-                    MIN = -1, 
-                    MAX = 85,                            
-                    DB = "HealingElixir",
-                    DBV = 85,
-                    ONOFF = true,
-                    L = { 
-                        ANY = A.GetSpellInfo(122281) .. " (%)",
-                    }, 
-                    M = {},
-                },
-                {
-                    E = "Slider",                                                     
-                    MIN = -1, 
-                    MAX = 100,                            
-                    DB = "Guard",
-                    DBV = 100,
-                    ONOFF = true,
-                    L = { 
-                        ANY = A.GetSpellInfo(115295) .. " (" .. A.GetSpellInfo(124255) .. " %)",    
-                    }, 
-                    M = {},
-                },
-            }, 
-            { -- [4]     
-                {
-                    E = "Slider",                                                     
-                    MIN = -1, 
-                    MAX = 100,                            
-                    DB = "DampenHarm",
-                    DBV = 100,
-                    ONOFF = true,
-                    L = { 
-                        ANY = A.GetSpellInfo(122278) .. " (%)",                        
-                    }, 
-                    M = {},
-                },
-                {
-                    E = "Slider",                                                     
-                    MIN = -1, 
-                    MAX = 100,                            
-                    DB = "FortifyingBrew",
-                    DBV = 100,
-                    ONOFF = true,
-                    L = { 
-                        ANY = A.GetSpellInfo(115203) .. " (%)",
-                    }, 
-                    M = {},
-                },
-            }, 
-            { -- [5]    
-                {
-                    E = "Slider",                                                     
-                    MIN = -1, 
-                    MAX = 100,                            
-                    DB = "ZenMeditation",
-                    DBV = 100,
-                    ONOFF = true,
-                    L = { 
-                        ANY = A.GetSpellInfo(115176) .. " (%)",                        
-                    }, 
-                    M = {},
-                },
-                {
-                    E = "Dropdown",                                                         
-                    OT = {
-                        { text = "Invoke Niuzao the BlackOx", value = 1 },
-                        { text = "Summon BlackOx Statue", value = 2 },
-                        { text = "Provoke On BlackOx Statue", value = 3 },
+                        { text = "@arena1", value = 1 },
+                        { text = "@arena2", value = 2 },
+                        { text = "@arena3", value = 3 },
+                        { text = "primary", value = 4 },
                     },
                     MULT = true,
-                    DB = "AdditionalTaunt",
+                    DB = "FearPvPUnits",
                     DBV = {
                         [1] = true, 
                         [2] = true,
                         [3] = true,
+                        [4] = true,
                     }, 
                     L = { 
-                        enUS = "Additional Taunt",
-                        ruRU = "Дополнительный Таунт",
+                        ANY = "PvP " .. A.GetSpellInfo(5782) .. " units",
                     }, 
-                    M = {},                                    
-                },    
-            }, 
-            { -- [6]
+                    TT = { 
+                        enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 
+                        ruRU = "primary - это @target, @mouseover, @targettarget (эти юниты зависят от чекбоксов наверху)", 
+                    }, 
+                    M = {},
+                },     
                 {
                     E = "Slider",                                                     
                     MIN = -1, 
                     MAX = 100,                            
-                    DB = "Stoneform",
-                    DBV = 100,
+                    DB = "UnendingResolve",
+                    DBV = 30, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(20594) .. " (%)",                        
+                        ANY = A.GetSpellInfo(104773) .. " (%)",
                     }, 
                     M = {},
                 },
                 {
-                    E = "LayoutSpace",                                                                         
-                },
-            }, 
-            { -- [7]
-                {
-                    E = "Header",
-                    L = {
-                        ANY = " -- PvP -- ",
-                    },
-                },
-            },
-            { -- [8]
-                {
-                    E = "Dropdown",                                                         
-                    OT = {
-                        { text = "Only Heal", value = "Heal" },
-                        { text = "Only PvP", value = "PvP" },
-                        { text = "BOTH", value = "BOTH" },
-                        { text = "OFF", value = "OFF" },
-                    },
-                    DB = "ParalysisPvP",
-                    DBV = "BOTH",
+                    E = "Checkbox", 
+                    DB = "OffGCDasOffGCD",
+                    DBV = true,
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(115078),
+                        enUS = "Display OffGCD as OffGCD, ForceReturn", 
+                        ruRU = "Отобразить OffGCD как OffGCD, ForceReturn", 
+						frFR = "Afficher OffGCD comme OffGCD, ForceReturn",
                     }, 
                     TT = { 
-                        enUS = "@arena1-3 interrupt PvP list from 'Interrupts' tab by Paralysis\nMore custom config you can find in group by open /tmw", 
-                        ruRU = "@arena1-3 прерывание Параличом PvP списка из вкладки 'Прерывания'\nБольше кастомизации вы найдете в группе открыв /tmw", 
+                        enUS = "Will force certains spells to be used as off GCD", 
+                        ruRU = "Вынудит определенные заклинания использоваться как вне GCD", 
+						frFR = "Forcera certains spells à être utilisés sur le GCD",
                     }, 
                     M = {},
-                },
-            }, 
+                },  
+            },
         },
     },
+	-- MSG Actions UI
     [7] = {
         [ACTION_CONST_WARLOCK_AFFLI] = { 
-            ["stun"] = { Enabled = true, Key = "LegSweep", LUA = [[
-                return     Unit("player"):HasBuffs(Action[PlayerSpec].ZenMeditation.ID, true) == 0 and 
+		    -- MSG Action Pet Dispell
+            ["dispell"] = { Enabled = true, Key = "PetDispell", LUA = [[
+                return     A.DispellMagic:IsReady(unit, true) and 
                         (
                             ( 
                                 not Unit(thisunit):IsEnemy() and 
                                 (
                                     (
                                         not InPvP() and 
-                                        AoE(1, 5) 
+                                        Env.Dispel(unit)
                                     ) or 
                                     (
                                         InPvP() and 
@@ -230,35 +126,25 @@ A.Data.ProfileUI = {
                             ( 
                                 Unit(thisunit):IsEnemy() and 
                                 Unit(thisunit):GetRange() <= 5 and 
-                                Unit(thisunit):IsControlAble("stun", 0) and
-                                Action[PlayerSpec].LegSweep:AbsentImun(thisunit, {"StunImun", "TotalImun", "DamagePhysImun", "CCTotalImun"}, true) 
+                                Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"TotalImun", "DeffBuffsMagic"}, true) 
                             )                
                         ) 
             ]] },
-            ["kick"] = { Enabled = true, Key = "SpearHandStrike", LUA = [[
-                return     Unit("player"):HasBuffs(Action[PlayerSpec].ZenMeditation.ID, true) == 0 and
-                        SpellInRange(thisunit, Action[PlayerSpec].SpearHandStrike.ID) and 
+			-- MSG Action Pet Kick
+            ["kick"] = { Enabled = true, Key = "Pet Kick", LUA = [[
+                return  SpellInRange(thisunit, Action[PlayerSpec].SpellLock.ID) and 
                         select(2, CastTime(nil, thisunit)) > 0 and 
-                        Action[PlayerSpec].SpearHandStrike:AbsentImun(thisunit, {"KickImun", "TotalImun", "DamagePhysImun"}, true) 
+                        Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
             ]] },
-            ["freedom"] = { Enabled = true, Key = "TigersLust", LUA = [[
-                return     Unit("player"):HasBuffs(Action[PlayerSpec].ZenMeditation.ID, true) == 0 and 
-                        TalentLearn(Action[PlayerSpec].TigersLust.ID) and 
-                        SpellInRange(thisunit, Action[PlayerSpec].TigersLust.ID) and 
-                        Action[PlayerSpec].TigersLust:AbsentImun(thisunit) and 
-                        Action.LossOfControlIsMissed("SILENCE") and 
-                        LossOfControlGet("SCHOOL_INTERRUPT", "NATURE") == 0
-            ]] },
-            ["dispel"] = { Enabled = true, Key = "Detox", LUA = [[
-                return     Unit("player"):HasBuffs(Action[PlayerSpec].ZenMeditation.ID, true) == 0 and 
-                        SpellInRange(thisunit, Action[PlayerSpec].Detox.ID) and 
-                        Action.AuraIsValid(thisunit, "UseDispel", "Dispel") and                         
-                        Action[PlayerSpec].Detox:AbsentImun(thisunit) and 
-                        Action.LossOfControlIsMissed("SILENCE") and 
-                        LossOfControlGet("SCHOOL_INTERRUPT", "NATURE") == 0
+			-- MSG Action Fear
+            ["kick"] = { Enabled = true, Key = "Pet Kick", LUA = [[
+                return  SpellInRange(thisunit, Action[PlayerSpec].SpellLock.ID) and 
+                        select(2, CastTime(nil, thisunit)) > 0 and 
+                        Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
             ]] },
         },
-        [ACTION_CONST_WARLOCK_AFFLI] = {
+		-- Other Spec ?
+        --[[ [ACTION_CONST_WARLOCK_DESTRU] = {
             ["stun"] = { Enabled = true, Key = "LegSweep", LUA = [[
                 return     (
                             not InPvP() and 
@@ -299,7 +185,7 @@ A.Data.ProfileUI = {
                         LossOfControlGet("SCHOOL_INTERRUPT", "NATURE") == 0 and 
                         UNITHP(thisunit) <= 92
             ]] },
-        },
+        }, ]]--
     },
 }
 
@@ -319,9 +205,9 @@ Env.PlayerMoving = A.MakeFunctionCachedStatic(Env.PlayerMoving)
 -----------------------------------------
 --                   PvP  
 -----------------------------------------
-function Env.GrappleWeaponIsReady(unit, isMsg)
-    if A[Env.PlayerSpec].GrappleWeapon then 
-        local unitID = A.GetToggle(2, "GrappleWeaponPvPunits")
+function Env.FearIsReady(unit, isMsg)
+    if A[Env.PlayerSpec].Fear then 
+        local unitID = A.GetToggle(2, "FearPvPunits")
         return     (
             (unit == "arena1" and unitID[1]) or 
             (unit == "arena2" and unitID[2]) or
@@ -329,28 +215,27 @@ function Env.GrappleWeaponIsReady(unit, isMsg)
             (not unit:match("arena") and unitID[4]) 
         ) and 
         Env.InPvP() and
-        Env.PvPTalentLearn(A[Env.PlayerSpec].GrappleWeapon.ID) and 
+        Env.PvPTalentLearn(A[Env.PlayerSpec].Fear.ID) and 
         Env.Unit(unit):IsEnemy() and  
         (
             (
                 not isMsg and 
-                A.GetToggle(2, "GrappleWeaponPvP") ~= "OFF" and 
-                A[Env.PlayerSpec].GrappleWeapon:IsReady(unit) and 
+                A.GetToggle(2, "FearPvPunits") ~= "OFF" and 
+                A[Env.PlayerSpec].Fear:IsReady(unit) and 
                 Env.Unit(unit):IsMelee() and 
                 (
-                    A.GetToggle(2, "GrappleWeaponPvP") == "ON COOLDOWN" or 
+                    A.GetToggle(2, "FearPvPunits") == "ON COOLDOWN" or 
                     Env.Unit(unit):HasBuffs("DamageBuffs") > 3 
                 )
             ) or 
             (
                 isMsg and 
-                A[Env.PlayerSpec].GrappleWeapon:IsReadyP(unit)                     
+                A[Env.PlayerSpec].Fear:IsReadyP(unit)                     
             )
         ) and 
         UnitIsPlayer(unit) and                     
-        A[Env.PlayerSpec].GrappleWeapon:AbsentImun(unit, {"CCTotalImun", "DamagePhysImun", "TotalImun"}, true) and 
-        Env.Unit(unit):IsControlAble("disarm", 0) and 
-        Env.Unit(unit):HasDeBuffs("Disarmed") == 0
+        A[Env.PlayerSpec].Fear:AbsentImun(unit, {"CCTotalImun", "DeffBuffsMagic", "TotalImun"}, true) and 
+        Env.Unit(unit):IsControlAble("incapacitate", 0)
     end 
 end 
 
