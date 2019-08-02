@@ -50,6 +50,24 @@ A.Data.ProfileUI = {
                 {
                     E = "Dropdown",                                                         
                     OT = {
+                        { text = "ON MELEE BURST", value = "ON MELEE BURST" },
+                        { text = "ON COOLDOWN", value = "ON COOLDOWN" },                    
+                        { text = "OFF", value = "OFF" },
+                    },
+                    DB = "FearPvP",
+                    DBV = "ON MELEE BURST",
+                    L = { 
+                        ANY = "PvP " .. A.GetSpellInfo(5782),
+                    }, 
+                    TT = { 
+                        enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
+                        ruRU = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Только если игрок ближнего боя имеет бафы на урон\nON COOLDOWN - значит будет использовано по игрокам ближнего боя по восстановлению способности\nOFF - Выключает из ротации, но при этом позволяет Очередь и MSG системам работать\nЕсли нужно полностью выключить, тогда установите блокировку во вкладке 'Действия'", 
+                    }, 
+                    M = {},
+                },
+				{
+                    E = "Dropdown",                                                         
+                    OT = {
                         { text = "@arena1", value = 1 },
                         { text = "@arena2", value = 2 },
                         { text = "@arena3", value = 3 },
@@ -220,11 +238,11 @@ function Env.FearIsReady(unit, isMsg)
         (
             (
                 not isMsg and 
-                A.GetToggle(2, "FearPvPunits") ~= "OFF" and 
+                A.GetToggle(2, "FearPvP") ~= "OFF" and 
                 A[Env.PlayerSpec].Fear:IsReady(unit) and 
                 Env.Unit(unit):IsMelee() and 
                 (
-                    A.GetToggle(2, "FearPvPunits") == "ON COOLDOWN" or 
+                    A.GetToggle(2, "FearPvP") == "ON COOLDOWN" or 
                     Env.Unit(unit):HasBuffs("DamageBuffs") > 3 
                 )
             ) or 
