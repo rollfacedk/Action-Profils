@@ -566,7 +566,8 @@ A[3] = function(icon, isMulti)
         -- Purge
         if A.ArcaneTorrent:AutoRacial(unit, true) then 
             return A.ArcaneTorrent:Show(icon)
-        end             
+        end   
+	
         
         -- Interrupts
         local Interrupt = Interrupts(unit, ShouldStop)

@@ -1,3 +1,7 @@
+--------------------
+-- Taste TMW Action Rotation
+-- Last Update : 05/08/2019
+
 local TMW = TMW 
 local CNDT = TMW.CNDT 
 local Env = CNDT.Env
