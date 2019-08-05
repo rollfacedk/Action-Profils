@@ -264,13 +264,13 @@ local function Interrupts(unit, ShouldStop)
         end 
     end 
     
-	-- ChaosNova if multiple units casting or Disrupt not ready
+	-- ChaosNova if unit casting in 5yd range and Disrupt not ready
     if useCC and not ShouldStop and Action.ChaosNova:IsReady(unit, true) and Env.Unit(unit):GetRange() <= 5 and select(2, Env.CastTime(nil, unit)) > Env.CurrentTimeGCD() + 0.1 and Action.ChaosNova:AbsentImun(unit, {"StunImun", "CCTotalImun", "DamagePhysImun", "TotalImun"}, true) and Env.Unit(unit):IsControlAble("stun", 0) then
         return Action.ChaosNova     
     end 
 	
 	-- FelEruption if talent is learned and no multiple units and not Disrupt ready
-    if useCC and not ShouldStop and not Action.Disrupt:IsReady(unit) and Env.TalentLearn(Action.FelEruption.ID) and Action.FelEruption:IsReady(unit) and Action.FelEruption:AbsentImun(unit, {"StunImun", "TotalImun", "DamagePhysImun", "CCTotalImun"}) and Env.Unit(unit):IsControlAble("stun", 0) then 
+    if useCC and not ShouldStop and Env.Unit(unit):GetRange() <= 20 and Env.TalentLearn(Action.FelEruption.ID) and Action.FelEruption:IsReady(unit) and Action.FelEruption:AbsentImun(unit, {"StunImun", "TotalImun", "DamagePhysImun", "CCTotalImun"}) and Env.Unit(unit):IsControlAble("stun", 0) then 
         return Action.FelEruption              
     end             
     -- Racials
