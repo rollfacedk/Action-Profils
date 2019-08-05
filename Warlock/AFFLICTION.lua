@@ -332,7 +332,7 @@ local function EvaluateTargetIfSiphonLife293(TargetUnit)
 end
 
 local function EvaluateCycleCorruption300(TargetUnit)
-    return EnemiesCount < 3 + num(S.WritheInAgony:IsAvailable()) and (TargetUnit:DebuffRemainsP(S.CorruptionDebuff) <= Player:GCD() or S.SummonDarkglare:CooldownRemainsP() > 10 and TargetUnit:DebuffRefreshableCP(S.CorruptionDebuff)) and TargetUnit:TimeToDie() > 10
+    return EnemiesCount < 3 + num(S.WritheInAgony:IsAvailable()) and (TargetUnit:DebuffRemainsP(S.CorruptionDebuff) <= Player:GCD() or S.SummonDarkglare:CooldownRemainsP() > 10 and TargetUnit:DebuffRemainsP(S.CorruptionDebuff) <= 4) and TargetUnit:TimeToDie() > 10
 end
 
 local function EvaluateCycleDrainSoul479(TargetUnit)
@@ -605,7 +605,7 @@ local function APL()
             if HR.Cast(S.Agony) then return "agony 91"; end
         end
         -- corruption,line_cd=15,if=(dot.corruption.remains%dot.corruption.duration)<=(dot.agony.remains%dot.agony.duration)&(dot.corruption.remains%dot.corruption.duration)<=(dot.siphon_life.remains%dot.siphon_life.duration)&dot.corruption.remains<dot.corruption.duration*1.3
-        if S.Corruption:IsCastableP() and not ShouldStop and ((Target:DebuffRemainsP(S.CorruptionDebuff) / S.CorruptionDebuff:BaseDuration()) <= (Target:DebuffRemainsP(S.AgonyDebuff) / S.AgonyDebuff:BaseDuration()) and (Target:DebuffRemainsP(S.CorruptionDebuff) / S.CorruptionDebuff:BaseDuration()) <= (Target:DebuffRemainsP(S.SiphonLifeDebuff) / S.SiphonLifeDebuff:BaseDuration()) and Target:DebuffRemainsP(S.CorruptionDebuff) < S.CorruptionDebuff:BaseDuration() * 1.3) then
+        if S.Corruption:IsCastableP() and not S.AbsoluteCorruption:IsAvailable() and not ShouldStop and ((Target:DebuffRemainsP(S.CorruptionDebuff) / S.CorruptionDebuff:BaseDuration()) <= (Target:DebuffRemainsP(S.AgonyDebuff) / S.AgonyDebuff:BaseDuration()) and (Target:DebuffRemainsP(S.CorruptionDebuff) / S.CorruptionDebuff:BaseDuration()) <= (Target:DebuffRemainsP(S.SiphonLifeDebuff) / S.SiphonLifeDebuff:BaseDuration()) and Target:DebuffRemainsP(S.CorruptionDebuff) < S.CorruptionDebuff:BaseDuration() * 1.3) then
             if HR.Cast(S.Corruption) then return "corruption 113"; end
         end
     end
@@ -633,11 +633,11 @@ local function APL()
             if HR.Cast(S.SiphonLife) then return "siphon_life 774"; end
         end
 		-- corruption,cycle_targets=1,if=!prevgcd.corruption&refreshable&target.time_to_die<=5
-        if S.Corruption:IsCastableP() and not ShouldStop and S.AbsoluteCorruption:IsAvailable() and not Player:PrevGCDP(1, S.Corruption) and (Target:DebuffDownP(S.CorruptionDebuff) or Target:DebuffRemainsP(S.CorruptionDebuff) <= 4) then
+        if S.Corruption:IsCastableP() and not ShouldStop and not S.AbsoluteCorruption:IsAvailable() and not Player:PrevGCDP(1, S.Corruption) and (Target:DebuffDownP(S.CorruptionDebuff) or Target:DebuffRemainsP(S.CorruptionDebuff) <= 4) then
 		    if HR.Cast(S.Corruption) then return "corruption 318" end
         end
         -- corruption,cycle_targets=1,if=spell_targets.seed_of_corruption_aoe<3+raid_event.invulnerable.up+talent.writhe_in_agony.enabled&(remains<=gcd|cooldown.summon_darkglare.remains>10&refreshable)&target.time_to_die>10
-        if S.Corruption:IsCastableP() and not ShouldStop and EvaluateCycleCorruption300(Target)  then
+        if S.Corruption:IsCastableP() and not S.AbsoluteCorruption:IsAvailable() and (Target:DebuffDownP(S.CorruptionDebuff) or Target:DebuffRemainsP(S.CorruptionDebuff) <= 4) and not ShouldStop and EvaluateCycleCorruption300(Target) then
             if HR.Cast(S.Corruption) then return "corruption 318" end
         end
     end
@@ -678,6 +678,10 @@ local function APL()
         end
         -- corruption,if=buff.movement.up&!prev_gcd.1.corruption&!talent.absolute_corruption.enabled
         if S.Corruption:IsCastableP() and not ShouldStop and Player:IsMoving() and not Player:PrevGCDP(1, S.Corruption) and not S.AbsoluteCorruption:IsAvailable() then
+            if HR.Cast(S.Corruption) then return "corruption 411"; end
+        end
+        -- corruption,if=buff.movement.up&!prev_gcd.1.corruption&!talent.absolute_corruption.enabled
+        if S.Corruption:IsCastableP() and not ShouldStop and Player:IsMoving() and not Player:PrevGCDP(1, S.Corruption) and S.AbsoluteCorruption:IsAvailable() and not Target:DebuffP(S.CorruptionDebuff) then
             if HR.Cast(S.Corruption) then return "corruption 411"; end
         end
         --  drain_life,if=buff.inevitable_demise.stack>10&target.time_to_die<=10
@@ -851,7 +855,7 @@ local function APL()
             if HR.Cast(S.Haunt) then return "haunt 714"; end
         end
         -- summon_darkglare,if=dot.agony.ticking&dot.corruption.ticking&(buff.active_uas.stack=5|soul_shard=0)&(!talent.phantom_singularity.enabled|dot.phantom_singularity.remains)&(!talent.deathbolt.enabled|cooldown.deathbolt.remains<=gcd|!cooldown.deathbolt.remains|spell_targets.seed_of_corruption_aoe>1+raid_event.invulnerable.up)
-        if S.SummonDarkglare:IsCastableP() and Action.GetToggle(2, "CDs") and (Target:DebuffP(S.AgonyDebuff) and Target:DebuffP(S.CorruptionDebuff) and (ActiveUAs() == 5 or Player:SoulShardsP() == 0) and (not S.PhantomSingularity:IsAvailable() or Target:DebuffP(S.PhantomSingularityDebuff)) and (not S.Deathbolt:IsAvailable() or S.Deathbolt:CooldownRemainsP() <= Player:GCD() or S.Deathbolt:CooldownUpP() or EnemiesCount > 1)) then
+        if S.SummonDarkglare:IsCastableP() and Action.GetToggle(2, "CDs") and (Target:DebuffP(S.AgonyDebuff) and (Target:DebuffP(S.CorruptionDebuff) or S.AbsoluteCorruption:IsAvailable()) and (ActiveUAs() == 5 or Player:SoulShardsP() == 0) and (not S.PhantomSingularity:IsAvailable() or Target:DebuffP(S.PhantomSingularityDebuff)) and (not S.Deathbolt:IsAvailable() or S.Deathbolt:CooldownRemainsP() <= Player:GCD() or S.Deathbolt:CooldownUpP() or EnemiesCount > 1)) then
             if HR.Cast(S.SummonDarkglare, Action.GetToggle(2, "OffGCDasOffGCD")) then return "summon_darkglare 716"; end
         end
         -- deathbolt,if=cooldown.summon_darkglare.remains&spell_targets.seed_of_corruption_aoe=1+raid_event.invulnerable.up&(!essence.vision_of_perfection.minor&!azerite.dreadful_calling.rank|cooldown.summon_darkglare.remains>30)
@@ -887,8 +891,8 @@ local function APL()
         if S.Corruption:IsCastableP() and not ShouldStop and (HL.CombatTime() > 30 and S.SummonDarkglare:CooldownRemainsP() <= 15 and I.AzsharasFontofPower:IsEquipped() and not S.AbsoluteCorruption:IsAvailable() and (S.SiphonLife:IsAvailable() or EnemiesCount > 1 and EnemiesCount <= 3)) then
             if HR.Cast(S.Corruption) then return "corruption 773"; end
         end
-	    -- agony,target_if=min:dot.agony.remains,if=remains<=gcd+action.shadow_bolt.execute_time&target.time_to_die>8
-        if S.Corruption:IsCastableP() and not ShouldStop and not Action.GetToggle(2, "CDs") and Target:DebuffRemainsP(S.CorruptionDebuff) <= 4 then
+	    -- corruption fix with AC
+        if S.Corruption:IsCastableP() and not ShouldStop and not Action.GetToggle(2, "CDs") and Target:DebuffDownP(S.CorruptionDebuff) and S.AbsoluteCorruption:IsAvailable() then
             if HR.Cast(S.Corruption) then return "corruption 770" end
         end
         -- siphon_life,line_cd=30,if=time>30&cooldown.summon_darkglare.remains<=15&equipped.169314
