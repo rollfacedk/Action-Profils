@@ -7,7 +7,7 @@ local CNDT = TMW.CNDT
 local Env = CNDT.Env
 local Action = Action
 
-Action[ACTION_CONST_WARLOCK_AFFLI] = {
+Action[ACTION_CONST_DEMONHUNTER_HAVOC] = {
   -- Racial
   ArcaneTorrent                        = Action.Create({ Type = "Spell", ID = 50613     }),
   BloodFury                            = Action.Create({ Type = "Spell", ID = 20572      }),
@@ -118,12 +118,12 @@ Action[ACTION_CONST_WARLOCK_AFFLI] = {
 }
 
 -- To create essences use next code:
-Action:CreateEssencesFor(ACTION_CONST_WARLOCK_AFFLI)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
+Action:CreateEssencesFor(ACTION_CONST_DEMONHUNTER_HAVOC)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 
 -- This code making shorter access to both tables Action[PLAYERSPEC] and Action
 -- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady(), it doesn't make any conflict if you will skip shorter access
 -- So with shorter access you can just do A.Guard:IsReady() instead of Action[PLAYERSPEC].Guard:IsReady()
-local A = setmetatable(Action[ACTION_CONST_WARLOCK_AFFLI], { __index = Action })
+local A = setmetatable(Action[ACTION_CONST_DEMONHUNTER_HAVOC], { __index = Action })
 
 -- Simcraft Imported
 -- HeroLib
@@ -210,9 +210,9 @@ end
 
 -- FelRush GUI Handler
 local function CastFelRush()
-    if Settings.Havoc.FelRushDisplayStyle == "Suggested" then
+    if Action.GetToggle(2, "FelRushDisplay") == "SUGGESTED" then
         return HR.CastSuggested(S.FelRush);
-    elseif Settings.Havoc.FelRushDisplayStyle == "Cooldown" then
+    elseif Action.GetToggle(2, "FelRushDisplay") == "COOLDOWN" then
         if S.FelRush:TimeSinceLastDisplay() ~= 0 then
             return HR.Cast(S.FelRush, { true, false } );
         else
