@@ -216,10 +216,10 @@ A.Data.ProfileUI = {
                     }, 
                     M = {},
                 },
-            }
+            },
         },
     },
-    -- MSG Actions UI
+-- MSG Actions UI
     [7] = {
         [ACTION_CONST_DEMONHUNTER_HAVOC] = { 
             -- MSG Action Pet Dispell
@@ -277,39 +277,7 @@ Env.PlayerMoving = A.MakeFunctionCachedStatic(Env.PlayerMoving)
 -----------------------------------------
 --                   PvP  
 -----------------------------------------
-function Env.FearIsReady(unit, isMsg)
-    if A[Env.PlayerSpec].Fear then 
-        local unitID = A.GetToggle(2, "FearPvPunits")
-        return     (
-            (unit == "arena1" and unitID[1]) or 
-            (unit == "arena2" and unitID[2]) or
-            (unit == "arena3" and unitID[3]) or
-            (not unit:match("arena") and unitID[4]) 
-        ) and 
-        Env.InPvP() and
-        Env.PvPTalentLearn(A[Env.PlayerSpec].Fear.ID) and 
-        Env.Unit(unit):IsEnemy() and  
-        (
-            (
-                not isMsg and 
-                A.GetToggle(2, "FearPvP") ~= "OFF" and 
-                A[Env.PlayerSpec].Fear:IsReady(unit) and 
-                Env.Unit(unit):IsMelee() and 
-                (
-                    A.GetToggle(2, "FearPvP") == "ON COOLDOWN" or 
-                    Env.Unit(unit):HasBuffs("DamageBuffs") > 3 
-                )
-            ) or 
-            (
-                isMsg and 
-                A[Env.PlayerSpec].Fear:IsReadyP(unit)                     
-            )
-        ) and 
-        UnitIsPlayer(unit) and                     
-        A[Env.PlayerSpec].Fear:AbsentImun(unit, {"CCTotalImun", "DeffBuffsMagic", "TotalImun"}, true) and 
-        Env.Unit(unit):IsControlAble("incapacitate", 0)
-    end 
-end 
+ 
 
 function Env.Main_CastBars(unit, list)
     if not A.IsInitialized or Env.IamHealer or not Env.InPvP() then 

@@ -36,7 +36,7 @@ Action[ACTION_CONST_DEMONHUNTER_HAVOC] = {
   Annihilation                          = Action.Create({ Type = "Spell", ID = 201427}),  
   ChaosStrike                           = Action.Create({ Type = "Spell", ID = 162794}),
   DeathSweep                            = Action.Create({ Type = "Spell", ID = 210152}),
-  FelBarrage                            = Action.Create({ Type = "Spell", ID = 211053}),
+  FelBarrage                            = Action.Create({ Type = "Spell", ID = 258925}),
   RevolvingBlades                       = Action.Create({ Type = "Spell", ID = 279581}),
   ImmolationAura                        = Action.Create({ Type = "Spell", ID = 258920}),
   Felblade                              = Action.Create({ Type = "Spell", ID = 232893}),
@@ -54,6 +54,7 @@ Action[ACTION_CONST_DEMONHUNTER_HAVOC] = {
   FelEruption                           = Action.Create({ Type = "Spell", ID = 211881}),
   ChaosNova                             = Action.Create({ Type = "Spell", ID = 179057}),
   Blur                                  = Action.Create({ Type = "Spell", ID = 198589}),
+  ConsumeMagic                          = Action.Create({ Type = "Spell", ID = 278326}),
   Darkness                              = Action.Create({ Type = "Spell", ID = 196718}),
   RecklessForceCounter1                 = Action.Create({ Type = "Spell", ID = 298409}),
   RecklessForceCounter2                 = Action.Create({ Type = "Spell", ID = 302917}),
@@ -252,45 +253,45 @@ local function DetermineEssenceRanks()
 end
 
 -- Interrupts handler
-local function Interrupts(unit, ShouldStop)
-    local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
+--[[local function Interrupts(Target, ShouldStop)
+    local useKick, useCC, useRacial = Action.InterruptIsValid(Target, "TargetMouseover")    
     
 	-- Disrupt
-    if useKick and Action.Disrupt:IsReady(unit) and Action.Disrupt:AbsentImun(unit, {"TotalImun", "DamagePhysImun", "KickImun"}, true) then 
-        if Env.RandomKick(unit, true) then 
-            return Action.Disrupt
+    if useKick and Action.InterruptIsValid(Target, "TargetMouseover") and S.Disrupt:IsReadyP(15) and Action.Disrupt:AbsentImun(Target, {"TotalImun", "DamagePhysImun", "KickImun"}, true) then 
+        if Env.RandomKick(Target, true) then 
+			if HR.Cast(S.Disrupt) then return ""; end
         else 
             return false
         end 
     end 
     
-	-- ChaosNova if unit casting in 5yd range and Disrupt not ready
-    if useCC and not ShouldStop and Action.ChaosNova:IsReady(unit, true) and Env.Unit(unit):GetRange() <= 5 and select(2, Env.CastTime(nil, unit)) > Env.CurrentTimeGCD() + 0.1 and Action.ChaosNova:AbsentImun(unit, {"StunImun", "CCTotalImun", "DamagePhysImun", "TotalImun"}, true) and Env.Unit(unit):IsControlAble("stun", 0) then
-        return Action.ChaosNova     
+	-- ChaosNova if Target casting in 5yd range and Disrupt not ready
+    if useCC and not ShouldStop and S.ChaosNova:IsReadyP(5) and Action.ChaosNova:AbsentImun(Target, {"StunImun", "CCTotalImun", "DamagePhysImun", "TotalImun"}, true) then  
+		if HR.Cast(S.ChaosNova) then return ""; end
     end 
 	
-	-- FelEruption if talent is learned and no multiple units and not Disrupt ready
-    if useCC and not ShouldStop and Env.Unit(unit):GetRange() <= 20 and Env.TalentLearn(Action.FelEruption.ID) and Action.FelEruption:IsReady(unit) and Action.FelEruption:AbsentImun(unit, {"StunImun", "TotalImun", "DamagePhysImun", "CCTotalImun"}) and Env.Unit(unit):IsControlAble("stun", 0) then 
-        return Action.FelEruption              
+	-- FelEruption if talent is learned and no multiple Targets and not Disrupt ready
+    if useCC and not ShouldStop and S.FelEruption:IsAvailable() and S.FelEruption:IsReadyP(20) and Action.FelEruption:AbsentImun(Target, {"StunImun", "TotalImun", "DamagePhysImun", "CCTotalImun"}) then  
+       if HR.Cast(S.FelEruption) then return ""; end		
     end             
     -- Racials
-    if useRacial and Action.QuakingPalm:AutoRacial(unit, true) then 
-        return Action.QuakingPalm
+    if useRacial and Action.QuakingPalm:AutoRacial(Target, true) then 
+	    if HR.Cast(S.QuakingPalm) then return ""; end
     end 
     
-    if useRacial and Action.Haymaker:AutoRacial(unit, true) then 
-        return Action.Haymaker
+    if useRacial and Action.Haymaker:AutoRacial(Target, true) then 
+	    if HR.Cast(S.Haymaker) then return ""; end
     end 
     
-    if useRacial and Action.WarStomp:AutoRacial(unit, true) then 
-        return Action.WarStomp
+    if useRacial and Action.WarStomp:AutoRacial(Target, true) then 
+	    if HR.Cast(S.WarStomp) then return ""; end
     end 
     
-    if useRacial and Action.BullRush:AutoRacial(unit, true) then 
-        return Action.BullRush
+    if useRacial and Action.BullRush:AutoRacial(Target, true) then 
+	    if HR.Cast(S.BullRush) then return ""; end
     end      
 end 
-Interrupts = Action.MakeFunctionCachedDynamic(Interrupts)
+Interrupts = Action.MakeFunctionCachedDynamic(Interrupts)]]--
 
 --- ======= ACTION LISTS =======
 local function APL() 
@@ -298,7 +299,6 @@ local function APL()
 	-- Action specifics remap
 	local ShouldStop = Action.ShouldStop()
 	local Pull = Action.BossMods_Pulling()
-	local Interrupt = Interrupts(unit, ShouldStop)
 	
 	-- Local functions remap
     EnemiesCount = active_enemies()
@@ -312,33 +312,27 @@ local function APL()
 	    ShouldStop = false
 	end
 	
-	local function Precombat_DBM()
-        -- summon_pet
-        if SummonPet:IsCastableP() and not ShouldStop and (not Player:IsMoving()) and not Player:ShouldStopCasting() and not Pet:IsActive() and (not bool(Player:BuffRemainsP(S.GrimoireofSacrificeBuff)))  then
-            if HR.Cast(SummonPet, true) then return "summon_pet 3"; end
-        end
-        -- grimoire_of_sacrifice,if=talent.grimoire_of_sacrifice.enabled
-        if S.GrimoireofSacrifice:IsCastableP() and not ShouldStop and Player:BuffDownP(S.GrimoireofSacrificeBuff) and (S.GrimoireofSacrifice:IsAvailable()) then
-            if HR.Cast(S.GrimoireofSacrifice, true) then return "grimoire_of_sacrifice 5"; end
-         end
+    local function Precombat_DBM()
+        -- flask
+        -- augmentation
+        -- food
         -- snapshot_stats
-        -- pre potion haunt
-        if I.PotionofUnbridledFury:IsReady() and not ShouldStop and S.Haunt:IsAvailable() and Action.GetToggle(1, "Potion") and Pull > S.Haunt:ExecuteTime() + 1 and Pull <= S.Haunt:ExecuteTime() + 2 then
-            if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 14"; end
+		-- Immolation Aura
+        if S.ImmolationAura:IsCastableP() and Pull > 1 and Pull <= 2  then
+            if HR.Cast(S.ImmolationAura) then return "immolation_aura 5"; end
         end
-        -- pre potion no haunt
-        if I.PotionofUnbridledFury:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") and not S.Haunt:IsAvailable() and Pull > S.Haunt:ExecuteTime() + 1 and Pull <= S.ShadowBolt:ExecuteTime() + 2 then
-            if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 14"; end
+        -- potion
+        if I.PotionofFocusedResolve:IsReady() and Action.GetToggle(1, "Potion") then
+            if HR.CastSuggested(I.PotionofFocusedResolve) then return "battle_potion_of_agility 4"; end
         end
-        -- haunt
-        if S.Haunt:IsCastableP() and not ShouldStop and not Player:IsMoving() and Pull > 0.1 and Pull <= S.Haunt:ExecuteTime() + 0.05 and (not Player:IsMoving()) and not Player:ShouldStopCasting() and Player:DebuffDownP(S.HauntDebuff) then
-            if HR.Cast(S.Haunt) then return "haunt 20"; end
+        -- metamorphosis,if=!azerite.chaotic_transformation.enabled
+        if S.Metamorphosis:IsCastableP(40) and (Player:BuffDownP(S.MetamorphosisBuff) and not S.ChaoticTransformation:AzeriteEnabled()) then
+            if HR.Cast(S.Metamorphosis, Action.GetToggle(2, "OffGCDasOffGCD")) then return "metamorphosis 6"; end
         end
-        -- shadow_bolt,if=!talent.haunt.enabled&spell_targets.seed_of_corruption_aoe<3
-        if S.ShadowBolt:IsCastableP() and not ShouldStop and Pull > 0.1 and Pull <= S.ShadowBolt:ExecuteTime() and (not Player:IsMoving()) and not Player:ShouldStopCasting() and (not S.Haunt:IsAvailable() and active_enemies() < 3) then
-            if HR.Cast(S.ShadowBolt) then return "shadow_bolt 24"; end
+        -- use_item,name=azsharas_font_of_power
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() then
+            if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 7"; end
         end
-        return 0, 462338
     end
     
     local function Precombat()
@@ -347,9 +341,6 @@ local function APL()
         -- food
         -- snapshot_stats
         -- potion
-        if I.PotionofFocusedResolve:IsReady() and Action.GetToggle(1, "Potion") then
-            if HR.CastSuggested(I.PotionofFocusedResolve) then return "battle_potion_of_agility 4"; end
-        end
         -- Immolation Aura
         if S.ImmolationAura:IsCastableP() then
             if HR.Cast(S.ImmolationAura) then return "immolation_aura 5"; end
@@ -598,12 +589,6 @@ local function APL()
     if Player:IsCasting() and Player:CastRemains() >= ((select(4, GetNetStats()) / 1000 * 2) + 0.05) or Player:IsChanneling() or ShouldStop then
         if HR.Cast(S.Channeling) then return "" end
     end  
-	-- call DBM precombat
-    if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
-        local ShouldReturn = Precombat_DBM(); 
-            if ShouldReturn then return ShouldReturn; 
-        end    
-    end
     -- call non DBM precombat
     if not Player:AffectingCombat() and not Action.GetToggle(1, "DBM") and not Player:IsCasting() then        
         local ShouldReturn = Precombat(); 
@@ -615,14 +600,27 @@ local function APL()
     if Player:AffectingCombat() then
         
 		-- Interrupts handler (Kick + available stuns depending on situation)
-        if Interrupt then 
-            return Interrupt:Show(icon)
-        end   
+		 -- Interrupts
+        --local Interrupt = Interrupts(Target, ShouldStop)
+        --if Interrupt then 
+        --    return Interrupt:Show(icon)
+        --end   
+		
+		-- Disrupt
+      --  if useKick and Action.InterruptIsValid(Target, "TargetMouseover") and S.Disrupt:IsReadyP(15) and Action.Disrupt:AbsentImun(Target, {"TotalImun", "DamagePhysImun", "KickImun"}, true) then 
+      --      if Env.RandomKick(Target, true) then 
+	--	    	if HR.Cast(S.Disrupt) then return ""; end
+     --       else 
+      --          return false
+      --     end 
+      --  end 
 		
 		-- Purge
-        if S.ConsumeMagic:IsReady() and Target:HasStealableBuff() then
-            if HR.Cast(S.ConsumeMagic) then return "" end
-        end	
+		-- Note: Toggles  ("UseDispel", "UsePurge", "UseExpelEnrage")
+        -- Category ("Dispel", "MagicMovement", "PurgeFriendly", "PurgeHigh", "PurgeLow", "Enrage")
+        --if S.ConsumeMagic:IsReady() and Action.AuraIsValid("player", "UsePurge", "PurgeHigh") then
+        --    if HR.Cast(S.ConsumeMagic) then return "" end
+        --end	
     
         -- Set Variables
         -- variable,name=blade_dance,value=talent.first_blood.enabled|spell_targets.blade_dance1>=(3-talent.trail_of_ruin.enabled)
