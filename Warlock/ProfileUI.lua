@@ -10,7 +10,7 @@ A.Data.ProfileEnabled[TMW.db:GetCurrentProfile()] = true
 A.Data.ProfileUI = {    
     DateTime = "v4 (01.08.2019)",
     -- Class settings
-	[2] = {        
+    [2] = {        
         [ACTION_CONST_WARLOCK_AFFLI] = {             
             { -- [1] 1st Row                           
                 {
@@ -20,12 +20,12 @@ A.Data.ProfileUI = {
                     L = { 
                         enUS = "Use @mouseover", 
                         ruRU = "Использовать @mouseover", 
-						frFR = "Utiliser les fonctions @mouseover",
+                        frFR = "Utiliser les fonctions @mouseover",
                     }, 
                     TT = { 
                         enUS = "Will unlock use actions for @mouseover units\nExample: Resuscitate, Healing", 
                         ruRU = "Разблокирует использование действий для @mouseover юнитов\nНапример: Воскрешение, Хилинг", 
-						frFR = "Activera les actions via @mouseover\n Exemple: Ressusciter, Soigner",
+                        frFR = "Activera les actions via @mouseover\n Exemple: Ressusciter, Soigner",
                     }, 
                     M = {},
                 },
@@ -36,17 +36,124 @@ A.Data.ProfileUI = {
                     L = { 
                         enUS = "Use AoE", 
                         ruRU = "Использовать AoE", 
-						frFR = "Utiliser l'AoE"
+                        frFR = "Utiliser l'AoE"
                     }, 
                     TT = { 
                         enUS = "Enable multiunits actions", 
                         ruRU = "Включает действия для нескольких целей", 
-						frFR = "Activer les actions multi-unités",
+                        frFR = "Activer les actions multi-unités",
                     }, 
                     M = {},
-                },                    
+                }, 
+                {
+                    E = "Checkbox", 
+                    DB = "CDs",
+                    DBV = true,
+                    L = { 
+                        enUS = "Use Cooldowns", 
+                        ruRU = "Использовать Cooldowns", 
+                        frFR = "Utiliser les Cooldowns"
+                    }, 
+                    TT = { 
+                        enUS = "Enable cooldowns usage in rotation", 
+                        ruRU = "Включить использование перезарядки в ротации", 
+                        frFR = "Activer l'usage des cooldowns par la rotation",
+                    }, 
+                    M = {},
+                },                 
             }, 
-            { -- [2] 2th Row 
+            { -- [2] 2nd Row
+                {
+                    E = "Checkbox", 
+                    DB = "OffGCDasOffGCD",
+                    DBV = true,
+                    L = { 
+                        enUS = "Use spells OffGCD", 
+                        ruRU = "Используйте заклинания OffGCD", 
+                        frFR = "Utiliser les spells OffGCD",
+                    }, 
+                    TT = { 
+                        enUS = "Will force certains spells to be used as off GCD", 
+                        ruRU = "Вынудит определенные заклинания использоваться как вне GCD", 
+                        frFR = "Forcera certains spells à être utilisés sur le GCD",
+                    }, 
+                    M = {},
+                },  
+            },
+            { -- [3] 3rd Row 
+                {
+                    E = "Slider",                                                     
+                    MIN = -1, 
+                    MAX = 100,                            
+                    DB = "UnendingResolve",
+                    DBV = 30, -- Set healthpercentage @30% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = A.GetSpellInfo(104773) .. " (%)",
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Slider",                                                     
+                    MIN = -1, 
+                    MAX = 100,                            
+                    DB = "UnendingResolve",
+                    DBV = 30, -- Set healthpercentage @30% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = A.GetSpellInfo(104773) .. " (%)",
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Slider",                                                     
+                    MIN = -1, 
+                    MAX = 100,                            
+                    DB = "UnendingResolve",
+                    DBV = 30, -- Set healthpercentage @30% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = A.GetSpellInfo(104773) .. " (%)",
+                    }, 
+                    M = {},
+                },
+            },
+            { -- [4] 4th Row
+                {
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = A.GetSpellInfo(688), value = "IMP" },
+                        { text = A.GetSpellInfo(697), value = "VOIDWALKER" },                    
+                        { text = A.GetSpellInfo(691), value = "FELHUNTER" },
+                        { text = A.GetSpellInfo(712), value = "SUCCUBUS" },
+                    },
+                    DB = "PetChoice",
+                    DBV = "IMP",
+                    L = { 
+                        enUS = "Pet selection", 
+                        ruRU = "Выбор питомца", 
+                        frFR = "Sélection du familier",
+                    }, 
+                    TT = { 
+                        enUS = "Choose the pet to summon", 
+                        ruRU = "Выберите питомца для призыва", 
+                        frFR = "Choisir le familier à invoquer",
+					},
+                    M = {},
+                },
+                {
+                    E = "LayoutSpace",                                                                         
+                },
+            }, 
+            { -- [7]
+                {
+                    E = "Header",
+                    L = {
+                        ANY = " -- PvP -- ",
+                    },
+                },
+            },
+            { -- [5] 5th Row     
                 {
                     E = "Dropdown",                                                         
                     OT = {
@@ -65,7 +172,7 @@ A.Data.ProfileUI = {
                     }, 
                     M = {},
                 },
-				{
+                {
                     E = "Dropdown",                                                         
                     OT = {
                         { text = "@arena1", value = 1 },
@@ -89,42 +196,14 @@ A.Data.ProfileUI = {
                         ruRU = "primary - это @target, @mouseover, @targettarget (эти юниты зависят от чекбоксов наверху)", 
                     }, 
                     M = {},
-                },     
-                {
-                    E = "Slider",                                                     
-                    MIN = -1, 
-                    MAX = 100,                            
-                    DB = "UnendingResolve",
-                    DBV = 30, -- Set healthpercentage @30% life. 
-                    ONOFF = true,
-                    L = { 
-                        ANY = A.GetSpellInfo(104773) .. " (%)",
-                    }, 
-                    M = {},
                 },
-                {
-                    E = "Checkbox", 
-                    DB = "OffGCDasOffGCD",
-                    DBV = true,
-                    L = { 
-                        enUS = "Display OffGCD as OffGCD, ForceReturn", 
-                        ruRU = "Отобразить OffGCD как OffGCD, ForceReturn", 
-						frFR = "Afficher OffGCD comme OffGCD, ForceReturn",
-                    }, 
-                    TT = { 
-                        enUS = "Will force certains spells to be used as off GCD", 
-                        ruRU = "Вынудит определенные заклинания использоваться как вне GCD", 
-						frFR = "Forcera certains spells à être utilisés sur le GCD",
-                    }, 
-                    M = {},
-                },  
-            },
+            }
         },
     },
-	-- MSG Actions UI
+    -- MSG Actions UI
     [7] = {
         [ACTION_CONST_WARLOCK_AFFLI] = { 
-		    -- MSG Action Pet Dispell
+            -- MSG Action Pet Dispell
             ["dispell"] = { Enabled = true, Key = "PetDispell", LUA = [[
                 return     A.DispellMagic:IsReady(unit, true) and 
                         (
@@ -148,65 +227,21 @@ A.Data.ProfileUI = {
                             )                
                         ) 
             ]] },
-			-- MSG Action Pet Kick
+            -- MSG Action Pet Kick
             ["kick"] = { Enabled = true, Key = "Pet Kick", LUA = [[
                 return  SpellInRange(thisunit, Action[PlayerSpec].SpellLock.ID) and 
                         select(2, CastTime(nil, thisunit)) > 0 and 
                         Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
             ]] },
-			-- MSG Action Fear
+            -- MSG Action Fear
             ["kick"] = { Enabled = true, Key = "Pet Kick", LUA = [[
                 return  SpellInRange(thisunit, Action[PlayerSpec].SpellLock.ID) and 
                         select(2, CastTime(nil, thisunit)) > 0 and 
                         Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
             ]] },
         },
-		-- Other Spec ?
-        --[[ [ACTION_CONST_WARLOCK_DESTRU] = {
-            ["stun"] = { Enabled = true, Key = "LegSweep", LUA = [[
-                return     (
-                            not InPvP() and 
-                            AoE(1, 5 + (TalentLearn(Action[PlayerSpec].TigerTailSweep.ID) and 2 or 0)) 
-                        ) or 
-                        (
-                            InPvP() and 
-                            EnemyTeam():PlayersInRange(1, 5 + (TalentLearn(Action[PlayerSpec].TigerTailSweep.ID) and 2 or 0))
-                        )                                                     
-            ]] },
-            ["disarm"] = { Enabled = true, Key = "GrappleWeapon", LUA = [[
-                return     GrappleWeaponIsReady(thisunit, true)
-            ]] },
-            ["kick"] = { Enabled = true, Key = "SpearHandStrike", LUA = [[
-                return     SpellInRange(thisunit, Action[PlayerSpec].SpearHandStrike.ID) and 
-                        select(2, CastTime(nil, thisunit)) > 0 and 
-                        Action[PlayerSpec].SpearHandStrike:AbsentImun(thisunit, {"KickImun", "TotalImun", "DamagePhysImun"}, true) 
-            ]] },
-            ["freedom"] = { Enabled = true, Key = "TigersLust", LUA = [[
-                return     TalentLearn(Action[PlayerSpec].TigersLust.ID) and 
-                        SpellInRange(thisunit, Action[PlayerSpec].TigersLust.ID) and 
-                        Action[PlayerSpec].TigersLust:AbsentImun(thisunit) and 
-                        Action.LossOfControlIsMissed("SILENCE") and 
-                        LossOfControlGet("SCHOOL_INTERRUPT", "NATURE") == 0
-            ]] },
-            ["dispel"] = { Enabled = true, Key = "Detox", LUA = [[
-                return     SpellInRange(thisunit, Action[PlayerSpec].Detox.ID) and 
-                        Action.AuraIsValid(thisunit, "UseDispel", "Dispel") and                         
-                        Action[PlayerSpec].Detox:AbsentImun(thisunit) and 
-                        Action.LossOfControlIsMissed("SILENCE") and 
-                        LossOfControlGet("SCHOOL_INTERRUPT", "NATURE") == 0
-            ]] },    
-            ["heal"] = { Enabled = true, Key = "ReverseHarm", LUA = [[
-                return     PvPTalentLearn(Action[PlayerSpec].ReverseHarm.ID) and
-                        SpellInRange(thisunit, Action[PlayerSpec].ReverseHarm.ID) and                                                     
-                        Action[PlayerSpec].ReverseHarm:AbsentImun(thisunit) and 
-                        Action.LossOfControlIsMissed("SILENCE") and 
-                        LossOfControlGet("SCHOOL_INTERRUPT", "NATURE") == 0 and 
-                        UNITHP(thisunit) <= 92
-            ]] },
-        }, ]]--
     },
 }
-
 -- Shared 
 Env.PlayerMovementStarted = 0
 function Env.PlayerMoving()
@@ -281,6 +316,5 @@ function Env.Second_CastBars(unit)
         end 
     end 
 end 
-
 
 
