@@ -295,7 +295,7 @@ local function PrepareAshvaneBurst()
     -- Ashvane 153142 Dummies:144086    
     if not Action.GetToggle(2, "CDs") and Player:InstanceDifficulty() == 16 and Target:NPCID() == 152236 
     -- Need around 45sec to get to 5shards...
-    and HL.CombatTime() > 25 then
+    and HL.CombatTime() > 35 then
         return true
     end
     return false
@@ -793,7 +793,11 @@ local function APL()
 	
 	-- Call Ashvane mythic burst on first P2 (If your guild is doing it this way)
 	if PrepareAshvaneBurst() then 
-   	    -- agony,target_if=min:dot.agony.remains,if=remains<=gcd+action.shadow_bolt.execute_time&target.time_to_die>8
+   	    -- haunt
+        if S.Haunt:IsCastableP() and not ShouldStop then
+            if HR.Cast(S.Haunt) then return "haunt 461"; end
+        end
+		-- agony,target_if=min:dot.agony.remains,if=remains<=gcd+action.shadow_bolt.execute_time&target.time_to_die>8
         if S.Agony:IsCastableP() and not ShouldStop and not Action.GetToggle(2, "CDs") and Target:DebuffRemainsP(S.AgonyDebuff) <= 5 then
             if HR.Cast(S.Agony) then return "siphon_life 770" end
         end
