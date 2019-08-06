@@ -11,8 +11,9 @@ local CNDT = TMW.CNDT
 local Env = CNDT.Env
 local A = Action
 A.Data.ProfileEnabled[TMW.db:GetCurrentProfile()] = true
+
 A.Data.ProfileUI = {    
-    DateTime = "v4 (01.08.2019)",
+    DateTime = "v1.1 (06.08.2019)",
     -- Class settings
     [2] = {        
         [ACTION_CONST_DEMONHUNTER_HAVOC] = {             
@@ -125,18 +126,6 @@ A.Data.ProfileUI = {
                     }, 
                     M = {},
                 },
-                {
-                    E = "Slider",                                                     
-                    MIN = -1, 
-                    MAX = 100,                            
-                    DB = "UnendingResolve",
-                    DBV = 30, -- Set healthpercentage @30% life. 
-                    ONOFF = true,
-                    L = { 
-                        ANY = A.GetSpellInfo(104773) .. " (%)",
-                    }, 
-                    M = {},
-                },
             },
             { -- [4] 4th Row
                 {
@@ -180,10 +169,10 @@ A.Data.ProfileUI = {
                         { text = "ON COOLDOWN", value = "ON COOLDOWN" },                    
                         { text = "OFF", value = "OFF" },
                     },
-                    DB = "FearPvP",
+                    DB = "ImprisonPvP",
                     DBV = "ON MELEE BURST",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(5782),
+                        ANY = "PvP " .. A.GetSpellInfo(217832),
                     }, 
                     TT = { 
                         enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
@@ -200,7 +189,7 @@ A.Data.ProfileUI = {
                         { text = "primary", value = 4 },
                     },
                     MULT = true,
-                    DB = "FearPvPUnits",
+                    DB = "ImprisonPvPUnits",
                     DBV = {
                         [1] = true, 
                         [2] = true,
@@ -208,7 +197,7 @@ A.Data.ProfileUI = {
                         [4] = true,
                     }, 
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(5782) .. " units",
+                        ANY = "PvP " .. A.GetSpellInfo(217832) .. " units",
                     }, 
                     TT = { 
                         enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 
@@ -219,12 +208,12 @@ A.Data.ProfileUI = {
             },
         },
     },
--- MSG Actions UI
+    -- MSG Actions UI
     [7] = {
         [ACTION_CONST_DEMONHUNTER_HAVOC] = { 
-            -- MSG Action Pet Dispell
-            ["dispell"] = { Enabled = true, Key = "PetDispell", LUA = [[
-                return     A.DispellMagic:IsReady(unit, true) and 
+            -- MSG Action ConsumeMagic Purge
+            ["ConsumeMagic"] = { Enabled = true, Key = "ConsumeMagic", LUA = [[
+                return     A.ConsumeMagic:IsReady(unit, true) and 
                         (
                             ( 
                                 not Unit(thisunit):IsEnemy() and 
@@ -242,21 +231,15 @@ A.Data.ProfileUI = {
                             ( 
                                 Unit(thisunit):IsEnemy() and 
                                 Unit(thisunit):GetRange() <= 5 and 
-                                Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"TotalImun", "DeffBuffsMagic"}, true) 
+                                Action[PlayerSpec].ConsumeMagic:AbsentImun(thisunit, {"TotalImun", "DeffBuffsMagic"}, true) 
                             )                
                         ) 
             ]] },
             -- MSG Action Pet Kick
-            ["kick"] = { Enabled = true, Key = "Pet Kick", LUA = [[
-                return  SpellInRange(thisunit, Action[PlayerSpec].SpellLock.ID) and 
+            ["kick"] = { Enabled = true, Key = "Disrupt", LUA = [[
+                return  SpellInRange(thisunit, Action[PlayerSpec].Disrupt.ID) and 
                         select(2, CastTime(nil, thisunit)) > 0 and 
-                        Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
-            ]] },
-            -- MSG Action Fear
-            ["kick"] = { Enabled = true, Key = "Pet Kick", LUA = [[
-                return  SpellInRange(thisunit, Action[PlayerSpec].SpellLock.ID) and 
-                        select(2, CastTime(nil, thisunit)) > 0 and 
-                        Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
+                        Action[PlayerSpec].Disrupt:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
             ]] },
         },
     },
