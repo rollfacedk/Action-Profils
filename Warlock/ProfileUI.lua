@@ -201,7 +201,7 @@ A.Data.ProfileUI = {
                     }, 
                     M = {},
                 },
-            }
+            },
         },
     },
     -- MSG Actions UI
