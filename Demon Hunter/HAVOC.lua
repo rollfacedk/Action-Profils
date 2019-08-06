@@ -318,21 +318,21 @@ local function APL()
         -- food
         -- snapshot_stats
 		-- Immolation Aura
-        if S.ImmolationAura:IsCastableP() and Pull > 1 and Pull <= 2  then
+        if S.ImmolationAura:IsCastableP() and Pull > 1.5 and Pull <= 2  then
             if HR.Cast(S.ImmolationAura) then return "immolation_aura 5"; end
         end
         -- potion
-        if I.PotionofFocusedResolve:IsReady() and Action.GetToggle(1, "Potion") then
+        if I.PotionofFocusedResolve:IsReady() and Action.GetToggle(1, "Potion") and Pull > 0.1 and Pull <= 1 then
             if HR.CastSuggested(I.PotionofFocusedResolve) then return "battle_potion_of_agility 4"; end
         end
         -- metamorphosis,if=!azerite.chaotic_transformation.enabled
-        if S.Metamorphosis:IsCastableP(40) and (Player:BuffDownP(S.MetamorphosisBuff) and not S.ChaoticTransformation:AzeriteEnabled()) then
+        if S.Metamorphosis:IsCastableP(40) and (Player:BuffDownP(S.MetamorphosisBuff) and not S.ChaoticTransformation:AzeriteEnabled()) and Pull > 0.1 and Pull <= 0.2 then
             if HR.Cast(S.Metamorphosis, Action.GetToggle(2, "OffGCDasOffGCD")) then return "metamorphosis 6"; end
         end
         -- use_item,name=azsharas_font_of_power
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() then
-            if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 7"; end
-        end
+       -- if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() then
+      --      if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 7"; end
+      --  end
     end
     
     local function Precombat()
@@ -589,12 +589,19 @@ local function APL()
     if Player:IsCasting() and Player:CastRemains() >= ((select(4, GetNetStats()) / 1000 * 2) + 0.05) or Player:IsChanneling() or ShouldStop then
         if HR.Cast(S.Channeling) then return "" end
     end  
+	-- call DBM precombat
+    if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
+        local ShouldReturn = Precombat_DBM(); 
+            if ShouldReturn then return ShouldReturn; 
+        end    
+    end
     -- call non DBM precombat
     if not Player:AffectingCombat() and not Action.GetToggle(1, "DBM") and not Player:IsCasting() then        
         local ShouldReturn = Precombat(); 
             if ShouldReturn then return ShouldReturn; 
         end    
-    end	
+    end
+	
     
     --- In Combat
     if Player:AffectingCombat() then

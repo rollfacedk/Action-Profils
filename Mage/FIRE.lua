@@ -293,6 +293,49 @@ local function APL()
 	else
 	    ShouldStop = false
 	end
+	
+	local function Precombat_DBM()
+        -- flask
+        -- food
+        -- augmentation
+        -- arcane_intellect
+         if S.ArcaneIntellect:IsCastableP() and Player:BuffDownP(S.ArcaneIntellectBuff, true) then
+            if HR.Cast(S.ArcaneIntellect) then return "arcane_intellect 3"; end
+        end
+        -- variable,name=combustion_rop_cutoff,op=set,value=60
+        if (true) then
+            VarCombustionRopCutoff = 60
+        end
+        -- variable,name=combustion_on_use,op=set,value=equipped.notorious_aspirants_badge|equipped.notorious_gladiators_badge|equipped.sinister_gladiators_badge|equipped.sinister_aspirants_badge|equipped.dread_gladiators_badge|equipped.dread_aspirants_badge|equipped.dread_combatants_insignia|equipped.notorious_aspirants_medallion|equipped.notorious_gladiators_medallion|equipped.sinister_gladiators_medallion|equipped.sinister_aspirants_medallion|equipped.dread_gladiators_medallion|equipped.dread_aspirants_medallion|equipped.dread_combatants_medallion|equipped.ignition_mages_fuse|equipped.tzanes_barkspines|equipped.azurethos_singed_plumage|equipped.ancient_knot_of_wisdom|equipped.shockbiters_fang|equipped.neural_synapse_enhancer|equipped.balefire_branch
+        if (true) then
+            VarCombustionOnUse = num(I.NotoriousAspirantsBadge:IsEquipped() or I.NotoriousGladiatorsBadge:IsEquipped() or I.SinisterGladiatorsBadge:IsEquipped() or I.SinisterAspirantsBadge:IsEquipped() or I.DreadGladiatorsBadge:IsEquipped() or I.DreadAspirantsBadge:IsEquipped() or I.DreadCombatantsInsignia:IsEquipped() or I.NotoriousAspirantsMedallion:IsEquipped() or I.NotoriousGladiatorsMedallion:IsEquipped() or I.SinisterGladiatorsMedallion:IsEquipped() or I.SinisterAspirantsMedallion:IsEquipped() or I.DreadGladiatorsMedallion:IsEquipped() or I.DreadAspirantsMedallion:IsEquipped() or I.DreadCombatantsMedallion:IsEquipped() or I.IgnitionMagesFuse:IsEquipped() or I.TzanesBarkspines:IsEquipped() or I.AzurethoseSingedPlumage:IsEquipped() or I.AncientKnotofWisdomAlliance:IsEquipped() or I.AncientKnotofWisdomHorde:IsEquipped() or I.ShockbitersFang:IsEquipped() or I.NeuralSynapseEnhancer:IsEquipped() or I.BalefireBranch:IsEquipped())
+        end
+        -- variable,name=font_double_on_use,op=set,value=equipped.azsharas_font_of_power&variable.combustion_on_use
+        if (true) then
+            VarFontDoubleOnUse = num(I.AzsharasFontofPower:IsEquipped() and bool(VarCombustionOnUse))
+        end
+        -- variable,name=on_use_cutoff,op=set,value=20*variable.combustion_on_use&!variable.font_double_on_use+40*variable.font_double_on_use+25*equipped.azsharas_font_of_power&!variable.font_double_on_use
+        if (true) then
+            VarOnUseCutoff = 20 * num(bool(VarCombustionOnUse) and not bool(VarFontDoubleOnUse)) + 40 * VarFontDoubleOnUse + 25 * num(I.AzsharasFontofPower:IsEquipped() and not bool(VarFontDoubleOnUse))
+        end
+        -- snapshot_stats
+        -- use_item,name=azsharas_font_of_power
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and Action.GetToggle(2, "UseTrinkets") and Pull > 2 and Pull <= I.AzsharasFontofPower:CastTime() then
+            if HR.CastSuggested(I.AzsharasFontofPower) then return "azsharas_font_of_power 9"; end
+        end
+        -- mirror_image
+        if S.MirrorImage:IsCastableP() and Pull > 1 and Pull <= 2 then
+            if HR.Cast(S.MirrorImage) then return "mirror_image 10"; end
+        end
+        -- potion
+        if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
+            if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 12"; end
+        end
+        -- pyroblast
+        if S.Pyroblast:IsCastableP() then
+            if HR.Cast(S.Pyroblast) then return "pyroblast 14"; end
+        end
+    end
 
 	local function Precombat()
         -- flask
