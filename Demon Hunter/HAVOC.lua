@@ -25,7 +25,8 @@ Action[ACTION_CONST_DEMONHUNTER_HAVOC] = {
   WilloftheForsaken                    = Action.Create({ Type = "Spell", ID = 7744        }), -- not usable in APL but user can Queue it    
   EscapeArtist                         = Action.Create({ Type = "Spell", ID = 20589    }), -- not usable in APL but user can Queue it
   EveryManforHimself                   = Action.Create({ Type = "Spell", ID = 59752    }), -- not usable in APL but user can Queue it
-  PetKick                              = Action.Create({ Type = "Spell", ID = 47482, Color = "RED", Desc = "RED" }),  
+  PetKick                              = Action.Create({ Type = "Spell", ID = 47482, Color = "RED", Desc = "RED" }),
+  Imprison                             = Action.Create({ Type = "Spell", ID = 217832}),
   Metamorphosis                         = Action.Create({ Type = "Spell", ID = 191427}),
   ChaoticTransformation                 = Action.Create({ Type = "Spell", ID = 288754}),
   Demonic                               = Action.Create({ Type = "Spell", ID = 213410}),
@@ -122,8 +123,8 @@ Action[ACTION_CONST_DEMONHUNTER_HAVOC] = {
 Action:CreateEssencesFor(ACTION_CONST_DEMONHUNTER_HAVOC)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 
 -- This code making shorter access to both tables Action[PLAYERSPEC] and Action
--- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady(), it doesn't make any conflict if you will skip shorter access
--- So with shorter access you can just do A.Guard:IsReady() instead of Action[PLAYERSPEC].Guard:IsReady()
+-- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop, it doesn't make any conflict if you will skip shorter access
+-- So with shorter access you can just do A.Guard:IsReady() and not ShouldStop instead of Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop
 local A = setmetatable(Action[ACTION_CONST_DEMONHUNTER_HAVOC], { __index = Action })
 
 -- Simcraft Imported
@@ -211,21 +212,23 @@ end
 
 -- FelRush GUI Handler
 local function CastFelRush()
-    if Action.GetToggle(2, "FelRushDisplay") == "SUGGESTED" then
-        return HR.CastSuggested(S.FelRush);
-    elseif Action.GetToggle(2, "FelRushDisplay") == "COOLDOWN" then
-        if S.FelRush:TimeSinceLastDisplay() ~= 0 then
-            return HR.Cast(S.FelRush, { true, false } );
-        else
-            return false;
-        end
+    if not Action.GetToggle(2, "UseMoves") then 
+        if Action.GetToggle(2, "FelRushDisplay") == "SUGGESTED" then
+            return HR.CastSuggested(S.FelRush);
+        elseif Action.GetToggle(2, "FelRushDisplay") == "COOLDOWN" then
+            if S.FelRush:TimeSinceLastDisplay() ~= 0 then
+                return HR.Cast(S.FelRush, { true, false } );
+            else
+               return false;
+            end
+		end
     end  
     return HR.Cast(S.FelRush);
 end
 
--- FelRush conservation handler
-local function ConserveFelRush()
-  return not Action.GetToggle(2, "ConserveFelRush") or S.FelRush:Charges() == 2  
+-- FelRush handler
+local function UseMoves()
+  return Action.GetToggle(2, "UseMoves") --or S.FelRush:Charges() == 2  
 end
 
 -- Local essence ranks (Is it really usefull?)
@@ -271,7 +274,7 @@ end
     end 
 	
 	-- FelEruption if talent is learned and no multiple Targets and not Disrupt ready
-    if useCC and not ShouldStop and S.FelEruption:IsAvailable() and S.FelEruption:IsReadyP(20) and Action.FelEruption:AbsentImun(Target, {"StunImun", "TotalImun", "DamagePhysImun", "CCTotalImun"}) then  
+    if useCC and not ShouldStop and S.FelEruption:IsAvailable() and S.FelEruption:IsReadyP(20) and not ShouldStop and Action.FelEruption:AbsentImun(Target, {"StunImun", "TotalImun", "DamagePhysImun", "CCTotalImun"}) then  
        if HR.Cast(S.FelEruption) then return ""; end		
     end             
     -- Racials
@@ -318,19 +321,19 @@ local function APL()
         -- food
         -- snapshot_stats
 		-- Immolation Aura
-        if S.ImmolationAura:IsCastableP() and Pull > 1.5 and Pull <= 2  then
+        if S.ImmolationAura:IsCastableP() and not ShouldStop and Pull > 1.5 and Pull <= 2  then
             if HR.Cast(S.ImmolationAura) then return "immolation_aura 5"; end
         end
         -- potion
-        if I.PotionofFocusedResolve:IsReady() and Action.GetToggle(1, "Potion") and Pull > 0.1 and Pull <= 1 then
+        if I.PotionofFocusedResolve:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") and Pull > 0.1 and Pull <= 1 then
             if HR.CastSuggested(I.PotionofFocusedResolve) then return "battle_potion_of_agility 4"; end
         end
         -- metamorphosis,if=!azerite.chaotic_transformation.enabled
-        if S.Metamorphosis:IsCastableP(40) and (Player:BuffDownP(S.MetamorphosisBuff) and not S.ChaoticTransformation:AzeriteEnabled()) and Pull > 0.1 and Pull <= 0.2 then
+        if S.Metamorphosis:IsCastableP(40) and not ShouldStop and (Player:BuffDownP(S.MetamorphosisBuff) and not S.ChaoticTransformation:AzeriteEnabled()) and Pull > 0.1 and Pull <= 0.2 then
             if HR.Cast(S.Metamorphosis, Action.GetToggle(2, "OffGCDasOffGCD")) then return "metamorphosis 6"; end
         end
         -- use_item,name=azsharas_font_of_power
-       -- if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() then
+       -- if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and not ShouldStop then
       --      if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 7"; end
       --  end
     end
@@ -342,90 +345,90 @@ local function APL()
         -- snapshot_stats
         -- potion
         -- Immolation Aura
-        if S.ImmolationAura:IsCastableP() then
+        if S.ImmolationAura:IsCastableP() and not ShouldStop then
             if HR.Cast(S.ImmolationAura) then return "immolation_aura 5"; end
         end
         -- metamorphosis,if=!azerite.chaotic_transformation.enabled
-        if S.Metamorphosis:IsCastableP(40) and (Player:BuffDownP(S.MetamorphosisBuff) and not S.ChaoticTransformation:AzeriteEnabled()) then
+        if S.Metamorphosis:IsCastableP(40) and not ShouldStop and (Player:BuffDownP(S.MetamorphosisBuff) and not S.ChaoticTransformation:AzeriteEnabled()) then
             if HR.Cast(S.Metamorphosis, Action.GetToggle(2, "OffGCDasOffGCD")) then return "metamorphosis 6"; end
         end
         -- use_item,name=azsharas_font_of_power
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() then
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and not ShouldStop then
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 7"; end
         end
     end
     
 	local function Essences()
         -- concentrated_flame
-        if S.ConcentratedFlame:IsCastableP() then
+        if S.ConcentratedFlame:IsCastableP() and not ShouldStop then
             if HR.Cast(S.ConcentratedFlame, Action.GetToggle(2, "OffGCDasOffGCD")) then return "concentrated_flame"; end
         end
         -- blood_of_the_enemy,if=buff.metamorphosis.up|target.time_to_die<=10
-        if S.BloodoftheEnemy:IsCastableP() and (Player:BuffP(S.MetamorphosisBuff) or Target:TimeToDie() <= 10) then
+        if S.BloodoftheEnemy:IsCastableP() and not ShouldStop and (Player:BuffP(S.MetamorphosisBuff) or Target:TimeToDie() <= 10) then
             if HR.Cast(S.BloodoftheEnemy, Action.GetToggle(2, "OffGCDasOffGCD")) then return "blood_of_the_enemy"; end
         end
         -- guardian_of_azeroth,if=buff.metamorphosis.up|target.time_to_die<=30
-        if S.GuardianofAzeroth:IsCastableP() and (Player:BuffP(S.MetamorphosisBuff) or Target:TimeToDie() <= 30) then
+        if S.GuardianofAzeroth:IsCastableP() and not ShouldStop and (Player:BuffP(S.MetamorphosisBuff) or Target:TimeToDie() <= 30) then
             if HR.Cast(S.GuardianofAzeroth, Action.GetToggle(2, "OffGCDasOffGCD")) then return "guardian_of_azeroth"; end
         end
         -- focused_azerite_beam,if=spell_targets.blade_dance1>=2|raid_event.adds.in>60
-        if S.FocusedAzeriteBeam:IsCastableP() and (Cache.EnemiesCount[8] >= 2) then
+        if S.FocusedAzeriteBeam:IsCastableP() and not ShouldStop and (Cache.EnemiesCount[8] >= 2) then
             if HR.Cast(S.FocusedAzeriteBeam, Action.GetToggle(2, "OffGCDasOffGCD")) then return "focused_azerite_beam"; end
         end
         -- purifying_blast,if=spell_targets.blade_dance1>=2|raid_event.adds.in>60
-        if S.PurifyingBlast:IsCastableP() and (Cache.EnemiesCount[8] >= 2) then
+        if S.PurifyingBlast:IsCastableP() and not ShouldStop and (Cache.EnemiesCount[8] >= 2) then
             if HR.Cast(S.PurifyingBlast, Action.GetToggle(2, "OffGCDasOffGCD")) then return "purifying_blast"; end
         end
         -- the_unbound_force,if=buff.reckless_force.up|buff.reckless_force_counter.stack<10
-        if S.TheUnboundForce:IsCastableP() and (Player:BuffP(S.RecklessForceBuff) or Player:BuffStackP(S.RecklessForceCounter) < 10) then
+        if S.TheUnboundForce:IsCastableP() and not ShouldStop and (Player:BuffP(S.RecklessForceBuff) or Player:BuffStackP(S.RecklessForceCounter) < 10) then
             if HR.Cast(S.TheUnboundForce, Action.GetToggle(2, "OffGCDasOffGCD")) then return "the_unbound_force"; end
         end
         -- ripple_in_space
-        if S.RippleInSpace:IsCastableP() then
+        if S.RippleInSpace:IsCastableP() and not ShouldStop then
             if HR.Cast(S.RippleInSpace, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ripple_in_space"; end
         end
         -- worldvein_resonance,if=buff.lifeblood.stack<3
-        if S.WorldveinResonance:IsCastableP() and (Player:BuffStackP(S.LifebloodBuff) < 3) then
+        if S.WorldveinResonance:IsCastableP() and not ShouldStop and (Player:BuffStackP(S.LifebloodBuff) < 3) then
             if HR.Cast(S.WorldveinResonance, Action.GetToggle(2, "OffGCDasOffGCD")) then return "worldvein_resonance"; end
         end
         -- memory_of_lucid_dreams,if=fury<40&buff.metamorphosis.up
-        if S.MemoryofLucidDreams:IsCastableP() and (Player:Fury() < 40 and Player:BuffP(S.MetamorphosisBuff)) then
+        if S.MemoryofLucidDreams:IsCastableP() and not ShouldStop and (Player:Fury() < 40 and Player:BuffP(S.MetamorphosisBuff)) then
             if HR.Cast(S.MemoryofLucidDreams, Action.GetToggle(2, "OffGCDasOffGCD")) then return "memory_of_lucid_dreams"; end
         end
     end
     
 	local function Cooldown()
         -- metamorphosis,if=!(talent.demonic.enabled|variable.pooling_for_meta|variable.waiting_for_nemesis)|target.time_to_die<25
-        if S.Metamorphosis:IsCastableP(40) and (Player:BuffDownP(S.MetamorphosisBuff) and not (S.Demonic:IsAvailable() or bool(VarPoolingForMeta) or bool(VarWaitingForNemesis)) or Target:TimeToDie() < 25) then
+        if S.Metamorphosis:IsCastableP(40) and not ShouldStop and (Player:BuffDownP(S.MetamorphosisBuff) and not (S.Demonic:IsAvailable() or bool(VarPoolingForMeta) or bool(VarWaitingForNemesis)) or Target:TimeToDie() < 25) then
             if HR.Cast(S.Metamorphosis, Action.GetToggle(2, "OffGCDasOffGCD")) then return "metamorphosis 12"; end
         end
         -- metamorphosis,if=talent.demonic.enabled&(!azerite.chaotic_transformation.enabled|(cooldown.eye_beam.remains>20&(!variable.blade_dance|cooldown.blade_dance.remains>gcd.max)))
-        if S.Metamorphosis:IsCastableP(40) and (Player:BuffDownP(S.MetamorphosisBuff) and S.Demonic:IsAvailable() and (not S.ChaoticTransformation:AzeriteEnabled() or (S.EyeBeam:CooldownRemainsP() > 12 and (not bool(VarBladeDance) or S.BladeDance:CooldownRemainsP() > Player:GCD())))) then
+        if S.Metamorphosis:IsCastableP(40) and not ShouldStop and (Player:BuffDownP(S.MetamorphosisBuff) and S.Demonic:IsAvailable() and (not S.ChaoticTransformation:AzeriteEnabled() or (S.EyeBeam:CooldownRemainsP() > 12 and (not bool(VarBladeDance) or S.BladeDance:CooldownRemainsP() > Player:GCD())))) then
             if HR.Cast(S.Metamorphosis, Action.GetToggle(2, "OffGCDasOffGCD")) then return "metamorphosis 20"; end
         end
         -- nemesis,target_if=min:target.time_to_die,if=raid_event.adds.exists&debuff.nemesis.down&(active_enemies>desired_targets|raid_event.adds.in>60)
         -- nemesis,if=!raid_event.adds.exists
-        if S.Nemesis:IsCastableP(50) and (not Cache.EnemiesCount[40] > 1) then
+        if S.Nemesis:IsCastableP(50) and not ShouldStop and (not Cache.EnemiesCount[40] > 1) then
             if HR.Cast(S.Nemesis, Action.GetToggle(2, "OffGCDasOffGCD")) then return "nemesis 51"; end
         end
         -- potion,if=buff.metamorphosis.remains>25|target.time_to_die<60
-        if I.PotionofFocusedResolve:IsReady() and Action.GetToggle(1, "Potion") and (Player:BuffRemainsP(S.MetamorphosisBuff) > 25 or Target:TimeToDie() < 60) then
+        if I.PotionofFocusedResolve:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") and (Player:BuffRemainsP(S.MetamorphosisBuff) > 25 or Target:TimeToDie() < 60) then
             if HR.CastSuggested(I.PotionofFocusedResolve) then return "battle_potion_of_agility 55"; end
         end
         -- use_item,name=galecallers_boon,if=!talent.fel_barrage.enabled|cooldown.fel_barrage.ready
-        if I.GalecallersBoon:IsEquipped() and I.GalecallersBoon:IsReady() and (not S.FelBarrage:IsAvailable() or S.FelBarrage:CooldownUpP()) then
+        if I.GalecallersBoon:IsEquipped() and I.GalecallersBoon:IsReady() and not ShouldStop and (not S.FelBarrage:IsAvailable() or S.FelBarrage:CooldownUpP()) then
             if HR.CastSuggested(I.GalecallersBoon) then return "galecallers_boon 56"; end
         end
         -- use_item,effect_name=cyclotronic_blast,if=buff.metamorphosis.up&buff.memory_of_lucid_dreams.down&(!variable.blade_dance|!cooldown.blade_dance.ready)
-        if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and S.CyclotronicBlast:IsAvailable() and (Player:BuffP(S.MetamorphosisBuff) and Player:BuffDownP(S.MemoryofLucidDreams) and (not bool(VarBladeDance) or not S.BladeDance:IsReady())) then
+        if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and not ShouldStop and S.CyclotronicBlast:IsAvailable() and (Player:BuffP(S.MetamorphosisBuff) and Player:BuffDownP(S.MemoryofLucidDreams) and (not bool(VarBladeDance) or not S.BladeDance:IsReady() and not ShouldStop)) then
             if HR.CastSuggested(I.PocketsizedComputationDevice) then return "cyclotronic_blast 57"; end
         end
         -- use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down|(debuff.conductive_ink_debuff.up|buff.metamorphosis.remains>20)&target.health.pct<31|target.time_to_die<20
-        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and (Target:DebuffDownP(S.RazorCoralDebuff) or (Target:DebuffP(S.ConductiveInkDebuff) or Player:BuffRemainsP(S.MetamorphosisBuff) > 20) and Target:HealthPercentage() < 31 or Target:TimeToDie() < 20) then
+        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and not ShouldStop and (Target:DebuffDownP(S.RazorCoralDebuff) or (Target:DebuffP(S.ConductiveInkDebuff) or Player:BuffRemainsP(S.MetamorphosisBuff) > 20) and Target:HealthPercentage() < 31 or Target:TimeToDie() < 20) then
             if HR.CastSuggested(I.AshvanesRazorCoral) then return "ashvanes_razor_coral 59"; end
         end
         -- use_item,name=azsharas_font_of_power,if=cooldown.metamorphosis.remains<10|cooldown.metamorphosis.remains>60
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and (S.Metamorphosis:CooldownRemainsP() < 10 or S.Metamorphosis:CooldownRemainsP() > 60) then
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and not ShouldStop and (S.Metamorphosis:CooldownRemainsP() < 10 or S.Metamorphosis:CooldownRemainsP() > 60) then
             if HR.CastSuggested(I.AzsharasFontofPower) then return "azsharas_font_of_power 60"; end
         end
         -- use_items,if=buff.metamorphosis.up
@@ -437,58 +440,58 @@ local function APL()
     
 	local function DarkSlash()
         -- dark_slash,if=fury>=80&(!variable.blade_dance|!cooldown.blade_dance.ready)
-        if S.DarkSlash:IsCastableP() and IsInMeleeRange() and (Player:Fury() >= 80 and (not bool(VarBladeDance) or not S.BladeDance:CooldownUpP())) then
+        if S.DarkSlash:IsCastableP() and not ShouldStop and IsInMeleeRange() and (Player:Fury() >= 80 and (not bool(VarBladeDance) or not S.BladeDance:CooldownUpP())) then
             if HR.Cast(S.DarkSlash) then return "dark_slash 61"; end
         end
         -- annihilation,if=debuff.dark_slash.up
-        if S.Annihilation:IsReadyP() and IsInMeleeRange() and (Target:DebuffP(S.DarkSlashDebuff)) then
+        if S.Annihilation:IsReadyP() and not ShouldStop and IsInMeleeRange() and (Target:DebuffP(S.DarkSlashDebuff)) then
             if HR.Cast(S.Annihilation) then return "annihilation 67"; end
         end
         -- chaos_strike,if=debuff.dark_slash.up
-        if S.ChaosStrike:IsReadyP() and IsInMeleeRange() and (Target:DebuffP(S.DarkSlashDebuff)) then
+        if S.ChaosStrike:IsReadyP() and not ShouldStop and IsInMeleeRange() and (Target:DebuffP(S.DarkSlashDebuff)) then
             if HR.Cast(S.ChaosStrike) then return "chaos_strike 71"; end
         end
     end
     
 	local function Demonic()
         -- death_sweep,if=variable.blade_dance
-        if S.DeathSweep:IsReadyP() and IsInMeleeRange() and (bool(VarBladeDance)) then
+        if S.DeathSweep:IsReadyP() and not ShouldStop and IsInMeleeRange() and (bool(VarBladeDance)) then
             if HR.Cast(S.DeathSweep) then return "death_sweep 75"; end
         end
         -- eye_beam,if=raid_event.adds.up|raid_event.adds.in>25
-        if S.EyeBeam:IsReadyP(20) then
+        if S.EyeBeam:IsReadyP(20) and Action.GetToggle(2, "UseEyeBeam") and not ShouldStop then
             if HR.Cast(S.EyeBeam, Action.GetToggle(2, "OffGCDasOffGCD")) then return "eye_beam 79"; end
         end
         -- fel_barrage,if=((!cooldown.eye_beam.up|buff.metamorphosis.up)&raid_event.adds.in>30)|active_enemies>desired_targets
-        if S.FelBarrage:IsCastableP() and IsInMeleeRange() and ((not S.EyeBeam:CooldownUpP() or Player:BuffP(S.MetamorphosisBuff)) or Cache.EnemiesCount[8] > 1) then
+        if S.FelBarrage:IsCastableP() and not ShouldStop and IsInMeleeRange() and ((not S.EyeBeam:CooldownUpP() or Player:BuffP(S.MetamorphosisBuff)) or Cache.EnemiesCount[8] > 1) then
             if HR.Cast(S.FelBarrage) then return "fel_barrage 83"; end
         end
         -- blade_dance,if=variable.blade_dance&!cooldown.metamorphosis.ready&(cooldown.eye_beam.remains>(5-azerite.revolving_blades.rank*3)|(raid_event.adds.in>cooldown&raid_event.adds.in<25))
-        if S.BladeDance:IsReadyP() and IsInMeleeRange() and (bool(VarBladeDance) and (S.EyeBeam:CooldownRemainsP() > (5 - S.RevolvingBlades:AzeriteRank() * 3))) then
+        if S.BladeDance:IsReadyP() and not ShouldStop and IsInMeleeRange() and (bool(VarBladeDance) and (S.EyeBeam:CooldownRemainsP() > (5 - S.RevolvingBlades:AzeriteRank() * 3))) then
             if HR.Cast(S.BladeDance) then return "blade_dance 95"; end
         end
         -- immolation_aura
-        if S.ImmolationAura:IsCastableP() then
+        if S.ImmolationAura:IsCastableP() and not ShouldStop then
             if HR.Cast(S.ImmolationAura) then return "immolation_aura 109"; end
         end
         -- annihilation,if=!variable.pooling_for_blade_dance
-        if S.Annihilation:IsReadyP() and IsInMeleeRange() and (not bool(VarPoolingForBladeDance)) then
+        if S.Annihilation:IsReadyP() and not ShouldStop and IsInMeleeRange() and (not bool(VarPoolingForBladeDance)) then
             if HR.Cast(S.Annihilation) then return "annihilation 111"; end
         end
         -- felblade,if=fury.deficit>=40
-        if S.Felblade:IsCastableP(15) and (Player:FuryDeficit() >= 40) then
+        if S.Felblade:IsCastableP(15) and not ShouldStop and (Player:FuryDeficit() >= 40) then
             if HR.Cast(S.Felblade) then return "felblade 115"; end
         end
         -- chaos_strike,if=!variable.pooling_for_blade_dance&!variable.pooling_for_eye_beam
-        if S.ChaosStrike:IsReadyP() and IsInMeleeRange() and (not bool(VarPoolingForBladeDance) and not bool(VarPoolingForEyeBeam)) then
+        if S.ChaosStrike:IsReadyP() and not ShouldStop and IsInMeleeRange() and (not bool(VarPoolingForBladeDance) and not bool(VarPoolingForEyeBeam)) then
             if HR.Cast(S.ChaosStrike) then return "chaos_strike 117"; end
         end
         -- fel_rush,if=talent.demon_blades.enabled&!cooldown.eye_beam.ready&(charges=2|(raid_event.movement.in>10&raid_event.adds.in>10))
-        if S.FelRush:IsCastableP(20, true) and (S.DemonBlades:IsAvailable() and not S.EyeBeam:CooldownUpP() and ConserveFelRush()) then
+        if S.FelRush:IsCastableP(20, true) and (S.DemonBlades:IsAvailable() and not S.EyeBeam:CooldownUpP() and UseMoves()) then
             if CastFelRush() then return "fel_rush 123"; end
         end
         -- demons_bite
-        if S.DemonsBite:IsCastableP() and IsInMeleeRange() then
+        if S.DemonsBite:IsCastableP() and not ShouldStop and IsInMeleeRange() then
             if HR.Cast(S.DemonsBite) then return "demons_bite 133"; end
         end
         -- throw_glaive,if=buff.out_of_range.up
@@ -496,7 +499,7 @@ local function APL()
             if HR.Cast(S.ThrowGlaive) then return "throw_glaive 135"; end
         end
         -- fel_rush,if=movement.distance>15|buff.out_of_range.up
-        -- if S.FelRush:IsCastableP(20, true) and (not IsInMeleeRange() and ConserveFelRush()) then
+        -- if S.FelRush:IsCastableP(20, true) and (not IsInMeleeRange() and UseMoves()) then
       -- if CastFelRush() then return "fel_rush 139"; end
         -- end
         -- vengeful_retreat,if=movement.distance>15
@@ -511,67 +514,67 @@ local function APL()
 	
     local function Normal()
         -- vengeful_retreat,if=talent.momentum.enabled&buff.prepared.down&time>1
-        if S.VengefulRetreat:IsCastableP("Melee", true) and (S.Momentum:IsAvailable() and Player:BuffDownP(S.PreparedBuff) and HL.CombatTime() > 1) then
+        if S.VengefulRetreat:IsCastableP("Melee", true) and UseMoves() and (S.Momentum:IsAvailable() and Player:BuffDownP(S.PreparedBuff) and HL.CombatTime() > 1) then
             if HR.Cast(S.VengefulRetreat, Action.GetToggle(2, "OffGCDasOffGCD")) then return "vengeful_retreat 149"; end
         end
         -- fel_rush,if=(variable.waiting_for_momentum|talent.fel_mastery.enabled)&(charges=2|(raid_event.movement.in>10&raid_event.adds.in>10))
-        if S.FelRush:IsCastableP(20, true) and ((bool(VarWaitingForMomentum) or S.FelMastery:IsAvailable()) and ConserveFelRush()) then
+        if S.FelRush:IsCastableP(20, true) and ((bool(VarWaitingForMomentum) or S.FelMastery:IsAvailable()) and UseMoves()) then
             if CastFelRush() then return "fel_rush 155"; end
         end
         -- fel_barrage,if=!variable.waiting_for_momentum&(active_enemies>desired_targets|raid_event.adds.in>30)
-        if S.FelBarrage:IsCastableP() and IsInMeleeRange() and (not bool(VarWaitingForMomentum) and Cache.EnemiesCount[8] > 1) then
+        if S.FelBarrage:IsCastableP() and not ShouldStop and IsInMeleeRange() and (not bool(VarWaitingForMomentum) and Cache.EnemiesCount[8] > 1) then
             if HR.Cast(S.FelBarrage) then return "fel_barrage 165"; end
         end
         -- death_sweep,if=variable.blade_dance
-        if S.DeathSweep:IsReadyP() and IsInMeleeRange() and (bool(VarBladeDance)) then
+        if S.DeathSweep:IsReadyP() and not ShouldStop and IsInMeleeRange() and (bool(VarBladeDance)) then
             if HR.Cast(S.DeathSweep) then return "death_sweep 175"; end
         end
         -- immolation_aura
-        if S.ImmolationAura:IsCastableP() then
+        if S.ImmolationAura:IsCastableP() and not ShouldStop then
             if HR.Cast(S.ImmolationAura) then return "immolation_aura 179"; end
         end
         -- eye_beam,if=active_enemies>1&(!raid_event.adds.exists|raid_event.adds.up)&!variable.waiting_for_momentum
-        if S.EyeBeam:IsReadyP(20) and (Cache.EnemiesCount[20] > 1 and not bool(VarWaitingForMomentum)) then
+        if S.EyeBeam:IsReadyP(20) and Action.GetToggle(2, "UseEyeBeam") and not ShouldStop and (Cache.EnemiesCount[20] > 1 and not bool(VarWaitingForMomentum)) then
             if HR.Cast(S.EyeBeam, Action.GetToggle(2, "OffGCDasOffGCD")) then return "eye_beam 181"; end
         end
         -- blade_dance,if=variable.blade_dance
-        if S.BladeDance:IsReadyP() and IsInMeleeRange() and (bool(VarBladeDance)) then
+        if S.BladeDance:IsReadyP() and not ShouldStop and IsInMeleeRange() and (bool(VarBladeDance)) then
             if HR.Cast(S.BladeDance) then return "blade_dance 195"; end
         end
         -- felblade,if=fury.deficit>=40
-        if S.Felblade:IsCastableP(15) and (Player:FuryDeficit() >= 40) then
+        if S.Felblade:IsCastableP(15) and not ShouldStop and (Player:FuryDeficit() >= 40) then
             if HR.Cast(S.Felblade) then return "felblade 199"; end
         end
         -- eye_beam,if=!talent.blind_fury.enabled&!variable.waiting_for_dark_slash&raid_event.adds.in>cooldown
-        if S.EyeBeam:IsReadyP(20) and (not S.BlindFury:IsAvailable() and not bool(VarWaitingForDarkSlash)) then
+        if S.EyeBeam:IsReadyP(20) and Action.GetToggle(2, "UseEyeBeam") and not ShouldStop and (not S.BlindFury:IsAvailable() and not bool(VarWaitingForDarkSlash)) then
             if HR.Cast(S.EyeBeam, Action.GetToggle(2, "OffGCDasOffGCD")) then return "eye_beam 201"; end
         end
         -- annihilation,if=(talent.demon_blades.enabled|!variable.waiting_for_momentum|fury.deficit<30|buff.metamorphosis.remains<5)&!variable.pooling_for_blade_dance&!variable.waiting_for_dark_slash
-        if S.Annihilation:IsReadyP() and IsInMeleeRange() and ((S.DemonBlades:IsAvailable() or not bool(VarWaitingForMomentum) or Player:FuryDeficit() < 30 or Player:BuffRemainsP(S.MetamorphosisBuff) < 5) and not bool(VarPoolingForBladeDance) and not bool(VarWaitingForDarkSlash)) then
+        if S.Annihilation:IsReadyP() and not ShouldStop and IsInMeleeRange() and ((S.DemonBlades:IsAvailable() or not bool(VarWaitingForMomentum) or Player:FuryDeficit() < 30 or Player:BuffRemainsP(S.MetamorphosisBuff) < 5) and not bool(VarPoolingForBladeDance) and not bool(VarWaitingForDarkSlash)) then
             if HR.Cast(S.Annihilation) then return "annihilation 211"; end
         end
         -- chaos_strike,if=(talent.demon_blades.enabled|!variable.waiting_for_momentum|fury.deficit<30)&!variable.pooling_for_meta&!variable.pooling_for_blade_dance&!variable.waiting_for_dark_slash
-        if S.ChaosStrike:IsReadyP() and IsInMeleeRange() and ((S.DemonBlades:IsAvailable() or not bool(VarWaitingForMomentum) or Player:FuryDeficit() < 30) and not bool(VarPoolingForMeta) and not bool(VarPoolingForBladeDance) and not bool(VarWaitingForDarkSlash)) then
+        if S.ChaosStrike:IsReadyP() and not ShouldStop and IsInMeleeRange() and ((S.DemonBlades:IsAvailable() or not bool(VarWaitingForMomentum) or Player:FuryDeficit() < 30) and not bool(VarPoolingForMeta) and not bool(VarPoolingForBladeDance) and not bool(VarWaitingForDarkSlash)) then
             if HR.Cast(S.ChaosStrike) then return "chaos_strike 223"; end
         end
         -- eye_beam,if=talent.blind_fury.enabled&raid_event.adds.in>cooldown
-        if S.EyeBeam:IsReadyP(20) and (S.BlindFury:IsAvailable()) then
+        if S.EyeBeam:IsReadyP(20) and Action.GetToggle(2, "UseEyeBeam") and not ShouldStop and (S.BlindFury:IsAvailable()) then
             if HR.Cast(S.EyeBeam, Action.GetToggle(2, "OffGCDasOffGCD")) then return "eye_beam 235"; end
         end
         -- demons_bite
-        if S.DemonsBite:IsCastableP() and IsInMeleeRange() then
+        if S.DemonsBite:IsCastableP() and not ShouldStop and IsInMeleeRange() then
             if HR.Cast(S.DemonsBite) then return "demons_bite 243"; end
         end
         -- fel_rush,if=!talent.momentum.enabled&raid_event.movement.in>charges*10&talent.demon_blades.enabled
-        if S.FelRush:IsCastableP(20, true) and (not S.Momentum:IsAvailable() and S.DemonBlades:IsAvailable() and ConserveFelRush()) then
+        if S.FelRush:IsCastableP(20, true) and (not S.Momentum:IsAvailable() and S.DemonBlades:IsAvailable() and UseMoves()) then
             if CastFelRush() then return "fel_rush 245"; end
         end
         -- felblade,if=movement.distance>15|buff.out_of_range.up
-        -- if S.Felblade:IsCastableP(15) and (not IsInMeleeRange()) then
+        -- if S.Felblade:IsCastableP(15) and not ShouldStop and (not IsInMeleeRange()) then
       -- if HR.Cast(S.Felblade) then return "felblade 255"; end
         -- end
         -- fel_rush,if=movement.distance>15|(buff.out_of_range.up&!talent.momentum.enabled)
-        -- if S.FelRush:IsCastableP(20, true) and (not IsInMeleeRange() and not S.Momentum:IsAvailable() and ConserveFelRush()) then
+        -- if S.FelRush:IsCastableP(20, true) and (not IsInMeleeRange() and not S.Momentum:IsAvailable() and UseMoves()) then
           -- if CastFelRush() then return "fel_rush 259"; end
         -- end
         -- vengeful_retreat,if=movement.distance>15
@@ -614,20 +617,20 @@ local function APL()
         --end   
 		
 		-- Disrupt
-      --  if useKick and Action.InterruptIsValid(Target, "TargetMouseover") and S.Disrupt:IsReadyP(15) and Action.Disrupt:AbsentImun(Target, {"TotalImun", "DamagePhysImun", "KickImun"}, true) then 
-      --      if Env.RandomKick(Target, true) then 
-	--	    	if HR.Cast(S.Disrupt) then return ""; end
-     --       else 
-      --          return false
-      --     end 
-      --  end 
+        if useKick and Action.InterruptIsValid(Target, "TargetMouseover") and S.Disrupt:IsReadyP(15) and Action.Disrupt:AbsentImun(Target, {"TotalImun", "DamagePhysImun", "KickImun"}, true) then 
+            if Env.RandomKick(Target, true) then 
+		    	if HR.Cast(S.Disrupt) then return ""; end
+            else 
+                return false
+           end 
+        end 
 		
 		-- Purge
 		-- Note: Toggles  ("UseDispel", "UsePurge", "UseExpelEnrage")
         -- Category ("Dispel", "MagicMovement", "PurgeFriendly", "PurgeHigh", "PurgeLow", "Enrage")
-        --if S.ConsumeMagic:IsReady() and Action.AuraIsValid("player", "UsePurge", "PurgeHigh") then
-        --    if HR.Cast(S.ConsumeMagic) then return "" end
-        --end	
+        if S.ConsumeMagic:IsReady() and not ShouldStop and Action.AuraIsValid("player", "UsePurge", "PurgeHigh") then
+            if HR.Cast(S.ConsumeMagic) then return "" end
+        end	
     
         -- Set Variables
         -- variable,name=blade_dance,value=talent.first_blood.enabled|spell_targets.blade_dance1>=(3-talent.trail_of_ruin.enabled)

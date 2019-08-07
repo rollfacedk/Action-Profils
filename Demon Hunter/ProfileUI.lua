@@ -4,15 +4,12 @@
 
 ACTION_CONST_DEMONHUNTER_HAVOC = 577
 ACTION_CONST_DEMONHUNTER_VENGEANCE = 581
---ACTION_CONST_DEMONHUNTER_HEAL = 99999999999
-
 local TMW = TMW 
 local CNDT = TMW.CNDT 
 local Env = CNDT.Env
 local A = Action
 A.Data.ProfileEnabled[TMW.db:GetCurrentProfile()] = true
-
-A.Data.ProfileUI = {    
+A.Data.ProfileUI = {      
     DateTime = "v1.1 (06.08.2019)",
     -- Class settings
     [2] = {        
@@ -41,7 +38,7 @@ A.Data.ProfileUI = {
                     L = { 
                         enUS = "Use AoE", 
                         ruRU = "Использовать AoE", 
-                        frFR = "Utiliser l'AoE"
+                        frFR = "Utiliser l'AoE",
                     }, 
                     TT = { 
                         enUS = "Enable multiunits actions", 
@@ -57,7 +54,7 @@ A.Data.ProfileUI = {
                     L = { 
                         enUS = "Use Cooldowns", 
                         ruRU = "Использовать Cooldowns", 
-                        frFR = "Utiliser les Cooldowns"
+                        frFR = "Utiliser les Cooldowns",
                     }, 
                     TT = { 
                         enUS = "Enable cooldowns usage in rotation", 
@@ -86,20 +83,36 @@ A.Data.ProfileUI = {
                 },  
                 {
                     E = "Checkbox", 
-                    DB = "ConserveFelRush",
+                    DB = "UseMoves",
                     DBV = true,
                     L = { 
-                        enUS = "Conserve Fel Rush", 
-                        ruRU = "консервировать Рывок Скверны", 
-                        frFR = "Conserver Ruée Fulgurante",
+                        enUS = "Use Fel Rush & Vengeful Retreat", 
+                        ruRU = "Используйте Fel Rush & Vengeful Retreat", 
+                        frFR = "Utiliser Ruée Fulgurante & Retraite Vengeresse",
                     }, 
                     TT = { 
-                        enUS = "Save at least 1 Fel Rush charge for mobility.", 
-                        ruRU = "Для мобильности сэкономьте как минимум 1 заряд Рывок Скверны", 
-                        frFR = "Économisez au moins 1 charge de Ruée Fulgurante pour la mobilité.",
+                        enUS = "Suggest when Fel Rush & Vengeful Retreat for mobility or for Momentum build.", 
+                        ruRU = "Предложите, когда Ослепительная Раш & Мстительное отступление для мобильности или для наращивания Momentum.", 
+                        frFR = "Suggère quand utiliser Ruée Fulgurante & Retraite Vengeresse pour la mobilité ou pour la build Momentum",
                     }, 
                     M = {},
-                },  
+                }, 
+                {
+                    E = "Checkbox", 
+                    DB = "UseEyeBeam",
+                    DBV = true,
+                    L = { 
+                        enUS = "Use Eyebeam as soon as possible", 
+                        ruRU = "Use Eyebeam on cooldown", 
+                        frFR = "Utiliser Rayon Accablant dès que possible",
+                    }, 
+                    TT = { 
+                        enUS = "Use Eyebeam as soon as possible or not and use QueueMacro depending on your current needs", 
+                        ruRU = "Use Eyebeam as soon as possible or not and use QueueMacro depending on your current needs", 
+                        frFR = "Use Eyebeam as soon as possible or not and use QueueMacro depending on your current needs",
+                    }, 
+                    M = {},
+                },				
             },
             { -- [3] 3rd Row 
                 {
@@ -211,9 +224,9 @@ A.Data.ProfileUI = {
     -- MSG Actions UI
     [7] = {
         [ACTION_CONST_DEMONHUNTER_HAVOC] = { 
-            -- MSG Action ConsumeMagic Purge
-            ["ConsumeMagic"] = { Enabled = true, Key = "ConsumeMagic", LUA = [[
-                return     A.ConsumeMagic:IsReady(unit, true) and 
+            -- MSG Action Pet Dispell
+            ["dispell"] = { Enabled = true, Key = "PetDispell", LUA = [[
+                return     A.DispellMagic:IsReady(unit, true) and 
                         (
                             ( 
                                 not Unit(thisunit):IsEnemy() and 
@@ -231,15 +244,21 @@ A.Data.ProfileUI = {
                             ( 
                                 Unit(thisunit):IsEnemy() and 
                                 Unit(thisunit):GetRange() <= 5 and 
-                                Action[PlayerSpec].ConsumeMagic:AbsentImun(thisunit, {"TotalImun", "DeffBuffsMagic"}, true) 
+                                Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"TotalImun", "DeffBuffsMagic"}, true) 
                             )                
                         ) 
             ]] },
             -- MSG Action Pet Kick
-            ["kick"] = { Enabled = true, Key = "Disrupt", LUA = [[
-                return  SpellInRange(thisunit, Action[PlayerSpec].Disrupt.ID) and 
+            ["kick"] = { Enabled = true, Key = "Pet Kick", LUA = [[
+                return  SpellInRange(thisunit, Action[PlayerSpec].SpellLock.ID) and 
                         select(2, CastTime(nil, thisunit)) > 0 and 
-                        Action[PlayerSpec].Disrupt:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
+                        Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
+            ]] },
+            -- MSG Action Fear
+            ["kick"] = { Enabled = true, Key = "Pet Kick", LUA = [[
+                return  SpellInRange(thisunit, Action[PlayerSpec].SpellLock.ID) and 
+                        select(2, CastTime(nil, thisunit)) > 0 and 
+                        Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
             ]] },
         },
     },
@@ -256,11 +275,42 @@ function Env.PlayerMoving()
     end 
 end 
 Env.PlayerMoving = A.MakeFunctionCachedStatic(Env.PlayerMoving)
-
 -----------------------------------------
 --                   PvP  
 -----------------------------------------
- 
+function Env.FearIsReady(unit, isMsg)
+    if A[Env.PlayerSpec].Imprison then 
+        local unitID = A.GetToggle(2, "ImprisonPvPUnits")
+        return     (
+            (unit == "arena1" and unitID[1]) or 
+            (unit == "arena2" and unitID[2]) or
+            (unit == "arena3" and unitID[3]) or
+            (not unit:match("arena") and unitID[4]) 
+        ) and 
+        Env.InPvP() and
+        Env.PvPTalentLearn(A[Env.PlayerSpec].Imprison.ID) and 
+        Env.Unit(unit):IsEnemy() and  
+        (
+            (
+                not isMsg and 
+                A.GetToggle(2, "ImprisonPvP") ~= "OFF" and 
+                A[Env.PlayerSpec].Imprison:IsReady(unit) and 
+                Env.Unit(unit):IsMelee() and 
+                (
+                    A.GetToggle(2, "ImprisonPvP") == "ON COOLDOWN" or 
+                    Env.Unit(unit):HasBuffs("DamageBuffs") > 3 
+                )
+            ) or 
+            (
+                isMsg and 
+                A[Env.PlayerSpec].Imprison:IsReadyP(unit)                     
+            )
+        ) and 
+        UnitIsPlayer(unit) and                     
+        A[Env.PlayerSpec].Imprison:AbsentImun(unit, {"CCTotalImun", "DeffBuffsMagic", "TotalImun"}, true) and 
+        Env.Unit(unit):IsControlAble("incapacitate", 0)
+    end 
+end 
 
 function Env.Main_CastBars(unit, list)
     if not A.IsInitialized or Env.IamHealer or not Env.InPvP() then 
