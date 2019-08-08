@@ -144,28 +144,7 @@ A.Data.ProfileUI = {
                 },
             },
             { -- [4] 4th Row
-                {
-                    E = "Dropdown",                                                         
-                    OT = {
-                        { text = A.GetSpellInfo(688), value = "IMP" },
-                        { text = A.GetSpellInfo(697), value = "VOIDWALKER" },                    
-                        { text = A.GetSpellInfo(691), value = "FELHUNTER" },
-                        { text = A.GetSpellInfo(712), value = "SUCCUBUS" },
-                    },
-                    DB = "PetChoice",
-                    DBV = "IMP",
-                    L = { 
-                        enUS = "Pet selection", 
-                        ruRU = "Выбор питомца", 
-                        frFR = "Sélection du familier",
-                    }, 
-                    TT = { 
-                        enUS = "Choose the pet to summon", 
-                        ruRU = "Выберите питомца для призыва", 
-                        frFR = "Choisir le familier à invoquer",
-					},
-                    M = {},
-                },
+
                 {
                     E = "LayoutSpace",                                                                         
                 },
@@ -283,9 +262,9 @@ Env.PlayerMoving = A.MakeFunctionCachedStatic(Env.PlayerMoving)
 -----------------------------------------
 --                   PvP  
 -----------------------------------------
-function Env.FearIsReady(unit, isMsg)
-    if A[Env.PlayerSpec].Fear then 
-        local unitID = A.GetToggle(2, "FearPvPunits")
+function Env.PolyIsReady(unit, isMsg)
+    if A[Env.PlayerSpec].Polymorph then 
+        local unitID = A.GetToggle(2, "PolymorphPvPunits")
         return     (
             (unit == "arena1" and unitID[1]) or 
             (unit == "arena2" and unitID[2]) or
@@ -293,26 +272,25 @@ function Env.FearIsReady(unit, isMsg)
             (not unit:match("arena") and unitID[4]) 
         ) and 
         Env.InPvP() and
-        Env.PvPTalentLearn(A[Env.PlayerSpec].Fear.ID) and 
         Env.Unit(unit):IsEnemy() and  
         (
             (
                 not isMsg and 
-                A.GetToggle(2, "FearPvP") ~= "OFF" and 
-                A[Env.PlayerSpec].Fear:IsReady(unit) and 
+                A.GetToggle(2, "PolymorphPvP") ~= "OFF" and 
+                A[Env.PlayerSpec].Polymorph:IsReady(unit) and 
                 Env.Unit(unit):IsMelee() and 
                 (
-                    A.GetToggle(2, "FearPvP") == "ON COOLDOWN" or 
+                    A.GetToggle(2, "PolymorphPvP") == "ON COOLDOWN" or 
                     Env.Unit(unit):HasBuffs("DamageBuffs") > 3 
                 )
             ) or 
             (
                 isMsg and 
-                A[Env.PlayerSpec].Fear:IsReadyP(unit)                     
+                A[Env.PlayerSpec].Polymorph:IsReadyP(unit)                     
             )
         ) and 
         UnitIsPlayer(unit) and                     
-        A[Env.PlayerSpec].Fear:AbsentImun(unit, {"CCTotalImun", "DeffBuffsMagic", "TotalImun"}, true) and 
+        A[Env.PlayerSpec].Polymorph:AbsentImun(unit, {"CCTotalImun", "DeffBuffsMagic", "TotalImun"}, true) and 
         Env.Unit(unit):IsControlAble("incapacitate", 0)
     end 
 end 
@@ -322,7 +300,7 @@ function Env.Main_CastBars(unit, list)
         return false 
     end 
     
-    if A[Env.PlayerSpec] and A[Env.PlayerSpec].SpearHandStrike and A[Env.PlayerSpec].SpearHandStrike:IsReadyP(unit, nil, true) and A[Env.PlayerSpec].SpearHandStrike:AbsentImun(unit, {"KickImun", "TotalImun", "DamagePhysImun"}, true) and A.InterruptIsValid(unit, list) then 
+    if A[Env.PlayerSpec] and A[Env.PlayerSpec].Counterspell and A[Env.PlayerSpec].Counterspell:IsReadyP(unit, nil, true) and A[Env.PlayerSpec].Counterspell:AbsentImun(unit, {"KickImun", "TotalImun", "DamagePhysImun"}, true) and A.InterruptIsValid(unit, list) then 
         return true         
     end 
 end 
@@ -332,8 +310,8 @@ function Env.Second_CastBars(unit)
         return false 
     end 
     
-    local Toggle = A.GetToggle(2, "ParalysisPvP")    
-    if Toggle and Toggle ~= "OFF" and A[Env.PlayerSpec] and A[Env.PlayerSpec].Paralysis and A[Env.PlayerSpec].Paralysis:IsReadyP(unit, nil, true) and A[Env.PlayerSpec].Paralysis:AbsentImun(unit, {"CCTotalImun", "TotalImun", "DamagePhysImun"}, true) and Env.Unit(unit):IsControlAble("incapacitate", 0) then 
+    local Toggle = A.GetToggle(2, "PolymorphPvP")    
+    if Toggle and Toggle ~= "OFF" and A[Env.PlayerSpec] and A[Env.PlayerSpec].Polymorph and A[Env.PlayerSpec].Polymorph:IsReadyP(unit, nil, true) and A[Env.PlayerSpec].Polymorph:AbsentImun(unit, {"CCTotalImun", "TotalImun", "DamagePhysImun"}, true) and Env.Unit(unit):IsControlAble("incapacitate", 0) then 
         if Toggle == "BOTH" then 
             return select(2, A.InterruptIsValid(unit, "Heal", true)) or select(2, A.InterruptIsValid(unit, "PvP", true)) 
         else
