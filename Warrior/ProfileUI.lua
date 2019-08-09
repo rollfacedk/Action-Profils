@@ -2,9 +2,9 @@
 -- Taste TMW Action ProfileUI
 -- Last Update : 05/08/2019
 
-ACTION_CONST_WARLOCK_AFFLI = 265
-ACTION_CONST_WARLOCK_DEMO = 266
-ACTION_CONST_WARLOCK_DESTRU = 267
+ACTION_CONST_WARRIOR_FURY = 72
+ACTION_CONST_WARRIOR_ARMS = 71
+ACTION_CONST_WARRIOR_PROT = 73
 
 local TMW = TMW 
 local CNDT = TMW.CNDT 
@@ -15,7 +15,7 @@ A.Data.ProfileUI = {
     DateTime = "v4 (01.08.2019)",
     -- Class settings
     [2] = {        
-        [ACTION_CONST_WARLOCK_AFFLI] = {             
+        [ACTION_CONST_WARRIOR_FURY] = {             
             { -- [1] 1st Row                           
                 {
                     E = "Checkbox", 
@@ -206,7 +206,7 @@ A.Data.ProfileUI = {
     },
     -- MSG Actions UI
     [7] = {
-        [ACTION_CONST_WARLOCK_AFFLI] = { 
+        [ACTION_CONST_WARRIOR_FURY] = { 
             -- MSG Action Pet Dispell
             ["dispell"] = { Enabled = true, Key = "PetDispell", LUA = [[
                 return     A.DispellMagic:IsReady(unit, true) and 
