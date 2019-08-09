@@ -765,9 +765,6 @@ local function APL()
             if ShouldReturn then return ShouldReturn; 
         end    
     end
-	
-	
-	
     
     --- In Combat
     if Player:AffectingCombat() then
@@ -841,7 +838,6 @@ local function APL()
     end
 end
 -- Finished
-
 
 
 -----------------------------------------

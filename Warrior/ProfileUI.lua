@@ -2,9 +2,9 @@
 -- Taste TMW Action ProfileUI
 -- Last Update : 05/08/2019
 
-ACTION_CONST_MAGE_FIRE = 63
-ACTION_CONST_MAGE_FROST = 64
-ACTION_CONST_MAGE_ARCANE = 62
+ACTION_CONST_WARRIOR_FURY = 72
+ACTION_CONST_WARRIOR_ARMS = 71
+ACTION_CONST_WARRIOR_PROT = 73
 
 local TMW = TMW 
 local CNDT = TMW.CNDT 
@@ -15,7 +15,7 @@ A.Data.ProfileUI = {
     DateTime = "v4 (01.08.2019)",
     -- Class settings
     [2] = {        
-        [ACTION_CONST_MAGE_FIRE] = {             
+        [ACTION_CONST_WARRIOR_FURY] = {             
             { -- [1] 1st Row                           
                 {
                     E = "Checkbox", 
@@ -69,22 +69,6 @@ A.Data.ProfileUI = {
             { -- [2] 2nd Row
                 {
                     E = "Checkbox", 
-                    DB = "UseTrinkets",
-                    DBV = true,
-                    L = { 
-                        enUS = "Use Trinkets", 
-                        ruRU = "Используйте Брелки", 
-                        frFR = "Utiliser les bijoux",
-                    }, 
-                    TT = { 
-                        enUS = "Use Trinkets as part of the rotation", 
-                        ruRU = "Используйте Брелки как часть вращения", 
-                        frFR = "Utilisez les bijoux dans le cadre de la rotation",
-                    }, 
-                    M = {},
-                }, 
-                {
-                    E = "Checkbox", 
                     DB = "OffGCDasOffGCD",
                     DBV = true,
                     L = { 
@@ -98,35 +82,18 @@ A.Data.ProfileUI = {
                         frFR = "Forcera certains spells à être utilisés sur le GCD",
                     }, 
                     M = {},
-                }, 
-				-- Splash Data
-                {
-                    E = "Checkbox", 
-                    DB = "UseSplashData",
-                    DBV = true,
-                    L = { 
-                        enUS = "Use Splash Data for AoE", 
-                        ruRU = "Использовать данные всплеска для AoE", 
-                        frFR = "Utiliser les données Splash pour AoE",
-                    }, 
-                    TT = { 
-                        enUS = "Only count AoE enemies that are already hit by AoE abilities.", 
-                        ruRU = "Считайте только AoE врагов, которые уже поражены AoE способностями.", 
-                        frFR = "Ne compter que les ennemis qui sont déjà touchés par des capacités de zone.",
-                    }, 
-                    M = {},
-                }, 				
+                },  
             },
             { -- [3] 3rd Row 
                 {
                     E = "Slider",                                                     
                     MIN = -1, 
                     MAX = 100,                            
-                    DB = "BlazingBarrier",
-                    DBV = 99, -- Set healthpercentage @99% life. 
+                    DB = "VictoryRush",
+                    DBV = 60, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(235313) .. " (%)",
+                        ANY = A.GetSpellInfo(34428) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -134,17 +101,28 @@ A.Data.ProfileUI = {
                     E = "Slider",                                                     
                     MIN = -1, 
                     MAX = 100,                            
-                    DB = "IceBlock",
+                    DB = "ImpendingVictory",
+                    DBV = 60, -- Set healthpercentage @60% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = A.GetSpellInfo(202168) .. " (%)",
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Slider",                                                     
+                    MIN = -1, 
+                    MAX = 100,                            
+                    DB = "RallyingCry",
                     DBV = 30, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(45438) .. " (%)",
+                        ANY = A.GetSpellInfo(97462) .. " (%)",
                     }, 
                     M = {},
                 },
             },
             { -- [4] 4th Row
-
                 {
                     E = "LayoutSpace",                                                                         
                 },
@@ -165,10 +143,10 @@ A.Data.ProfileUI = {
                         { text = "ON COOLDOWN", value = "ON COOLDOWN" },                    
                         { text = "OFF", value = "OFF" },
                     },
-                    DB = "PolymorphPvP",
+                    DB = "FearPvP",
                     DBV = "ON MELEE BURST",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(118),
+                        ANY = "PvP " .. A.GetSpellInfo(5782),
                     }, 
                     TT = { 
                         enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
@@ -185,7 +163,7 @@ A.Data.ProfileUI = {
                         { text = "primary", value = 4 },
                     },
                     MULT = true,
-                    DB = "PolymorphPvPUnits",
+                    DB = "FearPvPUnits",
                     DBV = {
                         [1] = true, 
                         [2] = true,
@@ -193,7 +171,7 @@ A.Data.ProfileUI = {
                         [4] = true,
                     }, 
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(118) .. " units",
+                        ANY = "PvP " .. A.GetSpellInfo(5782) .. " units",
                     }, 
                     TT = { 
                         enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 
@@ -206,7 +184,7 @@ A.Data.ProfileUI = {
     },
     -- MSG Actions UI
     [7] = {
-        [ACTION_CONST_MAGE_FIRE] = { 
+        [ACTION_CONST_WARRIOR_FURY] = { 
             -- MSG Action Pet Dispell
             ["dispell"] = { Enabled = true, Key = "PetDispell", LUA = [[
                 return     A.DispellMagic:IsReady(unit, true) and 
@@ -262,9 +240,9 @@ Env.PlayerMoving = A.MakeFunctionCachedStatic(Env.PlayerMoving)
 -----------------------------------------
 --                   PvP  
 -----------------------------------------
-function Env.PolyIsReady(unit, isMsg)
-    if A[Env.PlayerSpec].Polymorph then 
-        local unitID = A.GetToggle(2, "PolymorphPvPunits")
+function Env.FearIsReady(unit, isMsg)
+    if A[Env.PlayerSpec].Fear then 
+        local unitID = A.GetToggle(2, "FearPvPunits")
         return     (
             (unit == "arena1" and unitID[1]) or 
             (unit == "arena2" and unitID[2]) or
@@ -272,25 +250,26 @@ function Env.PolyIsReady(unit, isMsg)
             (not unit:match("arena") and unitID[4]) 
         ) and 
         Env.InPvP() and
+        Env.PvPTalentLearn(A[Env.PlayerSpec].Fear.ID) and 
         Env.Unit(unit):IsEnemy() and  
         (
             (
                 not isMsg and 
-                A.GetToggle(2, "PolymorphPvP") ~= "OFF" and 
-                A[Env.PlayerSpec].Polymorph:IsReady(unit) and 
+                A.GetToggle(2, "FearPvP") ~= "OFF" and 
+                A[Env.PlayerSpec].Fear:IsReady(unit) and 
                 Env.Unit(unit):IsMelee() and 
                 (
-                    A.GetToggle(2, "PolymorphPvP") == "ON COOLDOWN" or 
+                    A.GetToggle(2, "FearPvP") == "ON COOLDOWN" or 
                     Env.Unit(unit):HasBuffs("DamageBuffs") > 3 
                 )
             ) or 
             (
                 isMsg and 
-                A[Env.PlayerSpec].Polymorph:IsReadyP(unit)                     
+                A[Env.PlayerSpec].Fear:IsReadyP(unit)                     
             )
         ) and 
         UnitIsPlayer(unit) and                     
-        A[Env.PlayerSpec].Polymorph:AbsentImun(unit, {"CCTotalImun", "DeffBuffsMagic", "TotalImun"}, true) and 
+        A[Env.PlayerSpec].Fear:AbsentImun(unit, {"CCTotalImun", "DeffBuffsMagic", "TotalImun"}, true) and 
         Env.Unit(unit):IsControlAble("incapacitate", 0)
     end 
 end 
@@ -300,7 +279,7 @@ function Env.Main_CastBars(unit, list)
         return false 
     end 
     
-    if A[Env.PlayerSpec] and A[Env.PlayerSpec].Counterspell and A[Env.PlayerSpec].Counterspell:IsReadyP(unit, nil, true) and A[Env.PlayerSpec].Counterspell:AbsentImun(unit, {"KickImun", "TotalImun", "DamagePhysImun"}, true) and A.InterruptIsValid(unit, list) then 
+    if A[Env.PlayerSpec] and A[Env.PlayerSpec].SpearHandStrike and A[Env.PlayerSpec].SpearHandStrike:IsReadyP(unit, nil, true) and A[Env.PlayerSpec].SpearHandStrike:AbsentImun(unit, {"KickImun", "TotalImun", "DamagePhysImun"}, true) and A.InterruptIsValid(unit, list) then 
         return true         
     end 
 end 
@@ -310,8 +289,8 @@ function Env.Second_CastBars(unit)
         return false 
     end 
     
-    local Toggle = A.GetToggle(2, "PolymorphPvP")    
-    if Toggle and Toggle ~= "OFF" and A[Env.PlayerSpec] and A[Env.PlayerSpec].Polymorph and A[Env.PlayerSpec].Polymorph:IsReadyP(unit, nil, true) and A[Env.PlayerSpec].Polymorph:AbsentImun(unit, {"CCTotalImun", "TotalImun", "DamagePhysImun"}, true) and Env.Unit(unit):IsControlAble("incapacitate", 0) then 
+    local Toggle = A.GetToggle(2, "ParalysisPvP")    
+    if Toggle and Toggle ~= "OFF" and A[Env.PlayerSpec] and A[Env.PlayerSpec].Paralysis and A[Env.PlayerSpec].Paralysis:IsReadyP(unit, nil, true) and A[Env.PlayerSpec].Paralysis:AbsentImun(unit, {"CCTotalImun", "TotalImun", "DamagePhysImun"}, true) and Env.Unit(unit):IsControlAble("incapacitate", 0) then 
         if Toggle == "BOTH" then 
             return select(2, A.InterruptIsValid(unit, "Heal", true)) or select(2, A.InterruptIsValid(unit, "PvP", true)) 
         else
