@@ -89,11 +89,11 @@ A.Data.ProfileUI = {
                     E = "Slider",                                                     
                     MIN = -1, 
                     MAX = 100,                            
-                    DB = "UnendingResolve",
-                    DBV = 30, -- Set healthpercentage @30% life. 
+                    DB = "VictoryRush",
+                    DBV = 60, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(104773) .. " (%)",
+                        ANY = A.GetSpellInfo(34428) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -101,11 +101,11 @@ A.Data.ProfileUI = {
                     E = "Slider",                                                     
                     MIN = -1, 
                     MAX = 100,                            
-                    DB = "UnendingResolve",
-                    DBV = 30, -- Set healthpercentage @30% life. 
+                    DB = "ImpendingVictory",
+                    DBV = 60, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(104773) .. " (%)",
+                        ANY = A.GetSpellInfo(202168) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -113,38 +113,16 @@ A.Data.ProfileUI = {
                     E = "Slider",                                                     
                     MIN = -1, 
                     MAX = 100,                            
-                    DB = "UnendingResolve",
+                    DB = "RallyingCry",
                     DBV = 30, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(104773) .. " (%)",
+                        ANY = A.GetSpellInfo(97462) .. " (%)",
                     }, 
                     M = {},
                 },
             },
             { -- [4] 4th Row
-                {
-                    E = "Dropdown",                                                         
-                    OT = {
-                        { text = A.GetSpellInfo(688), value = "IMP" },
-                        { text = A.GetSpellInfo(697), value = "VOIDWALKER" },                    
-                        { text = A.GetSpellInfo(691), value = "FELHUNTER" },
-                        { text = A.GetSpellInfo(712), value = "SUCCUBUS" },
-                    },
-                    DB = "PetChoice",
-                    DBV = "IMP",
-                    L = { 
-                        enUS = "Pet selection", 
-                        ruRU = "Выбор питомца", 
-                        frFR = "Sélection du familier",
-                    }, 
-                    TT = { 
-                        enUS = "Choose the pet to summon", 
-                        ruRU = "Выберите питомца для призыва", 
-                        frFR = "Choisir le familier à invoquer",
-					},
-                    M = {},
-                },
                 {
                     E = "LayoutSpace",                                                                         
                 },

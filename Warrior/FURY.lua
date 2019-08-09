@@ -49,8 +49,12 @@ Action[ACTION_CONST_WARRIOR_FURY] = {
     ColdSteelHotBlood                     = Action.Create({ Type = "Spell", ID = 288080    }),
 	ConcentratedFlameBurn                 = Action.Create({ Type = "Spell", ID = 295368    }),
     -- Defensive
+	RallyingCry                           = Action.Create({ Type = "Spell", ID = 97462    }),
     -- Misc
     Channeling                           = Action.Create({ Type = "Spell", ID = 209274, Hidden = true     }),
+    Victorious                           = Action.Create({ Type = "Spell", ID = 32216, Hidden = true     }),
+    VictoryRush                          = Action.Create({ Type = "Spell", ID = 34428, Hidden = true     }),
+	
     -- Buffs
     RecklessForceBuff                     = Action.Create({ Type = "Spell", ID = 302932, Hidden = true}),
     FujiedasFuryBuff                      = Action.Create({ Type = "Spell", ID = 207775, Hidden = true}),
@@ -332,6 +336,18 @@ local function APL()
         -- charge
         if S.Charge:IsReadyP() and S.Charge:ChargesP() >= 1 then
             if HR.Cast(S.Charge, Action.GetToggle(2, "OffGCDasOffGCD")) then return "charge 78"; end
+        end
+		-- Victory Rush
+        if S.VictoryRush:IsReady('Melee') and Player:HealthPercentage() <= GetToggle(2, "VictoryRush") then
+			if HR.Cast(S.VictoryRush) then return ""; end
+        end
+		-- ImpendingVictory
+        if S.ImpendingVictory:IsReadyMorph('Melee') and Player:HealthPercentage() <= GetToggle(2, "ImpendingVictory") then
+		    if HR.Cast(S.VictoryRush) then return ""; end
+        end
+
+        if S.RallyingCry:IsReady() and Player:HealthPercentage() <= GetToggle(2, "RallyingCry")then
+            if HR.Cast(S.RallyingCry) then return ""; end
         end
         -- Interrupts
         -- run_action_list,name=movement,if=movement.distance>5
