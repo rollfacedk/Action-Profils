@@ -641,6 +641,10 @@ local function APL()
         if S.Corruption:IsCastableP() and not S.AbsoluteCorruption:IsAvailable() and (Target:DebuffDownP(S.CorruptionDebuff) or Target:DebuffRemainsP(S.CorruptionDebuff) <= 4) and not ShouldStop and EvaluateCycleCorruption300(Target) then
             if HR.Cast(S.Corruption) then return "corruption 318" end
         end
+		-- corruption,cycle_targets=1,if=!prevgcd.corruption&refreshable&target.time_to_die<=5
+        if S.Corruption:IsCastableP() and S.AbsoluteCorruption:IsAvailable() and not Player:PrevGCDP(1, S.Corruption) and not Target:Debuff(S.CorruptionDebuff) and (HL.CombatTime() <= 5 or Target:TimeToDie() <= 30) then
+            if HR.Cast(S.Corruption) then return "corruption 318" end
+        end	
     end
     
     
@@ -678,11 +682,7 @@ local function APL()
             if HR.Cast(S.SiphonLife) then return "siphon_life 403"; end
         end
         -- corruption,if=buff.movement.up&!prev_gcd.1.corruption&!talent.absolute_corruption.enabled
-        if S.Corruption:IsCastableP() and not ShouldStop and Player:IsMoving() and not Player:PrevGCDP(1, S.Corruption) and not S.AbsoluteCorruption:IsAvailable() then
-            if HR.Cast(S.Corruption) then return "corruption 411"; end
-        end
-        -- corruption,if=buff.movement.up&!prev_gcd.1.corruption&!talent.absolute_corruption.enabled
-        if S.Corruption:IsCastableP() and not ShouldStop and Player:IsMoving() and not Player:PrevGCDP(1, S.Corruption) and S.AbsoluteCorruption:IsAvailable() and not Target:DebuffP(S.CorruptionDebuff) then
+        if S.Corruption:IsCastableP() and not ShouldStop and Player:IsMoving() and not Player:PrevGCDP(1, S.Corruption) and not S.AbsoluteCorruption:IsAvailable() and not Target:DebuffP(S.CorruptionDebuff) then
             if HR.Cast(S.Corruption) then return "corruption 411"; end
         end
         --  drain_life,if=buff.inevitable_demise.stack>10&target.time_to_die<=10
@@ -891,10 +891,6 @@ local function APL()
         -- corruption,line_cd=30,if=time>30&cooldown.summon_darkglare.remains<=15&equipped.169314&!talent.absolute_corruption.enabled&(talent.siphon_life.enabled|spell_targets.seed_of_corruption_aoe>1&spell_targets.seed_of_corruption_aoe<=3)
         if S.Corruption:IsCastableP() and not ShouldStop and (HL.CombatTime() > 30 and S.SummonDarkglare:CooldownRemainsP() <= 15 and I.AzsharasFontofPower:IsEquipped() and not S.AbsoluteCorruption:IsAvailable() and (S.SiphonLife:IsAvailable() or EnemiesCount > 1 and EnemiesCount <= 3)) then
             if HR.Cast(S.Corruption) then return "corruption 773"; end
-        end
-	    -- corruption fix with AC
-        if S.Corruption:IsCastableP() and not ShouldStop and not Action.GetToggle(2, "CDs") and Target:DebuffDownP(S.CorruptionDebuff) and S.AbsoluteCorruption:IsAvailable() then
-            if HR.Cast(S.Corruption) then return "corruption 770" end
         end
         -- siphon_life,line_cd=30,if=time>30&cooldown.summon_darkglare.remains<=15&equipped.169314
         if S.SiphonLife:IsCastableP() and not ShouldStop and (HL.CombatTime() > 30 and S.SummonDarkglare:CooldownRemainsP() <= 15 and I.AzsharasFontofPower:IsEquipped()) then
