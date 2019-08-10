@@ -93,7 +93,7 @@ A.Data.ProfileUI = {
                     DBV = 30, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(104773) .. " (%)",
+                        ANY = A.GetSpellInfo(193316) .. " Leech HP (%)",
                     }, 
                     M = {},
                 },
@@ -106,6 +106,11 @@ A.Data.ProfileUI = {
                     ONOFF = true,
                     L = { 
                         ANY = A.GetSpellInfo(104773) .. " (%)",
+                    }, 
+                    TT = { 
+                        enUS = "Set the HP threshold before re-rolling for the leech buff (working only if Solo Mode is enabled).", 
+                        ruRU = "Set the HP threshold before re-rolling for the leech buff (working only if Solo Mode is enabled).", 
+                        frFR = "Set the HP threshold before re-rolling for the leech buff (working only if Solo Mode is enabled).",
                     }, 
                     M = {},
                 },

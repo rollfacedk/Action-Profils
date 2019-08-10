@@ -54,7 +54,7 @@ Action[ACTION_CONST_WARRIOR_FURY] = {
     Channeling                           = Action.Create({ Type = "Spell", ID = 209274, Hidden = true     }),
     Victorious                           = Action.Create({ Type = "Spell", ID = 32216, Hidden = true     }),
     VictoryRush                          = Action.Create({ Type = "Spell", ID = 34428, Hidden = true     }),
-	
+	ImpendingVictory                     = Action.Create({ Type = "Spell", ID = 202168, Hidden = true     }),
     -- Buffs
     RecklessForceBuff                     = Action.Create({ Type = "Spell", ID = 302932, Hidden = true}),
     FujiedasFuryBuff                      = Action.Create({ Type = "Spell", ID = 207775, Hidden = true}),
@@ -62,6 +62,8 @@ Action[ACTION_CONST_WARRIOR_FURY] = {
 	EnrageBuff                            = Action.Create({ Type = "Spell", ID = 184362, Hidden = true}),
     FuriousSlashBuff                      = Action.Create({ Type = "Spell", ID = 202539, Hidden = true}),
     RecklessnessBuff                      = Action.Create({ Type = "Spell", ID = 1719, Hidden = true}),
+	Enrage                                = Action.Create({ Type = "Spell", ID = 184362, Hidden = true}),
+	SuddenDeathBuff                       = Action.Create({ Type = "Spell", ID = 280776, Hidden = true}),
     -- Debuffs 
     RazorCoralDebuff                      = Action.Create({ Type = "Spell", ID = 303568, Hidden = true}),
     ConductiveInkDebuff                   = Action.Create({ Type = "Spell", ID = 302565, Hidden = true}),
@@ -76,11 +78,16 @@ Action[ACTION_CONST_WARRIOR_FURY] = {
     AquipotentNautilus                   = Action.Create({ Type = "Trinket", ID = 169305, QueueForbidden = true }),
     TidestormCodex                       = Action.Create({ Type = "Trinket", ID = 165576, QueueForbidden = true }),
     VialofStorms                         = Action.Create({ Type = "Trinket", ID = 158224, QueueForbidden = true }),
+	AshvanesRazorCoral                   = Action.Create({ Type = "Trinket", ID = 169311, QueueForbidden = true }),
     -- Potions
     PotionofUnbridledFury                = Action.Create({ Type = "Potion", ID = 169299, QueueForbidden = true }),
     PotionTest                           = Action.Create({ Type = "Potion", ID = 142117, QueueForbidden = true }),
     -- Misc
     CyclotronicBlast                      = Action.Create({ Type = "Spell", ID = 293491, Hidden = true}),
+	
+	ExecuteDefault                        = Action.Create({ Type = "Spell", ID = 5308, Hidden = true}),
+    ExecuteMassacre                       = Action.Create({ Type = "Spell", ID = 280735, Hidden = true}),
+	
     -- Hidden Heart of Azeroth
     VisionofPerfectionMinor               = Action.Create({ Type = "Spell", ID = 296320, Hidden = true}),
     VisionofPerfectionMinor2              = Action.Create({ Type = "Spell", ID = 299367, Hidden = true}),
@@ -113,6 +120,9 @@ Action[ACTION_CONST_WARRIOR_FURY] = {
     MemoryofLucidDreams                   = Action.Create({ Type = "HeartOfAzeroth", ID = 298357, Hidden = true}),
     MemoryofLucidDreams2                  = Action.Create({ Type = "HeartOfAzeroth", ID = 299372, Hidden = true}),
     MemoryofLucidDreams3                  = Action.Create({ Type = "HeartOfAzeroth", ID = 299374, Hidden = true}),
+	CondensedLifeforce                    = Action.Create({ Type = "HeartOfAzeroth", ID = 295834, Hidden = true}),
+	CondensedLifeforce2                   = Action.Create({ Type = "HeartOfAzeroth", ID = 299354, Hidden = true}),
+	CondensedLifeforce3                   = Action.Create({ Type = "HeartOfAzeroth", ID = 299357, Hidden = true}),
     -- Here come all the stuff needed by simcraft but not classic spells or items. 
 }
 
@@ -164,7 +174,7 @@ local StunInterrupts = {
   {S.IntimidatingShout, "Cast Intimidating Shout (Interrupt)", function () return true; end},
 };
 
-local EnemyRanges = {8}
+local EnemyRanges = {8, "Melee"}
 local function UpdateRanges()
   for _, i in ipairs(EnemyRanges) do
     HL.GetEnemies(i);
@@ -179,11 +189,12 @@ local function bool(val)
   return val ~= 0
 end
 
-S.ExecuteDefault    = Spell(5308)
-S.ExecuteMassacre   = Spell(280735)
-
 local function UpdateExecuteID()
     S.Execute = S.Massacre:IsAvailable() and S.ExecuteMassacre or S.ExecuteDefault
+end
+
+local function ExecuteRange()
+	return S.Massacre:IsAvailable() and 35 or 20;
 end
 
 local function DetermineEssenceRanks()
@@ -207,6 +218,8 @@ local function DetermineEssenceRanks()
     S.VisionofPerfectionMinor = S.VisionofPerfectionMinor3:IsAvailable() and S.VisionofPerfectionMinor3 or S.VisionofPerfectionMinor
     S.GuardianofAzeroth = S.GuardianofAzeroth2:IsAvailable() and S.GuardianofAzeroth2 or S.GuardianofAzeroth
     S.GuardianofAzeroth = S.GuardianofAzeroth3:IsAvailable() and S.GuardianofAzeroth3 or S.GuardianofAzeroth
+    S.CondensedLifeforce = S.CondensedLifeforce2:IsAvailable() and S.CondensedLifeforce2 or S.CondensedLifeforce
+    S.CondensedLifeforce = S.CondensedLifeforce3:IsAvailable() and S.CondensedLifeforce3 or S.CondensedLifeforce
 end
 
 
@@ -218,10 +231,11 @@ local function APL()
 	local Pull = Action.BossMods_Pulling()
 	
 	-- Local functions remap
-    EnemiesCount = active_enemies()
+    UpdateRanges()
     HL.GetEnemies(40, true) -- To populate Cache.Enemies[40] for CastCycles
     UpdateExecuteID()
-	
+	ExecuteRange()
+	DetermineEssenceRanks()
 	if Player:IsCasting() or Player:IsChanneling() then
 	    ShouldStop = true
 	else
@@ -272,7 +286,7 @@ local function APL()
             if HR.Cast(S.Rampage) then return "rampage 20"; end
         end
         -- execute
-        if S.Execute:IsReady("Melee") then
+        if S.Execute:IsCastable("Melee") then
             if HR.Cast(S.Execute) then return "execute 34"; end
         end
         -- furious_slash,if=!buff.bloodlust.up&buff.furious_slash.remains<3
@@ -318,11 +332,11 @@ local function APL()
         if HR.Cast(S.Channeling) then return "" end
     end  
 	-- call DBM precombat
-    if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
-        local ShouldReturn = Precombat_DBM(); 
-            if ShouldReturn then return ShouldReturn; 
-        end    
-    end
+   --if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
+    --    local ShouldReturn = Precombat_DBM(); 
+    --        if ShouldReturn then return ShouldReturn; 
+    --    end    
+    --end
     -- call non DBM precombat
     if not Player:AffectingCombat() and not Action.GetToggle(1, "DBM") and not Player:IsCasting() then        
         local ShouldReturn = Precombat(); 
@@ -334,19 +348,26 @@ local function APL()
     if Player:AffectingCombat() then
         -- auto_attack
         -- charge
-        if S.Charge:IsReadyP() and S.Charge:ChargesP() >= 1 then
+        if S.Charge:IsReadyP() and S.Charge:ChargesP() >= 1 and Target:MaxDistanceToPlayer(true) >= 8 then
             if HR.Cast(S.Charge, Action.GetToggle(2, "OffGCDasOffGCD")) then return "charge 78"; end
         end
 		-- Victory Rush
-        if S.VictoryRush:IsReady('Melee') and Player:HealthPercentage() <= GetToggle(2, "VictoryRush") then
+        if S.VictoryRush:IsReady('Melee') and Player:HealthPercentage() <= Action.GetToggle(2, "VictoryRush") then
 			if HR.Cast(S.VictoryRush) then return ""; end
         end
 		-- ImpendingVictory
-        if S.ImpendingVictory:IsReadyMorph('Melee') and Player:HealthPercentage() <= GetToggle(2, "ImpendingVictory") then
+        if S.ImpendingVictory:IsReady("Melee") and Player:HealthPercentage() <= Action.GetToggle(2, "ImpendingVictory") then
 		    if HR.Cast(S.VictoryRush) then return ""; end
         end
-
-        if S.RallyingCry:IsReady() and Player:HealthPercentage() <= GetToggle(2, "RallyingCry")then
+        -- execute,if=buff.enrage.upSuddenDeathBuff
+        if S.Execute:IsCastable("Melee") and (Player:BuffP(S.Enrage)) then
+		    if HR.Cast(S.Execute) then return ""; end
+        end
+			-- execute,if=buff.enrage.up
+        if S.Execute:IsCastable("Melee") and Player:BuffRemainsP(S.SuddenDeathBuff) > 1 then
+		    if HR.Cast(S.Execute) then return ""; end
+        end
+        if S.RallyingCry:IsReady() and Player:HealthPercentage() <= Action.GetToggle(2, "RallyingCry")then
             if HR.Cast(S.RallyingCry) then return ""; end
         end
         -- Interrupts
