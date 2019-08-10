@@ -60,6 +60,10 @@ Action[ACTION_CONST_MAGE_FIRE] = {
     BlazingBarrier                       = Action.Create({ Type = "Spell", ID = 235313}),
     -- Misc
     Channeling                           = Action.Create({ Type = "Spell", ID = 209274, Hidden = true     }),
+    RecklessForceBuff                    = Action.Create({ Type = "Spell", ID = 302932, Hidden = true     }),
+    ConcentratedFlameBurn                = Action.Create({ Type = "Spell", ID = 295368, Hidden = true     }),
+    CyclotronicBlast                     = Action.Create({ Type = "Spell", ID = 167672, Hidden = true     }),
+    HarmonicDematerializer               = Action.Create({ Type = "Spell", ID = 293512, Hidden = true     }),
     -- Buffs
     ArcaneIntellectBuff                  = Action.Create({ Type = "Spell", ID = 1459, Hidden = true     }),
 	CombustionBuff                       = Action.Create({ Type = "Spell", ID = 190319, Hidden = true     }),
@@ -69,6 +73,7 @@ Action[ACTION_CONST_MAGE_FIRE] = {
     HotStreakBuff                        = Action.Create({ Type = "Spell", ID = 48108, Hidden = true     }),
     PyroclasmBuff                        = Action.Create({ Type = "Spell", ID = 269651, Hidden = true     }),
     -- Debuffs 
+
     -- Potions
     PotionofUnbridledFury                = Action.Create({ Type = "Potion", ID = 169299, QueueForbidden = true }),
     -- Trinkets
@@ -108,6 +113,9 @@ Action[ACTION_CONST_MAGE_FIRE] = {
     VisionofPerfectionMinor              = Action.Create({ Type = "Spell", ID = 296320, Hidden = true}),
     VisionofPerfectionMinor2             = Action.Create({ Type = "Spell", ID = 299367, Hidden = true}),
     VisionofPerfectionMinor3             = Action.Create({ Type = "Spell", ID = 299369, Hidden = true}),
+	MemoryofLucidDreamsMinor             = Action.Create({ Type = "Spell", ID = 298268, Hidden = true}),
+    MemoryofLucidDreamsMinor2            = Action.Create({ Type = "Spell", ID = 299371, Hidden = true}),
+    MemoryofLucidDreamsMinor3            = Action.Create({ Type = "Spell", ID = 299373, Hidden = true}),
     UnleashHeartOfAzeroth                = Action.Create({ Type = "Spell", ID = 280431, Hidden = true}),
     BloodoftheEnemy                      = Action.Create({ Type = "HeartOfAzeroth", ID = 297108, Hidden = true}),
     BloodoftheEnemy2                     = Action.Create({ Type = "HeartOfAzeroth", ID = 298273, Hidden = true}),
@@ -264,6 +272,8 @@ local function DetermineEssenceRanks()
     S.VisionofPerfectionMinor = S.VisionofPerfectionMinor3:IsAvailable() and S.VisionofPerfectionMinor3 or S.VisionofPerfectionMinor
     S.GuardianofAzeroth = S.GuardianofAzeroth2:IsAvailable() and S.GuardianofAzeroth2 or S.GuardianofAzeroth
     S.GuardianofAzeroth = S.GuardianofAzeroth3:IsAvailable() and S.GuardianofAzeroth3 or S.GuardianofAzeroth
+    S.MemoryofLucidDreamsMinor = S.MemoryofLucidDreamsMinor2:IsAvailable() and S.MemoryofLucidDreamsMinor2 or S.MemoryofLucidDreamsMinor
+    S.MemoryofLucidDreamsMinor = S.MemoryofLucidDreamsMinor3:IsAvailable() and S.MemoryofLucidDreamsMinor3 or S.MemoryofLucidDreamsMinor
 end
 
 local function num(val)
@@ -748,6 +758,17 @@ local function APL()
             if HR.Cast(S.Scorch) then return "scorch 786"; end
         end
     end
+	
+	-- Emergency situations
+	local function Emergency()
+	    if S.IceBlock:IsReady() and Player:HealthPercentage() <= Action.GetToggle(2, "IceBlock") then
+            if HR.Cast(S.IceBlock) then return "IceBlock 786"; end
+        end
+
+        if S.BlazingBarrier:IsReady() and not Player:Buff(S.BlazingBarrier) and  Player:HealthPercentage() <= Action.GetToggle(2, "BlazingBarrier") then
+            if HR.Cast(S.BlazingBarrier) then return "BlazingBarrier 786"; end
+        end
+	end
     
     -- Protect against interrupt of channeled spells
     if Player:IsCasting() and Player:CastRemains() >= ((select(4, GetNetStats()) / 1000 * 2) + 0.05) or Player:IsChanneling() or ShouldStop then
@@ -769,8 +790,28 @@ local function APL()
     --- In Combat
     if Player:AffectingCombat() then
         -- counterspell
-        -- TODO ADD INTERRUPT HANDLER HERE 
-		
+		local useKick, useCC, useRacial = A.InterruptIsValid("Target", "TargetMouseover")
+        if useKick and S.Counterspell:IsReadyP(15) and Action.Counterspell:AbsentImun(Target, {"TotalImun", "DamagePhysImun", "KickImun"}, true) then 
+            if Env.RandomKick(Target, true) then 
+		    	if HR.Cast(S.Counterspell) then return ""; end
+            else 
+                return false
+           end 
+        end 
+		-- Emergency
+		local ShouldReturn = Emergency(); if ShouldReturn then return ShouldReturn; end		
+		-- pyroblast,if=moving
+        if S.Pyroblast:IsCastableP() and Player:IsMoving() and Player:BuffP(S.HotStreakBuff) then
+            if HR.Cast(S.Pyroblast) then return "pyroblast 726"; end
+        end
+		-- fireblast,if.moving
+        if S.FireBlast:IsCastableP() and Player:IsMoving() and Player:BuffP(S.HeatingUpBuff) and Player:BuffDownP(S.HotStreakBuff) and not Player:PrevOffGCDP(1, S.FireBlast) and S.FireBlast:ChargesP() >= 2 then
+            if HR.Cast(S.FireBlast) then return "fire_blast 454"; end
+        end
+		-- scorch.moving
+        if S.Scorch:IsCastableP() and Player:IsMoving() then
+            if HR.Cast(S.Scorch) then return "scorch 786"; end
+        end
         -- call_action_list,name=items_high_priority
         if (Action.GetToggle(2, "UseTrinkets")) then
             local ShouldReturn = ItemsHighPriority(); if ShouldReturn then return ShouldReturn; end
@@ -835,6 +876,7 @@ local function APL()
         if (true) then
             local ShouldReturn = StandardRotation(); if ShouldReturn then return ShouldReturn; end
         end
+
     end
 end
 -- Finished
