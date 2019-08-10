@@ -707,7 +707,7 @@ local function APL()
   end
   Opener = function()
     -- hand_of_guldan,line_cd=30,if=azerite.explosive_potential.enabled
-    if S.HandofGuldan:IsReadyP() and HL.CombatTime() < 2 and not Player:PrevGCDP(1, S.HandOfGuldan) and Player:SoulShardsP() > 2 and (S.ExplosivePotential:AzeriteEnabled()) then
+    if S.HandofGuldan:IsReadyP() and HL.CombatTime() < 2 and not Player:PrevGCDP(1, S.HandofGuldan) and Player:SoulShardsP() > 2 and (S.ExplosivePotential:AzeriteEnabled()) then
         if HR.Cast(S.HandofGuldan) then return "hand_of_guldan 30"; end
     end
     -- implosion,if=azerite.explosive_potential.enabled&buff.wild_imps.stack>2&buff.explosive_potential.down
@@ -720,7 +720,7 @@ local function APL()
         if HR.Cast(S.Doom) then return "doom 32"; end
     end
     -- guardian_of_azeroth
-    if S.GuardianofAzeroth:IsCastableP() then
+    if S.GuardianofAzeroth:IsCastableP() and HR.CDsON() then
         if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth 33"; end
     end
     -- hand_of_guldan,if=prev_gcd.1.hand_of_guldan&soul_shard>0&prev_gcd.2.soul_strike
@@ -760,7 +760,7 @@ local function APL()
         if HR.Cast(S.HandofGuldan) then return "hand_of_guldan 42"; end
     end
     -- summon_demonic_tyrant,if=prev_gcd.1.demonic_strength|prev_gcd.1.hand_of_guldan&prev_gcd.2.hand_of_guldan|!talent.demonic_strength.enabled&buff.wild_imps.stack+imps_spawned_during.2000%spell_haste>=6
-    if S.SummonDemonicTyrant:IsReadyP() and (Player:PrevGCDP(1, S.DemonicStrength) or Player:PrevGCDP(1, S.HandofGuldan) and Player:PrevGCDP(2, S.HandofGuldan) or not S.DemonicStrength:IsAvailable() and WildImpsCount() + ImpsSpawnedDuring(S.SummonDemonicTyrant:CastTime()) >= 6) then
+    if S.SummonDemonicTyrant:IsReadyP() and HR.CDsON() and (Player:PrevGCDP(1, S.DemonicStrength) or Player:PrevGCDP(1, S.HandofGuldan) and Player:PrevGCDP(2, S.HandofGuldan) or not S.DemonicStrength:IsAvailable() and WildImpsCount() + ImpsSpawnedDuring(S.SummonDemonicTyrant:CastTime()) >= 6) then
         if HR.Cast(S.SummonDemonicTyrant, Action.GetToggle(2, "OffGCDasOffGCD")) then return "summon_demonic_tyrant 43"; end
     end
     -- demonbolt,if=soul_shard<=3&buff.demonic_core.remains
@@ -777,7 +777,11 @@ local function APL()
     if S.Implosion:IsCastableP() and ((WildImpsCount() >= 6 and (Player:SoulShardsP() < 3 or Player:PrevGCDP(1, S.CallDreadstalkers) or WildImpsCount() >= 9 or Player:PrevGCDP(1, S.BilescourgeBombers) or (not Player:PrevGCDP(1, S.HandofGuldan) and not Player:PrevGCDP(2, S.HandofGuldan))) and not Player:PrevGCDP(1, S.HandofGuldan) and not Player:PrevGCDP(2, S.HandofGuldan) and Player:BuffDownP(S.DemonicPowerBuff)) or (Target:TimeToDie() < 3 and WildImpsCount() > 0) or (Player:PrevGCDP(2, S.CallDreadstalkers) and WildImpsCount() > 2 and not S.DemonicCalling:IsAvailable())) then
         if HR.Cast(S.Implosion) then return "implosion 96"; end
     end
-    -- grimoire_felguard,if=cooldown.summon_demonic_tyrant.remains<13|!equipped.132369
+    	-- implosion,if=PetStack.imps>=mainAddon.db.profile[266].sk2+RubimRH.AoEON
+    if S.Implosion:IsCastableP() and not Player:PrevGCDP(1, S.SummonDemonicTyrant) and not Player:PrevGCDP(1, S.Implosion) and WildImpsCount() > 1 and WildImpsCount() >= Action.GetToggle(2, "Implosion") and HR.AoEON() then
+        if HR.Cast(S.Implosion) then return "implosion 97"; end
+    end  
+	-- grimoire_felguard,if=cooldown.summon_demonic_tyrant.remains<13|!equipped.132369
     if S.GrimoireFelguard:IsReadyP() and (S.SummonDemonicTyrant:CooldownRemainsP() < 13) then
         if HR.Cast(S.GrimoireFelguard, Action.GetToggle(2, "OffGCDasOffGCD")) then return "grimoire_felguard 128"; end
     end
@@ -786,7 +790,7 @@ local function APL()
         if HR.Cast(S.CallDreadstalkers) then return "call_dreadstalkers 134"; end
     end
     -- summon_demonic_tyrant
-    if S.SummonDemonicTyrant:IsCastableP() then
+    if S.SummonDemonicTyrant:IsCastableP() and HR.CDsON() then
         if HR.Cast(S.SummonDemonicTyrant, Action.GetToggle(2, "OffGCDasOffGCD")) then return "summon_demonic_tyrant 146"; end
     end
     -- hand_of_guldan,if=soul_shard>=5
@@ -1050,7 +1054,7 @@ local function APL()
         local ShouldReturn = Implosion(); if ShouldReturn then return ShouldReturn; end
     end
     -- guardian_of_azeroth,if=cooldown.summon_demonic_tyrant.remains<=15|target.time_to_die<=30
-    if S.GuardianofAzeroth:IsCastableP() and (S.SummonDemonicTyrant:CooldownRemainsP() <= 15 or Target:TimeToDie() <= 30) then
+    if S.GuardianofAzeroth:IsCastableP() and HR.CDsON() and (S.SummonDemonicTyrant:CooldownRemainsP() <= 15 or Target:TimeToDie() <= 30) then
         if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth 408"; end
     end
     -- grimoire_felguard,if=(target.time_to_die>120|target.time_to_die<cooldown.summon_demonic_tyrant.remains+15|cooldown.summon_demonic_tyrant.remains<13)
@@ -1078,7 +1082,7 @@ local function APL()
         if HR.Cast(S.HandofGuldan) then return "hand_of_guldan 435"; end
     end
     -- summon_demonic_tyrant,if=soul_shard<3&(!talent.demonic_consumption.enabled|buff.wild_imps.stack+imps_spawned_during.2000%spell_haste>=6&time_to_imps.all.remains<cast_time)|target.time_to_die<20
-    if S.SummonDemonicTyrant:IsCastableP() and (Player:SoulShardsP() < 3 and (not S.DemonicConsumption:IsAvailable() or WildImpsCount() + ImpsSpawnedDuring(2000) >= 6) or Target:TimeToDie() < 20) then
+    if S.SummonDemonicTyrant:IsCastableP() and HR.CDsON() and (Player:SoulShardsP() < 3 and (not S.DemonicConsumption:IsAvailable() or WildImpsCount() + ImpsSpawnedDuring(2000) >= 6) or Target:TimeToDie() < 20) then
         if HR.Cast(S.SummonDemonicTyrant, Action.GetToggle(2, "OffGCDasOffGCD")) then return "summon_demonic_tyrant 445"; end
     end
     -- power_siphon,if=buff.wild_imps.stack>=2&buff.demonic_core.stack<=2&buff.demonic_power.down&spell_targets.implosion<2

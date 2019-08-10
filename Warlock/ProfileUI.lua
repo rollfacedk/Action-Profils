@@ -298,12 +298,12 @@ A.Data.ProfileUI = {
                 {
                     E = "Slider",                                                     
                     MIN = -1, 
-                    MAX = 100,                            
-                    DB = "UnendingResolve",
-                    DBV = 30, -- Set healthpercentage @30% life. 
+                    MAX = 10,                            
+                    DB = "Implosion",
+                    DBV = 5, -- Set number of imps default @ 5. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(193316) .. " (%)",
+                        ANY = "Number of Imps to use " .. A.GetSpellInfo(196277),
                     }, 
                     M = {},
                 },
@@ -321,18 +321,6 @@ A.Data.ProfileUI = {
                         enUS = "Set the HP threshold before re-rolling for the leech buff (working only if Solo Mode is enabled).", 
                         ruRU = "Set the HP threshold before re-rolling for the leech buff (working only if Solo Mode is enabled).", 
                         frFR = "Set the HP threshold before re-rolling for the leech buff (working only if Solo Mode is enabled).",
-                    }, 
-                    M = {},
-                },
-                {
-                    E = "Slider",                                                     
-                    MIN = -1, 
-                    MAX = 100,                            
-                    DB = "UnendingResolve",
-                    DBV = 30, -- Set healthpercentage @30% life. 
-                    ONOFF = true,
-                    L = { 
-                        ANY = A.GetSpellInfo(104773) .. " (%)",
                     }, 
                     M = {},
                 },
