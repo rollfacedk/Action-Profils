@@ -617,8 +617,8 @@ local function APL()
         --end   
 		
 		-- Disrupt
-        if useKick and Action.InterruptIsValid(Target, "TargetMouseover") and S.Disrupt:IsReadyP(15) and Action.Disrupt:AbsentImun(Target, {"TotalImun", "DamagePhysImun", "KickImun"}, true) then 
-            if Env.RandomKick(Target, true) then 
+        if useKick and Action.InterruptIsValid("Target", "TargetMouseover") and S.Disrupt:IsReadyP(15) and Action.Disrupt:AbsentImun("Target", {"TotalImun", "DamagePhysImun", "KickImun"}, true) then 
+            if Env.RandomKick("Target", true) then 
 		    	if HR.Cast(S.Disrupt) then return ""; end
             else 
                 return false
