@@ -330,7 +330,7 @@ local function APL()
         end
         -- snapshot_stats
         -- use_item,name=azsharas_font_of_power
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and Action.GetToggle(2, "UseTrinkets") and Pull > 2 and Pull <= I.AzsharasFontofPower:CastTime() then
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and (Action.GetToggle(1, "Trinkets")[1] or Action.GetToggle(1, "Trinkets")[2]) and Pull > 2 and Pull <= I.AzsharasFontofPower:CastTime() then
             if HR.CastSuggested(I.AzsharasFontofPower) then return "azsharas_font_of_power 9"; end
         end
         -- mirror_image
@@ -373,7 +373,7 @@ local function APL()
         end
         -- snapshot_stats
         -- use_item,name=azsharas_font_of_power
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and Action.GetToggle(2, "UseTrinkets") then
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and (Action.GetToggle(1, "Trinkets")[1] or Action.GetToggle(1, "Trinkets")[2]) then
             if HR.CastSuggested(I.AzsharasFontofPower) then return "azsharas_font_of_power 9"; end
         end
         -- mirror_image
@@ -742,7 +742,7 @@ local function APL()
             if HR.Cast(S.DragonsBreath) then return "dragons_breath 766"; end
         end
         -- call_action_list,name=items_low_priority
-        if (Action.GetToggle(2, "UseTrinkets")) then
+        if ((Action.GetToggle(1, "Trinkets")[1] or Action.GetToggle(1, "Trinkets")[2])) then
             local ShouldReturn = ItemsLowPriority(); if ShouldReturn then return ShouldReturn; end
         end
         -- scorch,if=target.health.pct<=30&talent.searing_touch.enabled
@@ -819,7 +819,7 @@ local function APL()
             if HR.Cast(S.Scorch) then return "scorch 786"; end
         end
         -- call_action_list,name=items_high_priority
-        if (Action.GetToggle(2, "UseTrinkets")) then
+        if ((Action.GetToggle(1, "Trinkets")[1] or Action.GetToggle(1, "Trinkets")[2])) then
             local ShouldReturn = ItemsHighPriority(); if ShouldReturn then return ShouldReturn; end
         end
         -- mirror_image,if=buff.combustion.down
