@@ -124,7 +124,7 @@ Action:CreateEssencesFor(ACTION_CONST_DEMONHUNTER_HAVOC)        -- where PLAYERS
 
 -- This code making shorter access to both tables Action[PLAYERSPEC] and Action
 -- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop, it doesn't make any conflict if you will skip shorter access
--- So with shorter access you can just do A.Guard:IsReady() and not ShouldStop instead of Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop
+-- So with shorter access you can just do Action.Guard:IsReady() and not ShouldStop instead of Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop
 local A = setmetatable(Action[ACTION_CONST_DEMONHUNTER_HAVOC], { __index = Action })
 
 -- Simcraft Imported
@@ -274,7 +274,7 @@ end
     end 
 	
 	-- FelEruption if talent is learned and no multiple Targets and not Disrupt ready
-    if useCC and not ShouldStop and S.FelEruption:IsAvailable() and S.FelEruption:IsReadyP(20) and not ShouldStop and Action.FelEruption:AbsentImun(Target, {"StunImun", "TotalImun", "DamagePhysImun", "CCTotalImun"}) then  
+    if useCC and not ShouldStop and S.FelEruption:IsAvailable() and S.FelEruption:IsCastableP(20) and not ShouldStop and Action.FelEruption:AbsentImun(Target, {"StunImun", "TotalImun", "DamagePhysImun", "CCTotalImun"}) then  
        if HR.Cast(S.FelEruption) then return ""; end		
     end             
     -- Racials
@@ -309,11 +309,11 @@ local function APL()
     DetermineEssenceRanks()
 	
 	-- Anti channeling protection ? To see if its usefull
-	if Player:IsCasting() or Player:IsChanneling() then
-	    ShouldStop = true
-	else
-	    ShouldStop = false
-	end
+	--if Player:IsCasting() or Player:IsChanneling() then
+	--    ShouldStop = true
+	--else
+	--    ShouldStop = false
+	--end
 	
     local function Precombat_DBM()
         -- flask
@@ -589,9 +589,9 @@ local function APL()
     
 	-- Custom stuff
     -- Protect against interrupt of channeled spells
-    if Player:IsCasting() and Player:CastRemains() >= ((select(4, GetNetStats()) / 1000 * 2) + 0.05) or Player:IsChanneling() or ShouldStop then
-        if HR.Cast(S.Channeling) then return "" end
-    end  
+  --  if Player:IsCasting() and Player:CastRemains() >= ((select(4, GetNetStats()) / 1000 * 2) + 0.05) or Player:IsChanneling() or ShouldStop then
+  --      if HR.Cast(S.Channeling) then return "" end
+  --  end  
 	-- call DBM precombat
     if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
         local ShouldReturn = Precombat_DBM(); 
