@@ -347,6 +347,15 @@ local function APL()
     --- In Combat
     if Player:AffectingCombat() then
         -- auto_attack
+		-- Pummel
+		local useKick, useCC, useRacial = A.InterruptIsValid("Target", "TargetMouseover")
+        if useKick and S.Pummel:IsReadyP(15) and Action.Pummel:AbsentImun("Target", {"TotalImun", "DamagePhysImun", "KickImun"}, true) then 
+            if Env.RandomKick("Target", true) then 
+		    	if HR.Cast(S.Pummel) then return ""; end
+            else 
+                return false
+           end 
+        end
         -- charge
         if S.Charge:IsReadyP() and S.Charge:ChargesP() >= 1 and Target:MaxDistanceToPlayer(true) >= 8 then
             if HR.Cast(S.Charge, Action.GetToggle(2, "OffGCDasOffGCD")) then return "charge 78"; end
