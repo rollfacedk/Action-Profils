@@ -25,7 +25,7 @@ Action[ACTION_CONST_WARLOCK_AFFLI] = {
     WilloftheForsaken                    = Action.Create({ Type = "Spell", ID = 7744        }), -- not usable in APL but user can Queue it    
     EscapeArtist                         = Action.Create({ Type = "Spell", ID = 20589    }), -- not usable in APL but user can Queue it
     EveryManforHimself                   = Action.Create({ Type = "Spell", ID = 59752    }), -- not usable in APL but user can Queue it
-    PetKick                              = Action.Create({ Type = "Spell", ID = 47482, Color = "RED", Desc = "RED" }),  
+    PetKick                              = Action.Create({ Type = "SpellSingleColor", ID = 119910, Color = "RED", Desc = "RED Color for Pet Target kick" }),  
     -- Generics Spells
     DreadfulCalling                      = Action.Create({ Type = "Spell", ID = 278727     }),
     --SummonPet                            = Action.Create({ Type = "Spell", ID = 691     }),
@@ -137,8 +137,15 @@ Action:CreateEssencesFor(ACTION_CONST_WARLOCK_AFFLI)        -- where PLAYERSPEC 
 
 -- This code making shorter access to both tables Action[PLAYERSPEC] and Action
 -- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady(), it doesn't make any conflict if you will skip shorter access
--- So with shorter access you can just do A.Guard:IsReady() instead of Action[PLAYERSPEC].Guard:IsReady()
+-- So with shorter access you can just do Action.Guard:IsReady() instead of Action[PLAYERSPEC].Guard:IsReady()
 local A = setmetatable(Action[ACTION_CONST_WARLOCK_AFFLI], { __index = Action })
+
+local GetSpellCount = 
+GetSpellCount
+local IsIndoors, IsStealthed, IsMounted = 
+IsIndoors, IsStealthed, IsMounted
+local UnitIsPlayer, UnitExists, UnitIsUnit, UnitPower, UnitPowerMax = 
+UnitIsPlayer, UnitExists, UnitIsUnit, UnitPower, UnitPowerMax
 
 -- Simcraft Imported
 -- HeroLib
@@ -303,6 +310,9 @@ local function PrepareAshvaneBurst()
     return false
 end
 
+----------------------------
+---- Interrupt handler -----
+
 -- Register in flight spells with travel time
 S.ShadowBolt:RegisterInFlight()
 S.SeedofCorruption:RegisterInFlight()
@@ -431,7 +441,6 @@ end
 
 --- ======= ACTION LISTS =======
 local function APL() 
-    
 	-- Action specifics remap
 	local ShouldStop = Action.ShouldStop()
 	local Pull = Action.BossMods_Pulling()
@@ -828,6 +837,20 @@ local function APL()
     
     --- In Combat
     if Player:AffectingCombat() and not PrepareAshvaneBurst() then
+	
+	    -- Interrupt Handler
+        local randomInterrupt = math.random(25, 70)
+        local unit = "target"
+        local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
+        
+		-- PetKick
+        if useKick and S.PetKick:IsReady() and Target:IsInterruptible() then 
+		    if Target:CastPercentage() >= randomInterrupt then
+                if HR.Cast(S.PetKick, true) then return "PetKick 5"; end
+            else 
+                return
+            end 
+        end    
         -- variable,name=use_seed,value=talent.sow_the_seeds.enabled&spell_targets.seed_of_corruption_aoe>=3+raid_event.invulnerable.up|talent.siphon_life.enabled&spell_targets.seed_of_corruption>=5+raid_event.invulnerable.up|spell_targets.seed_of_corruption>=8+raid_event.invulnerable.up
         if (true) then
             VarUseSeed = num(S.SowtheSeeds:IsAvailable() and EnemiesCount >= 3 or S.SiphonLife:IsAvailable() and EnemiesCount >= 5 or EnemiesCount >= 8)
@@ -980,5 +1003,6 @@ A[3] = function(icon)
     if APL() then 
         return true 
     end 
+
 end
 
