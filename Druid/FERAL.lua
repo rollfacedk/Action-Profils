@@ -327,7 +327,7 @@ local function APL()
         end
         -- potion,dynamic_prepot=1
         if I.PotionofFocusedResolve:IsReady() and Action.GetToggle(1, "Potion") then
-            if HR.CastSuggested(I.PotionofFocusedResolve) then return "battle_potion_of_agility 24"; end
+            if HR.Cast(I.PotionofFocusedResolve) then return "battle_potion_of_agility 24"; end
         end
         -- berserk
         if S.Berserk:IsCastableP() and Player:BuffDownP(S.BerserkBuff) and HR.CDsON() then
@@ -386,7 +386,7 @@ local function APL()
         end
         -- potion,if=target.time_to_die<65|(time_to_die<180&(buff.berserk.up|buff.incarnation.up))
         if I.PotionofFocusedResolve:IsReady() and Action.GetToggle(1, "Potion") and (Target:TimeToDie() < 65 or (Target:TimeToDie() < 180 and (Player:BuffP(S.BerserkBuff) or Player:BuffP(S.IncarnationBuff)))) then
-            if HR.CastSuggested(I.PotionofFocusedResolve) then return "battle_potion_of_agility 48"; end
+            if HR.Cast(I.PotionofFocusedResolve) then return "battle_potion_of_agility 48"; end
         end
         -- shadowmeld,if=combo_points<5&energy>=action.rake.cost&dot.rake.pmultiplier<2.1&buff.tigers_fury.up&(buff.bloodtalons.up|!talent.bloodtalons.enabled)&(!talent.incarnation.enabled|cooldown.incarnation.remains>18)&!buff.incarnation.up
         if S.Shadowmeld:IsCastableP() and HR.CDsON() and (Player:ComboPoints() < 5 and Player:EnergyPredicted() >= S.Rake:Cost() and Target:PMultiplier(S.Rake) < 2.1 and Player:BuffP(S.TigersFuryBuff) and (Player:BuffP(S.BloodtalonsBuff) or not S.Bloodtalons:IsAvailable()) and (not S.Incarnation:IsAvailable() or S.Incarnation:CooldownRemainsP() > 18) and not Player:BuffP(S.IncarnationBuff)) then

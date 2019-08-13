@@ -573,7 +573,7 @@ local function APL()
         end
         -- use_item,name=pocketsized_computation_device,if=cooldown.summon_darkglare.remains>=25&(cooldown.deathbolt.remains|!talent.deathbolt.enabled)
         if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and Action.AbsentImun(nil, unit, "DamageMagicImun") and (S.SummonDarkglare:CooldownRemainsP() >= 25 and (bool(S.Deathbolt:CooldownRemainsP()) or not S.Deathbolt:IsAvailable())) then
-            if HR.CastSuggested(I.PocketsizedComputationDevice) then return "pocketsized_computation_device 50"; end
+            if HR.Cast(I.PocketsizedComputationDevice) then return "pocketsized_computation_device 50"; end
 			--return Action.MacroQueue("PocketsizedComputationDevice", { Priority = 1})
         end
         -- use_item,name=rotcrusted_voodoo_doll,if=cooldown.summon_darkglare.remains>=25&(cooldown.deathbolt.remains|!talent.deathbolt.enabled)

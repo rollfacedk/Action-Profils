@@ -683,7 +683,7 @@ local function APL()
     --if Everyone.TargetIsValid() then
         -- potion
         if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
-          if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 10"; end
+          if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 10"; end
         end
         -- demonbolt
         if S.Demonbolt:IsCastableP() then
@@ -958,7 +958,7 @@ local function APL()
     --Everyone.Interrupt(40, S.SpellLock, Settings.Commons.OffGCDasOffGCD.SpellLock, StunInterrupts);
     -- potion,if=pet.demonic_tyrant.active&(!essence.vision_of_perfection.major|!talent.demonic_consumption.enabled|cooldown.summon_demonic_tyrant.remains>=cooldown.summon_demonic_tyrant.duration-5)&(!talent.nether_portal.enabled|cooldown.nether_portal.remains>160)|target.time_to_die<30
     if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") and (DemonicTyrantTime() > 0 and (not S.VisionofPerfection:IsAvailable() or not S.DemonicConsumption:IsAvailable() or S.SummonDemonicTyrant:CooldownRemainsP() >= S.SummonDemonicTyrant:BaseDuration() - 5) and (not S.NetherPortal:IsAvailable() or S.NetherPortal:CooldownRemainsP() > 160) or Target:TimeToDie() < 30) then
-        if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 322"; end
+        if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 322"; end
     end
     -- use_item,name=azsharas_font_of_power,if=cooldown.summon_demonic_tyrant.remains<=20&!talent.nether_portal.enabled
     if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and (Action.GetToggle(1, "Trinkets")[1] or Action.GetToggle(1, "Trinkets")[2]) and (S.SummonDemonicTyrant:CooldownRemainsP() <= 20 and not S.NetherPortal:IsAvailable()) then

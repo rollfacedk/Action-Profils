@@ -451,14 +451,14 @@ local function CDs ()
             and not Player:IsStealthedP(true, true) and Player:ComboPointsDeficit() >= CPMaxSpend() - 1) then
                 if HR.Cast(S.MarkedforDeath, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Marked for Death"; end
             elseif not Player:IsStealthedP(true, true) and Player:ComboPointsDeficit() >= CPMaxSpend() - 1 then
-                HR.CastSuggested(S.MarkedforDeath);
+                HR.Cast(S.MarkedforDeath);
             end
         end
         if HR.CDsON() then
             -- actions.cds+=/blade_flurry,if=spell_targets.blade_flurry>=2&!buff.blade_flurry.up
             if HR.AoEON() and S.BladeFlurry:IsCastable() and Cache.EnemiesCount[BladeFlurryRange] >= 2 and not Player:BuffP(S.BladeFlurry) then
                 if Action.GetToggle(2, "OffGCDasOffGCD") then
-                    HR.CastSuggested(S.BladeFlurry);
+                    HR.Cast(S.BladeFlurry);
                 else
                     if HR.Cast(S.BladeFlurry) then return "Cast Blade Flurry"; end
                 end

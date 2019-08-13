@@ -304,7 +304,7 @@ local function APL()
         end
         -- potion
         if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
-            if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_agility 6"; end
+            if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_agility 6"; end
         end
         -- use_item,name=azsharas_font_of_power
         if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and (Action.GetToggle(1, "Trinkets")[1] or Action.GetToggle(1, "Trinkets")[2]) then
@@ -365,7 +365,7 @@ local function APL()
         end
         -- potion,if=buff.bestial_wrath.up&buff.aspect_of_the_wild.up&(target.health.pct<35|!talent.killer_instinct.enabled)|(consumable.potion_of_unbridled_fury&target.time_to_die<61|target.time_to_die<26)
         if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") and (Player:BuffP(S.BestialWrathBuff) and Player:BuffP(S.AspectoftheWildBuff) and (Target:HealthPercentage() < 35 or not S.KillerInstinct:IsAvailable()) or Target:TimeToDie() < 61) then
-            if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_agility 68"; end
+            if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_agility 68"; end
         end
         -- worldvein_resonance,if=buff.lifeblood.stack<4
         if S.WorldveinResonance:IsCastableP() and (Player:BuffStackP(S.LifebloodBuff) < 4) then

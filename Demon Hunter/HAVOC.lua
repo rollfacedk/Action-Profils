@@ -214,7 +214,7 @@ end
 local function CastFelRush()
     if not Action.GetToggle(2, "UseMoves") then 
         if Action.GetToggle(2, "FelRushDisplay") == "SUGGESTED" then
-            return HR.CastSuggested(S.FelRush);
+            return HR.Cast(S.FelRush);
         elseif Action.GetToggle(2, "FelRushDisplay") == "COOLDOWN" then
             if S.FelRush:TimeSinceLastDisplay() ~= 0 then
                 return HR.Cast(S.FelRush, { true, false } );
@@ -326,7 +326,7 @@ local function APL()
         end
         -- potion
         if I.PotionofFocusedResolve:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") and Pull > 0.1 and Pull <= 1 then
-            if HR.CastSuggested(I.PotionofFocusedResolve) then return "battle_potion_of_agility 4"; end
+            if HR.Cast(I.PotionofFocusedResolve) then return "battle_potion_of_agility 4"; end
         end
         -- metamorphosis,if=!azerite.chaotic_transformation.enabled
         if S.Metamorphosis:IsCastableP(40) and not ShouldStop and (Player:BuffDownP(S.MetamorphosisBuff) and not S.ChaoticTransformation:AzeriteEnabled()) and Pull > 0.1 and Pull <= 0.2 then
@@ -413,23 +413,23 @@ local function APL()
         end
         -- potion,if=buff.metamorphosis.remains>25|target.time_to_die<60
         if I.PotionofFocusedResolve:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") and (Player:BuffRemainsP(S.MetamorphosisBuff) > 25 or Target:TimeToDie() < 60) then
-            if HR.CastSuggested(I.PotionofFocusedResolve) then return "battle_potion_of_agility 55"; end
+            if HR.Cast(I.PotionofFocusedResolve) then return "battle_potion_of_agility 55"; end
         end
         -- use_item,name=galecallers_boon,if=!talent.fel_barrage.enabled|cooldown.fel_barrage.ready
         if I.GalecallersBoon:IsEquipped() and I.GalecallersBoon:IsReady() and not ShouldStop and (not S.FelBarrage:IsAvailable() or S.FelBarrage:CooldownUpP()) then
-            if HR.CastSuggested(I.GalecallersBoon) then return "galecallers_boon 56"; end
+            if HR.Cast(I.GalecallersBoon) then return "galecallers_boon 56"; end
         end
         -- use_item,effect_name=cyclotronic_blast,if=buff.metamorphosis.up&buff.memory_of_lucid_dreams.down&(!variable.blade_dance|!cooldown.blade_dance.ready)
         if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and not ShouldStop and S.CyclotronicBlast:IsAvailable() and (Player:BuffP(S.MetamorphosisBuff) and Player:BuffDownP(S.MemoryofLucidDreams) and (not bool(VarBladeDance) or not S.BladeDance:IsReady() and not ShouldStop)) then
-            if HR.CastSuggested(I.PocketsizedComputationDevice) then return "cyclotronic_blast 57"; end
+            if HR.Cast(I.PocketsizedComputationDevice) then return "cyclotronic_blast 57"; end
         end
         -- use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down|(debuff.conductive_ink_debuff.up|buff.metamorphosis.remains>20)&target.health.pct<31|target.time_to_die<20
         if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and not ShouldStop and (Target:DebuffDownP(S.RazorCoralDebuff) or (Target:DebuffP(S.ConductiveInkDebuff) or Player:BuffRemainsP(S.MetamorphosisBuff) > 20) and Target:HealthPercentage() < 31 or Target:TimeToDie() < 20) then
-            if HR.CastSuggested(I.AshvanesRazorCoral) then return "ashvanes_razor_coral 59"; end
+            if HR.Cast(I.AshvanesRazorCoral) then return "ashvanes_razor_coral 59"; end
         end
         -- use_item,name=azsharas_font_of_power,if=cooldown.metamorphosis.remains<10|cooldown.metamorphosis.remains>60
         if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and not ShouldStop and (S.Metamorphosis:CooldownRemainsP() < 10 or S.Metamorphosis:CooldownRemainsP() > 60) then
-            if HR.CastSuggested(I.AzsharasFontofPower) then return "azsharas_font_of_power 60"; end
+            if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 60"; end
         end
         -- use_items,if=buff.metamorphosis.up
         -- call_action_list,name=essences
