@@ -26,55 +26,57 @@ Action[ACTION_CONST_HUNTER_BM] = {
     EscapeArtist                         = Action.Create({ Type = "Spell", ID = 20589    }), -- not usable in APL but user can Queue it
     EveryManforHimself                   = Action.Create({ Type = "Spell", ID = 59752    }), -- not usable in APL but user can Queue it
     -- Generics Spells    
-    SummonPet                             = Action.Create({ Type = "Trinket", ID = 883 }),
-    AspectoftheWild                       = Action.Create({ Type = "Trinket", ID = 193530 }),
-    PrimalInstincts                       = Action.Create({ Type = "Trinket", ID = 279806 }),
-    BestialWrath                          = Action.Create({ Type = "Trinket", ID = 19574 }),
-    AncestralCall                         = Action.Create({ Type = "Trinket", ID = 274738 }),
-    Fireblood                             = Action.Create({ Type = "Trinket", ID = 265221 }),
-    Berserking                            = Action.Create({ Type = "Trinket", ID = 26297 }),
-    KillerInstinct                        = Action.Create({ Type = "Trinket", ID = 273887 }),
-    BloodFury                             = Action.Create({ Type = "Trinket", ID = 20572 }),
-    LightsJudgment                        = Action.Create({ Type = "Trinket", ID = 255647 }),
-    BarbedShot                            = Action.Create({ Type = "Trinket", ID = 217200 }),
-    Multishot                             = Action.Create({ Type = "Trinket", ID = 2643 }),
-    Stampede                              = Action.Create({ Type = "Trinket", ID = 201430 }),
-    ChimaeraShot                          = Action.Create({ Type = "Trinket", ID = 53209 }),
-    AMurderofCrows                        = Action.Create({ Type = "Trinket", ID = 131894 }),
-    Barrage                               = Action.Create({ Type = "Trinket", ID = 120360 }),
-    KillCommand                           = Action.Create({ Type = "Trinket", ID = 34026 }),
-    RapidReload                           = Action.Create({ Type = "Trinket", ID = 278530 }),
-    DireBeast                             = Action.Create({ Type = "Trinket", ID = 120679 }),
-    CobraShot                             = Action.Create({ Type = "Trinket", ID = 193455 }),
-    SpittingCobra                         = Action.Create({ Type = "Trinket", ID = 194407 }),
-    OneWithThePack                        = Action.Create({ Type = "Trinket", ID = 199528 }),
-    Intimidation                          = Action.Create({ Type = "Trinket", ID = 19577 }),
-    CounterShot                           = Action.Create({ Type = "Trinket", ID = 147362 }),
-    Exhilaration                          = Action.Create({ Type = "Trinket", ID = 109304 }),
-    DanceofDeath                          = Action.Create({ Type = "Trinket", ID = 274441 }),
+    SummonPet                             = Action.Create({ Type = "Spell", ID = 883 }),
+    AspectoftheWild                       = Action.Create({ Type = "Spell", ID = 193530 }),
+    PrimalInstincts                       = Action.Create({ Type = "Spell", ID = 279806 }),
+    BestialWrath                          = Action.Create({ Type = "Spell", ID = 19574 }),
+    AncestralCall                         = Action.Create({ Type = "Spell", ID = 274738 }),
+    Fireblood                             = Action.Create({ Type = "Spell", ID = 265221 }),
+    Berserking                            = Action.Create({ Type = "Spell", ID = 26297 }),
+    KillerInstinct                        = Action.Create({ Type = "Spell", ID = 273887 }),
+    BloodFury                             = Action.Create({ Type = "Spell", ID = 20572 }),
+    LightsJudgment                        = Action.Create({ Type = "Spell", ID = 255647 }),
+    BarbedShot                            = Action.Create({ Type = "Spell", ID = 217200 }),
+    Multishot                             = Action.Create({ Type = "Spell", ID = 2643 }),
+    Stampede                              = Action.Create({ Type = "Spell", ID = 201430 }),
+    ChimaeraShot                          = Action.Create({ Type = "Spell", ID = 53209 }),
+    AMurderofCrows                        = Action.Create({ Type = "Spell", ID = 131894 }),
+    Barrage                               = Action.Create({ Type = "Spell", ID = 120360 }),
+    KillCommand                           = Action.Create({ Type = "Spell", ID = 34026 }),
+    RapidReload                           = Action.Create({ Type = "Spell", ID = 278530 }),
+    DireBeast                             = Action.Create({ Type = "Spell", ID = 120679 }),
+    CobraShot                             = Action.Create({ Type = "Spell", ID = 193455 }),
+    SpittingCobra                         = Action.Create({ Type = "Spell", ID = 194407 }),
+    OneWithThePack                        = Action.Create({ Type = "Spell", ID = 199528 }),
+    Intimidation                          = Action.Create({ Type = "Spell", ID = 19577 }),
+    CounterShot                           = Action.Create({ Type = "Spell", ID = 147362 }),
+    Exhilaration                          = Action.Create({ Type = "Spell", ID = 109304 }),
+    DanceofDeath                          = Action.Create({ Type = "Spell", ID = 274441 }),
     -- Utilities
 	-- Defensives
-	AspectoftheTurtle                    = Action.Create({ Type = "Trinket", ID = 274441 }),
+	AspectoftheTurtle                    = Action.Create({ Type = "Spell", ID = 274441 }),
     -- Misc
     Channeling                           = Action.Create({ Type = "Spell", ID = 209274, Hidden = true     }),
     RecklessForceBuff                    = Action.Create({ Type = "Spell", ID = 302932, Hidden = true     }),
     ConcentratedFlameBurn                = Action.Create({ Type = "Spell", ID = 295368, Hidden = true     }),
     CyclotronicBlast                     = Action.Create({ Type = "Spell", ID = 167672, Hidden = true     }),
     HarmonicDematerializer               = Action.Create({ Type = "Spell", ID = 293512, Hidden = true     }),
+	--PoolFocus                             = Action.Create({ Type = "Spell", ID = 9999000010, Hidden = true     }),
     -- Buffs
-    DanceofDeathBuff                      = Action.Create({ Type = "Trinket", ID = 274443 }),
-    BeastCleaveBuff                       = Action.Create({ Type = "Trinket", ID = 118455, "pet" }),
-    BloodFuryBuff                         = Action.Create({ Type = "Trinket", ID = 20572 }),
-    BerserkingBuff                        = Action.Create({ Type = "Trinket", ID = 26297 }),
-    BestialWrathBuff                      = Action.Create({ Type = "Trinket", ID = 19574 }),
-    PrimalInstinctsBuff                   = Action.Create({ Type = "Trinket", ID = 279810 }),
-    FrenzyBuff                            = Action.Create({ Type = "Trinket", ID = 272790 }),
-    AspectoftheWildBuff                   = Action.Create({ Type = "Trinket", ID = 193530 }),	
+    DanceofDeathBuff                      = Action.Create({ Type = "Spell", ID = 274443 }),
+    BeastCleaveBuff                       = Action.Create({ Type = "Spell", ID = 118455, "pet" }),
+    BloodFuryBuff                         = Action.Create({ Type = "Spell", ID = 20572 }),
+    BerserkingBuff                        = Action.Create({ Type = "Spell", ID = 26297 }),
+    BestialWrathBuff                      = Action.Create({ Type = "Spell", ID = 19574 }),
+    PrimalInstinctsBuff                   = Action.Create({ Type = "Spell", ID = 279810 }),
+    FrenzyBuff                            = Action.Create({ Type = "Spell", ID = 272790 }),
+    AspectoftheWildBuff                   = Action.Create({ Type = "Spell", ID = 193530 }),	
 	-- Debuffs 
-    RazorCoralDebuff                      = Action.Create({ Type = "Trinket", ID = 303568 }),	
+    RazorCoralDebuff                      = Action.Create({ Type = "Spell", ID = 303568 }),	
     -- Potions
     PotionofUnbridledFury                = Action.Create({ Type = "Potion", ID = 169299, QueueForbidden = true }),
     -- Trinkets
+	AshvanesRazorCoral                   = Action.Create({ Type = "Trinket", ID = 169311, QueueForbidden = true }),
     TidestormCodex                       = Action.Create({ Type = "Trinket", ID = 165576, QueueForbidden = true }),
     MalformedHeraldsLegwraps             = Action.Create({ Type = "Trinket", ID = 167835, QueueForbidden = true }),
     PocketsizedComputationDevice         = Action.Create({ Type = "Trinket", ID = 167555, QueueForbidden = true }),
@@ -531,7 +533,7 @@ local function APL()
         -- Avoids cases where Cobra Shot would be suggested but the GCD of Cobra Shot + latency would allow Barbed Shot to fall off
         -- wait,if=pet.cat.buff.frenzy.up&pet.cat.buff.frenzy.remains<=gcd.max*2&focus.time_to_max>gcd.max*2
         if Pet:BuffP(S.FrenzyBuff) and Pet:BuffRemainsP(S.FrenzyBuff) <= GCDMax * 2 and Player:FocusTimeToMaxPredicted() > GCDMax * 2 then
-            if HR.Cast(S.PoolFocus) then return "Barbed Shot Pooling"; end
+            if HR.Cast(S.Channeling) then return "Barbed Shot Pooling"; end
         end
         -- cobra_shot,if=(focus-cost+focus.regen*(cooldown.kill_command.remains-1)>action.kill_command.cost|cooldown.kill_command.remains>1+gcd|buff.memory_of_lucid_dreams.up)&cooldown.kill_command.remains>1
         if S.CobraShot:IsCastableP() and ((Player:Focus() - S.CobraShot:Cost() + Player:FocusRegen() * (S.KillCommand:CooldownRemainsP() - 1) > S.KillCommand:Cost() or S.KillCommand:CooldownRemainsP() > 1 + GCDMax or Player:BuffP(S.MemoryofLucidDreams)) and S.KillCommand:CooldownRemainsP() > 1) then
@@ -564,11 +566,11 @@ local function APL()
         if HR.Cast(S.Channeling) then return "" end
     end  
 	-- call DBM precombat
-    if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
-        local ShouldReturn = Precombat_DBM(); 
-            if ShouldReturn then return ShouldReturn; 
-        end    
-    end
+    --if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
+   --     local ShouldReturn = Precombat_DBM(); 
+   --         if ShouldReturn then return ShouldReturn; 
+   --     end    
+   -- end
     -- call non DBM precombat
     if not Player:AffectingCombat() and not Action.GetToggle(1, "DBM") and not Player:IsCasting() then        
         local ShouldReturn = Precombat(); 
@@ -579,15 +581,19 @@ local function APL()
     -- In Combat
     if Player:AffectingCombat() then
         
-		-- CounterShot
-		local useKick, useCC, useRacial = A.InterruptIsValid("Target", "TargetMouseover")
-        if useKick and S.CounterShot:IsReadyP(15) and Action.CounterShot:AbsentImun("Target", {"TotalImun", "DamagePhysImun", "KickImun"}, true) then 
-            if Env.RandomKick("Target", true) then 
-		    	if HR.Cast(S.CounterShot) then return ""; end
-            else 
-                return false
-           end 
-        end 
+		-- Interrupt Handler
+ 	 	local randomInterrupt = math.random(25, 70)
+  		local unit = "target"
+   		local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
+        
+  	    -- CounterShot
+  	    if useKick and S.CounterShot:IsReady() and Target:IsInterruptible() then 
+		  	if Target:CastPercentage() >= randomInterrupt then
+          	    if HR.Cast(S.CounterShot, true) then return "CounterShot 5"; end
+         	else 
+          	    return
+         	end 
+      	end 		
 		-- Self heal, if below setting value
         if S.Exhilaration:IsCastableP() and Player:HealthPercentage() <= Action.GetToggle(2, "Exhilaration") then
             if HR.Cast(S.Exhilaration, Action.GetToggle(2, "OffGCDasOffGCD")) then return "exhilaration"; end
@@ -615,7 +621,7 @@ local function APL()
             local ShouldReturn = Cleave(); if ShouldReturn then return ShouldReturn; end
         end
 		-- Pool icon
-        --if HR.Cast(S.PoolFocus) then return "Pooling Focus"; end
+        if HR.Cast(S.Channeling) then return "Pooling Focus"; end
 
     end
 end

@@ -609,21 +609,28 @@ local function APL()
     --- In Combat
     if Player:AffectingCombat() then
         
-		-- Interrupts handler (Kick + available stuns depending on situation)
-		 -- Interrupts
-        --local Interrupt = Interrupts(Target, ShouldStop)
-        --if Interrupt then 
-        --    return Interrupt:Show(icon)
-        --end   
-		
-		-- Disrupt
-        if useKick and Action.InterruptIsValid("Target", "TargetMouseover") and S.Disrupt:IsReadyP(15) and Action.Disrupt:AbsentImun("Target", {"TotalImun", "DamagePhysImun", "KickImun"}, true) then 
-            if Env.RandomKick("Target", true) then 
-		    	if HR.Cast(S.Disrupt) then return ""; end
-            else 
-                return false
-           end 
-        end 
+		-- Interrupt Handler
+ 	 	local randomInterrupt = math.random(25, 70)
+  		local unit = "target"
+   		local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
+        
+  	    -- Disrupt
+  	    if useKick and S.Disrupt:IsReady() and Target:IsInterruptible() then 
+		  	if Target:CastPercentage() >= randomInterrupt then
+          	    if HR.Cast(S.Disrupt, true) then return "Disrupt 5"; end
+         	else 
+          	    return
+         	end 
+      	end 
+	
+     	 -- ChaosNova
+      	if useCC and S.ChaosNova:IsReady() and Target:IsInterruptible() then 
+	  		if Target:CastPercentage() >= randomInterrupt then
+     	        if HR.Cast(S.ChaosNova, true) then return "ChaosNova 5"; end
+     	    else 
+     	        return
+     	    end 
+     	end 
 		
 		-- Purge
 		-- Note: Toggles  ("UseDispel", "UsePurge", "UseExpelEnrage")

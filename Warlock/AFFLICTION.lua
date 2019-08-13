@@ -812,6 +812,10 @@ local function APL()
         if S.Haunt:IsCastableP() and not ShouldStop then
             if HR.Cast(S.Haunt) then return "haunt 461"; end
         end
+        -- drain_life,
+        if S.DrainLife:IsCastableP() and not ShouldStop and Player:BuffStackP(S.InevitableDemiseBuff) >= 45 and Target:DebuffRemainsP(S.AgonyDebuff) > 5 * Player:SpellHaste() then
+            if HR.Cast(S.DrainLife) then return "drain_life 415"; end
+        end
 		-- agony,target_if=min:dot.agony.remains,if=remains<=gcd+action.shadow_bolt.execute_time&target.time_to_die>8
         if S.Agony:IsCastableP() and not ShouldStop and not Action.GetToggle(2, "CDs") and Target:DebuffRemainsP(S.AgonyDebuff) <= 5 then
             if HR.Cast(S.Agony) then return "siphon_life 770" end

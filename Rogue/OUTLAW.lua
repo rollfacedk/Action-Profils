@@ -57,6 +57,8 @@ Action[ACTION_CONST_ROGUE_OUT] = {
 	-- Utility
     Kick                                 = Action.Create({ Type = "Spell", ID = 1766       }),
     Blind                                = Action.Create({ Type = "Spell", ID = 2094       }),
+    CheapShot                            = Action.Create({ Type = "Spell", ID = 1833       }),
+    KidneyShot                           = Action.Create({ Type = "Spell", ID = 408       }),
 	-- Roll the Bones
     Broadside                            = Action.Create({ Type = "Spell", ID = 193356       }),
     BuriedTreasure                       = Action.Create({ Type = "Spell", ID = 199600       }),
@@ -768,8 +770,28 @@ local function APL()
         ShouldReturn = TrainingScenario();
         if ShouldReturn then return ShouldReturn; end
         
-		-- Interrupts
-        -- TODO
+ 		-- Interrupt Handler
+ 	 	local randomInterrupt = math.random(25, 70)
+  		local unit = "target"
+   		local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
+        
+  	    -- Kick
+  	    if useKick and S.Kick:IsReady() and Target:IsInterruptible() then 
+		  	if Target:CastPercentage() >= randomInterrupt then
+          	    if HR.Cast(S.Kick, true) then return "Kick 5"; end
+         	else 
+          	    return
+         	end 
+      	end 
+	
+     	 -- CheapShot
+      	if useCC and S.CheapShot:IsReady() and Target:IsInterruptible() and Player:EnergyPredicted() >= 40 then 
+	  		if Target:CastPercentage() >= randomInterrupt then
+     	        if HR.Cast(S.CheapShot, true) then return "CheapShot 5"; end
+     	    else 
+     	        return
+     	    end 
+     	end 
 
         -- actions+=/call_action_list,name=stealth,if=stealthed.all
         if Player:IsStealthedP(true, true) then

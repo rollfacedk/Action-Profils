@@ -416,7 +416,7 @@ local function APL()
         end
         -- fire_blast,use_while_casting=1,use_off_gcd=1,if=charges>=1&((action.fire_blast.charges_fractional+(buff.combustion.remains-buff.blaster_master.duration)%cooldown.fire_blast.duration-(buff.combustion.remains)%(buff.blaster_master.duration-0.5))>=0|!azerite.blaster_master.enabled|!talent.flame_on.enabled|buff.combustion.remains<=buff.blaster_master.duration|buff.blaster_master.remains<0.5|equipped.hyperthread_wristwraps&cooldown.hyperthread_wristwraps_300142.remains<5)&buff.combustion.up&(!action.scorch.executing&!action.pyroblast.in_flight&buff.heating_up.up|action.scorch.executing&buff.hot_streak.down&(buff.heating_up.down|azerite.blaster_master.enabled)|azerite.blaster_master.enabled&talent.flame_on.enabled&action.pyroblast.in_flight&buff.heating_up.down&buff.hot_streak.down)
         if S.FireBlast:IsReady() and (S.FireBlast:ChargesP() >= 1 and ((S.FireBlast:ChargesFractional() + (Player:BuffRemainsP(S.CombustionBuff) - S.BlasterMasterBuff:BaseDuration()) % S.FireBlast:Cooldown() - (Player:BuffRemainsP(S.CombustionBuff)) % (S.BlasterMasterBuff:BaseDuration() - 0.5)) >= 0 or not S.BlasterMaster:AzeriteEnabled() or not S.FlameOn:IsAvailable() or Player:BuffRemainsP(S.CombustionBuff) <= S.BlasterMasterBuff:BaseDuration() or Player:BuffRemainsP(S.BlasterMasterBuff) < 0.5 or I.HyperthreadWristwraps:IsEquipped() and I.HyperthreadWristwraps:CooldownRemains() < 5) and Player:BuffP(S.Combustion) and (not Player:IsCasting(S.Scorch) and not S.Pyroblast:InFlight() and Player:BuffP(S.HeatingUpBuff) or Player:IsCasting(S.Scorch) and Player:BuffDownP(S.HotStreakBuff) and (Player:BuffDownP(S.HeatingUpBuff) or S.BlasterMaster:AzeriteEnabled()) or S.BlasterMaster:AzeriteEnabled() and S.FlameOn:IsAvailable() and S.Pyroblast:InFlight() and Player:BuffP(S.HeatingUpBuff) and Player:BuffDownP(S.HotStreakBuff))) then
-            if HR.Cast(S.Scorch) then return "scorch 247"; end
+            if HR.Cast(S.FireBlast) then return "FireBlast 247"; end
         end
         -- rune_of_power,if=buff.combustion.down
         if S.RuneofPower:IsCastableP() and not ShouldStop and (Player:BuffDownP(S.CombustionBuff)) then
@@ -789,15 +789,21 @@ local function APL()
     
     --- In Combat
     if Player:AffectingCombat() then
-        -- counterspell
-		local useKick, useCC, useRacial = A.InterruptIsValid("Target", "TargetMouseover")
-        if useKick and S.Counterspell:IsReadyP(15) and Action.Counterspell:AbsentImun("Target", {"TotalImun", "DamagePhysImun", "KickImun"}, true) then 
-            if Env.RandomKick("Target", true) then 
-		    	if HR.Cast(S.Counterspell) then return ""; end
+
+	    -- Interrupt Handler
+        local randomInterrupt = math.random(25, 70)
+        local unit = "target"
+        local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
+        
+		-- Counterspell
+        if useKick and S.Counterspell:IsReady() and Target:IsInterruptible() then 
+		    if Target:CastPercentage() >= randomInterrupt then
+                if HR.Cast(S.Counterspell, true) then return "Counterspell 5"; end
             else 
-                return false
-           end 
-        end 
+                return
+            end 
+        end    
+		
 		-- Purge
 		-- Note: Toggles  ("UseDispel", "UsePurge", "UseExpelEnrage")
         -- Category ("Dispel", "MagicMovement", "PurgeFriendly", "PurgeHigh", "PurgeLow", "Enrage")
