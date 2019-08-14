@@ -372,7 +372,7 @@ local function APL()
             if HR.Cast(S.GuardianofAzeroth, Action.GetToggle(2, "OffGCDasOffGCD")) then return "guardian_of_azeroth"; end
         end
         -- focused_azerite_beam,if=spell_targets.blade_dance1>=2|raid_event.adds.in>60
-        if S.FocusedAzeriteBeam:IsCastableP() and not ShouldStop and (Cache.EnemiesCount[8] >= 2) then
+        if S.FocusedAzeriteBeam:IsCastableP() and (Cache.EnemiesCount[8] >= 2) then
             if HR.Cast(S.FocusedAzeriteBeam, Action.GetToggle(2, "OffGCDasOffGCD")) then return "focused_azerite_beam"; end
         end
         -- purifying_blast,if=spell_targets.blade_dance1>=2|raid_event.adds.in>60
@@ -388,7 +388,7 @@ local function APL()
             if HR.Cast(S.RippleInSpace, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ripple_in_space"; end
         end
         -- worldvein_resonance,if=buff.lifeblood.stack<3
-        if S.WorldveinResonance:IsCastableP() and not ShouldStop and (Player:BuffStackP(S.LifebloodBuff) < 3) then
+        if S.WorldveinResonance:IsCastableP() and (Player:BuffStackP(S.LifebloodBuff) < 3) then
             if HR.Cast(S.WorldveinResonance, Action.GetToggle(2, "OffGCDasOffGCD")) then return "worldvein_resonance"; end
         end
         -- memory_of_lucid_dreams,if=fury<40&buff.metamorphosis.up
