@@ -103,6 +103,7 @@ Action[ACTION_CONST_DRUID_FERAL] = {
 	AshvanesRazorCoral                    = Action.Create({ Type = "Trinket", ID = 169311, QueueForbidden = true }),
     -- Potions
     PotionofUnbridledFury                 = Action.Create({ Type = "Potion", ID = 169299, QueueForbidden = true }),
+    PotionofFocusedResolve                = Action.Create({ Type = "Potion", ID = 168506, QueueForbidden = true }),
     PotionTest                            = Action.Create({ Type = "Potion", ID = 142117, QueueForbidden = true }),
     -- Hidden Heart of Azeroth
     VisionofPerfectionMinor               = Action.Create({ Type = "Spell", ID = 296320, Hidden = true}),
@@ -178,54 +179,6 @@ Action.HeroSetHookAllTable(I, {
 --S.Brews                                 = Spell(115308)
 --S.BlackoutCombo                         = Spell(196736)
 --S.BlackoutComboBuff                     = Spell(228563)
-
-----------------------------
----- Interrupt handler -----
-
-local unit
-if Action.IsUnitEnemy("mouseover") then 
-    unit = "mouseover"
-elseif Action.IsUnitEnemy("target") then 
-    unit = "target"
-end
-
-local function Interrupts(unit, ShouldStop)
-    local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
-    -- SkullBash
-    if useKick and Action.SkullBash:IsReady(unit) and Action.SkullBash:AbsentImun(unit, {"TotalImun", "DamagePhysImun", "KickImun"}, true) then 
-        if Env.RandomKick(unit, true) then 
-            return Action.SkullBash
-        else 
-            return false
-        end 
-    end 
-    -- MightyBash
-    if useCC and not ShouldStop and S.MightyBash:IsAvailable() and Action.MightyBash:IsReady(unit) and Action.MightyBash:AbsentImun(unit, {"TotalImun", "DamagePhysImun", "CCTotalImun"}) then 
-        return Action.MightyBash              
-    end             
-    
-    if useRacial and Action.QuakingPalm:AutoRacial(unit, true) then 
-        return Action.QuakingPalm
-    end 
-    
-    if useRacial and Action.Haymaker:AutoRacial(unit, true) then 
-        return Action.Haymaker
-    end 
-    
-    if useRacial and Action.WarStomp:AutoRacial(unit, true) then 
-        return Action.WarStomp
-    end 
-    
-    if useRacial and Action.BullRush:AutoRacial(unit, true) then 
-        return Action.BullRush
-    end      
-    
-    if useCC and not ShouldStop and Action.IncapacitatingRoar:IsReady(unit, true) and Action.IncapacitatingRoar:AbsentImun(unit, {"StunImun", "CCTotalImun", "DamagePhysImun", "TotalImun"}, true) then
-        return Action.IncapacitatingRoar     
-    end 
-end 
-Interrupts = Action.MakeFunctionCachedDynamic(Interrupts)
-
 
 
 -- Rotation Var
@@ -374,7 +327,7 @@ local function APL()
         end
         -- potion,dynamic_prepot=1
         if I.PotionofFocusedResolve:IsReady() and Action.GetToggle(1, "Potion") then
-            if HR.CastSuggested(I.PotionofFocusedResolve) then return "battle_potion_of_agility 24"; end
+            if HR.Cast(I.PotionofFocusedResolve) then return "battle_potion_of_agility 24"; end
         end
         -- berserk
         if S.Berserk:IsCastableP() and Player:BuffDownP(S.BerserkBuff) and HR.CDsON() then
@@ -433,7 +386,7 @@ local function APL()
         end
         -- potion,if=target.time_to_die<65|(time_to_die<180&(buff.berserk.up|buff.incarnation.up))
         if I.PotionofFocusedResolve:IsReady() and Action.GetToggle(1, "Potion") and (Target:TimeToDie() < 65 or (Target:TimeToDie() < 180 and (Player:BuffP(S.BerserkBuff) or Player:BuffP(S.IncarnationBuff)))) then
-            if HR.CastSuggested(I.PotionofFocusedResolve) then return "battle_potion_of_agility 48"; end
+            if HR.Cast(I.PotionofFocusedResolve) then return "battle_potion_of_agility 48"; end
         end
         -- shadowmeld,if=combo_points<5&energy>=action.rake.cost&dot.rake.pmultiplier<2.1&buff.tigers_fury.up&(buff.bloodtalons.up|!talent.bloodtalons.enabled)&(!talent.incarnation.enabled|cooldown.incarnation.remains>18)&!buff.incarnation.up
         if S.Shadowmeld:IsCastableP() and HR.CDsON() and (Player:ComboPoints() < 5 and Player:EnergyPredicted() >= S.Rake:Cost() and Target:PMultiplier(S.Rake) < 2.1 and Player:BuffP(S.TigersFuryBuff) and (Player:BuffP(S.BloodtalonsBuff) or not S.Bloodtalons:IsAvailable()) and (not S.Incarnation:IsAvailable() or S.Incarnation:CooldownRemainsP() > 18) and not Player:BuffP(S.IncarnationBuff)) then
@@ -465,7 +418,7 @@ local function APL()
             if S.SavageRoar:IsUsablePPool() then
                 if HR.Cast(S.SavageRoar) then return "savage_roar 84"; end
             else
-                if HR.Cast(S.PoolResource) then return "pool_resource 85"; end
+                if HR.Cast(S.Channeling) then return "pool_resource 85"; end
             end
         end
         -- pool_resource,for_next=1
@@ -489,7 +442,7 @@ local function APL()
             if S.SavageRoar:IsUsablePPool() then
                 if HR.Cast(S.SavageRoar) then return "savage_roar 157"; end
             else
-                if HR.Cast(S.PoolResource) then return "pool_resource 158"; end
+                if HR.Cast(S.Channeling) then return "pool_resource 158"; end
             end
         end
         -- pool_resource,for_next=1
@@ -498,7 +451,7 @@ local function APL()
             if S.Maim:IsUsablePPool() then
                 if HR.Cast(S.Maim) then return "maim 163"; end
             else
-                if HR.Cast(S.PoolResource) then return "pool_resource 164"; end
+                if HR.Cast(S.Channeling) then return "pool_resource 164"; end
             end
         end
         -- ferocious_bite,max_energy=1
@@ -507,7 +460,7 @@ local function APL()
         end
         -- Pool if nothing else to do
         if (true) then
-            if HR.Cast(S.PoolEnergy) then return "pool_resource"; end
+            if HR.Cast(S.Channeling) then return "pool_resource"; end
         end
     end
 	
@@ -530,7 +483,7 @@ local function APL()
             if S.ThrashCat:IsUsablePPool() then
                 if HR.Cast(S.ThrashCat) then return "thrash_cat 199"; end
             else
-                if HR.Cast(S.PoolResource) then return "pool_resource 200"; end
+                if HR.Cast(S.Channeling) then return "pool_resource 200"; end
             end
         end
         -- pool_resource,for_next=1
@@ -539,7 +492,7 @@ local function APL()
             if S.ThrashCat:IsUsablePPool() then
                 if HR.Cast(S.ThrashCat) then return "thrash_cat 209"; end
             else
-                if HR.Cast(S.PoolResource) then return "pool_resource 210"; end
+                if HR.Cast(S.Channeling) then return "pool_resource 210"; end
             end
         end
         -- pool_resource,for_next=1
@@ -549,7 +502,7 @@ local function APL()
             if S.SwipeCat:IsUsablePPool() then
                 if HR.Cast(S.SwipeCat) then return "swipe_cat 217"; end
             else
-                if HR.Cast(S.PoolResource) then return "pool_resource 218"; end
+                if HR.Cast(S.Channeling) then return "pool_resource 218"; end
             end
         end
         -- pool_resource,for_next=1
@@ -580,7 +533,7 @@ local function APL()
             if S.ThrashCat:IsUsablePPool() then
                 if HR.Cast(S.ThrashCat) then return "thrash_cat 312"; end
             else
-                if HR.Cast(S.PoolResource) then return "pool_resource 313"; end
+                if HR.Cast(S.Channeling) then return "pool_resource 313"; end
             end
         end
         -- thrash_cat,if=refreshable&variable.use_thrash=1&buff.clearcasting.react&(!buff.incarnation.up|azerite.wild_fleshrending.enabled)
@@ -593,7 +546,7 @@ local function APL()
             if S.SwipeCat:IsUsablePPool() then
                 if HR.Cast(S.SwipeCat) then return "swipe_cat 344"; end
             else
-                if HR.Cast(S.PoolResource) then return "pool_resource 345"; end
+                if HR.Cast(S.Channeling) then return "pool_resource 345"; end
             end
         end
         -- shred,if=dot.rake.remains>(action.shred.cost+action.rake.cost-energy)%energy.regen|buff.clearcasting.react
@@ -602,7 +555,7 @@ local function APL()
         end
         -- Pool if nothing else to do
         if (true) then
-            if HR.Cast(S.PoolEnergy) then return "pool_resource"; end
+            if HR.Cast(S.Channeling) then return "Channeling"; end
         end
     end
 	
@@ -654,11 +607,37 @@ local function APL()
     --- In Combat
     if Player:AffectingCombat() then	
 		
-        -- Interrupts
-        local Interrupt = Interrupts(unit, ShouldStop)
-        if Interrupt then 
-            return Interrupt:Show(icon)
-        end 		
+		-- Interrupt Handler
+ 	 	local randomInterrupt = math.random(25, 70)
+  		local unit = "target"
+   		local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
+        
+  	    -- SkullBash
+  	    if useKick and S.SkullBash:IsReady() and Target:IsInterruptible() then 
+		  	if Target:CastPercentage() >= randomInterrupt then
+          	    if HR.Cast(S.SkullBash, true) then return "SkullBash 5"; end
+         	else 
+          	    return
+         	end 
+      	end 
+	
+     	 -- MightyBash
+      	if useCC and S.MightyBash:IsAvailable() and S.MightyBash:IsReady() and Target:IsInterruptible() then 
+	  		if Target:CastPercentage() >= randomInterrupt then
+     	        if HR.Cast(S.MightyBash, true) then return "MightyBash 5"; end
+     	    else 
+     	        return
+     	    end 
+     	end 
+
+     	 -- IncapacitatingRoar
+      	if useCC and (not S.MightyBash:IsAvailable() or not S.MightyBash:IsReady()) and S.IncapacitatingRoar:IsReady() and Target:IsInterruptible() then 
+	  		if Target:CastPercentage() >= randomInterrupt then
+     	        if HR.Cast(S.IncapacitatingRoar, true) then return "IncapacitatingRoar 5"; end
+     	    else 
+     	        return
+     	    end 
+     	end 		
 		-- Soothe
 		-- Note: Toggles  ("UseDispel", "UsePurge", "UseExpelEnrage")
         -- Category ("Dispel", "MagicMovement", "PurgeFriendly", "PurgeHigh", "PurgeLow", "Enrage")
@@ -700,7 +679,7 @@ local function APL()
         end
         -- Pool if nothing else to do
         if (true) then
-            if HR.Cast(S.PoolEnergy) then return "pool_resource"; end
+            if HR.Cast(S.Channeling) then return "Channeling"; end
         end		
     end
 end

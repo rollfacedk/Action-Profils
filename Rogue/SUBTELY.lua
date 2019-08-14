@@ -235,7 +235,7 @@ local function APL()
         -- snapshot_stats
         -- use_item,name=azsharas_font_of_power
         if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and (Action.GetToggle(1, "Trinkets")[1] or Action.GetToggle(1, "Trinkets")[2]) then
-            if HR.CastSuggested(I.AzsharasFontofPower) then return "azsharas_font_of_power"; end
+            if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power"; end
         end
         -- memory_of_lucid_dreams
         if S.MemoryofLucidDreams:IsCastableP() then
@@ -251,7 +251,7 @@ local function APL()
         end
         -- potion
         if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
-            if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_strength 4"; end
+            if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_strength 4"; end
         end
     end
     
@@ -357,7 +357,7 @@ local function APL()
         end
         -- potion
         if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
-            if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_strength 84"; end
+            if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_strength 84"; end
         end
         -- rampage,if=cooldown.recklessness.remains<3
         if S.Rampage:IsReadyP("Melee") and (S.Recklessness:CooldownRemainsP() < 3) then
@@ -409,7 +409,7 @@ local function APL()
         end
         -- use_item,name=ashvanes_razor_coral,if=!debuff.razor_coral_debuff.up|(target.health.pct<30.1&debuff.conductive_ink_debuff.up)|(!debuff.conductive_ink_debuff.up&buff.memory_of_lucid_dreams.up|prev_gcd.2.guardian_of_azeroth|prev_gcd.2.recklessness&(buff.guardian_of_azeroth.up|!essence.memory_of_lucid_dreams.major&!essence.condensed_lifeforce.major))
         if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and (Action.GetToggle(1, "Trinkets")[1] or Action.GetToggle(1, "Trinkets")[2]) and (Target:DebuffDownP(S.RazorCoralDebuff) or (Target:HealthPercentage() < 30 and Target:DebuffP(S.ConductiveInkDebuff)) or (Target:DebuffDownP(S.ConductiveInkDebuff) and Player:BuffP(S.MemoryofLucidDreams) or Player:PrevGCDP(2, S.GuardianofAzeroth) or Player:PrevGCDP(2, S.Recklessness) and (Player:BuffP(S.GuardianofAzeroth) or not S.MemoryofLucidDreams:IsAvailable() and not S.GuardianofAzeroth:IsAvailable()))) then
-            if HR.CastSuggested(I.AshvanesRazorCoral) then return "ashvanes_razor_coral 115"; end
+            if HR.Cast(I.AshvanesRazorCoral) then return "ashvanes_razor_coral 115"; end
         end
         -- blood_fury
         if S.BloodFury:IsCastableP() and Action.GetToggle(2, "CDs") then

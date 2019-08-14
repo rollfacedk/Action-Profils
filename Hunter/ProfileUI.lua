@@ -138,7 +138,7 @@ A.Data.ProfileUI = {
                     DBV = 30, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(274441) .. " (%)",
+                        ANY = A.GetSpellInfo(186265) .. " (%)",
                     }, 
                     M = {},
                 },

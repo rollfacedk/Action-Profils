@@ -573,7 +573,7 @@ local function APL()
         end
         -- use_item,name=pocketsized_computation_device,if=cooldown.summon_darkglare.remains>=25&(cooldown.deathbolt.remains|!talent.deathbolt.enabled)
         if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and Action.AbsentImun(nil, unit, "DamageMagicImun") and (S.SummonDarkglare:CooldownRemainsP() >= 25 and (bool(S.Deathbolt:CooldownRemainsP()) or not S.Deathbolt:IsAvailable())) then
-            if HR.CastSuggested(I.PocketsizedComputationDevice) then return "pocketsized_computation_device 50"; end
+            if HR.Cast(I.PocketsizedComputationDevice) then return "pocketsized_computation_device 50"; end
 			--return Action.MacroQueue("PocketsizedComputationDevice", { Priority = 1})
         end
         -- use_item,name=rotcrusted_voodoo_doll,if=cooldown.summon_darkglare.remains>=25&(cooldown.deathbolt.remains|!talent.deathbolt.enabled)
@@ -811,6 +811,10 @@ local function APL()
    	    -- haunt
         if S.Haunt:IsCastableP() and not ShouldStop then
             if HR.Cast(S.Haunt) then return "haunt 461"; end
+        end
+        -- drain_life,
+        if S.DrainLife:IsCastableP() and not ShouldStop and Player:BuffStackP(S.InevitableDemiseBuff) >= 45 and Target:DebuffRemainsP(S.AgonyDebuff) > 5 * Player:SpellHaste() then
+            if HR.Cast(S.DrainLife) then return "drain_life 415"; end
         end
 		-- agony,target_if=min:dot.agony.remains,if=remains<=gcd+action.shadow_bolt.execute_time&target.time_to_die>8
         if S.Agony:IsCastableP() and not ShouldStop and not Action.GetToggle(2, "CDs") and Target:DebuffRemainsP(S.AgonyDebuff) <= 5 then

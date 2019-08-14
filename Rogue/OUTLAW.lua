@@ -57,6 +57,8 @@ Action[ACTION_CONST_ROGUE_OUT] = {
 	-- Utility
     Kick                                 = Action.Create({ Type = "Spell", ID = 1766       }),
     Blind                                = Action.Create({ Type = "Spell", ID = 2094       }),
+    CheapShot                            = Action.Create({ Type = "Spell", ID = 1833       }),
+    KidneyShot                           = Action.Create({ Type = "Spell", ID = 408       }),
 	-- Roll the Bones
     Broadside                            = Action.Create({ Type = "Spell", ID = 193356       }),
     BuriedTreasure                       = Action.Create({ Type = "Spell", ID = 199600       }),
@@ -488,14 +490,14 @@ local function CDs ()
             and not Player:IsStealthedP(true, true) and Player:ComboPointsDeficit() >= CPMaxSpend() - 1) then
                 if HR.Cast(S.MarkedforDeath, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Marked for Death"; end
             elseif not Player:IsStealthedP(true, true) and Player:ComboPointsDeficit() >= CPMaxSpend() - 1 then
-                HR.CastSuggested(S.MarkedforDeath);
+                HR.Cast(S.MarkedforDeath);
             end
         end
         if HR.CDsON() then
             -- actions.cds+=/blade_flurry,if=spell_targets.blade_flurry>=2&!buff.blade_flurry.up
             if HR.AoEON() and S.BladeFlurry:IsCastable() and Cache.EnemiesCount[BladeFlurryRange] >= 2 and not Player:BuffP(S.BladeFlurry) then
                 if Action.GetToggle(2, "OffGCDasOffGCD") then
-                    HR.CastSuggested(S.BladeFlurry);
+                    HR.Cast(S.BladeFlurry);
                 else
                     if HR.Cast(S.BladeFlurry) then return "Cast Blade Flurry"; end
                 end
@@ -768,8 +770,28 @@ local function APL()
         ShouldReturn = TrainingScenario();
         if ShouldReturn then return ShouldReturn; end
         
-		-- Interrupts
-        -- TODO
+ 		-- Interrupt Handler
+ 	 	local randomInterrupt = math.random(25, 70)
+  		local unit = "target"
+   		local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
+        
+  	    -- Kick
+  	    if useKick and S.Kick:IsReady() and Target:IsInterruptible() then 
+		  	if Target:CastPercentage() >= randomInterrupt then
+          	    if HR.Cast(S.Kick, true) then return "Kick 5"; end
+         	else 
+          	    return
+         	end 
+      	end 
+	
+     	 -- CheapShot
+      	if useCC and S.CheapShot:IsReady() and Target:IsInterruptible() and Player:EnergyPredicted() >= 40 then 
+	  		if Target:CastPercentage() >= randomInterrupt then
+     	        if HR.Cast(S.CheapShot, true) then return "CheapShot 5"; end
+     	    else 
+     	        return
+     	    end 
+     	end 
 
         -- actions+=/call_action_list,name=stealth,if=stealthed.all
         if Player:IsStealthedP(true, true) then
