@@ -246,9 +246,6 @@ local function DetermineEssenceRanks()
     S.GuardianofAzeroth = S.GuardianofAzeroth3:IsAvailable() and S.GuardianofAzeroth3 or S.GuardianofAzeroth
 end
 
-UseSplashData = true
-
-
 local function num(val)
     if val then return 1 else return 0 end
 end
@@ -439,6 +436,10 @@ local function EvaluateTargetIfUnstableAffliction870(TargetUnit)
     return not bool(VarUseSeed) and Player:SoulShardsP() == 5
 end
 
+local function Init ()
+  HL.RegisterNucleusAbility(27285, 10, 6)               -- Seed Explosion
+end
+
 --- ======= ACTION LISTS =======
 local function APL() 
 	-- Action specifics remap
@@ -452,6 +453,8 @@ local function APL()
     contagion = Contagion()
     DetermineEssenceRanks()
     HandlePetChoice()
+	-- Init data for splash data (To Check)
+	Init()
 	
 	if Player:IsCasting() or Player:IsChanneling() then
 	    ShouldStop = true

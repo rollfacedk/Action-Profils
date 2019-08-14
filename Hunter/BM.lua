@@ -275,6 +275,17 @@ local function DetermineEssenceRanks()
     S.MemoryofLucidDreamsMinor = S.MemoryofLucidDreamsMinor3:IsAvailable() and S.MemoryofLucidDreamsMinor3 or S.MemoryofLucidDreamsMinor
 end
 
+-- Initiate Nucleus Ability registration
+local function Init()
+  -- Register Splash Data Nucleus Abilities
+  HL.RegisterNucleusAbility(2643, 8, 6)               -- Multi-Shot
+  HL.RegisterNucleusAbility(194392, 8, 6)             -- Volley
+  HL.RegisterNucleusAbility({171454, 171457}, 8, 6)   -- Chimaera Shot
+  HL.RegisterNucleusAbility(118459, 10, 6)            -- Beast Cleave
+  HL.RegisterNucleusAbility(201754, 10, 6)            -- Stomp
+  HL.RegisterNucleusAbility(271686, 3, 6)             -- Head My Call
+end
+
 --- ======= ACTION LISTS =======
 local function APL() 
     
@@ -287,6 +298,8 @@ local function APL()
     EnemiesCount = GetEnemiesCount(8)
     HL.GetEnemies(40) -- To populate Cache.Enemies[40] for CastCycles
     DetermineEssenceRanks()
+	-- Init data for splash data (To Check)
+	Init()
 	
 	if Player:IsCasting() or Player:IsChanneling() then
 	    ShouldStop = true

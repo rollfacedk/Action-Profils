@@ -284,7 +284,15 @@ local function bool(val)
     return val ~= 0
 end
 
-
+-- Initiate Nucleus Ability registration
+local function Init()
+  HL.RegisterNucleusAbility(157981, 8, 6)               -- Blast Wave
+  HL.RegisterNucleusAbility(153561, 8, 6)               -- Meteor
+  HL.RegisterNucleusAbility(31661, 8, 6)                -- Dragon's Breath
+  HL.RegisterNucleusAbility(44457, 10, 6)               -- Living Bomb
+  HL.RegisterNucleusAbility(2120, 8, 6)                 -- Flamestrike
+  HL.RegisterNucleusAbility(257541, 8, 6)               -- Phoenix Flames
+end
 
 --- ======= ACTION LISTS =======
 local function APL() 
@@ -297,6 +305,8 @@ local function APL()
     EnemiesCount = GetEnemiesCount(8)
     HL.GetEnemies(40) -- For interrupts
     DetermineEssenceRanks()
+	-- Init data for splash data (To Check)
+	Init()
 	
 	if Player:IsCasting() or Player:IsChanneling() then
 	    ShouldStop = true

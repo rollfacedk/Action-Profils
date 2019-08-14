@@ -648,7 +648,10 @@ local function FutureShard()
     end
 end
 
-
+local function Init ()
+    HL.RegisterNucleusAbility(105174, 8, 6)               -- Hand of Gul'dan
+    HL.RegisterNucleusAbility(196277, 8, 6)               -- Implosion
+end
 
 --- ======= ACTION LISTS =======
 local function APL() 
@@ -663,6 +666,8 @@ local function APL()
     UpdatePetTable()
     UpdateSoulShards()
     DetermineEssenceRanks()
+	-- Init data for splash data (To Check)
+	Init()
 	
 	if Player:IsCasting() or Player:IsChanneling() then
 	    ShouldStop = true
