@@ -252,7 +252,7 @@ local function DetermineEssenceRanks()
     S.AnimaofLife = S.AnimaofLife3:IsAvailable() and S.AnimaofLife3 or S.AnimaofLife	
 end
 
--- Initiate NucleusAbility registration
+-- Initiate Nucleus Ability registration
 local function Init()
   HL.RegisterNucleusAbility(6343, 8, 6)               -- Thunder Clap
   HL.RegisterNucleusAbility(118000, 12, 6)            -- Dragon Roar
