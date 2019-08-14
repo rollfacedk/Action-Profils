@@ -191,6 +191,45 @@ local function num(val)
   if val then return 1 else return 0 end
 end
 
+-- Stuns
+local Interrupts = {
+  {S.Blind, "Cast Blind (Interrupt)", function () return true; end},
+};
+
+-- cp_max_spend
+local function CPMaxSpend()
+    -- Should work for all 3 specs since they have same Deeper Stratagem Spell ID.
+    return S.DeeperStratagem:IsAvailable() and 6 or 5;
+end
+
+-- "cp_spend"
+local function CPSpend()
+    return mathmin(Player:ComboPoints(), CPMaxSpend());
+end
+  
+-- Stealth
+local function Stealth(Stealth, Setting)
+    if Action.GetToggle(2, "StealthOOC") and Stealth:IsCastable() and not Player:IsStealthed() then
+        if HR.Cast(Stealth, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Stealth (OOC)"; end
+    end
+    return false;
+end
+
+-- Crimson Vial
+local function CrimsonVial(CrimsonVial)
+    if CrimsonVial:IsCastable() and Player:HealthPercentage() <= Action.GetToggle(2, "CrimsonVialHP") then
+        if HR.Cast(CrimsonVial, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Crimson Vial (Defensives)"; end
+    end
+    return false;
+end
+
+-- Feint
+local function Feint(Feint)
+    if Feint:IsCastable() and not Player:Buff(Feint) and Player:HealthPercentage() <= Action.GetToggle(2, "FeintHP") then
+        if HR.Cast(Feint, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Feint (Defensives)"; end
+    end
+end
+
 -- APL Action Lists (and Variables)
 local SappedSoulSpells = {
     {S.Kick, "Cast Kick (Sapped Soul)", function () return Target:IsInRange(S.SinisterStrike); end},
@@ -608,45 +647,6 @@ local function Build ()
     -- actions.build+=/sinister_strike
     if S.SinisterStrike:IsCastable(S.SinisterStrike) then
         if HR.Cast(S.SinisterStrike) then return "Cast Sinister Strike"; end
-    end
-end
-
--- Stuns
-local Interrupts = {
-  {S.Blind, "Cast Blind (Interrupt)", function () return true; end},
-};
-
--- cp_max_spend
-local function CPMaxSpend()
-    -- Should work for all 3 specs since they have same Deeper Stratagem Spell ID.
-    return S.DeeperStratagem:IsAvailable() and 6 or 5;
-end
-
--- "cp_spend"
-local function CPSpend()
-    return mathmin(Player:ComboPoints(), Commons.CPMaxSpend());
-end
-  
--- Stealth
-local function Stealth(Stealth, Setting)
-    if Action.GetToggle(2, "StealthOOC") and Stealth:IsCastable() and not Player:IsStealthed() then
-        if HR.Cast(Stealth, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Stealth (OOC)"; end
-    end
-    return false;
-end
-
--- Crimson Vial
-local function CrimsonVial(CrimsonVial)
-    if CrimsonVial:IsCastable() and Player:HealthPercentage() <= Action.GetToggle(2, "CrimsonVialHP") then
-        if HR.Cast(CrimsonVial, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Crimson Vial (Defensives)"; end
-    end
-    return false;
-end
-
--- Feint
-local function Feint(Feint)
-    if Feint:IsCastable() and not Player:Buff(Feint) and Player:HealthPercentage() <= Action.GetToggle(2, "FeintHP") then
-        if HR.Cast(Feint, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Feint (Defensives)"; end
     end
 end
 
