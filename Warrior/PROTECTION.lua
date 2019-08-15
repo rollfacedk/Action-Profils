@@ -71,9 +71,12 @@ Action[ACTION_CONST_WARRIOR_PROT] = {
     TidestormCodex                        = Action.Create({ Type = "Trinket", ID = 165576, QueueForbidden = true }),
     VialofStorms                          = Action.Create({ Type = "Trinket", ID = 158224, QueueForbidden = true }),
 	AshvanesRazorCoral                    = Action.Create({ Type = "Trinket", ID = 169311, QueueForbidden = true }),
+	GrongsPrimalRage                      = Action.Create({ Type = "Trinket", ID = 165574, QueueForbidden = true }),	
     -- Potions
     PotionofUnbridledFury                 = Action.Create({ Type = "Potion", ID = 169299, QueueForbidden = true }),
     PotionTest                            = Action.Create({ Type = "Potion", ID = 142117, QueueForbidden = true }),
+    SuperiorBattlePotionofStrength        = Action.Create({ Type = "Potion", ID = 168500, QueueForbidden = true }),	
+	
     -- Misc
     CyclotronicBlast                      = Action.Create({ Type = "Spell", ID = 293491, Hidden = true}),	
     -- Hidden Heart of Azeroth

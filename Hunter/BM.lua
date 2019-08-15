@@ -209,19 +209,23 @@ local function UpdateRanges()
   end
 end
 
+
+-- AoE Detection Mode
 local function GetEnemiesCount(range)
-  -- Unit Update - Update differently depending on if splash data is being used
-  if HR.AoEON() then
-    if Action.GetToggle(2, "UseSplashData") then
-      HL.GetEnemies(range, nil, true, Target)
-      return Cache.EnemiesCount[range]
+    -- Unit Update - Update differently depending on if splash data is being used
+    if HR.AoEON() then
+        if Action.GetToggle(2, "AoeDetectionMode") == "USE COMBAT LOGS" then
+	       return active_enemies()
+	    elseif Action.GetToggle(2, "AoeDetectionMode") == "USE SPLASH DATA" then
+	        HL.GetEnemies(range, nil, true, Target)
+            return Cache.EnemiesCount[range]
+	    else 
+            UpdateRanges()
+            return Cache.EnemiesCount[40]
+        end
     else
-      UpdateRanges()
-      return Cache.EnemiesCount[40]
+        return 1
     end
-  else
-    return 1
-  end
 end
 
 S.ConcentratedFlame:RegisterInFlight()
@@ -286,6 +290,9 @@ local function Init()
   HL.RegisterNucleusAbility(271686, 3, 6)             -- Head My Call
 end
 
+-- Init data for splash data (To Check)
+Init()
+
 --- ======= ACTION LISTS =======
 local function APL() 
     
@@ -295,11 +302,11 @@ local function APL()
 	
 	-- Local functions remap
     GCDMax = Player:GCD() + 0.150
-    EnemiesCount = GetEnemiesCount(8)
+    EnemiesCount = GetEnemiesCount(40)
+	--print(EnemiesCount)
     HL.GetEnemies(40) -- To populate Cache.Enemies[40] for CastCycles
     DetermineEssenceRanks()
-	-- Init data for splash data (To Check)
-	Init()
+
 	
 	if Player:IsCasting() or Player:IsChanneling() then
 	    ShouldStop = true
@@ -647,8 +654,12 @@ end
 
 -- [3] Single Rotation
 A[3] = function(icon)
+
+
     if APL() then 
         return true 
     end 
+	
+	--something if needed
 end
 

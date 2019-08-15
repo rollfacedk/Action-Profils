@@ -227,17 +227,18 @@ local function EvaluateCycleDoom198(TargetUnit)
   return TargetUnit:DebuffRefreshableCP(S.DoomDebuff)
 end
 
+-- AoE Detection Mode
 local function GetEnemiesCount(range)
     -- Unit Update - Update differently depending on if splash data is being used
     if HR.AoEON() then
-        if Action.GetToggle(2, "UseSplashData") then
-		    -- Use splash data 
-            HL.GetEnemies(range, nil, true, Target)
+        if Action.GetToggle(2, "AoeDetectionMode") == "USE COMBAT LOGS" then
+	       return active_enemies()
+	    elseif Action.GetToggle(2, "AoeDetectionMode") == "USE SPLASH DATA" then
+	        HL.GetEnemies(range, nil, true, Target)
             return Cache.EnemiesCount[range]
-        else
-		    -- Else use CLEU events to get enemy count
+	    else 
             UpdateRanges()
-            return active_enemies()
+            return Cache.EnemiesCount[40]
         end
     else
         return 1
@@ -661,7 +662,7 @@ local function APL()
 	local Pull = Action.BossMods_Pulling()
 	
 	-- Local functions remap
-    EnemiesCount = GetEnemiesCount(8)
+    EnemiesCount = GetEnemiesCount(40)
     HL.GetEnemies(40, true) -- To populate Cache.Enemies[40] for CastCycles
     UpdatePetTable()
     UpdateSoulShards()

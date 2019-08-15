@@ -281,14 +281,18 @@ local function AP_Check(spell)
   end
 end
 
+-- AoE Detection Mode
 local function GetEnemiesCount(range)
     -- Unit Update - Update differently depending on if splash data is being used
-    if Action.GetToggle(2, "AoE") then
-        if Action.GetToggle(2, "UseSplashData") then
-            HL.GetEnemies(range, nil, true, Target)
+    if HR.AoEON() then
+        if Action.GetToggle(2, "AoeDetectionMode") == "USE COMBAT LOGS" then
+	       return active_enemies()
+	    elseif Action.GetToggle(2, "AoeDetectionMode") == "USE SPLASH DATA" then
+	        HL.GetEnemies(range, nil, true, Target)
             return Cache.EnemiesCount[range]
-        else
-            return active_enemies()
+	    else 
+            UpdateRanges()
+            return Cache.EnemiesCount[40]
         end
     else
         return 1
@@ -350,7 +354,7 @@ local function APL()
 	local Pull = Action.BossMods_Pulling()
 	
 	-- Local functions remap
-    EnemiesCount = GetEnemiesCount(15)
+    EnemiesCount = GetEnemiesCount(40)
     HL.GetEnemies(40) -- To populate Cache.Enemies[40] for CastCycles
 	DetermineEssenceRanks()
 	-- Init data for splash data (To Check)
