@@ -13,7 +13,15 @@ A.Data.ProfileUI = {
     DateTime = "v1.1 (06.08.2019)",
     -- Class settings
     [2] = {        
-        [ACTION_CONST_DEMONHUNTER_HAVOC] = {             
+        [ACTION_CONST_DEMONHUNTER_HAVOC] = {          
+            { -- [7]
+                {
+                    E = "Header",
+                    L = {
+                        ANY = " -- General -- ",
+                    },
+                },
+            },			
             { -- [1] 1st Row                           
                 {
                     E = "Checkbox", 
@@ -113,6 +121,20 @@ A.Data.ProfileUI = {
                     }, 
                     M = {},
                 },				
+            },
+            { -- [4] 4th Row
+
+                {
+                    E = "LayoutSpace",                                                                         
+                },
+            },
+            { -- [7] 
+                {
+                    E = "Header",
+                    L = {
+                        ANY = " -- Defensives -- ",
+                    },
+                },
             },
             { -- [3] 3rd Row 
                 {

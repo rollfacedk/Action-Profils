@@ -15,7 +15,15 @@ A.Data.ProfileUI = {
     DateTime = "v4 (01.08.2019)",
     -- Class settings
     [2] = {        
-        [ACTION_CONST_MAGE_FIRE] = {             
+        [ACTION_CONST_MAGE_FIRE] = {  
+            { -- [7]
+                {
+                    E = "Header",
+                    L = {
+                        ANY = " -- General -- ",
+                    },
+                },
+            },		
             { -- [1] 1st Row                           
                 {
                     E = "Checkbox", 
@@ -101,21 +109,37 @@ A.Data.ProfileUI = {
                 }, 
 				-- Splash Data
                 {
-                    E = "Checkbox", 
-                    DB = "UseSplashData",
-                    DBV = true,
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
+                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
+                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
+                    },
+                    DB = "AoeDetectionMode",
+                    DBV = "USE COMBAT LOGS",
                     L = { 
-                        enUS = "Use Splash Data for AoE", 
-                        ruRU = "Использовать данные всплеска для AoE", 
-                        frFR = "Utiliser les données Splash pour AoE",
+                        ANY = "AoE Detection Mode",
                     }, 
                     TT = { 
-                        enUS = "Only count AoE enemies that are already hit by AoE abilities.", 
-                        ruRU = "Считайте только AoE врагов, которые уже поражены AoE способностями.", 
-                        frFR = "Ne compter que les ennemis qui sont déjà touchés par des capacités de zone.",
+                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
                     }, 
                     M = {},
-                }, 				
+                },	 				
+            },
+            { -- [4] 4th Row
+
+                {
+                    E = "LayoutSpace",                                                                         
+                },
+            },
+            { -- [7] 
+                {
+                    E = "Header",
+                    L = {
+                        ANY = " -- Defensives -- ",
+                    },
+                },
             },
             { -- [3] 3rd Row 
                 {
