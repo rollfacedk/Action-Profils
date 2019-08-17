@@ -212,16 +212,16 @@ A.Data.ProfileUI = {
                 {
                     E = "Dropdown",                                                         
                     OT = {
-                        { text = "SimC", value = "SIMC" },
-						{ text = "Mythic +", value = "MYTHICPLUS" },
-						{ text = "AoE Strat", value = "AOESTRAT" },
-                        { text = "1+ Buff", value = "1BUFF" },                    
-                        { text = "Broadside", value = "BROADSIDE" },
-                        { text = "Buried Treasure", value = "BURIEDTREASURE" },
-						{ text = "Grand Melee", value = "GRANDMELEE" },
-						{ text = "Skull and Crossbones", value = "SKULLANDCROSS" },
-						{ text = "Ruthless Precision", value = "RUTHLESSPRECISION" },
-						{ text = "True Bearing", value = "TRUEBEARING" },							
+                        { text = "SIMC", value = "SIMC" },
+						{ text = "MYTHICPLUS", value = "MYTHICPLUS" },
+						{ text = "AOESTRAT", value = "AOESTRAT" },
+                        { text = "1BUFF", value = "1BUFF" },                    
+                        { text = "BROADSIDE", value = "BROADSIDE" },
+                        { text = "BURIEDTREASURE", value = "BURIEDTREASURE" },
+						{ text = "GRANDMELEE", value = "GRANDMELEE" },
+						{ text = "SKULLANDCROSS", value = "SKULLANDCROSS" },
+						{ text = "RUTHLESSPRECISION", value = "RUTHLESSPRECISION" },
+						{ text = "TRUEBEARING", value = "TRUEBEARING" },							
                     },
                     DB = "RolltheBonesLogic",
                     DBV = "SIMC",
@@ -237,9 +237,41 @@ A.Data.ProfileUI = {
 					},
                     M = {},
                 },
+				-- Splash Data
                 {
-                    E = "LayoutSpace",                                                                         
-                },
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
+                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
+                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
+                    },
+                    DB = "AoeDetectionMode",
+                    DBV = "USE COMBAT LOGS",
+                    L = { 
+                        ANY = "AoE Detection Mode",
+                    }, 
+                    TT = { 
+                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                    }, 
+                    M = {},
+                },			
+                {
+                    E = "Checkbox", 
+                    DB = "TempBurst",
+                    DBV = false,
+                    L = { 
+                        enUS = "CD Mode: Burst", 
+                        ruRU = "CD Mode: Burst", 
+                        frFR = "CD Mode: Burst",
+                    }, 
+                    TT = { 
+                        enUS = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.", 
+                        ruRU = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.", 
+                        frFR = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.",
+                    }, 
+                    M = {},
+                }, 
             }, 
             { -- [7]
                 {

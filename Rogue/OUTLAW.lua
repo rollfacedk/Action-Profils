@@ -275,7 +275,7 @@ local function RtB_List (Type, List)
     end
     return Cache.APLVar.RtB_List[Type][Sequence];
 end
-local function RtB_BuffRemains ()
+local function RtB_BuffRemains()
     if not Cache.APLVar.RtB_BuffRemains then
         Cache.APLVar.RtB_BuffRemains = 0;
         for i = 1, #RtB_BuffsList do
@@ -288,7 +288,7 @@ local function RtB_BuffRemains ()
     return Cache.APLVar.RtB_BuffRemains;
 end
 -- Get the number of Roll the Bones buffs currently on
-local function RtB_Buffs ()
+local function RtB_Buffs()
     if not Cache.APLVar.RtB_Buffs then
         Cache.APLVar.RtB_Buffs = 0;
         for i = 1, #RtB_BuffsList do
@@ -299,39 +299,70 @@ local function RtB_Buffs ()
     end
     return Cache.APLVar.RtB_Buffs;
 end
+
+local function CheckGoodBuffs()
+    local choice = Action.GetToggle(2, "RolltheBonesLogic")
+    local GotGoodBuff = false
+	
+    if choice == "1BUFF" then
+        GotGoodBuff = (not S.SliceandDice:IsAvailable() and RtB_Buffs() <= 0) and true or false;
+    elseif choice == "MYTHICPLUS" then
+        GotGoodBuff = (not S.SliceandDice:IsAvailable() and (not Player:BuffP(S.RuthlessPrecision) and not Player:BuffP(S.GrandMelee) and not Player:BuffP(S.Broadside)) and not (RtB_Buffs() >= 2)) and true or false
+    elseif choice == "AOESTRAT" then   
+        GotGoodBuff = (not S.SliceandDice:IsAvailable() and (not Player:BuffP(S.RuthlessPrecision) and not Player:BuffP(S.GrandMelee) and not Player:BuffP(S.Broadside)) and not (RtB_Buffs() >= 2)) and true or false
+    elseif choice == "BROADSIDE" then  
+        GotGoodBuff = (not S.SliceandDice:IsAvailable() and not Player:BuffP(S.Broadside) and true) or false;
+    elseif choice == "BURIEDTREASURE" then  
+        GotGoodBuff = (not S.SliceandDice:IsAvailable() and not Player:BuffP(S.BuriedTreasure) and true) or false;
+    elseif choice == "GRANDMELEE" then  
+        GotGoodBuff = (not S.SliceandDice:IsAvailable() and not Player:BuffP(S.GrandMelee) and true) or false;
+    elseif choice == "SKULLANDCROSS" then  
+        GotGoodBuff = (not S.SliceandDice:IsAvailable() and not Player:BuffP(S.SkullandCrossbones) and true) or false;
+    elseif choice == "RUTHLESSPRECISION" then  
+        GotGoodBuff = (not S.SliceandDice:IsAvailable() and not Player:BuffP(S.RuthlessPrecision) and true) or false;
+    elseif choice == "TRUEBEARING" then  
+        GotGoodBuff = (not S.SliceandDice:IsAvailable() and not Player:BuffP(S.TrueBearing) and true) or false;
+    else
+        print("No Dice Data")
+    end
+    return GotGoodBuff
+end
+
 -- RtB rerolling strategy, return true if we should reroll
-local function RtB_Reroll ()
-    if not Cache.APLVar.RtB_Reroll then
+local function RtB_Reroll()
+
+    --if not Cache.APLVar.RtB_Reroll then
+	
         -- Defensive Override : Grand Melee if HP < 60
         if Action.GetToggle(2, "SoloMode") and Player:HealthPercentage() < Action.GetToggle(2, "RolltheBonesLeechHP") then
             Cache.APLVar.RtB_Reroll = (not S.SliceandDice:IsAvailable() and not Player:BuffP(S.GrandMelee)) and true or false;
         -- 1+ Buff
         elseif Action.GetToggle(2, "RolltheBonesLogic") == "1BUFF" then
-            Cache.APLVar.RtB_Reroll = (not S.SliceandDice:IsAvailable() and RtB_Buffs() <= 0) and true or false;
+            Cache.APLVar.RtB_Reroll = CheckGoodBuffs()
         -- Mythic+
         elseif Action.GetToggle(2, "RolltheBonesLogic") == "MYTHICPLUS" then
-            Cache.APLVar.RtB_Reroll = (not S.SliceandDice:IsAvailable() and (not Player:BuffP(S.RuthlessPrecision) and not Player:BuffP(S.GrandMelee) and not Player:BuffP(S.Broadside)) and not (RtB_Buffs () >= 2)) and true or false;
+            Cache.APLVar.RtB_Reroll = CheckGoodBuffs()
         -- Broadside
-        elseif Action.GetToggle(2, "RolltheBonesLogic") == "AOESTRAT" and Cache.EnemiesCount[BladeFlurryRange] >= 2 or (not Target:IsInBossList()) then
-            Cache.APLVar.RtB_Reroll = (not S.SliceandDice:IsAvailable() and (not Player:BuffP(S.RuthlessPrecision) and not Player:BuffP(S.GrandMelee) and not Player:BuffP(S.Broadside)) and not (RtB_Buffs () >= 2)) and true or false;
+        elseif Action.GetToggle(2, "RolltheBonesLogic") == "AOESTRAT" and EnemiesCount >= 2 or (not Target:IsInBossList()) then
+            Cache.APLVar.RtB_Reroll = CheckGoodBuffs()
         -- Broadside
         elseif Action.GetToggle(2, "RolltheBonesLogic") == "BROADSIDE" then
-            Cache.APLVar.RtB_Reroll = (not S.SliceandDice:IsAvailable() and not Player:BuffP(S.Broadside)) and true or false;
+            Cache.APLVar.RtB_Reroll = CheckGoodBuffs()
         -- Buried Treasure
         elseif Action.GetToggle(2, "RolltheBonesLogic") == "BURIEDTREASURE" then
-            Cache.APLVar.RtB_Reroll = (not S.SliceandDice:IsAvailable() and not Player:BuffP(S.BuriedTreasure)) and true or false;
+            Cache.APLVar.RtB_Reroll = CheckGoodBuffs()
         -- Grand Melee
         elseif Action.GetToggle(2, "RolltheBonesLogic") == "GRANDMELEE" then
-            Cache.APLVar.RtB_Reroll = (not S.SliceandDice:IsAvailable() and not Player:BuffP(S.GrandMelee)) and true or false;
+            Cache.APLVar.RtB_Reroll = CheckGoodBuffs()
         -- Skull and Crossbones
         elseif Action.GetToggle(2, "RolltheBonesLogic") == "SKULLANDCROSS" then
-            Cache.APLVar.RtB_Reroll = (not S.SliceandDice:IsAvailable() and not Player:BuffP(S.SkullandCrossbones)) and true or false;
+            Cache.APLVar.RtB_Reroll = CheckGoodBuffs()
         -- Ruthless Precision
         elseif Action.GetToggle(2, "RolltheBonesLogic") == "RUTHLESSPRECISION" then
-            Cache.APLVar.RtB_Reroll = (not S.SliceandDice:IsAvailable() and not Player:BuffP(S.RuthlessPrecision)) and true or false;
+            Cache.APLVar.RtB_Reroll = CheckGoodBuffs()
         -- True Bearing
         elseif Action.GetToggle(2, "RolltheBonesLogic") == "TRUEBEARING" then
-            Cache.APLVar.RtB_Reroll = (not S.SliceandDice:IsAvailable() and not Player:BuffP(S.TrueBearing)) and true or false;
+            Cache.APLVar.RtB_Reroll = CheckGoodBuffs()
         -- SimC Default
         else
         -- # Reroll for 2+ buffs with Loaded Dice up. Otherwise reroll for 2+ or Grand Melee or Ruthless Precision.
@@ -358,8 +389,9 @@ local function RtB_Reroll ()
                 Cache.APLVar.RtB_Reroll = (RtB_Buffs() < 2 and (Player:BuffP(S.LoadedDiceBuff) or
                (not Player:BuffP(S.GrandMelee) and not Player:BuffP(S.RuthlessPrecision)))) and true or false;
             end
+			return true
         end
-    end
+    --end
     return Cache.APLVar.RtB_Reroll;
 end
 -- # Condition to use Stealth cooldowns for Ambush
@@ -375,7 +407,7 @@ end
 -- # With multiple targets, this variable is checked to decide whether some CDs should be synced with Blade Flurry
 -- actions+=/variable,name=blade_flurry_sync,value=spell_targets.blade_flurry<2&raid_event.adds.in>20|buff.blade_flurry.up
 local function Blade_Flurry_Sync ()
-    return not HR.AoEON() or Cache.EnemiesCount[BladeFlurryRange] < 2 or Player:BuffP(S.BladeFlurry)
+    return not HR.AoEON() or EnemiesCount < 2 or Player:BuffP(S.BladeFlurry)
 end
 
 local function EnergyTimeToMaxRounded ()
@@ -495,7 +527,7 @@ local function CDs ()
         end
         if HR.CDsON() then
             -- actions.cds+=/blade_flurry,if=spell_targets.blade_flurry>=2&!buff.blade_flurry.up
-            if HR.AoEON() and S.BladeFlurry:IsCastable() and Cache.EnemiesCount[BladeFlurryRange] >= 2 and not Player:BuffP(S.BladeFlurry) then
+            if HR.AoEON() and S.BladeFlurry:IsCastable() and EnemiesCount >= 2 and not Player:BuffP(S.BladeFlurry) then
                 if Action.GetToggle(2, "OffGCDasOffGCD") then
                     HR.Cast(S.BladeFlurry);
                 else
@@ -678,6 +710,63 @@ local function MfDSniping (MarkedforDeath)
         end
     end
 end
+-- HeroLib EnemiesCount handler
+local EnemyRanges = {"Melee", 6, 9}
+local function UpdateRanges()
+    for _, i in ipairs(EnemyRanges) do
+        HL.GetEnemies(i);
+    end
+end
+
+-- AoE Detection Mode
+local function GetEnemiesCount(range)
+    -- Unit Update - Update differently depending on if splash data is being used
+    if HR.AoEON() then
+        if Action.GetToggle(2, "AoeDetectionMode") == "USE COMBAT LOGS" then
+	        return active_enemies()
+	    elseif Action.GetToggle(2, "AoeDetectionMode") == "USE SPLASH DATA" then
+            return active_enemies()
+	    else 
+            UpdateRanges()
+            return Cache.EnemiesCount[range]
+        end
+    else
+        return 1
+    end
+end
+
+local function InitBurstCDTimer()
+    if not Player:AffectingCombat() and Action.GetToggle(2, "TempBurst") and not Action.GetToggle(2, "CDs") then
+	    -- Activate CDs if disabled but user got BurstMode
+		Action.SetToggle({2, "CDs"})
+		Action.Print("Auto Burst : Enabled CDs")
+	else 
+		if Action.GetToggle(2, "TempBurst") and Action.GetToggle(2, "CDs") and Player:AffectingCombat() then
+	     	local burstCDtimer = HL.CombatTime()
+		   	if burstCDtimer >= 10 then
+		       	return true
+		   	else
+		       	return false
+		   	end
+	   	else 
+	       	burstCDtimer = 0
+	   	end
+	end
+end
+
+local function ToggleBurstMode()    
+    if Action.GetToggle(2, "TempBurst") and Action.GetToggle(2, "CDs") then
+        if InitBurstCDTimer() then			
+			--Action.SetToggle({2, "CDs"}, nil)
+			Action.SetToggle({2, "CDs"})
+			Action.Print("Auto Burst : Disabled CDs")
+		else
+		    return
+        end
+    else
+	    return
+	end
+end
 
 --- ======= ACTION LISTS =======
 local function APL() 
@@ -688,8 +777,12 @@ local function APL()
 
     -- Unit Update
     BladeFlurryRange = S.AcrobaticStrikes:IsAvailable() and 9 or 6;
-    HL.GetEnemies(BladeFlurryRange);
-    HL.GetEnemies("Melee");
+    InitBurstCDTimer()
+    ToggleBurstMode()
+	UpdateRanges()
+	EnemiesCount = GetEnemiesCount(BladeFlurryRange)
+	CheckGoodBuffs()
+	--print(EnemiesCount)
 	
 	-- Anti channel interrupt
 	if Player:IsCasting() or Player:IsChanneling() then
@@ -762,6 +855,8 @@ local function APL()
       
 	if Player:AffectingCombat() then
         
+		ToggleBurstMode()
+		
 		-- Mythic Dungeon
         ShouldReturn = MythicDungeon();
         if ShouldReturn then return ShouldReturn; end
