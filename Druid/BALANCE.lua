@@ -404,7 +404,7 @@ local function APL()
             if HR.Cast(S.MoonkinForm, Action.GetToggle(2, "GCDasOffGCD")) then return "moonkin_form 39"; end
         end
         -- use_item,name=azsharas_font_of_power
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and (Action.GetToggle(1, "Trinkets")[1] or Action.GetToggle(1, "Trinkets")[2]) then
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and I.AzsharasFontofPower:IsTrinketON() then
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power precombat"; end
         end
         -- potion,dynamic_prepot=1
@@ -488,51 +488,51 @@ local function APL()
             if HR.Cast(S.Berserking, Action.GetToggle(2, "GCDasOffGCD")) then return "berserking 65"; end
         end
         -- use_item,name=azsharas_font_of_power,if=!buff.ca_inc.up,target_if=dot.moonfire.ticking&dot.sunfire.ticking&(!talent.stellar_flare.enabled|dot.stellar_flare.ticking)
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and (Action.GetToggle(1, "Trinkets")[1] or Action.GetToggle(1, "Trinkets")[2]) and (Player:BuffDownP(CaInc()) and DoTsUp())then
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and I.AzsharasFontofPower:IsTrinketON() and (Player:BuffDownP(CaInc()) and DoTsUp())then
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 73" end
         end
         -- guardian_of_azeroth,if=(!talent.starlord.enabled|buff.starlord.up)&!buff.ca_inc.up,target_if=dot.moonfire.ticking&dot.sunfire.ticking&(!talent.stellar_flare.enabled|dot.stellar_flare.ticking)
-        if S.GuardianofAzeroth:IsCastableP() and EvaluateCycleGuardianofAzeroth78(Target) then
+        if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and EvaluateCycleGuardianofAzeroth78(Target) then
             if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth 94" end
         end
         -- use_item,effect_name=cyclotronic_blast,if=!buff.ca_inc.up,target_if=dot.moonfire.ticking&dot.sunfire.ticking&(!talent.stellar_flare.enabled|dot.stellar_flare.ticking)
-        if I.PocketsizedComputationDevice:IsEquipped() and EvaluateCyclePocketsizedComputationDevice103(Target) and I.PocketsizedComputationDevice:IsReady() and S.CyclotronicBlast:IsAvailable() and (Action.GetToggle(1, "Trinkets")[1] or Action.GetToggle(1, "Trinkets")[2]) then
+        if I.PocketsizedComputationDevice:IsEquipped() and EvaluateCyclePocketsizedComputationDevice103(Target) and I.PocketsizedComputationDevice:IsReady() and S.CyclotronicBlast:IsAvailable() and I.PocketsizedComputationDevice:IsTrinketON() then
             if HR.CastCycle(I.PocketsizedComputationDevice) then return "pocketsized_computation_device 117" end
         end
         -- use_item,name=shiver_venom_relicif=!buff.ca_inc.up,target_if=dot.shiver_venom.stack>=5
-        if I.ShiverVenomRelic:IsEquipped() and I.ShiverVenomRelic:IsReady() and (Action.GetToggle(1, "Trinkets")[1] or Action.GetToggle(1, "Trinkets")[2]) and EvaluateCycleShiverVenomRelic104(Target) then
+        if I.ShiverVenomRelic:IsEquipped() and I.ShiverVenomRelic:IsReady() and I.ShiverVenomRelic:IsTrinketON() and EvaluateCycleShiverVenomRelic104(Target) then
             if HR.CastCycle(I.ShiverVenomRelic) then return "shiver_venom_relic 105"; end
         end
         -- blood_of_the_enemy,if=cooldown.ca_inc.remains>30
-        if S.BloodoftheEnemy:IsCastableP() and (CaInc():CooldownRemainsP() > 30) then
+        if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (CaInc():CooldownRemainsP() > 30) then
             if HR.Cast(S.BloodoftheEnemy) then return "blood_of_the_enemy"; end
         end
         -- memory_of_lucid_dreams,if=!buff.ca_inc.up&(astral_power<25|cooldown.ca_inc.remains>30),target_if=dot.sunfire.remains>10&dot.moonfire.remains>10&(!talent.stellar_flare.enabled|dot.stellar_flare.remains>10)
-        if S.MemoryofLucidDreams:IsCastableP() and EvaluateCycleMemoryofLucidDreams135(Target) then
+        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and EvaluateCycleMemoryofLucidDreams135(Target) then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams 149" end
         end
         -- purifying_blast
-        if S.PurifyingBlast:IsCastableP() then
+        if S.PurifyingBlast:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.PurifyingBlast) then return "purifying_blast"; end
         end
         -- ripple_in_space
-        if S.RippleInSpace:IsCastableP() then
+        if S.RippleInSpace:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.RippleInSpace) then return "ripple_in_space"; end
         end
         -- concentrated_flame
-        if S.ConcentratedFlame:IsCastableP() then
+        if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame"; end
         end
         -- the_unbound_force,if=buff.reckless_force.up,target_if=dot.moonfire.ticking&dot.sunfire.ticking&(!talent.stellar_flare.enabled|dot.stellar_flare.ticking)
-        if S.TheUnboundForce:IsCastableP() and EvaluateCycleTheUnboundForce160(Target) then
+        if S.TheUnboundForce:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and EvaluateCycleTheUnboundForce160(Target) then
             if HR.Cast(S.TheUnboundForce) then return "the_unbound_force 172" end
         end
         -- worldvein_resonance
-        if S.WorldveinResonance:IsCastableP() then
+        if S.WorldveinResonance:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance"; end
         end
         -- focused_azerite_beam,if=(!variable.az_ss|!buff.ca_inc.up),target_if=dot.moonfire.ticking&dot.sunfire.ticking&(!talent.stellar_flare.enabled|dot.stellar_flare.ticking)
-        if S.FocusedAzeriteBeam:IsCastableP() and EvaluateCycleFocusedAzeriteBeam179(Target) then
+        if S.FocusedAzeriteBeam:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and EvaluateCycleFocusedAzeriteBeam179(Target) then
             if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam 193" end
         end
         -- thorns

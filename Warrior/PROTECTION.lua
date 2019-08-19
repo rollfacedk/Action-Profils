@@ -290,7 +290,7 @@ local function APL()
         -- augmentation
         -- snapshot_stats
         -- use_item,name=azsharas_font_of_power
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and (Action.GetToggle(1, "Trinkets")[1] or Action.GetToggle(1, "Trinkets")[2]) then
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and I.AzsharasFontofPower:IsTrinketON() then
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power precombat"; end
         end
         -- memory_of_lucid_dreams
@@ -391,11 +391,11 @@ local function APL()
             if HR.Cast(S.ShieldSlam) then return "shield_slam 70"; end
         end
         -- use_item,name=ashvanes_razor_coral,target_if=debuff.razor_coral_debuff.stack=0
-        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and (Action.GetToggle(1, "Trinkets")[1] or Action.GetToggle(1, "Trinkets")[2]) and (Target:DebuffStackP(S.RazorCoralDebuff) == 0) then
+        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and I.AzsharasFontofPower:IsTrinketON() and (Target:DebuffStackP(S.RazorCoralDebuff) == 0) then
             if HR.Cast(I.AshvanesRazorCoral) then return "ashvanes_razor_coral 71"; end
         end
         -- use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.stack>7&(cooldown.avatar.remains<5|buff.avatar.up)
-        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and (Action.GetToggle(1, "Trinkets")[1] or Action.GetToggle(1, "Trinkets")[2]) and (Target:DebuffStackP(S.RazorCoralDebuff) > 7 and (S.Avatar:CooldownRemainsP() < 5 or Player:BuffP(S.AvatarBuff))) then
+        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and I.AzsharasFontofPower:IsTrinketON() and (Target:DebuffStackP(S.RazorCoralDebuff) > 7 and (S.Avatar:CooldownRemainsP() < 5 or Player:BuffP(S.AvatarBuff))) then
             if HR.Cast(I.AshvanesRazorCoral) then return "ashvanes_razor_coral 72"; end
         end
         -- dragon_roar
@@ -465,7 +465,7 @@ local function APL()
         end
         -- use_items,if=cooldown.avatar.remains>20
         -- use_item,name=grongs_primal_rage,if=buff.avatar.down
-        if I.GrongsPrimalRage:IsEquipped() and I.GrongsPrimalRage:IsReady() and (Action.GetToggle(1, "Trinkets")[1] or Action.GetToggle(1, "Trinkets")[2]) and (Player:BuffDownP(S.AvatarBuff)) then
+        if I.GrongsPrimalRage:IsEquipped() and I.GrongsPrimalRage:IsReady() and I.AzsharasFontofPower:IsTrinketON() and (Player:BuffDownP(S.AvatarBuff)) then
             if HR.Cast(I.GrongsPrimalRage) then return "grongs_primal_rage 87"; end
         end
         -- blood_fury

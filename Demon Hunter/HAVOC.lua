@@ -333,7 +333,7 @@ local function APL()
             if HR.Cast(S.Metamorphosis, Action.GetToggle(2, "OffGCDasOffGCD")) then return "metamorphosis 6"; end
         end
         -- use_item,name=azsharas_font_of_power
-       -- if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and not ShouldStop then
+       -- if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and I.AzsharasFontofPower:IsTrinketON() and not ShouldStop then
       --      if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 7"; end
       --  end
     end
@@ -353,46 +353,46 @@ local function APL()
             if HR.Cast(S.Metamorphosis, Action.GetToggle(2, "OffGCDasOffGCD")) then return "metamorphosis 6"; end
         end
         -- use_item,name=azsharas_font_of_power
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and not ShouldStop then
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and I.AzsharasFontofPower:IsTrinketON() and not ShouldStop then
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 7"; end
         end
     end
     
 	local function Essences()
         -- concentrated_flame
-        if S.ConcentratedFlame:IsCastableP() and not ShouldStop then
+        if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.ConcentratedFlame, Action.GetToggle(2, "OffGCDasOffGCD")) then return "concentrated_flame"; end
         end
         -- blood_of_the_enemy,if=buff.metamorphosis.up|target.time_to_die<=10
-        if S.BloodoftheEnemy:IsCastableP() and not ShouldStop and (Player:BuffP(S.MetamorphosisBuff) or Target:TimeToDie() <= 10) then
+        if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and (Player:BuffP(S.MetamorphosisBuff) or Target:TimeToDie() <= 10) then
             if HR.Cast(S.BloodoftheEnemy, Action.GetToggle(2, "OffGCDasOffGCD")) then return "blood_of_the_enemy"; end
         end
         -- guardian_of_azeroth,if=buff.metamorphosis.up|target.time_to_die<=30
-        if S.GuardianofAzeroth:IsCastableP() and not ShouldStop and (Player:BuffP(S.MetamorphosisBuff) or Target:TimeToDie() <= 30) then
+        if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and (Player:BuffP(S.MetamorphosisBuff) or Target:TimeToDie() <= 30) then
             if HR.Cast(S.GuardianofAzeroth, Action.GetToggle(2, "OffGCDasOffGCD")) then return "guardian_of_azeroth"; end
         end
         -- focused_azerite_beam,if=spell_targets.blade_dance1>=2|raid_event.adds.in>60
-        if S.FocusedAzeriteBeam:IsCastableP() and (Cache.EnemiesCount[8] >= 2) then
+        if S.FocusedAzeriteBeam:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Cache.EnemiesCount[8] >= 2) then
             if HR.Cast(S.FocusedAzeriteBeam, Action.GetToggle(2, "OffGCDasOffGCD")) then return "focused_azerite_beam"; end
         end
         -- purifying_blast,if=spell_targets.blade_dance1>=2|raid_event.adds.in>60
-        if S.PurifyingBlast:IsCastableP() and not ShouldStop and (Cache.EnemiesCount[8] >= 2) then
+        if S.PurifyingBlast:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and (Cache.EnemiesCount[8] >= 2) then
             if HR.Cast(S.PurifyingBlast, Action.GetToggle(2, "OffGCDasOffGCD")) then return "purifying_blast"; end
         end
         -- the_unbound_force,if=buff.reckless_force.up|buff.reckless_force_counter.stack<10
-        if S.TheUnboundForce:IsCastableP() and not ShouldStop and (Player:BuffP(S.RecklessForceBuff) or Player:BuffStackP(S.RecklessForceCounter) < 10) then
+        if S.TheUnboundForce:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and (Player:BuffP(S.RecklessForceBuff) or Player:BuffStackP(S.RecklessForceCounter) < 10) then
             if HR.Cast(S.TheUnboundForce, Action.GetToggle(2, "OffGCDasOffGCD")) then return "the_unbound_force"; end
         end
         -- ripple_in_space
-        if S.RippleInSpace:IsCastableP() and not ShouldStop then
+        if S.RippleInSpace:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.RippleInSpace, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ripple_in_space"; end
         end
         -- worldvein_resonance,if=buff.lifeblood.stack<3
-        if S.WorldveinResonance:IsCastableP() and (Player:BuffStackP(S.LifebloodBuff) < 3) then
+        if S.WorldveinResonance:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffStackP(S.LifebloodBuff) < 3) then
             if HR.Cast(S.WorldveinResonance, Action.GetToggle(2, "OffGCDasOffGCD")) then return "worldvein_resonance"; end
         end
         -- memory_of_lucid_dreams,if=fury<40&buff.metamorphosis.up
-        if S.MemoryofLucidDreams:IsCastableP() and not ShouldStop and (Player:Fury() < 40 and Player:BuffP(S.MetamorphosisBuff)) then
+        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and (Player:Fury() < 40 and Player:BuffP(S.MetamorphosisBuff)) then
             if HR.Cast(S.MemoryofLucidDreams, Action.GetToggle(2, "OffGCDasOffGCD")) then return "memory_of_lucid_dreams"; end
         end
     end
@@ -416,19 +416,19 @@ local function APL()
             if HR.Cast(I.PotionofFocusedResolve) then return "battle_potion_of_agility 55"; end
         end
         -- use_item,name=galecallers_boon,if=!talent.fel_barrage.enabled|cooldown.fel_barrage.ready
-        if I.GalecallersBoon:IsEquipped() and I.GalecallersBoon:IsReady() and not ShouldStop and (not S.FelBarrage:IsAvailable() or S.FelBarrage:CooldownUpP()) then
+        if I.GalecallersBoon:IsEquipped() and I.GalecallersBoon:IsReady() and I.GalecallersBoon:IsTrinketON() and not ShouldStop and (not S.FelBarrage:IsAvailable() or S.FelBarrage:CooldownUpP()) then
             if HR.Cast(I.GalecallersBoon) then return "galecallers_boon 56"; end
         end
         -- use_item,effect_name=cyclotronic_blast,if=buff.metamorphosis.up&buff.memory_of_lucid_dreams.down&(!variable.blade_dance|!cooldown.blade_dance.ready)
-        if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and not ShouldStop and S.CyclotronicBlast:IsAvailable() and (Player:BuffP(S.MetamorphosisBuff) and Player:BuffDownP(S.MemoryofLucidDreams) and (not bool(VarBladeDance) or not S.BladeDance:IsReady() and not ShouldStop)) then
+        if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and I.PocketsizedComputationDevice:IsTrinketON() and not ShouldStop and S.CyclotronicBlast:IsAvailable() and (Player:BuffP(S.MetamorphosisBuff) and Player:BuffDownP(S.MemoryofLucidDreams) and (not bool(VarBladeDance) or not S.BladeDance:IsReady() and not ShouldStop)) then
             if HR.Cast(I.PocketsizedComputationDevice) then return "cyclotronic_blast 57"; end
         end
         -- use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down|(debuff.conductive_ink_debuff.up|buff.metamorphosis.remains>20)&target.health.pct<31|target.time_to_die<20
-        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and not ShouldStop and (Target:DebuffDownP(S.RazorCoralDebuff) or (Target:DebuffP(S.ConductiveInkDebuff) or Player:BuffRemainsP(S.MetamorphosisBuff) > 20) and Target:HealthPercentage() < 31 or Target:TimeToDie() < 20) then
+        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and I.AshvanesRazorCoral:IsTrinketON() and not ShouldStop and (Target:DebuffDownP(S.RazorCoralDebuff) or (Target:DebuffP(S.ConductiveInkDebuff) or Player:BuffRemainsP(S.MetamorphosisBuff) > 20) and Target:HealthPercentage() < 31 or Target:TimeToDie() < 20) then
             if HR.Cast(I.AshvanesRazorCoral) then return "ashvanes_razor_coral 59"; end
         end
         -- use_item,name=azsharas_font_of_power,if=cooldown.metamorphosis.remains<10|cooldown.metamorphosis.remains>60
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and not ShouldStop and (S.Metamorphosis:CooldownRemainsP() < 10 or S.Metamorphosis:CooldownRemainsP() > 60) then
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and I.AzsharasFontofPower:IsTrinketON() and not ShouldStop and (S.Metamorphosis:CooldownRemainsP() < 10 or S.Metamorphosis:CooldownRemainsP() > 60) then
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 60"; end
         end
         -- use_items,if=buff.metamorphosis.up
