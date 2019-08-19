@@ -504,7 +504,7 @@ local function APL()
             if HR.CastCycle(I.ShiverVenomRelic) then return "shiver_venom_relic 105"; end
         end
         -- blood_of_the_enemy,if=cooldown.ca_inc.remains>30
-        if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (CaInc():CooldownRemainsP() > 30) then
+        if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and Action.GetToggle(1, "HeartOfAzeroth") and (CaInc():CooldownRemainsP() > 30) then
             if HR.Cast(S.BloodoftheEnemy) then return "blood_of_the_enemy"; end
         end
         -- memory_of_lucid_dreams,if=!buff.ca_inc.up&(astral_power<25|cooldown.ca_inc.remains>30),target_if=dot.sunfire.remains>10&dot.moonfire.remains>10&(!talent.stellar_flare.enabled|dot.stellar_flare.remains>10)

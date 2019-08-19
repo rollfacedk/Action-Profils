@@ -589,39 +589,39 @@ local function APL()
             if HR.Cast(S.DarkSoulMisery, Action.GetToggle(2, "OffGCDasOffGCD")) then return ""; end
         end
         -- blood_of_the_enemy,if=pet.darkglare.remains|(!cooldown.deathbolt.remains|!talent.deathbolt.enabled)&cooldown.summon_darkglare.remains>=80&essence.blood_of_the_enemy.rank>1
-        if S.BloodoftheEnemy:IsCastableP() and not ShouldStop and (S.SummonDarkglare:CooldownRemainsP() > 160 or (S.Deathbolt:CooldownUpP() or not S.Deathbolt:IsAvailable()) and S.SummonDarkglare:CooldownRemainsP() >= 80 and not S.BloodoftheEnemy:ID() == 297108) then
+        if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and (S.SummonDarkglare:CooldownRemainsP() > 160 or (S.Deathbolt:CooldownUpP() or not S.Deathbolt:IsAvailable()) and S.SummonDarkglare:CooldownRemainsP() >= 80 and not S.BloodoftheEnemy:ID() == 297108) then
             if HR.Cast(S.UnleashHeartOfAzeroth) then return ""; end
         end
         -- use_item,name=pocketsized_computation_device,if=cooldown.summon_darkglare.remains>=25&(cooldown.deathbolt.remains|!talent.deathbolt.enabled)
-        if I.PocketsizedComputationDevice:IsEquipped() and I.AzsharasFontofPower:IsTrinketON() and I.PocketsizedComputationDevice:IsReady() and Action.AbsentImun(nil, unit, "DamageMagicImun") and (S.SummonDarkglare:CooldownRemainsP() >= 25 and (bool(S.Deathbolt:CooldownRemainsP()) or not S.Deathbolt:IsAvailable())) then
+        if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsTrinketON() and I.PocketsizedComputationDevice:IsReady() and Action.AbsentImun(nil, unit, "DamageMagicImun") and (S.SummonDarkglare:CooldownRemainsP() >= 25 and (bool(S.Deathbolt:CooldownRemainsP()) or not S.Deathbolt:IsAvailable())) then
             if HR.Cast(I.PocketsizedComputationDevice) then return "pocketsized_computation_device 50"; end
         end
         -- use_item,name=rotcrusted_voodoo_doll,if=cooldown.summon_darkglare.remains>=25&(cooldown.deathbolt.remains|!talent.deathbolt.enabled)
-        if I.RotcrustedVoodooDoll:IsEquipped() and I.AzsharasFontofPower:IsTrinketON() and not ShouldStop and I.RotcrustedVoodooDoll:IsReady() and (S.SummonDarkglare:CooldownRemainsP() >= 25 and (bool(S.Deathbolt:CooldownRemainsP()) or not S.Deathbolt:IsAvailable())) then
+        if I.RotcrustedVoodooDoll:IsEquipped() and I.RotcrustedVoodooDoll:IsTrinketON() and not ShouldStop and I.RotcrustedVoodooDoll:IsReady() and (S.SummonDarkglare:CooldownRemainsP() >= 25 and (bool(S.Deathbolt:CooldownRemainsP()) or not S.Deathbolt:IsAvailable())) then
             if HR.Cast(I.RotcrustedVoodooDoll) then return "rotcrusted_voodoo_doll"; end
         end
         -- use_item,name=shiver_venom_relic,if=cooldown.summon_darkglare.remains>=25&(cooldown.deathbolt.remains|!talent.deathbolt.enabled)
-        if I.ShiverVenomRelic:IsEquipped() and I.AzsharasFontofPower:IsTrinketON() and not ShouldStop and I.ShiverVenomRelic:IsReady() and (S.SummonDarkglare:CooldownRemainsP() >= 25 and (bool(S.Deathbolt:CooldownRemainsP()) or not S.Deathbolt:IsAvailable())) then
+        if I.ShiverVenomRelic:IsEquipped() and I.ShiverVenomRelic:IsTrinketON() and not ShouldStop and I.ShiverVenomRelic:IsReady() and (S.SummonDarkglare:CooldownRemainsP() >= 25 and (bool(S.Deathbolt:CooldownRemainsP()) or not S.Deathbolt:IsAvailable())) then
             if HR.Cast(I.ShiverVenomRelic) then return "shiver_venom_relic"; end
         end
         -- use_item,name=aquipotent_nautilus,if=cooldown.summon_darkglare.remains>=25&(cooldown.deathbolt.remains|!talent.deathbolt.enabled)
-        if I.AquipotentNautilus:IsEquipped() and I.AzsharasFontofPower:IsTrinketON() and not ShouldStop and I.AquipotentNautilus:IsReady() and (S.SummonDarkglare:CooldownRemainsP() >= 25 and (bool(S.Deathbolt:CooldownRemainsP()) or not S.Deathbolt:IsAvailable())) then
+        if I.AquipotentNautilus:IsEquipped() and I.AquipotentNautilus:IsTrinketON() and not ShouldStop and I.AquipotentNautilus:IsReady() and (S.SummonDarkglare:CooldownRemainsP() >= 25 and (bool(S.Deathbolt:CooldownRemainsP()) or not S.Deathbolt:IsAvailable())) then
             if HR.Cast(I.AquipotentNautilus) then return "aquipotent_nautilus"; end
         end
         -- use_item,name=tidestorm_codex,if=cooldown.summon_darkglare.remains>=25&(cooldown.deathbolt.remains|!talent.deathbolt.enabled)
-        if I.TidestormCodex:IsEquipped() and I.AzsharasFontofPower:IsTrinketON() and not ShouldStop and I.TidestormCodex:IsReady() and (S.SummonDarkglare:CooldownRemainsP() >= 25 and (bool(S.Deathbolt:CooldownRemainsP()) or not S.Deathbolt:IsAvailable())) then
+        if I.TidestormCodex:IsEquipped() and I.TidestormCodex:IsTrinketON() and not ShouldStop and I.TidestormCodex:IsReady() and (S.SummonDarkglare:CooldownRemainsP() >= 25 and (bool(S.Deathbolt:CooldownRemainsP()) or not S.Deathbolt:IsAvailable())) then
             if HR.Cast(I.TidestormCodex) then return "tidestorm_codex"; end
         end
         -- use_item,name=vial_of_storms,if=cooldown.summon_darkglare.remains>=25&(cooldown.deathbolt.remains|!talent.deathbolt.enabled)
-        if I.VialofStorms:IsEquipped() and I.AzsharasFontofPower:IsTrinketON() and not ShouldStop and I.VialofStorms:IsReady() and (S.SummonDarkglare:CooldownRemainsP() >= 25 and (bool(S.Deathbolt:CooldownRemainsP()) or not S.Deathbolt:IsAvailable())) then
+        if I.VialofStorms:IsEquipped() and I.VialofStorms:IsTrinketON() and not ShouldStop and I.VialofStorms:IsReady() and (S.SummonDarkglare:CooldownRemainsP() >= 25 and (bool(S.Deathbolt:CooldownRemainsP()) or not S.Deathbolt:IsAvailable())) then
             if HR.Cast(I.VialofStorms) then return "vial_of_storms"; end
         end
         -- worldvein_resonance,if=buff.lifeblood.stack<3
-        if S.WorldveinResonance:IsCastableP() and not ShouldStop and (Player:BuffStackP(S.LifebloodBuff) < 3) then
+        if S.WorldveinResonance:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and (Player:BuffStackP(S.LifebloodBuff) < 3) then
             if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance 63"; end
         end
         -- ripple_in_space
-        if S.RippleInSpace:IsCastableP() and not ShouldStop then
+        if S.RippleInSpace:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.RippleInSpace) then return "ripple_in_space 67"; end
         end
     end
@@ -736,15 +736,15 @@ local function APL()
             if HR.Cast(S.Haunt) then return "haunt 461"; end
         end
         -- focused_azerite_beam
-        if S.FocusedAzeriteBeam:IsCastableP() and not ShouldStop then
+        if S.FocusedAzeriteBeam:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.UnleashHeartOfAzeroth) then return "focused_azerite_beam 463"; end
         end
         -- purifying_blast
-        if S.PurifyingBlast:IsCastableP() and not ShouldStop then
+        if S.PurifyingBlast:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.UnleashHeartOfAzeroth) then return "purifying_blast 465"; end
         end
         -- concentrated_flame,if=!dot.concentrated_flame_burn.remains&!action.concentrated_flame.in_flight
-        if S.ConcentratedFlame:IsCastableP() and not ShouldStop and (Target:DebuffDownP(S.ConcentratedFlameBurn) and not S.ConcentratedFlame:InFlight()) then
+        if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and (Target:DebuffDownP(S.ConcentratedFlameBurn) and not S.ConcentratedFlame:InFlight()) then
             if HR.Cast(S.UnleashHeartOfAzeroth) then return "concentrated_flame 467"; end
         end
         -- drain_soul,interrupt_global=1,chain=1,interrupt=1,cycle_targets=1,if=target.time_to_die<=gcd
@@ -916,7 +916,7 @@ local function APL()
             if HR.Cast(S.Deathbolt) then return "deathbolt 734"; end
         end 
         -- the_unbound_force,if=buff.reckless_force.remains
-        if S.TheUnboundForce:IsCastableP() and not ShouldStop and (Player:BuffP(S.RecklessForceBuff)) then
+        if S.TheUnboundForce:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and (Player:BuffP(S.RecklessForceBuff)) then
             if HR.Cast(S.UnleashHeartOfAzeroth) then return "the_unbound_force 744"; end
         end
         -- agony,target_if=min:dot.agony.remains,if=remains<=gcd+action.shadow_bolt.execute_time&target.time_to_die>8
@@ -928,7 +928,7 @@ local function APL()
             if HR.Cast(S.Agony) then return "agony 770" end
         end
         -- memory_of_lucid_dreams,if=time<30
-        if S.MemoryofLucidDreams:IsCastableP() and not ShouldStop and (HL.CombatTime() < 30) then
+        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and (HL.CombatTime() < 30) then
             if HR.Cast(S.UnleashHeartOfAzeroth) then return "memory_of_lucid_dreams 771"; end
         end
         -- # Temporary fix to make sure azshara's font doesn't break darkglare usage.
@@ -997,7 +997,7 @@ local function APL()
             if HR.Cast(S.DarkSoulMisery, Action.GetToggle(2, "OffGCDasOffGCD")) then return "dark_soul 885"; end
         end
         -- guardian_of_azeroth,if=cooldown.summon_darkglare.remains<15+soul_shard*azerite.dreadful_calling.enabled|(azerite.dreadful_calling.rank|essence.vision_of_perfection.rank)&time>30&target.time_to_die>=210)&(dot.phantom_singularity.remains|dot.vile_taint.remains|!talent.phantom_singularity.enabled&!talent.vile_taint.enabled)|target.time_to_die<30+gcd
-        if S.GuardianofAzeroth:IsCastableP() and not ShouldStop and Action.GetToggle(2, "CDs") and S.SummonDarkglare:CooldownRemainsP() < 15 + Player:SoulShardsP() * num(S.DreadfulCalling:AzeriteEnabled()) or ((S.DreadfulCalling:AzeriteEnabled() or S.VisionofPerfectionMinor:IsAvailable()) and HL.CombatTime() > 30 and Target:TimeToDie() >= 210) and (Target:DebuffP(S.PhantomSingularityDebuff) or Target:DebuffP(S.VileTaint) or not S.PhantomSingularity:IsAvailable() and not S.VileTaint:IsAvailable()) then
+        if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and Action.GetToggle(2, "CDs") and S.SummonDarkglare:CooldownRemainsP() < 15 + Player:SoulShardsP() * num(S.DreadfulCalling:AzeriteEnabled()) or ((S.DreadfulCalling:AzeriteEnabled() or S.VisionofPerfectionMinor:IsAvailable()) and HL.CombatTime() > 30 and Target:TimeToDie() >= 210) and (Target:DebuffP(S.PhantomSingularityDebuff) or Target:DebuffP(S.VileTaint) or not S.PhantomSingularity:IsAvailable() and not S.VileTaint:IsAvailable()) then
             if HR.Cast(S.GuardianofAzeroth) then return ""; end
         end
         -- berserking

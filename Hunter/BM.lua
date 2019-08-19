@@ -335,11 +335,11 @@ local function APL()
             if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance"; end
         end
         -- guardian_of_azeroth
-        if S.GuardianofAzeroth:IsCastableP() then
+        if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth"; end
         end
         -- memory_of_lucid_dreams
-        if S.MemoryofLucidDreams:IsCastableP() then
+        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams"; end
         end
         -- use_item,effect_name=cyclotronic_blast,if=!raid_event.invulnerable.exists&(trinket.1.has_cooldown+trinket.2.has_cooldown<2|equipped.variable_intensity_gigavolt_oscillating_reactor)
@@ -348,7 +348,7 @@ local function APL()
             if HR.Cast(I.PocketsizedComputationDevice) then return "cyclotronic_blast precombat"; end
         end
         -- focused_azerite_beam,if=!raid_event.invulnerable.exists
-        if S.FocusedAzeriteBeam:IsCastableP() then
+        if S.FocusedAzeriteBeam:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam"; end
         end
         -- aspect_of_the_wild,precast_time=1.1,if=!azerite.primal_instincts.enabled&!essence.essence_of_the_focusing_iris.major&(equipped.azsharas_font_of_power|!equipped.cyclotronic_blast)
@@ -388,19 +388,19 @@ local function APL()
             if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_agility 68"; end
         end
         -- worldvein_resonance,if=buff.lifeblood.stack<4
-        if S.WorldveinResonance:IsCastableP() and (Player:BuffStackP(S.LifebloodBuff) < 4) then
+        if S.WorldveinResonance:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffStackP(S.LifebloodBuff) < 4) then
             if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance"; end
         end
         -- guardian_of_azeroth,if=cooldown.aspect_of_the_wild.remains<10|target.time_to_die>cooldown+duration|target.time_to_die<30
-        if S.GuardianofAzeroth:IsCastableP() and (S.AspectoftheWild:CooldownRemainsP() < 10 or Target:TimeToDie() > S.GuardianofAzeroth:Cooldown() + S.GuardianofAzeroth:BaseDuration() or Target:TimeToDie() < 30) then
+        if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (S.AspectoftheWild:CooldownRemainsP() < 10 or Target:TimeToDie() > S.GuardianofAzeroth:Cooldown() + S.GuardianofAzeroth:BaseDuration() or Target:TimeToDie() < 30) then
             if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth"; end
         end
         -- ripple_in_space
-        if S.RippleInSpace:IsCastableP() then
+        if S.RippleInSpace:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.RippleInSpace) then return "ripple_in_space"; end
         end
         -- memory_of_lucid_dreams
-        if S.MemoryofLucidDreams:IsCastableP() then
+        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams"; end
         end
     end
@@ -455,23 +455,23 @@ local function APL()
             if HR.Cast(S.BarbedShot) then return "barbed_shot 124"; end
         end
         -- focused_azerite_beam
-        if S.FocusedAzeriteBeam:IsCastableP() then
+        if S.FocusedAzeriteBeam:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam"; end
         end
         -- purifying_blast
-        if S.PurifyingBlast:IsCastableP() then
+        if S.PurifyingBlast:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
            if HR.Cast(S.PurifyingBlast) then return "focused_azerite_beam"; end
         end
         -- concentrated_flame
-        if S.ConcentratedFlame:IsCastableP() then
+        if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.ConcentratedFlame) then return "focused_azerite_beam"; end
         end
         -- blood_of_the_enemy
-        if S.BloodoftheEnemy:IsCastableP() then
+        if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.BloodoftheEnemy) then return "focused_azerite_beam"; end
         end
         -- the_unbound_force,if=buff.reckless_force.up|buff.reckless_force_counter.stack<10
-        if S.TheUnboundForce:IsCastableP() and (Player:BuffP(S.RecklessForceBuff) or Player:BuffStackP(S.RecklessForceCounter) < 10) then
+        if S.TheUnboundForce:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.RecklessForceBuff) or Player:BuffStackP(S.RecklessForceCounter) < 10) then
             if HR.Cast(S.TheUnboundForce) then return "focused_azerite_beam"; end
         end
         -- multishot,if=azerite.rapid_reload.enabled&active_enemies>2
@@ -494,7 +494,7 @@ local function APL()
             if HR.Cast(S.BarbedShot) then return "barbed_shot 164"; end
         end
         -- concentrated_flame,if=focus+focus.regen*gcd<focus.max&buff.bestial_wrath.down&(!dot.concentrated_flame_burn.remains&!action.concentrated_flame.in_flight)|full_recharge_time<gcd|target.time_to_die<5
-        if S.ConcentratedFlame:IsCastableP() and (Player:Focus() + Player:FocusRegen() * Player:GCD() < Player:FocusMax() and Player:BuffDownP(S.BestialWrathBuff) and (Target:DebuffDownP(S.ConcentratedFlameBurn) and not S.ConcentratedFlame:InFlight()) or S.ConcentratedFlame:FullRechargeTimeP() < Player:GCD() or Target:TimeToDie() < 5) then
+        if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:Focus() + Player:FocusRegen() * Player:GCD() < Player:FocusMax() and Player:BuffDownP(S.BestialWrathBuff) and (Target:DebuffDownP(S.ConcentratedFlameBurn) and not S.ConcentratedFlame:InFlight()) or S.ConcentratedFlame:FullRechargeTimeP() < Player:GCD() or Target:TimeToDie() < 5) then
             if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame 165"; end
         end
         -- aspect_of_the_wild,if=cooldown.barbed_shot.charges<2|pet.cat.buff.frenzy.stack>2|!azerite.primal_instincts.enabled
@@ -538,11 +538,11 @@ local function APL()
             if HR.Cast(S.BarbedShot) then return "barbed_shot 200"; end
         end
         -- purifying_blast,if=buff.bestial_wrath.down|target.time_to_die<8
-       if S.PurifyingBlast:IsCastableP() and (Player:BuffDownP(S.BestialWrathBuff) or Target:TimeToDie() < 8) then
+       if S.PurifyingBlast:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.BestialWrathBuff) or Target:TimeToDie() < 8) then
             if HR.Cast(S.PurifyingBlast) then return "focused_azerite_beam"; end
         end
         -- blood_of_the_enemy
-        if S.BloodoftheEnemy:IsCastableP() then
+        if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.BloodoftheEnemy) then return "focused_azerite_beam"; end
         end
         -- barrage

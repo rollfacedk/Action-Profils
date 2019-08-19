@@ -55,7 +55,14 @@ A.Data.ProfileUI = {
                         ruRU = "Включает действия для нескольких целей", 
                         frFR = "Activer les actions multi-unités",
                     }, 
-                    M = {},
+                    M = {
+					    Custom = "/run Action.AoEToggleMode()",
+						-- It does call func CraftMacro(L[CL], macro above, 1) -- 1 means perCharacter tab in MacroUI, if nil then will be used allCharacters tab in MacroUI
+						Value = value or nil, 
+						-- Very Very Optional, no idea why it will be need however.. 
+						TabN = '@number' or nil,								
+						Print = '@string' or nil,
+					},
                 }, 
                 {
                     E = "Checkbox", 
@@ -71,7 +78,14 @@ A.Data.ProfileUI = {
                         ruRU = "Включить использование перезарядки в ротации", 
                         frFR = "Activer l'usage des cooldowns par la rotation",
                     }, 
-                    M = {},
+                    M = {
+					    Custom = "/run Action.CDToggleMode()",
+						-- It does call func CraftMacro(L[CL], macro above, 1) -- 1 means perCharacter tab in MacroUI, if nil then will be used allCharacters tab in MacroUI
+						Value = value or nil, 
+						-- Very Very Optional, no idea why it will be need however.. 
+						TabN = '@number' or nil,								
+						Print = '@string' or nil,
+					},
                 },                 
             }, 
             { -- [2] 2nd Row

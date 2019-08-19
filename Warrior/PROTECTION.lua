@@ -294,11 +294,11 @@ local function APL()
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power precombat"; end
         end
         -- memory_of_lucid_dreams
-        if S.MemoryofLucidDreams:IsCastableP() then
+        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams precombat"; end
         end
         -- guardian_of_azeroth
-        if S.GuardianofAzeroth:IsCastableP() then
+        if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth precombat"; end
         end
         -- potion
@@ -324,7 +324,7 @@ local function APL()
             if HR.Cast(S.ThunderClap) then return "thunder_clap 6"; end
         end
         -- memory_of_lucid_dreams,if=buff.avatar.down
-        if S.MemoryofLucidDreams:IsCastableP() and (Player:BuffDownP(S.AvatarBuff)) then
+        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.AvatarBuff)) then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams 7"; end
         end
         -- demoralizing_shout,if=talent.booming_voice.enabled
@@ -332,7 +332,7 @@ local function APL()
             if HR.Cast(S.DemoralizingShout, Action.GetToggle(2, "GCDasOffGCD")) then return "demoralizing_shout 8"; end
         end
         -- anima_of_death,if=buff.last_stand.up
-        if S.AnimaofDeath:IsCastableP() and (Player:BuffP(S.LastStandBuff)) then
+        if S.AnimaofDeath:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.LastStandBuff)) then
             if HR.Cast(S.AnimaofDeath) then return "anima_of_death 9"; end
         end
         -- dragon_roar
@@ -383,7 +383,7 @@ local function APL()
             if HR.Cast(S.DemoralizingShout, Action.GetToggle(2, "GCDasOffGCD")) then return "demoralizing_shout 60"; end
         end
         -- anima_of_death,if=buff.last_stand.up
-        if S.AnimaofDeath:IsCastableP() and (Player:BuffP(S.LastStandBuff)) then
+        if S.AnimaofDeath:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.LastStandBuff)) then
             if HR.Cast(S.AnimaofDeath) then return "anima_of_death 61"; end
         end
         -- shield_slam
@@ -391,11 +391,11 @@ local function APL()
             if HR.Cast(S.ShieldSlam) then return "shield_slam 70"; end
         end
         -- use_item,name=ashvanes_razor_coral,target_if=debuff.razor_coral_debuff.stack=0
-        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and I.AzsharasFontofPower:IsTrinketON() and (Target:DebuffStackP(S.RazorCoralDebuff) == 0) then
+        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and I.AshvanesRazorCoral:IsTrinketON() and (Target:DebuffStackP(S.RazorCoralDebuff) == 0) then
             if HR.Cast(I.AshvanesRazorCoral) then return "ashvanes_razor_coral 71"; end
         end
         -- use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.stack>7&(cooldown.avatar.remains<5|buff.avatar.up)
-        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and I.AzsharasFontofPower:IsTrinketON() and (Target:DebuffStackP(S.RazorCoralDebuff) > 7 and (S.Avatar:CooldownRemainsP() < 5 or Player:BuffP(S.AvatarBuff))) then
+        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and I.AshvanesRazorCoral:IsTrinketON() and (Target:DebuffStackP(S.RazorCoralDebuff) > 7 and (S.Avatar:CooldownRemainsP() < 5 or Player:BuffP(S.AvatarBuff))) then
             if HR.Cast(I.AshvanesRazorCoral) then return "ashvanes_razor_coral 72"; end
         end
         -- dragon_roar
@@ -465,7 +465,7 @@ local function APL()
         end
         -- use_items,if=cooldown.avatar.remains>20
         -- use_item,name=grongs_primal_rage,if=buff.avatar.down
-        if I.GrongsPrimalRage:IsEquipped() and I.GrongsPrimalRage:IsReady() and I.AzsharasFontofPower:IsTrinketON() and (Player:BuffDownP(S.AvatarBuff)) then
+        if I.GrongsPrimalRage:IsEquipped() and I.GrongsPrimalRage:IsReady() and I.GrongsPrimalRage:IsTrinketON() and (Player:BuffDownP(S.AvatarBuff)) then
             if HR.Cast(I.GrongsPrimalRage) then return "grongs_primal_rage 87"; end
         end
         -- blood_fury
@@ -507,19 +507,19 @@ local function APL()
             if HR.Cast(S.IgnorePain, Action.GetToggle(2, "GCDasOffGCD")) then return "ignore_pain 107"; end
         end
         -- worldvein_resonance,if=cooldown.avatar.remains<=2
-        if S.WorldveinResonance:IsCastableP() and (S.Avatar:CooldownRemainsP() <= 2) then
+        if S.WorldveinResonance:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (S.Avatar:CooldownRemainsP() <= 2) then
             if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance 108"; end
         end
         -- ripple_in_space
-        if S.RippleInSpace:IsCastableP() then
+        if S.RippleInSpace:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.RippleInSpace) then return "ripple_in_space 109"; end
         end
         -- memory_of_lucid_dreams
-        if S.MemoryofLucidDreams:IsCastableP() then
+        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams 110"; end
         end
         -- concentrated_flame,if=buff.avatar.down
-        if S.ConcentratedFlame:IsCastableP() and (Player:BuffDownP(S.AvatarBuff)) then
+        if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.AvatarBuff)) then
             if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame 111"; end
         end
         -- last_stand,if=cooldown.anima_of_death.remains<=2

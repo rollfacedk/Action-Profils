@@ -699,7 +699,7 @@ local function APL()
   end
   BuildAShard = function()
     -- memory_of_lucid_dreams,if=soul_shard<2
-    if S.MemoryofLucidDreams:IsCastableP() and (Player:SoulShardsP() < 2) then
+    if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:SoulShardsP() < 2) then
         if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams build_a_shard"; end
     end
     -- soul_strike,if=!talent.demonic_consumption.enabled|time>15|prev_gcd.1.hand_of_guldan&!buff.bloodlust.remains
@@ -726,7 +726,7 @@ local function APL()
         if HR.Cast(S.Doom) then return "doom 32"; end
     end
     -- guardian_of_azeroth
-    if S.GuardianofAzeroth:IsCastableP() and HR.CDsON() then
+    if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and HR.CDsON() then
         if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth 33"; end
     end
     -- hand_of_guldan,if=prev_gcd.1.hand_of_guldan&soul_shard>0&prev_gcd.2.soul_strike
@@ -820,19 +820,19 @@ local function APL()
         if HR.Cast(S.BilescourgeBombers) then return "bilescourge_bombers 178"; end
     end
     -- focused_azerite_beam
-    if S.FocusedAzeriteBeam:IsCastableP() then
+    if S.FocusedAzeriteBeam:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
         if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam implosion"; end
     end
     -- purifying_blast
-    if S.PurifyingBlast:IsCastableP() then
+    if S.PurifyingBlast:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
         if HR.Cast(S.PurifyingBlast) then return "purifying_blast implosion"; end
     end
     -- blood_of_the_enemy
-    if S.BloodoftheEnemy:IsCastableP() then
+    if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
         if HR.Cast(S.BloodoftheEnemy) then return "blood_of_the_enemy implosion"; end
     end
     -- concentrated_flame,if=!dot.concentrated_flame_burn.remains&!action.concentrated_flame.in_flight&spell_targets.implosion<5
-    if S.ConcentratedFlame:IsCastableP() and (Target:DebuffDownP(S.ConcentratedFlameBurn) and not S.ConcentratedFlame:InFlight() and EnemiesCount < 5) then
+    if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Target:DebuffDownP(S.ConcentratedFlameBurn) and not S.ConcentratedFlame:InFlight() and EnemiesCount < 5) then
         if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame implosion"; end
     end
     -- soul_strike,if=soul_shard<5&buff.demonic_core.stack<=2
@@ -910,7 +910,7 @@ local function APL()
         if HR.Cast(I.AzsharasFontofPower) then reutrn "azsharas_font_of_power 295"; end
     end
     -- guardian_of_azeroth,if=!cooldown.nether_portal.remains&soul_shard>=5
-    if S.GuardianofAzeroth:IsCastableP() and (S.NetherPortal:CooldownUpP() and Player:SoulShardsP() >= 5) then
+    if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (S.NetherPortal:CooldownUpP() and Player:SoulShardsP() >= 5) then
         if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth 296"; end
     end
     -- nether_portal,if=soul_shard>=5
@@ -984,39 +984,39 @@ local function APL()
         if HR.Cast(S.Fireblood, Action.GetToggle(2, "OffGCDasOffGCD")) then return "fireblood 333"; end
     end
     -- blood_of_the_enemy,if=pet.demonic_tyrant.active&pet.demonic_tyrant.remains<=15-gcd*3&(!essence.vision_of_perfection.major|!talent.demonic_consumption.enabled|cooldown.summon_demonic_tyrant.remains>=cooldown.summon_demonic_tyrant.duration-5)
-    if S.BloodoftheEnemy:IsCastableP() and (DemonicTyrantTime() > 0 and DemonicTyrantTime() <= 15 - Player:GCD() * 3 and (not S.VisionofPerfection:IsAvailable() or not S.DemonicConsumption:IsAvailable() or S.SummonDemonicTyrant:CooldownRemainsP() >= S.SummonDemonicTyrant:BaseDuration() - 5)) then
+    if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (DemonicTyrantTime() > 0 and DemonicTyrantTime() <= 15 - Player:GCD() * 3 and (not S.VisionofPerfection:IsAvailable() or not S.DemonicConsumption:IsAvailable() or S.SummonDemonicTyrant:CooldownRemainsP() >= S.SummonDemonicTyrant:BaseDuration() - 5)) then
         if HR.Cast(S.BloodoftheEnemy) then return "blood_of_the_enemy"; end
     end
     -- worldvein_resonance,if=buff.lifeblood.stack<3&(pet.demonic_tyrant.active&(!essence.vision_of_perfection.major|!talent.demonic_consumption.enabled|cooldown.summon_demonic_tyrant.remains>=cooldown.summon_demonic_tyrant.duration-5)|target.time_to_die<=15)
-    if S.WorldveinResonance:IsCastableP() and (Player:BuffStackP(S.LifebloodBuff) < 3 and (DemonicTyrantTime() > 0 and (not S.VisionofPerfection:IsAvailable() or not S.DemonicConsumption:IsAvailable() or S.SummonDemonicTyrant:CooldownRemainsP() >= S.SummonDemonicTyrant:BaseDuration() - 5) or Target:TimeToDie() <= 15)) then
+    if S.WorldveinResonance:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffStackP(S.LifebloodBuff) < 3 and (DemonicTyrantTime() > 0 and (not S.VisionofPerfection:IsAvailable() or not S.DemonicConsumption:IsAvailable() or S.SummonDemonicTyrant:CooldownRemainsP() >= S.SummonDemonicTyrant:BaseDuration() - 5) or Target:TimeToDie() <= 15)) then
         if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance 334"; end
     end
     -- ripple_in_space,if=pet.demonic_tyrant.active&(!essence.vision_of_perfection.major|!talent.demonic_consumption.enabled|cooldown.summon_demonic_tyrant.remains>=cooldown.summon_demonic_tyrant.duration-5)|target.time_to_die<=15
-    if S.RippleInSpace:IsCastableP() and (DemonicTyrantTime() > 0 and (not S.VisionofPerfection:IsAvailable() or not S.DemonicConsumption:IsAvailable() or S.SummonDemonicTyrant:CooldownRemainsP() >= S.SummonDemonicTyrant:BaseDuration() - 5) or Target:TimeToDie() <= 15) then
+    if S.RippleInSpace:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (DemonicTyrantTime() > 0 and (not S.VisionofPerfection:IsAvailable() or not S.DemonicConsumption:IsAvailable() or S.SummonDemonicTyrant:CooldownRemainsP() >= S.SummonDemonicTyrant:BaseDuration() - 5) or Target:TimeToDie() <= 15) then
         if HR.Cast(S.RippleInSpace) then return "ripple_in_space 335"; end
     end
     -- use_item,name=pocketsized_computation_device,if=cooldown.summon_demonic_tyrant.remains>=20&cooldown.summon_demonic_tyrant.remains<=cooldown.summon_demonic_tyrant.duration-15|target.time_to_die<=30
-    if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and I.AzsharasFontofPower:IsTrinketON() and (S.SummonDemonicTyrant:CooldownRemainsP() >= 20 and S.SummonDemonicTyrant:CooldownRemainsP() <= 75 or Target:TimeToDie() <= 30) then
+    if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and I.PocketsizedComputationDevice:IsTrinketON() and (S.SummonDemonicTyrant:CooldownRemainsP() >= 20 and S.SummonDemonicTyrant:CooldownRemainsP() <= 75 or Target:TimeToDie() <= 30) then
         if HR.Cast(I.PocketsizedComputationDevice) then return "pocketsized_computation_device"; end
     end
     -- use_item,name=rotcrusted_voodoo_doll,if=(cooldown.summon_demonic_tyrant.remains>=25|target.time_to_die<=30)
-    if I.RotcrustedVoodooDoll:IsEquipped() and I.RotcrustedVoodooDoll:IsReady() and I.AzsharasFontofPower:IsTrinketON() and (S.SummonDemonicTyrant:CooldownRemainsP() >= 25 or Target:TimeToDie() <= 30) then
+    if I.RotcrustedVoodooDoll:IsEquipped() and I.RotcrustedVoodooDoll:IsReady() and I.RotcrustedVoodooDoll:IsTrinketON() and (S.SummonDemonicTyrant:CooldownRemainsP() >= 25 or Target:TimeToDie() <= 30) then
         if HR.Cast(I.RotcrustedVoodooDoll) then return "rotcrusted_voodoo_doll"; end
     end
     -- use_item,name=shiver_venom_relic,if=(cooldown.summon_demonic_tyrant.remains>=25|target.time_to_die<=30)
-    if I.ShiverVenomRelic:IsEquipped() and I.ShiverVenomRelic:IsReady() and I.AzsharasFontofPower:IsTrinketON() and (S.SummonDemonicTyrant:CooldownRemainsP() >= 25 or Target:TimeToDie() <= 30) then
+    if I.ShiverVenomRelic:IsEquipped() and I.ShiverVenomRelic:IsReady() and I.ShiverVenomRelic:IsTrinketON() and (S.SummonDemonicTyrant:CooldownRemainsP() >= 25 or Target:TimeToDie() <= 30) then
         if HR.Cast(I.ShiverVenomRelic) then return "shiver_venom_relic"; end
     end
     -- use_item,name=aquipotent_nautilus,if=(cooldown.summon_demonic_tyrant.remains>=25|target.time_to_die<=30)
-    if I.AquipotentNautilus:IsEquipped() and I.AquipotentNautilus:IsReady() and I.AzsharasFontofPower:IsTrinketON() and (S.SummonDemonicTyrant:CooldownRemainsP() >= 25 or Target:TimeToDie() <= 30) then
+    if I.AquipotentNautilus:IsEquipped() and I.AquipotentNautilus:IsReady() and I.AquipotentNautilus:IsTrinketON() and (S.SummonDemonicTyrant:CooldownRemainsP() >= 25 or Target:TimeToDie() <= 30) then
         if HR.Cast(I.AquipotentNautilus) then return "aquipotent_nautilus"; end
     end
     -- use_item,name=tidestorm_codex,if=(cooldown.summon_demonic_tyrant.remains>=25|target.time_to_die<=30)
-    if I.TidestormCodex:IsEquipped() and I.TidestormCodex:IsReady() and I.AzsharasFontofPower:IsTrinketON() and (S.SummonDemonicTyrant:CooldownRemainsP() >= 25 or Target:TimeToDie() <= 30) then
+    if I.TidestormCodex:IsEquipped() and I.TidestormCodex:IsReady() and I.TidestormCodex:IsTrinketON() and (S.SummonDemonicTyrant:CooldownRemainsP() >= 25 or Target:TimeToDie() <= 30) then
         if HR.Cast(I.TidestormCodex) then return "tidestorm_codex"; end
     end
     -- use_item,name=vial_of_storms,if=(cooldown.summon_demonic_tyrant.remains>=25|target.time_to_die<=30)
-    if I.VialofStorms:IsEquipped() and I.VialofStorms:IsReady() and I.AzsharasFontofPower:IsTrinketON() and (S.SummonDemonicTyrant:CooldownRemainsP() >= 25 or Target:TimeToDie() <= 30) then
+    if I.VialofStorms:IsEquipped() and I.VialofStorms:IsReady() and I.VialofStorms:IsTrinketON() and (S.SummonDemonicTyrant:CooldownRemainsP() >= 25 or Target:TimeToDie() <= 30) then
         if HR.Cast(I.VialofStorms) then return "vial_of_storms"; end
     end
     -- call_action_list,name=opener,if=!talent.nether_portal.enabled&time<30&!cooldown.summon_demonic_tyrant.remains
@@ -1060,7 +1060,7 @@ local function APL()
         local ShouldReturn = Implosion(); if ShouldReturn then return ShouldReturn; end
     end
     -- guardian_of_azeroth,if=cooldown.summon_demonic_tyrant.remains<=15|target.time_to_die<=30
-    if S.GuardianofAzeroth:IsCastableP() and HR.CDsON() and (S.SummonDemonicTyrant:CooldownRemainsP() <= 15 or Target:TimeToDie() <= 30) then
+    if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and HR.CDsON() and (S.SummonDemonicTyrant:CooldownRemainsP() <= 15 or Target:TimeToDie() <= 30) then
         if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth 408"; end
     end
     -- grimoire_felguard,if=(target.time_to_die>120|target.time_to_die<cooldown.summon_demonic_tyrant.remains+15|cooldown.summon_demonic_tyrant.remains<13)
@@ -1076,7 +1076,7 @@ local function APL()
         if HR.Cast(S.CallDreadstalkers) then return "call_dreadstalkers 421"; end
     end
     -- the_unbound_force,if=buff.reckless_force.react
-    if S.TheUnboundForce:IsCastableP() and (Player:BuffP(S.RecklessForceBuff)) then
+    if S.TheUnboundForce:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.RecklessForceBuff)) then
         if HR.Cast(S.TheUnboundForce) then return "the_unbound_force 422"; end
     end
     -- bilescourge_bombers
@@ -1112,15 +1112,15 @@ local function APL()
         if HR.Cast(S.Demonbolt) then return "demonbolt 503"; end
     end
     -- purifying_blast
-    if S.PurifyingBlast:IsCastableP() then
+    if S.PurifyingBlast:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
         if HR.Cast(S.PurifyingBlast) then return "purifying_blast 504"; end
     end
     -- blood_of_the_enemy
-    if S.BloodoftheEnemy:IsCastableP() then
+    if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
         if HR.Cast(S.BloodoftheEnemy) then return "blood_of_the_enemy 505"; end
     end
     -- concentrated_flame,if=!dot.concentrated_flame_burn.remains&!action.concentrated_flame.in_flight&!pet.demonic_tyrant.active
-    if S.ConcentratedFlame:IsCastableP() and (Target:DebuffDownP(S.ConcentratedFlameBurn) and not S.ConcentratedFlame:InFlight() and DemonicTyrantTime() == 0) then
+    if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Target:DebuffDownP(S.ConcentratedFlameBurn) and not S.ConcentratedFlame:InFlight() and DemonicTyrantTime() == 0) then
         if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame 506"; end
     end
     -- call_action_list,name=build_a_shard
