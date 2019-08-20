@@ -155,11 +155,11 @@ local Unit       = HL.Unit
 local Player     = Unit.Player
 local Target     = Unit.Target
 local Pet        = Unit.Pet
-local MouseOver = Unit.MouseOver;
-local Spell = HL.Spell;
-local Item = HL.Item;
+local MouseOver  = Unit.MouseOver;
+local Spell      = HL.Spell;
+local Item       = HL.Item;
 -- HeroRotation
-local HR = HeroRotation;
+local HR         = HeroRotation;
 -- Lua
 local mathmin = math.min;
 -- Lua
@@ -478,6 +478,46 @@ local function DetermineEssenceRanks()
     S.GuardianofAzeroth = S.GuardianofAzeroth3:IsAvailable() and S.GuardianofAzeroth3 or S.GuardianofAzeroth
 end
 
+-- Trinkets checker handler
+local function trinketReady(trinketPosition)
+    local inventoryPosition
+    
+	if trinketPosition == 1 then
+        inventoryPosition = 13
+    end
+    
+	if trinketPosition == 2 then
+        inventoryPosition = 14
+    end
+    
+	local start, duration, enable = GetInventoryItemCooldown("Player", inventoryPosition)
+    if enable == 0 then
+        return false
+    end
+
+    if start + duration - GetTime() > 0 then
+        return false
+    end
+	
+	if Action.GetToggle(1, "Trinkets")[1] == false then
+	    return false
+	end
+	
+   	if Action.GetToggle(1, "Trinkets")[2] == false then
+	    return false
+	end	
+	
+    return true
+end
+
+local function TrinketON()
+    if trinketReady(1) or trinketReady(2) then
+        return true
+	else
+	    return false
+	end
+end
+
 -- # Essences
 local function Essences ()
     -- blood_of_the_enemy,if=variable.blade_flurry_sync&cooldown.between_the_eyes.up&variable.bte_condition
@@ -584,26 +624,26 @@ local function CDs ()
         -- Trinkets
         -- actions.cds+=/use_item,if=buff.bloodlust.react|target.time_to_die<=20|combo_points.deficit<=2
         if (true) then
-            if I.GalecallersBoon:IsEquipped() and I.GalecallersBoon:IsReady() and I.GalecallersBoon:IsTrinketON() then
+            if I.GalecallersBoon:IsEquipped() and I.GalecallersBoon:IsReady() and TrinketON() then
                if HR.Cast(I.GalecallersBoon) then return "Cast GalecallersBoon"; end
             end
-            if I.LustrousGoldenPlumage:IsEquipped() and I.LustrousGoldenPlumage:IsReady() and I.LustrousGoldenPlumage:IsTrinketON() then
+            if I.LustrousGoldenPlumage:IsEquipped() and I.LustrousGoldenPlumage:IsReady() and TrinketON() then
                 if HR.Cast(I.LustrousGoldenPlumage) then return "Cast LustrousGoldenPlumage"; end
             end
-            if I.InvocationOfYulon:IsEquipped() and I.InvocationOfYulon:IsReady() and I.InvocationOfYulon:IsTrinketON() then
+            if I.InvocationOfYulon:IsEquipped() and I.InvocationOfYulon:IsReady() and TrinketON() then
                 if HR.Cast(I.InvocationOfYulon) then return "Cast InvocationOfYulon"; end
             end
             -- actions.cds+=/use_item,name=azsharas_font_of_power,if=!buff.adrenaline_rush.up&!buff.blade_flurry.up&cooldown.adrenaline_rush.remains<15
-            if I.FontOfPower:IsEquipped() and I.FontOfPower:IsReady() and I.FontOfPower:IsTrinketON() and not Player:BuffP(S.AdrenalineRush) and not Player:BuffP(S.BladeFlurry) and S.AdrenalineRush:CooldownRemainsP() < 15 then
+            if I.FontOfPower:IsEquipped() and I.FontOfPower:IsReady() and TrinketON() and not Player:BuffP(S.AdrenalineRush) and not Player:BuffP(S.BladeFlurry) and S.AdrenalineRush:CooldownRemainsP() < 15 then
                 if HR.Cast(I.FontOfPower) then return "Cast FontOfPower"; end
             end
             -- if=!stealthed.all&buff.adrenaline_rush.down&buff.memory_of_lucid_dreams.down&energy.time_to_max>4&rtb_buffs<5
-            if I.ComputationDevice:IsEquipped() and I.ComputationDevice:IsReady() and I.ComputationDevice:IsTrinketON() and not Player:IsStealthedP(true, true)
+            if I.ComputationDevice:IsEquipped() and I.ComputationDevice:IsReady() and TrinketON() and not Player:IsStealthedP(true, true)
             and not Player:BuffP(S.AdrenalineRush) and not Player:BuffP(S.LucidDreamsBuff) and EnergyTimeToMaxRounded() > 4 and RtB_Buffs() < 5 then
                 if HR.Cast(I.ComputationDevice) then return "Cast ComputationDevice"; end
             end
             -- actions.cds+=/use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down|debuff.conductive_ink_debuff.up&target.health.pct<32&target.health.pct>=30|!debuff.conductive_ink_debuff.up&(debuff.razor_coral_debuff.stack>=20-10*debuff.blood_of_the_enemy.up|target.time_to_die<60)&buff.adrenaline_rush.remains>18
-            if I.RazorCoral:IsEquipped() and I.RazorCoral:IsReady() and I.RazorCoral:IsTrinketON() then
+            if I.RazorCoral:IsEquipped() and I.RazorCoral:IsReady() and TrinketON() then
             local CastRazorCoral;
                 if S.RazorCoralDebuff:ActiveCount() == 0 then
                     CastRazorCoral = true;
@@ -623,7 +663,7 @@ local function CDs ()
                 end
             end
             -- Emulate SimC default behavior to use at max stacks
-            if I.VigorTrinket:IsEquipped() and I.VigorTrinket:IsReady() and I.VigorTrinket:IsTrinketON() and Player:BuffStack(S.VigorTrinketBuff) == 6 then
+            if I.VigorTrinket:IsEquipped() and I.VigorTrinket:IsReady() and TrinketON() and Player:BuffStack(S.VigorTrinketBuff) == 6 then
                 if HR.Cast(I.VigorTrinket) then return "Cast VigorTrinket"; end
             end
         end
