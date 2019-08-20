@@ -46,18 +46,18 @@ Action[ACTION_CONST_DEMONHUNTER_HAVOC] = {
   Rebuke                               = Action.Create({ Type = "Spell", ID = 96231     }),
   HammerofJustice                      = Action.Create({ Type = "Spell", ID = 853     }),
   -- Buffs
-  DivinePurposeBuff                    = Action.Create({ Type = "Spell", ID = 223819     }),
-  EmpyreanPowerBuff                    = Action.Create({ Type = "Spell", ID = 286393     }),
-  AvengingWrathBuff                    = Action.Create({ Type = "Spell", ID = 31884     }),
-  AvengingWrathCritBuff                = Action.Create({ Type = "Spell", ID = 294027     }),
-  InquisitionBuff                      = Action.Create({ Type = "Spell", ID = 84963     }),  
-  CrusadeBuff                          = Action.Create({ Type = "Spell", ID = 231895     }), 
-  SeethingRageBuff                     = Action.Create({ Type = "Spell", ID = 297126     }), 
-  RecklessForceBuff                    = Action.Create({ Type = "Spell", ID = 302932     }),  
+  DivinePurposeBuff                    = Action.Create({ Type = "Spell", ID = 223819, Hidden = true     }),
+  EmpyreanPowerBuff                    = Action.Create({ Type = "Spell", ID = 286393, Hidden = true     }),
+  AvengingWrathBuff                    = Action.Create({ Type = "Spell", ID = 31884, Hidden = true     }),
+  AvengingWrathCritBuff                = Action.Create({ Type = "Spell", ID = 294027, Hidden = true     }),
+  InquisitionBuff                      = Action.Create({ Type = "Spell", ID = 84963, Hidden = true     }),  
+  CrusadeBuff                          = Action.Create({ Type = "Spell", ID = 231895, Hidden = true     }), 
+  SeethingRageBuff                     = Action.Create({ Type = "Spell", ID = 297126, Hidden = true     }), 
+  RecklessForceBuff                    = Action.Create({ Type = "Spell", ID = 302932, Hidden = true     }),  
   -- Debuffs
-  JudgmentDebuff                       = Action.Create({ Type = "Spell", ID = 197277     }), 
-  ConcentratedFlameBurn                = Action.Create({ Type = "Spell", ID = 295368     }),
-  RazorCoralDebuff                     = Action.Create({ Type = "Spell", ID = 303568     }),
+  JudgmentDebuff                       = Action.Create({ Type = "Spell", ID = 197277, Hidden = true     }),
+  ConcentratedFlameBurn                = Action.Create({ Type = "Spell", ID = 295368, Hidden = true     }),
+  RazorCoralDebuff                     = Action.Create({ Type = "Spell", ID = 303568, Hidden = true     }),
   -- Trinkets
   AshvanesRazorCoral                    = Action.Create({ Type = "Trinket", ID = 169311, QueueForbidden = true }),
   DribblingInkpod                       = Action.Create({ Type = "Trinket", ID = 169319, QueueForbidden = true }),
@@ -262,12 +262,12 @@ local function APL()
 	    ShouldStop = false
 	end
 	
-    Precombat = function()
+    local function Precombat()
         -- flask
         -- food
         -- augmentation
         -- snapshot_stats
-        if Everyone.TargetIsValid() then
+        --if Everyone.TargetIsValid() then
             -- potion
             if I.PotionofFocusedResolve:IsReady() and Action.GetToggle(1, "Potion") then
                 if HR.CastSuggested(I.PotionofFocusedResolve) then return "battle_potion_of_strength 4"; end
@@ -280,9 +280,10 @@ local function APL()
             if S.ArcaneTorrent:IsCastableP() and HR.CDsON() and (not S.WakeofAshes:IsAvailable()) then
                 if HR.Cast(S.ArcaneTorrent, Action.GetToggle(2, "GCDasOffGCD")) then return "arcane_torrent 6"; end
             end
-        end
+        --end
     end
-    Cooldowns = function()
+	
+    local function Cooldowns()
         -- potion,if=(cooldown.guardian_of_azeroth.remains>90|!essence.condensed_lifeforce.major)&(buff.bloodlust.react|buff.avenging_wrath.up&buff.avenging_wrath.remains>18|buff.crusade.up&buff.crusade.remains<25)
         if I.PotionofFocusedResolve:IsReady() and Action.GetToggle(1, "Potion") and ((S.GuardianofAzeroth:CooldownRemainsP() > 90 or not S.GuardianofAzeroth:IsAvailable()) and (Player:HasHeroism() or Player:BuffP(S.AvengingWrathBuff) and Player:BuffRemainsP(S.AvengingWrathBuff) > 18 or Player:BuffP(S.CrusadeBuff) and Player:BuffRemainsP(S.CrusadeBuff) < 25)) then
             if HR.CastSuggested(I.PotionofFocusedResolve) then return "battle_potion_of_strength 10"; end
@@ -304,35 +305,35 @@ local function APL()
             if HR.Cast(I.AshvanesRazorCoral) then reutrn "ashvanes_razor_coral"; end
         end
         -- the_unbound_force,if=time<=2|buff.reckless_force.up
-        if S.TheUnboundForce:IsCastableP() and (HL.CombatTime() <= 2 or Player:BuffP(S.RecklessForceBuff)) then
+        if S.TheUnboundForce:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (HL.CombatTime() <= 2 or Player:BuffP(S.RecklessForceBuff)) then
             if HR.Cast(S.TheUnboundForce) then return "the_unbound_force"; end
         end
         -- blood_of_the_enemy,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack=10
-        if S.BloodoftheEnemy:IsCastableP() and (Player:BuffP(S.AvengingWrathBuff) or Player:BuffP(S.CrusadeBuff) and Player:BuffStackP(S.CrusadeBuff) == 10) then
+        if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.AvengingWrathBuff) or Player:BuffP(S.CrusadeBuff) and Player:BuffStackP(S.CrusadeBuff) == 10) then
             if HR.Cast(S.BloodoftheEnemy) then return "blood_of_the_enemy"; end
         end
         -- guardian_of_azeroth,if=!talent.crusade.enabled&(cooldown.avenging_wrath.remains<5&holy_power>=3&(buff.inquisition.up|!talent.inquisition.enabled)|cooldown.avenging_wrath.remains>=45)|(talent.crusade.enabled&cooldown.crusade.remains<gcd&holy_power>=4|holy_power>=3&time<10&talent.wake_of_ashes.enabled|cooldown.crusade.remains>=45)
-        if S.GuardianofAzeroth:IsCastableP() and (not S.Crusade:IsAvailable() and (S.AvengingWrath:CooldownRemainsP() < 5 and Player:HolyPower() >= 3 and (Player:BuffP(S.InquisitionBuff) or not S.Inquisition:IsAvailable()) or S.AvengingWrath:CooldownRemainsP() >= 45) or (S.Crusade:IsAvailable() and S.Crusade:CooldownRemainsP() < PlayerGCD and Player:HolyPower() >= 4 or Player:HolyPower() >= 3 and HL.CombatTime() < 10 and S.WakeofAshes:IsAvailable() or S.Crusade:CooldownRemainsP() >= 45)) then
+        if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (not S.Crusade:IsAvailable() and (S.AvengingWrath:CooldownRemainsP() < 5 and Player:HolyPower() >= 3 and (Player:BuffP(S.InquisitionBuff) or not S.Inquisition:IsAvailable()) or S.AvengingWrath:CooldownRemainsP() >= 45) or (S.Crusade:IsAvailable() and S.Crusade:CooldownRemainsP() < PlayerGCD and Player:HolyPower() >= 4 or Player:HolyPower() >= 3 and HL.CombatTime() < 10 and S.WakeofAshes:IsAvailable() or S.Crusade:CooldownRemainsP() >= 45)) then
             if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth"; end
         end
         -- worldvein_resonance,if=cooldown.avenging_wrath.remains<gcd&holy_power>=3|cooldown.crusade.remains<gcd&holy_power>=4|cooldown.avenging_wrath.remains>=45|cooldown.crusade.remains>=45
-        if S.WorldveinResonance:IsCastableP() and (S.AvengingWrath:CooldownRemainsP() < PlayerGCD and Player:HolyPower() >= 3 or S.Crusade:CooldownRemainsP() < PlayerGCD and Player:HolyPower() >= 4 or S.AvengingWrath:CooldownRemainsP() >= 45 or S.Crusade:CooldownRemainsP() >= 45) then
+        if S.WorldveinResonance:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (S.AvengingWrath:CooldownRemainsP() < PlayerGCD and Player:HolyPower() >= 3 or S.Crusade:CooldownRemainsP() < PlayerGCD and Player:HolyPower() >= 4 or S.AvengingWrath:CooldownRemainsP() >= 45 or S.Crusade:CooldownRemainsP() >= 45) then
             if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance"; end
         end
         -- focused_azerite_beam,if=(!raid_event.adds.exists|raid_event.adds.in>30|spell_targets.divine_storm>=2)&!(buff.avenging_wrath.up|buff.crusade.up)&(cooldown.blade_of_justice.remains>gcd*3&cooldown.judgment.remains>gcd*3)
-        if S.FocusedAzeriteBeam:IsCastableP() and ((Cache.EnemiesCount[8] >= 2) and not (Player:BuffP(S.AvengingWrathBuff) or Player:BuffP(S.CrusadeBuff)) and (S.BladeofJustice:CooldownRemainsP() > PlayerGCD * 3 and S.Judgment:CooldownRemainsP() > PlayerGCD * 3)) then
+        if S.FocusedAzeriteBeam:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and ((Cache.EnemiesCount[8] >= 2) and not (Player:BuffP(S.AvengingWrathBuff) or Player:BuffP(S.CrusadeBuff)) and (S.BladeofJustice:CooldownRemainsP() > PlayerGCD * 3 and S.Judgment:CooldownRemainsP() > PlayerGCD * 3)) then
             if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam"; end
         end
         -- memory_of_lucid_dreams,if=(buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack=10)&holy_power<=3
-        if S.MemoryofLucidDreams:IsCastableP() and ((Player:BuffP(S.AvengingWrathBuff) or Player:BuffP(S.CrusadeBuff) and Player:BuffStackP(S.CrusadeBuff) == 10) and Player:HolyPower() <= 3) then
+        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and ((Player:BuffP(S.AvengingWrathBuff) or Player:BuffP(S.CrusadeBuff) and Player:BuffStackP(S.CrusadeBuff) == 10) and Player:HolyPower() <= 3) then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams"; end
         end
         -- purifying_blast,if=(!raid_event.adds.exists|raid_event.adds.in>30|spell_targets.divine_storm>=2)
-        if S.PurifyingBlast:IsCastableP() and (Cache.EnemiesCount[8] >= 2) then
+        if S.PurifyingBlast:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Cache.EnemiesCount[8] >= 2) then
             if HR.Cast(S.PurifyingBlast) then return "purifying_blast"; end
         end
         -- use_item,effect_name=cyclotronic_blast,if=!(buff.avenging_wrath.up|buff.crusade.up)&(cooldown.blade_of_justice.remains>gcd*3&cooldown.judgment.remains>gcd*3)
-        if Everyone.CyclotronicBlastReady() and TrinketON() and (not (Player:BuffP(S.AvengingWrathBuff) or Player:BuffP(S.CrusadeBuff)) and (S.BladeofJustice:CooldownRemainsP() > PlayerGCD * 3 and S.Judgment:CooldownRemainsP() > PlayerGCD * 3)) then
+        if I.PocketsizedComputationDevice:IsEquipReady() and TrinketON() and (not (Player:BuffP(S.AvengingWrathBuff) or Player:BuffP(S.CrusadeBuff)) and (S.BladeofJustice:CooldownRemainsP() > PlayerGCD * 3 and S.Judgment:CooldownRemainsP() > PlayerGCD * 3)) then
             if HR.Cast(I.PocketsizedComputationDevice) then return "cyclotronic_blast"; end
         end
         -- avenging_wrath,if=(!talent.inquisition.enabled|buff.inquisition.up)&holy_power>=3
@@ -344,7 +345,8 @@ local function APL()
             if HR.Cast(S.Crusade, Action.GetToggle(2, "GCDasOffGCD")) then return "crusade 38"; end
         end
     end
-    Finishers = function()
+	
+    local function Finishers()
         -- variable,name=wings_pool,value=!equipped.169314&(!talent.crusade.enabled&cooldown.avenging_wrath.remains>gcd*3|cooldown.crusade.remains>gcd*3)|equipped.169314&(!talent.crusade.enabled&cooldown.avenging_wrath.remains>gcd*6|cooldown.crusade.remains>gcd*6)
         if (true) then
             VarWingsPool = num(not I.AzsharasFontofPower:IsEquipped() and (not S.Crusade:IsAvailable() and S.AvengingWrath:CooldownRemainsP() > PlayerGCD * 3 or S.Crusade:CooldownRemainsP() > PlayerGCD * 3) or I.AzsharasFontofPower:IsEquipped() and (not S.Crusade:IsAvailable() and S.AvengingWrath:CooldownRemainsP() > PlayerGCD * 6 or S.Crusade:CooldownRemainsP() > PlayerGCD * 6))
@@ -374,7 +376,8 @@ local function APL()
             if HR.Cast(S.TemplarsVerdict) then return "templars_verdict 93"; end
         end
     end
-    Generators = function()
+	
+    local function Generators()
         -- variable,name=HoW,value=(!talent.hammer_of_wrath.enabled|target.health.pct>=20&!(buff.avenging_wrath.up|buff.crusade.up))
         if (true) then
             VarHow = num((not S.HammerofWrath:IsAvailable() or Target:HealthPercentage() >= 20 and not (Player:BuffP(S.AvengingWrathBuff) or Player:BuffP(S.CrusadeBuff))))
@@ -416,7 +419,7 @@ local function APL()
             local ShouldReturn = Finishers(); if ShouldReturn then return ShouldReturn; end
         end
         -- concentrated_flame
-        if S.ConcentratedFlame:IsCastableP() then
+        if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame"; end
         end
         -- crusader_strike,if=holy_power<=4
@@ -435,13 +438,13 @@ local function APL()
    --         if ShouldReturn then return ShouldReturn; 
    --     end    
    -- end
+   
     -- call non DBM precombat
     if not Player:AffectingCombat() and not Action.GetToggle(1, "DBM") and not Player:IsCasting() then        
         local ShouldReturn = Precombat(); 
             if ShouldReturn then return ShouldReturn; 
         end    
-    end
-	
+    end	
     
     --- In Combat
     if Player:AffectingCombat() then
@@ -449,8 +452,7 @@ local function APL()
 		-- Interrupt Handler
  	 	local randomInterrupt = math.random(25, 70)
   		local unit = "target"
-   		local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
-        
+   		local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")          
   	    -- Rebuke
   	    if useKick and S.Rebuke:IsReady() and Target:IsInterruptible() then 
 		  	if Target:CastPercentage() >= randomInterrupt then
@@ -458,17 +460,15 @@ local function APL()
          	else 
           	    return
          	end 
-      	end 
-	
-     	 -- HammerofJustice
+      	end 	
+     	-- HammerofJustice
       	if useCC and S.HammerofJustice:IsReady() and Target:IsInterruptible() then 
 	  		if Target:CastPercentage() >= randomInterrupt then
      	        if HR.Cast(S.HammerofJustice, true) then return "HammerofJustice 5"; end
      	    else 
      	        return
      	    end 
-     	end 
-		
+     	end 		
         -- call_action_list,name=cooldowns
         if (HR.CDsON()) then
             local ShouldReturn = Cooldowns(); if ShouldReturn then return ShouldReturn; end

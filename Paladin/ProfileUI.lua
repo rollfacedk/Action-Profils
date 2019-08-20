@@ -119,23 +119,7 @@ A.Data.ProfileUI = {
                         frFR = "Enable this to show Shield of Vengeance in your DPS rotation.",
                     }, 
                     M = {},
-                }, 
-                {
-                    E = "Checkbox", 
-                    DB = "UseEyeBeam",
-                    DBV = true,
-                    L = { 
-                        enUS = "Use Eyebeam as soon as possible", 
-                        ruRU = "Use Eyebeam on cooldown", 
-                        frFR = "Utiliser Rayon Accablant dès que possible",
-                    }, 
-                    TT = { 
-                        enUS = "Use Eyebeam as soon as possible or not and use QueueMacro depending on your current needs", 
-                        ruRU = "Use Eyebeam as soon as possible or not and use QueueMacro depending on your current needs", 
-                        frFR = "Use Eyebeam as soon as possible or not and use QueueMacro depending on your current needs",
-                    }, 
-                    M = {},
-                },				
+                }, 				
             },
             { -- [4] 4th Row
 
