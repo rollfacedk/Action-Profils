@@ -953,7 +953,7 @@ local function APL()
         end
         -- actions+=/call_action_list,name=cds
         ShouldReturn = CDs();
-        if ShouldReturn then return "CDs: " .. ShouldReturn; end
+        if ShouldReturn and HR.CDsON() then return "CDs: " .. ShouldReturn; end
         -- actions+=/run_action_list,name=finish,if=combo_points>=cp_max_spend-(buff.broadside.up+buff.opportunity.up)*(talent.quick_draw.enabled&(!talent.marked_for_death.enabled|cooldown.marked_for_death.remains>1))
         if Player:ComboPoints() >= CPMaxSpend() - (num(Player:BuffP(S.Broadside)) + num(Player:BuffP(S.Opportunity))) * num(S.QuickDraw:IsAvailable() and (not S.MarkedforDeath:IsAvailable() or S.MarkedforDeath:CooldownRemainsP() > 1)) then
             ShouldReturn = Finish();
