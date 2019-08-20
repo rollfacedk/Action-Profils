@@ -322,7 +322,25 @@ local function CheckGoodBuffs()
         GotGoodBuff = (not S.SliceandDice:IsAvailable() and not Player:BuffP(S.RuthlessPrecision) and true) or false;
     elseif choice == "TRUEBEARING" then  
         GotGoodBuff = (not S.SliceandDice:IsAvailable() and not Player:BuffP(S.TrueBearing) and true) or false;
-    else
+    elseif choice == "SIMC" then  
+        if Player:BuffP(S.BladeFlurry) then
+            GotGoodBuff = (RtB_Buffs() - num(Player:BuffP(S.SkullandCrossbones)) < 2 and (Player:BuffP(S.LoadedDiceBuff) or
+            (not Player:BuffP(S.GrandMelee) and not Player:BuffP(S.RuthlessPrecision) and not Player:BuffP(S.Broadside)))) and true or false;
+        elseif S.SnakeEyesPower:AzeriteRank() >= 2 then
+           GotGoodBuff = (RtB_Buffs() < 2) and true or false;
+            -- # Do not reroll if Snake Eyes is at 2+ stacks of the buff (1+ stack with Broadside up)
+            -- actions+=/variable,name=rtb_reroll,op=reset,if=azerite.snake_eyes.rank>=2&buff.snake_eyes.stack>=2-buff.broadside.up
+            if Player:BuffStackP(S.SnakeEyesBuff) >= 2 - num(Player:BuffP(S.Broadside)) then
+                GotGoodBuff = false;
+            end
+        elseif S.Deadshot:AzeriteEnabled() or S.AceUpYourSleeve:AzeriteEnabled() then
+            GotGoodBuff = (RtB_Buffs() < 2 and (Player:BuffP(S.LoadedDiceBuff) or
+            Player:BuffRemainsP(S.RuthlessPrecision) <= S.BetweentheEyes:CooldownRemainsP())) and true or false;
+        else
+            GotGoodBuff = (RtB_Buffs() < 2 and (Player:BuffP(S.LoadedDiceBuff) or
+           (not Player:BuffP(S.GrandMelee) and not Player:BuffP(S.RuthlessPrecision)))) and true or false;
+        end
+	else
         print("No Dice Data")
     end
     return GotGoodBuff
