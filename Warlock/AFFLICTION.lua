@@ -891,6 +891,22 @@ local function APL()
         if (true) then
             VarMaintainSe = num(EnemiesCount <= 1 + num(S.WritheInAgony:IsAvailable()) + num(S.AbsoluteCorruption:IsAvailable()) * 2 + num((S.WritheInAgony:IsAvailable() and S.SowtheSeeds:IsAvailable() and EnemiesCount > 2)) + num((S.SiphonLife:IsAvailable() and not S.CreepingDeath:IsAvailable() and not S.DrainSoul:IsAvailable())))
         end
+		
+		
+		-- agony,target_if=min:dot.agony.remains,if=remains<=gcd+action.shadow_bolt.execute_time&target.time_to_die>8
+        if S.Agony:IsCastableP() and Player:IsMoving() and not ShouldStop and Target:DebuffRemainsP(S.AgonyDebuff) <= 5 then
+            if HR.Cast(S.Agony) then return "siphon_life 770" end
+        end
+	    -- agony,target_if=min:dot.agony.remains,if=remains<=gcd+action.shadow_bolt.execute_time&target.time_to_die>8
+        if S.Corruption:IsCastableP() and Player:IsMoving() and not ShouldStop and Target:DebuffRemainsP(S.CorruptionDebuff) <= 5 then
+            if HR.Cast(S.Corruption) then return "siphon_life 770" end
+        end
+	    -- agony,target_if=min:dot.agony.remains,if=remains<=gcd+action.shadow_bolt.execute_time&target.time_to_die>8
+        if S.SiphonLife:IsCastableP() and Player:IsMoving() and not ShouldStop and Target:DebuffRemainsP(S.SiphonLifeDebuff) <= 5 then
+            if HR.Cast(S.SiphonLife) then return "siphon_life 770" end
+        end
+		
+		
         -- call_action_list,name=cooldowns
         if (true) and Action.GetToggle(2, "CDs") then
             local ShouldReturn = Cooldowns(); if ShouldReturn then return ShouldReturn; end
@@ -908,7 +924,7 @@ local function APL()
             if HR.Cast(S.SummonDarkglare, Action.GetToggle(2, "OffGCDasOffGCD")) then return "summon_darkglare 716"; end
         end
         -- deathbolt,if=cooldown.summon_darkglare.remains&spell_targets.seed_of_corruption_aoe=1+raid_event.invulnerable.up&(!essence.vision_of_perfection.minor&!azerite.dreadful_calling.rank|cooldown.summon_darkglare.remains>30)
-        if S.Deathbolt:IsCastableP() and not ShouldStop and (bool(S.SummonDarkglare:CooldownRemainsP()) and EnemiesCount == 1 and (not S.VisionofPerfectionMinor:IsAvailable() and not bool(S.DreadfulCalling:AzeriteRank()) or S.SummonDarkglare:CooldownRemainsP() > 30)) then
+        if S.Deathbolt:IsCastableP() and not ShouldStop and (S.SummonDarkglare:CooldownRemainsP() >= 30) and EnemiesCount == 1 and (not S.VisionofPerfectionMinor:IsAvailable() and not bool(S.DreadfulCalling:AzeriteRank()) or S.SummonDarkglare:CooldownRemainsP() > 30) then
             if HR.Cast(S.Deathbolt) then return "deathbolt 734"; end
         end 
         -- deathbolt,if=shard<=1&!cooldowns
@@ -981,7 +997,7 @@ local function APL()
             if HR.Cast(S.VileTaint) then return "vile_taint 861" end
         end
         -- use_item,name=azsharas_font_of_power,if=time<=3
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsTrinketON() and not ShouldStop and I.AzsharasFontofPower:IsReady() and (HL.CombatTime() <= 3) then
+        if I.AzsharasFontofPower:IsEquipped()  and not ShouldStop and I.AzsharasFontofPower:IsReady() and (HL.CombatTime() <= 3) then
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 879"; end
         end
         -- phantom_singularity,if=time<=35
