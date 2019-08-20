@@ -280,6 +280,46 @@ local function DetermineEssenceRanks()
     S.MemoryofLucidDreamsMinor = S.MemoryofLucidDreamsMinor3:IsAvailable() and S.MemoryofLucidDreamsMinor3 or S.MemoryofLucidDreamsMinor
 end
 
+-- Trinkets checker handler
+local function trinketReady(trinketPosition)
+    local inventoryPosition
+    
+	if trinketPosition == 1 then
+        inventoryPosition = 13
+    end
+    
+	if trinketPosition == 2 then
+        inventoryPosition = 14
+    end
+    
+	local start, duration, enable = GetInventoryItemCooldown("Player", inventoryPosition)
+    if enable == 0 then
+        return false
+    end
+
+    if start + duration - GetTime() > 0 then
+        return false
+    end
+	
+	if Action.GetToggle(1, "Trinkets")[1] == false then
+	    return false
+	end
+	
+   	if Action.GetToggle(1, "Trinkets")[2] == false then
+	    return false
+	end	
+	
+    return true
+end
+
+local function TrinketON()
+    if trinketReady(1) or trinketReady(2) then
+        return true
+	else
+	    return false
+	end
+end
+
 local function num(val)
     if val then return 1 else return 0 end
 end
@@ -344,7 +384,7 @@ local function APL()
         end
         -- snapshot_stats
         -- use_item,name=azsharas_font_of_power
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and I.AzsharasFontofPower:IsTrinketON() and Pull > 2 and Pull <= I.AzsharasFontofPower:CastTime() then
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and TrinketON() and Pull > 2 and Pull <= I.AzsharasFontofPower:CastTime() then
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 9"; end
         end
         -- mirror_image
@@ -387,7 +427,7 @@ local function APL()
         end
         -- snapshot_stats
         -- use_item,name=azsharas_font_of_power
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and I.AzsharasFontofPower:IsTrinketON() then
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and TrinketON() then
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 9"; end
         end
         -- mirror_image
@@ -508,86 +548,86 @@ local function APL()
 	
     local function ItemsCombustion()
         -- use_item,name=ignition_mages_fuse
-        if I.IgnitionMagesFuse:IsEquipped() and I.IgnitionMagesFuse:IsReady() and I.IgnitionMagesFuse:IsTrinketON() then
+        if I.IgnitionMagesFuse:IsEquipped() and I.IgnitionMagesFuse:IsReady() and TrinketON() then
             if HR.Cast(I.IgnitionMagesFuse) then return "ignition_mages_fuse combustion"; end
         end
         -- use_item,name=hyperthread_wristwraps,if=buff.combustion.up&action.fire_blast.charges=0&action.fire_blast.recharge_time>gcd.remains
-        if I.HyperthreadWristwraps:IsEquipped() and I.HyperthreadWristwraps:IsReady() and I.HyperthreadWristwraps:IsTrinketON() and (Player:BuffP(S.CombustionBuff) and S.FireBlast:Charges() == 0 and S.FireBlast:RechargeP() > Player:GCDRemains()) then
+        if I.HyperthreadWristwraps:IsEquipped() and I.HyperthreadWristwraps:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) and S.FireBlast:Charges() == 0 and S.FireBlast:RechargeP() > Player:GCDRemains()) then
             if HR.Cast(I.HyperthreadWristwraps) then return "hyperthread_wristwraps combustion"; end
         end
         -- use_item,use_off_gcd=1,name=azurethos_singed_plumage,if=buff.combustion.up|action.meteor.in_flight&action.meteor.in_flight_remains<=0.5
-        if I.AzurethoseSingedPlumage:IsEquipped() and I.AzurethoseSingedPlumage:IsReady() and I.AzurethoseSingedPlumage:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.AzurethoseSingedPlumage:IsEquipped() and I.AzurethoseSingedPlumage:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.AzurethoseSingedPlumage) then return "azurethos_singed_plumage combustion"; end
         end
         -- use_item,use_off_gcd=1,effect_name=gladiators_badge,if=buff.combustion.up|action.meteor.in_flight&action.meteor.in_flight_remains<=0.5
         -- One line per badge
-        if I.NotoriousAspirantsBadge:IsEquipped() and I.NotoriousAspirantsBadge:IsReady() and I.NotoriousAspirantsBadge:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.NotoriousAspirantsBadge:IsEquipped() and I.NotoriousAspirantsBadge:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.NotoriousAspirantsBadge) then return "gladiators_badge combustion"; end
         end
-        if I.NotoriousGladiatorsBadge:IsEquipped() and I.NotoriousGladiatorsBadge:IsReady() and I.NotoriousGladiatorsBadge:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.NotoriousGladiatorsBadge:IsEquipped() and I.NotoriousGladiatorsBadge:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.NotoriousGladiatorsBadge) then return "gladiators_badge combustion"; end
         end
-        if I.SinisterGladiatorsBadge:IsEquipped() and I.SinisterGladiatorsBadge:IsReady() and I.SinisterGladiatorsBadge:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.SinisterGladiatorsBadge:IsEquipped() and I.SinisterGladiatorsBadge:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.SinisterGladiatorsBadge) then return "gladiators_badge combustion"; end
         end
-        if I.SinisterAspirantsBadge:IsEquipped() and I.SinisterAspirantsBadge:IsReady() and I.SinisterAspirantsBadge:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.SinisterAspirantsBadge:IsEquipped() and I.SinisterAspirantsBadge:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.SinisterAspirantsBadge) then return "gladiators_badge combustion"; end
         end
-        if I.DreadGladiatorsBadge:IsEquipped() and I.DreadGladiatorsBadge:IsReady() and I.DreadGladiatorsBadge:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.DreadGladiatorsBadge:IsEquipped() and I.DreadGladiatorsBadge:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.DreadGladiatorsBadge) then return "gladiators_badge combustion"; end
         end
-        if I.DreadAspirantsBadge:IsEquipped() and I.DreadAspirantsBadge:IsReady() and I.DreadAspirantsBadge:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.DreadAspirantsBadge:IsEquipped() and I.DreadAspirantsBadge:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.DreadAspirantsBadge) then return "gladiators_badge combustion"; end
         end
         -- use_item,use_off_gcd=1,effect_name=gladiators_medallion,if=buff.combustion.up|action.meteor.in_flight&action.meteor.in_flight_remains<=0.5
         -- One line per medallion
-        if I.NotoriousAspirantsMedallion:IsEquipped() and I.NotoriousAspirantsMedallion:IsReady() and I.NotoriousAspirantsMedallion:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.NotoriousAspirantsMedallion:IsEquipped() and I.NotoriousAspirantsMedallion:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.NotoriousAspirantsMedallion) then return "gladiators_medallion combustion"; end
         end
-        if I.NotoriousGladiatorsMedallion:IsEquipped() and I.NotoriousGladiatorsMedallion:IsReady() and I.NotoriousGladiatorsMedallion:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.NotoriousGladiatorsMedallion:IsEquipped() and I.NotoriousGladiatorsMedallion:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.NotoriousGladiatorsMedallion) then return "gladiators_medallion combustion"; end
         end
-        if I.SinisterGladiatorsMedallion:IsEquipped() and I.SinisterGladiatorsMedallion:IsReady() and I.SinisterGladiatorsMedallion:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.SinisterGladiatorsMedallion:IsEquipped() and I.SinisterGladiatorsMedallion:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.SinisterGladiatorsMedallion) then return "gladiators_medallion combustion"; end
         end
-        if I.SinisterAspirantsMedallion:IsEquipped() and I.SinisterAspirantsMedallion:IsReady() and I.SinisterAspirantsMedallion:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.SinisterAspirantsMedallion:IsEquipped() and I.SinisterAspirantsMedallion:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.SinisterAspirantsMedallion) then return "gladiators_medallion combustion"; end
         end
-        if I.DreadGladiatorsMedallion:IsEquipped() and I.DreadGladiatorsMedallion:IsReady() and I.DreadGladiatorsMedallion:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.DreadGladiatorsMedallion:IsEquipped() and I.DreadGladiatorsMedallion:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.DreadGladiatorsMedallion) then return "gladiators_medallion combustion"; end
         end
-        if I.DreadAspirantsMedallion:IsEquipped() and I.DreadAspirantsMedallion:IsReady() and I.DreadAspirantsMedallion:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.DreadAspirantsMedallion:IsEquipped() and I.DreadAspirantsMedallion:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.DreadAspirantsMedallion) then return "gladiators_medallion combustion"; end
         end
-        if I.DreadCombatantsMedallion:IsEquipped() and I.DreadCombatantsMedallion:IsReady() and I.DreadCombatantsMedallion:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.DreadCombatantsMedallion:IsEquipped() and I.DreadCombatantsMedallion:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.DreadCombatantsMedallion) then return "gladiators_medallion combustion"; end
         end
         -- use_item,use_off_gcd=1,name=balefire_branch,if=buff.combustion.up|action.meteor.in_flight&action.meteor.in_flight_remains<=0.5
-        if I.BalefireBranch:IsEquipped() and I.BalefireBranch:IsReady() and I.BalefireBranch:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.BalefireBranch:IsEquipped() and I.BalefireBranch:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.BalefireBranch) then return "balefire_branch combustion"; end
         end
         -- use_item,use_off_gcd=1,name=shockbiters_fang,if=buff.combustion.up|action.meteor.in_flight&action.meteor.in_flight_remains<=0.5
-        if I.ShockbitersFang:IsEquipped() and I.ShockbitersFang:IsReady() and I.ShockbitersFang:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.ShockbitersFang:IsEquipped() and I.ShockbitersFang:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.ShockbitersFang) then return "shockbiters_fang combustion"; end
         end
         -- use_item,use_off_gcd=1,name=tzanes_barkspines,if=buff.combustion.up|action.meteor.in_flight&action.meteor.in_flight_remains<=0.5
-        if I.TzanesBarkspines:IsEquipped() and I.TzanesBarkspines:IsReady() and I.TzanesBarkspines:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.TzanesBarkspines:IsEquipped() and I.TzanesBarkspines:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.TzanesBarkspines) then return "tzanes_barkspines combustion"; end
         end
         -- use_item,use_off_gcd=1,name=ancient_knot_of_wisdom,if=buff.combustion.up|action.meteor.in_flight&action.meteor.in_flight_remains<=0.5
         -- Two conditions, since the horde and alliance trinkets have different IDs
-        if I.AncientKnotofWisdomAlliance:IsEquipped() and I.AncientKnotofWisdomAlliance:IsReady() and I.AncientKnotofWisdomAlliance:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.AncientKnotofWisdomAlliance:IsEquipped() and I.AncientKnotofWisdomAlliance:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.AncientKnotofWisdomAlliance) then return "ancient_knot_of_wisdom combustion"; end
        end
-        if I.AncientKnotofWisdomHorde:IsEquipped() and I.AncientKnotofWisdomHorde:IsReady() and I.AncientKnotofWisdomHorde:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.AncientKnotofWisdomHorde:IsEquipped() and I.AncientKnotofWisdomHorde:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.AncientKnotofWisdomHorde) then return "ancient_knot_of_wisdom combustion"; end
         end
         -- use_item,use_off_gcd=1,name=neural_synapse_enhancer,if=buff.combustion.up|action.meteor.in_flight&action.meteor.in_flight_remains<=0.5
-        if I.NeuralSynapseEnhancer:IsEquipped() and I.NeuralSynapseEnhancer:IsReady() and I.NeuralSynapseEnhancer:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.NeuralSynapseEnhancer:IsEquipped() and I.NeuralSynapseEnhancer:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.NeuralSynapseEnhancer) then return "neural_synapse_enhancer combustion"; end
         end
         -- use_item,use_off_gcd=1,name=malformed_heralds_legwraps,if=buff.combustion.up|action.meteor.in_flight&action.meteor.in_flight_remains<=0.5
-        if I.MalformedHeraldsLegwraps:IsEquipped() and I.MalformedHeraldsLegwraps:IsReady() and I.MalformedHeraldsLegwraps:IsTrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
+        if I.MalformedHeraldsLegwraps:IsEquipped() and I.MalformedHeraldsLegwraps:IsReady() and TrinketON() and (Player:BuffP(S.CombustionBuff) or S.Meteor:InFlight() and S.Meteor:TimeSinceLastCast() >= 2.5) then
             if HR.Cast(I.MalformedHeraldsLegwraps) then return "malformed_heralds_legwraps combustion"; end
         end
     end
@@ -599,50 +639,50 @@ local function APL()
         end
         -- use_items
         -- use_item,name=azsharas_font_of_power,if=cooldown.combustion.remains<=5+15*variable.font_double_on_use
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and I.AzsharasFontofPower:IsTrinketON() and (S.Combustion:CooldownRemainsP() <= 5 + 15 * VarFontDoubleOnUse) then
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and TrinketON() and (S.Combustion:CooldownRemainsP() <= 5 + 15 * VarFontDoubleOnUse) then
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power high_priority"; end
         end
         -- use_item,name=rotcrusted_voodoo_doll,if=cooldown.combustion.remains>variable.on_use_cutoff
-        if I.RotcrustedVoodooDoll:IsEquipped() and I.RotcrustedVoodooDoll:IsReady() and I.RotcrustedVoodooDoll:IsTrinketON() and (S.Combustion:CooldownRemainsP() > VarOnUseCutoff) then
+        if I.RotcrustedVoodooDoll:IsEquipped() and I.RotcrustedVoodooDoll:IsReady() and TrinketON() and (S.Combustion:CooldownRemainsP() > VarOnUseCutoff) then
             if HR.Cast(I.RotcrustedVoodooDoll) then return "rotcrusted_voodoo_doll high_priority"; end
         end
         -- use_item,name=aquipotent_nautilus,if=cooldown.combustion.remains>variable.on_use_cutoff
-        if I.AquipotentNautilus:IsEquipped() and I.AquipotentNautilus:IsReady() and I.AquipotentNautilus:IsTrinketON() and (S.Combustion:CooldownRemainsP() > VarOnUseCutoff) then
+        if I.AquipotentNautilus:IsEquipped() and I.AquipotentNautilus:IsReady() and TrinketON() and (S.Combustion:CooldownRemainsP() > VarOnUseCutoff) then
             if HR.Cast(I.AquipotentNautilus) then return "aquipotent_nautilus high_priority"; end
         end
         -- use_item,name=shiver_venom_relic,if=cooldown.combustion.remains>variable.on_use_cutoff
-        if I.ShiverVenomRelic:IsEquipped() and I.ShiverVenomRelic:IsReady() and I.ShiverVenomRelic:IsTrinketON() and (S.Combustion:CooldownRemainsP() > VarOnUseCutoff) then
+        if I.ShiverVenomRelic:IsEquipped() and I.ShiverVenomRelic:IsReady() and TrinketON() and (S.Combustion:CooldownRemainsP() > VarOnUseCutoff) then
             if HR.Cast(I.ShiverVenomRelic) then return "shiver_venom_relic high_priority"; end
         end
         -- use_item,effect_name=harmonic_dematerializer
-        if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and I.PocketsizedComputationDevice:IsTrinketON() and S.HarmonicDematerializer:IsAvailable() then
+        if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and TrinketON() and S.HarmonicDematerializer:IsAvailable() then
             if HR.Cast(I.PocketsizedComputationDevice) then return "harmonic_dematerializer high_priority"; end
         end
         -- use_item,name=malformed_heralds_legwraps,if=cooldown.combustion.remains>=55&buff.combustion.down&cooldown.combustion.remains>variable.on_use_cutoff
-        if I.MalformedHeraldsLegwraps:IsEquipped() and I.MalformedHeraldsLegwraps:IsReady() and I.MalformedHeraldsLegwraps:IsTrinketON() and (S.Combustion:CooldownRemainsP() >= 55 and Player:BuffDownP(S.CombustionBuff) and S.Combustion:CooldownRemainsP() > VarOnUseCutoff) then
+        if I.MalformedHeraldsLegwraps:IsEquipped() and I.MalformedHeraldsLegwraps:IsReady() and TrinketON() and (S.Combustion:CooldownRemainsP() >= 55 and Player:BuffDownP(S.CombustionBuff) and S.Combustion:CooldownRemainsP() > VarOnUseCutoff) then
             if HR.Cast(I.MalformedHeraldsLegwraps) then return "malformed_heralds_legwraps high_priority"; end
         end
         -- use_item,name=ancient_knot_of_wisdom,if=cooldown.combustion.remains>=55&buff.combustion.down&cooldown.combustion.remains>variable.on_use_cutoff
         -- Two conditions, since the horde and alliance trinkets have different IDs
-        if I.AncientKnotofWisdomAlliance:IsEquipped() and I.AncientKnotofWisdomAlliance:IsReady() and I.AncientKnotofWisdomAlliance:IsTrinketON() and (S.Combustion:CooldownRemainsP() >= 55 and Player:BuffDownP(S.CombustionBuff) and S.Combustion:CooldownRemainsP() > VarOnUseCutoff) then
+        if I.AncientKnotofWisdomAlliance:IsEquipped() and I.AncientKnotofWisdomAlliance:IsReady() and TrinketON() and (S.Combustion:CooldownRemainsP() >= 55 and Player:BuffDownP(S.CombustionBuff) and S.Combustion:CooldownRemainsP() > VarOnUseCutoff) then
             if HR.Cast(I.AncientKnotofWisdomAlliance) then return "ancient_knot_of_wisdom high_priority"; end
         end
-        if I.AncientKnotofWisdomHorde:IsEquipped() and I.AncientKnotofWisdomHorde:IsReady() and I.AncientKnotofWisdomHorde:IsTrinketON() and (S.Combustion:CooldownRemainsP() >= 55 and Player:BuffDownP(S.CombustionBuff) and S.Combustion:CooldownRemainsP() > VarOnUseCutoff) then
+        if I.AncientKnotofWisdomHorde:IsEquipped() and I.AncientKnotofWisdomHorde:IsReady() and TrinketON() and (S.Combustion:CooldownRemainsP() >= 55 and Player:BuffDownP(S.CombustionBuff) and S.Combustion:CooldownRemainsP() > VarOnUseCutoff) then
             if HR.Cast(I.AncientKnotofWisdomHorde) then return "ancient_knot_of_wisdom high_priority"; end
         end
         -- use_item,name=neural_synapse_enhancer,if=cooldown.combustion.remains>=45&buff.combustion.down&cooldown.combustion.remains>variable.on_use_cutoff
-        if I.NeuralSynapseEnhancer:IsEquipped() and I.NeuralSynapseEnhancer:IsReady() and I.NeuralSynapseEnhancer:IsTrinketON() and (S.Combustion:CooldownRemainsP() >= 45 and Player:BuffDownP(S.CombustionBuff) and S.Combustion:CooldownRemainsP() > VarOnUseCutoff) then
+        if I.NeuralSynapseEnhancer:IsEquipped() and I.NeuralSynapseEnhancer:IsReady() and TrinketON() and (S.Combustion:CooldownRemainsP() >= 45 and Player:BuffDownP(S.CombustionBuff) and S.Combustion:CooldownRemainsP() > VarOnUseCutoff) then
             if HR.Cast(I.NeuralSynapseEnhancer) then return "neural_synapse_enhancer high_priority"; end
         end
     end
 	
     local function ItemsLowPriority()
         -- use_item,name=tidestorm_codex,if=cooldown.combustion.remains>variable.on_use_cutoff|talent.firestarter.enabled&firestarter.remains>variable.on_use_cutoff
-        if I.TidestormCodex:IsEquipped() and I.TidestormCodex:IsReady() and I.TidestormCodex:IsTrinketON() and (S.Combustion:CooldownRemainsP() > VarOnUseCutoff or S.Firestarter:IsAvailable() and S.Firestarter:ActiveRemains() > VarOnUseCutoff) then
+        if I.TidestormCodex:IsEquipped() and I.TidestormCodex:IsReady() and TrinketON() and (S.Combustion:CooldownRemainsP() > VarOnUseCutoff or S.Firestarter:IsAvailable() and S.Firestarter:ActiveRemains() > VarOnUseCutoff) then
             if HR.Cast(I.TidestormCodex) then return "tidestorm_codex low_priority"; end
         end
         -- use_item,effect_name=cyclotronic_blast,if=cooldown.combustion.remains>variable.on_use_cutoff|talent.firestarter.enabled&firestarter.remains>variable.on_use_cutoff
-        if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and I.PocketsizedComputationDevice:IsTrinketON() and S.CyclotronicBlast:IsAvailable() and (S.Combustion:CooldownRemainsP() > VarOnUseCutoff or S.Firestarter:IsAvailable() and S.Firestarter:ActiveRemains() > VarOnUseCutoff) then
+        if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and TrinketON() and S.CyclotronicBlast:IsAvailable() and (S.Combustion:CooldownRemainsP() > VarOnUseCutoff or S.Firestarter:IsAvailable() and S.Firestarter:ActiveRemains() > VarOnUseCutoff) then
             if HR.Cast(I.PocketsizedComputationDevice) then return "cyclotronic_blast low_priority"; end
         end
     end

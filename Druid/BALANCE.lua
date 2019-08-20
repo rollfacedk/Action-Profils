@@ -199,6 +199,46 @@ local function DetermineEssenceRanks()
     S.CondensedLifeforce = S.CondensedLifeforce3:IsAvailable() and S.CondensedLifeforce3 or S.CondensedLifeforce
 end
 
+-- Trinkets checker handler
+local function trinketReady(trinketPosition)
+    local inventoryPosition
+    
+	if trinketPosition == 1 then
+        inventoryPosition = 13
+    end
+    
+	if trinketPosition == 2 then
+        inventoryPosition = 14
+    end
+    
+	local start, duration, enable = GetInventoryItemCooldown("Player", inventoryPosition)
+    if enable == 0 then
+        return false
+    end
+
+    if start + duration - GetTime() > 0 then
+        return false
+    end
+	
+	if Action.GetToggle(1, "Trinkets")[1] == false then
+	    return false
+	end
+	
+   	if Action.GetToggle(1, "Trinkets")[2] == false then
+	    return false
+	end	
+	
+    return true
+end
+
+local function TrinketON()
+    if trinketReady(1) or trinketReady(2) then
+        return true
+	else
+	    return false
+	end
+end
+
 -- Variables
 local VarAzSs = 0;
 local VarAzAp = 0;
@@ -404,7 +444,7 @@ local function APL()
             if HR.Cast(S.MoonkinForm, Action.GetToggle(2, "GCDasOffGCD")) then return "moonkin_form 39"; end
         end
         -- use_item,name=azsharas_font_of_power
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and I.AzsharasFontofPower:IsTrinketON() then
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and TrinketON() then
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power precombat"; end
         end
         -- potion,dynamic_prepot=1
@@ -488,7 +528,7 @@ local function APL()
             if HR.Cast(S.Berserking, Action.GetToggle(2, "GCDasOffGCD")) then return "berserking 65"; end
         end
         -- use_item,name=azsharas_font_of_power,if=!buff.ca_inc.up,target_if=dot.moonfire.ticking&dot.sunfire.ticking&(!talent.stellar_flare.enabled|dot.stellar_flare.ticking)
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and I.AzsharasFontofPower:IsTrinketON() and (Player:BuffDownP(CaInc()) and DoTsUp())then
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and TrinketON() and (Player:BuffDownP(CaInc()) and DoTsUp())then
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 73" end
         end
         -- guardian_of_azeroth,if=(!talent.starlord.enabled|buff.starlord.up)&!buff.ca_inc.up,target_if=dot.moonfire.ticking&dot.sunfire.ticking&(!talent.stellar_flare.enabled|dot.stellar_flare.ticking)
@@ -496,11 +536,11 @@ local function APL()
             if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth 94" end
         end
         -- use_item,effect_name=cyclotronic_blast,if=!buff.ca_inc.up,target_if=dot.moonfire.ticking&dot.sunfire.ticking&(!talent.stellar_flare.enabled|dot.stellar_flare.ticking)
-        if I.PocketsizedComputationDevice:IsEquipped() and EvaluateCyclePocketsizedComputationDevice103(Target) and I.PocketsizedComputationDevice:IsReady() and S.CyclotronicBlast:IsAvailable() and I.PocketsizedComputationDevice:IsTrinketON() then
+        if I.PocketsizedComputationDevice:IsEquipped() and EvaluateCyclePocketsizedComputationDevice103(Target) and I.PocketsizedComputationDevice:IsReady() and S.CyclotronicBlast:IsAvailable() and TrinketON() then
             if HR.CastCycle(I.PocketsizedComputationDevice) then return "pocketsized_computation_device 117" end
         end
         -- use_item,name=shiver_venom_relicif=!buff.ca_inc.up,target_if=dot.shiver_venom.stack>=5
-        if I.ShiverVenomRelic:IsEquipped() and I.ShiverVenomRelic:IsReady() and I.ShiverVenomRelic:IsTrinketON() and EvaluateCycleShiverVenomRelic104(Target) then
+        if I.ShiverVenomRelic:IsEquipped() and I.ShiverVenomRelic:IsReady() and TrinketON() and EvaluateCycleShiverVenomRelic104(Target) then
             if HR.CastCycle(I.ShiverVenomRelic) then return "shiver_venom_relic 105"; end
         end
         -- blood_of_the_enemy,if=cooldown.ca_inc.remains>30
