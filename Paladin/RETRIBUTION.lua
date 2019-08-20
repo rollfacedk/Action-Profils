@@ -149,25 +149,6 @@ Action.HeroSetHookAllTable(I, {
 local ShouldReturn; -- Used to get the return string
 local ForceOffGCD = {true, false};
 
--- Variables
-local VarPoolingForMeta = 0;
-local VarWaitingForNemesis = 0;
-local VarBladeDance = 0;
-local VarPoolingForBladeDance = 0;
-local VarPoolingForEyeBeam = 0;
-local VarWaitingForMomentum = 0;
-local VarWaitingForDarkSlash = 0;
-
-HL:RegisterForEvent(function()
-  VarPoolingForMeta = 0
-  VarWaitingForNemesis = 0
-  VarBladeDance = 0
-  VarPoolingForBladeDance = 0
-  VarPoolingForEyeBeam = 0
-  VarWaitingForMomentum = 0
-  VarWaitingForDarkSlash = 0
-end, "PLAYER_REGEN_ENABLED")
-
 local StunInterrupts = {
   {S.HammerofJustice, "Cast Hammer of Justice (Interrupt)", function () return true; end},
 };
