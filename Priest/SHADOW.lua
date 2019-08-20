@@ -388,6 +388,18 @@ local function APL()
                 if HR.Cast(S.VampiricTouch) then return "vampiric_touch 54"; end
             end
     end
+	
+    local function CritCds()
+        -- use_item,name=azsharas_font_of_power
+        if I.AzsharasFontofPower:IsEquipReady() and TrinketON() then
+            if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power critcds"; end
+        end
+        -- use_item,effect_name=cyclotronic_blast
+        if I.PocketsizedComputationDevice:IsEquipReady() and TrinketON() then
+            if HR.Cast(I.PocketsizedComputationDevice) then return "pocketsized_computation_device critcds"; end
+        end
+    end
+	
     local function Cds()
         -- memory_of_lucid_dreams,if=(buff.voidform.stack>20&insanity<=50)|buff.voidform.stack>(26+7*buff.bloodlust.up)|(current_insanity_drain*((gcd.max*2)+action.mind_blast.cast_time)>insanity
         if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and ((Player:BuffStackP(S.VoidformBuff) > 20 and Player:Insanity() <= 50) or Player:BuffStackP(S.VoidformBuff) > (26 + 7 * num(Player:HasHeroism())) or (InsanityDrain * ((Player:GCD() * 2) + S.MindBlast:CastTime())) > Player:Insanity()) then
@@ -459,7 +471,7 @@ local function APL()
         end
         -- shadow_word_death,target_if=target.time_to_die<3|buff.voidform.down
         if S.ShadowWordDeath:IsReadyP() and EvaluateCycleShadowWordDeath84(Target) then
-            if HR.CastCycle(S.ShadowWordDeath) then return "shadow_word_death 88" end
+            if HR.Cast(S.ShadowWordDeath) then return "shadow_word_death 88" end
         end
         -- surrender_to_madness,if=buff.voidform.stack>10+(10*buff.bloodlust.up)
         if S.SurrenderToMadness:IsReadyP() and (Player:BuffStackP(S.VoidformBuff) > 10 + (10 * num(Player:HasHeroism()))) then
@@ -475,11 +487,11 @@ local function APL()
         end
         -- mind_blast,target_if=spell_targets.mind_sear<variable.mind_blast_targets
         if S.MindBlast:IsReadyP() and EvaluateCycleMindBlast103(Target) and not Player:IsCasting(S.MindBlast) then
-            if HR.CastCycle(S.MindBlast) then return "mind_blast 107" end
+            if HR.Cast(S.MindBlast) then return "mind_blast 107" end
         end
         -- shadow_word_void (added)
         if S.ShadowWordVoid:IsReadyP() and EvaluateCycleMindBlast103(Target) and not (Player:IsCasting(S.ShadowWordVoid) and S.ShadowWordVoid:ChargesP() == 1) then
-            if HR.CastCycle(S.ShadowWordVoid) then return "shadow_word_void added 107" end
+            if HR.Cast(S.ShadowWordVoid) then return "shadow_word_void added 107" end
         end
         -- shadow_crash,if=(raid_event.adds.in>5&raid_event.adds.duration<2)|raid_event.adds.duration>2
         if S.ShadowCrash:IsReadyP() and not Player:IsCasting(S.ShadowCrash) then
@@ -487,15 +499,15 @@ local function APL()
         end
         -- shadow_word_pain,target_if=refreshable&target.time_to_die>((-1.2+3.3*spell_targets.mind_sear)*variable.swp_trait_ranks_check*(1-0.012*azerite.searing_dialogue.rank*spell_targets.mind_sear)),if=!talent.misery.enabled
         if S.ShadowWordPain:IsCastableP() and EvaluateCycleShadowWordPain114(Target) then
-            if HR.CastCycle(S.ShadowWordPain) then return "shadow_word_pain 128" end
+            if HR.Cast(S.ShadowWordPain) then return "shadow_word_pain 128" end
         end
         -- vampiric_touch,target_if=refreshable,if=target.time_to_die>((1+3.3*spell_targets.mind_sear)*variable.vt_trait_ranks_check*(1+0.10*azerite.searing_dialogue.rank*spell_targets.mind_sear))
         if S.VampiricTouch:IsCastableP() and EvaluateCycleVampiricTouch133(Target) then
-            if HR.CastCycle(S.VampiricTouch) then return "vampiric_touch 145" end
+            if HR.Cast(S.VampiricTouch) then return "vampiric_touch 145" end
         end
         -- vampiric_touch,target_if=dot.shadow_word_pain.refreshable,if=(talent.misery.enabled&target.time_to_die>((1.0+2.0*spell_targets.mind_sear)*variable.vt_mis_trait_ranks_check*(variable.vt_mis_sd_check*spell_targets.mind_sear)))
         if S.VampiricTouch:IsCastableP() and EvaluateCycleVampiricTouch150(Target) then
-            if HR.CastCycle(S.VampiricTouch) then return "vampiric_touch 160" end
+            if HR.Cast(S.VampiricTouch) then return "vampiric_touch 160" end
         end
         -- void_torrent,if=buff.voidform.up
         if S.VoidTorrent:IsReadyP() and (Player:BuffP(S.VoidformBuff)) and not Player:IsCasting(S.VoidTorrent) then
@@ -503,7 +515,7 @@ local function APL()
         end
         -- mind_sear,target_if=spell_targets.mind_sear>1,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2
         if S.MindSear:IsCastableP() and EvaluateCycleMindSear169(Target) then
-            if HR.CastCycle(S.MindSear) then return "mind_sear 171" end
+            if HR.Cast(S.MindSear) then return "mind_sear 171" end
         end
         -- mind_flay,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2&(cooldown.void_bolt.up|cooldown.mind_blast.up)
         if S.MindFlay:IsCastableP() then
@@ -514,18 +526,7 @@ local function APL()
             if HR.Cast(S.ShadowWordPain) then return "shadow_word_pain 174"; end
         end
     end
-	
-    local function CritCds()
-        -- use_item,name=azsharas_font_of_power
-        if I.AzsharasFontofPower:IsEquipReady() and TrinketON() then
-            if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power critcds"; end
-        end
-        -- use_item,effect_name=cyclotronic_blast
-        if I.PocketsizedComputationDevice:IsEquipReady() and TrinketON() then
-            if HR.Cast(I.PocketsizedComputationDevice) then return "pocketsized_computation_device critcds"; end
-        end
-    end
-	
+		
     local function Single()
         -- void_eruption
         if S.VoidEruption:IsReadyP() and Player:Insanity() >= InsanityThreshold() and not Player:IsCasting(S.VoidEruption) then
@@ -606,9 +607,9 @@ local function APL()
     end
     
     -- Protect against interrupt of channeled spells
-    if Player:IsCasting() and Player:CastRemains() >= ((select(4, GetNetStats()) / 1000 * 2) + 0.05) or Player:IsChanneling() or ShouldStop then
-        if HR.Cast(S.Channeling) then return "" end
-    end  
+    --if Player:IsCasting() and Player:CastRemains() >= ((select(4, GetNetStats()) / 1000 * 2) + 0.05) or Player:IsChanneling() or ShouldStop then
+    --    if HR.Cast(S.Channeling) then return "" end
+    --end  
 	-- call DBM precombat
     --if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
     --    local ShouldReturn = Precombat_DBM(); 

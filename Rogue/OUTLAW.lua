@@ -837,7 +837,8 @@ local function APL()
     BladeFlurryRange = S.AcrobaticStrikes:IsAvailable() and 9 or 6;
     InitBurstCDTimer()
     ToggleBurstMode()
-	UpdateRanges()
+	HL.GetEnemies(BladeFlurryRange);
+    HL.GetEnemies("Melee");
 	EnemiesCount = GetEnemiesCount(BladeFlurryRange)
 	CheckGoodBuffs()
 	--print(EnemiesCount)
@@ -912,8 +913,6 @@ local function APL()
     MfDSniping(S.MarkedforDeath);
       
 	if Player:AffectingCombat() then
-        
-		ToggleBurstMode()
 		
 		-- Mythic Dungeon
         ShouldReturn = MythicDungeon();
