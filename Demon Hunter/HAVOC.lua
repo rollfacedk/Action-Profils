@@ -698,7 +698,7 @@ local function APL()
         VarWaitingForMomentum = num(S.Momentum:IsAvailable() and not Player:BuffP(S.MomentumBuff))
     
         -- call_action_list,name=cooldown,if=gcd.remains=0
-        if Action.GetToggle(2, "CDs") then
+        if HR.CDsON() then
             local ShouldReturn = Cooldown(); if ShouldReturn then return ShouldReturn; end
         end
     

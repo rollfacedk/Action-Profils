@@ -457,7 +457,7 @@ local function APL()
   
     local function CombustionPhase()
         -- lights_judgment,if=buff.combustion.down
-        if S.LightsJudgment:IsCastableP() and not ShouldStop and Action.GetToggle(2, "CDs") and (Player:BuffDownP(S.CombustionBuff)) then
+        if S.LightsJudgment:IsCastableP() and not ShouldStop and HR.CDsON() and (Player:BuffDownP(S.CombustionBuff)) then
             if HR.Cast(S.LightsJudgment) then return "lights_judgment 234"; end
         end
         -- blood_of_the_enemy
@@ -493,19 +493,19 @@ local function APL()
             if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 288"; end
         end
         -- blood_fury
-        if S.BloodFury:IsCastableP() and not ShouldStop and Action.GetToggle(2, "CDs") then
+        if S.BloodFury:IsCastableP() and not ShouldStop and HR.CDsON() then
             if HR.Cast(S.BloodFury, Action.GetToggle(2, "OffGCDasOffGCD")) then return "blood_fury 290"; end
         end
         -- berserking
-        if S.Berserking:IsCastableP() and not ShouldStop and Action.GetToggle(2, "CDs") then
+        if S.Berserking:IsCastableP() and not ShouldStop and HR.CDsON() then
             if HR.Cast(S.Berserking, Action.GetToggle(2, "OffGCDasOffGCD")) then return "berserking 292"; end
         end
         -- fireblood
-        if S.Fireblood:IsCastableP() and not ShouldStop and Action.GetToggle(2, "CDs") then
+        if S.Fireblood:IsCastableP() and not ShouldStop and HR.CDsON() then
             if HR.Cast(S.Fireblood, Action.GetToggle(2, "OffGCDasOffGCD")) then return "fireblood 294"; end
         end
         -- ancestral_call
-        if S.AncestralCall:IsCastableP() and not ShouldStop and Action.GetToggle(2, "CDs") then
+        if S.AncestralCall:IsCastableP() and not ShouldStop and HR.CDsON() then
             if HR.Cast(S.AncestralCall, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ancestral_call 296"; end
         end
         -- flamestrike,if=((talent.flame_patch.enabled&active_enemies>2)|active_enemies>6)&buff.hot_streak.react&!azerite.blaster_master.enabled
@@ -923,7 +923,7 @@ local function APL()
             if HR.Cast(S.RuneofPower, Action.GetToggle(2, "OffGCDasOffGCD")) then return "rune_of_power 807"; end
         end
         -- call_action_list,name=combustion_phase,if=(talent.rune_of_power.enabled&cooldown.combustion.remains<=action.rune_of_power.cast_time|cooldown.combustion.ready)&!firestarter.active|buff.combustion.up
-        if Action.GetToggle(2, "CDs") and ((S.RuneofPower:IsAvailable() and S.Combustion:CooldownRemainsP() <= S.RuneofPower:CastTime() or S.Combustion:CooldownUpP()) and not bool(S.Firestarter:ActiveStatus()) or Player:BuffP(S.CombustionBuff)) then
+        if HR.CDsON() and ((S.RuneofPower:IsAvailable() and S.Combustion:CooldownRemainsP() <= S.RuneofPower:CastTime() or S.Combustion:CooldownUpP()) and not bool(S.Firestarter:ActiveStatus()) or Player:BuffP(S.CombustionBuff)) then
             local ShouldReturn = CombustionPhase(); if ShouldReturn then return ShouldReturn; end
         end
         -- fire_blast,use_while_casting=1,use_off_gcd=1,if=(essence.memory_of_lucid_dreams.major|essence.memory_of_lucid_dreams.minor&azerite.blaster_master.enabled)&charges=max_charges&!buff.hot_streak.react&!(buff.heating_up.react&(buff.combustion.up&(action.fireball.in_flight|action.pyroblast.in_flight|action.scorch.executing)|target.health.pct<=30&action.scorch.executing))&!(!buff.heating_up.react&!buff.hot_streak.react&buff.combustion.down&(action.fireball.in_flight|action.pyroblast.in_flight))

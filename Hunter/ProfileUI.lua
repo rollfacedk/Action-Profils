@@ -49,7 +49,7 @@ A.Data.ProfileUI = {
                     L = { 
                         enUS = "Use AoE", 
                         ruRU = "Использовать AoE", 
-                        frFR = "Utiliser l'AoE"
+                        frFR = "Utiliser l'AoE",
                     }, 
                     TT = { 
                         enUS = "Enable multiunits actions", 
@@ -67,31 +67,6 @@ A.Data.ProfileUI = {
                 }, 
                 {
                     E = "Checkbox", 
-                    DB = "CDs",
-                    DBV = true,
-                    L = { 
-                        enUS = "Use Cooldowns", 
-                        ruRU = "Использовать Cooldowns", 
-                        frFR = "Utiliser les Cooldowns"
-                    }, 
-                    TT = { 
-                        enUS = "Enable cooldowns usage in rotation", 
-                        ruRU = "Включить использование перезарядки в ротации", 
-                        frFR = "Activer l'usage des cooldowns par la rotation",
-                    }, 
-                    M = {
-					    Custom = "/run Action.CDToggleMode()",
-						-- It does call func CraftMacro(L[CL], macro above, 1) -- 1 means perCharacter tab in MacroUI, if nil then will be used allCharacters tab in MacroUI
-						Value = value or nil, 
-						-- Very Very Optional, no idea why it will be need however.. 
-						TabN = '@number' or nil,								
-						Print = '@string' or nil,
-					},
-                },                 
-            }, 
-            { -- [2] 2nd Row
-                {
-                    E = "Checkbox", 
                     DB = "OffGCDasOffGCD",
                     DBV = true,
                     L = { 
@@ -106,6 +81,10 @@ A.Data.ProfileUI = {
                     }, 
                     M = {},
                 }, 
+                
+            }, 
+            { -- [2] 2nd Row
+
 				-- Splash Data
                 {
                     E = "Dropdown",                                                         

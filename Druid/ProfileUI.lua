@@ -25,7 +25,8 @@ A.Data.ProfileUI = {
                     },
                 },
             },		
-            { -- [1] 1st Row                           
+            { -- [1] 1st Row
+		
                 {
                     E = "Checkbox", 
                     DB = "mouseover",
@@ -49,7 +50,7 @@ A.Data.ProfileUI = {
                     L = { 
                         enUS = "Use AoE", 
                         ruRU = "Использовать AoE", 
-                        frFR = "Utiliser l'AoE"
+                        frFR = "Utiliser l'AoE",
                     }, 
                     TT = { 
                         enUS = "Enable multiunits actions", 
@@ -67,28 +68,22 @@ A.Data.ProfileUI = {
                 }, 
                 {
                     E = "Checkbox", 
-                    DB = "CDs",
+                    DB = "OffGCDasOffGCD",
                     DBV = true,
                     L = { 
-                        enUS = "Use Cooldowns", 
-                        ruRU = "Использовать Cooldowns", 
-                        frFR = "Utiliser les Cooldowns"
+                        enUS = "Use spells OffGCD", 
+                        ruRU = "Используйте заклинания OffGCD", 
+                        frFR = "Utiliser les spells OffGCD",
                     }, 
                     TT = { 
-                        enUS = "Enable cooldowns usage in rotation", 
-                        ruRU = "Включить использование перезарядки в ротации", 
-                        frFR = "Activer l'usage des cooldowns par la rotation",
+                        enUS = "Will force certains spells to be used as off GCD", 
+                        ruRU = "Вынудит определенные заклинания использоваться как вне GCD", 
+                        frFR = "Forcera certains spells à être utilisés sur le GCD",
                     }, 
-                    M = {
-					    Custom = "/run Action.CDToggleMode()",
-						-- It does call func CraftMacro(L[CL], macro above, 1) -- 1 means perCharacter tab in MacroUI, if nil then will be used allCharacters tab in MacroUI
-						Value = value or nil, 
-						-- Very Very Optional, no idea why it will be need however.. 
-						TabN = '@number' or nil,								
-						Print = '@string' or nil,
-					},
-                },                 
-            }, 
+                    M = {},
+                }, 
+                
+            },  
             { -- [2] 2nd Row
                 {
                     E = "Checkbox", 

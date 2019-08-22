@@ -357,7 +357,7 @@ end
 local function PrepareAshvaneBurst()
     -- Ashvane Mythic  
     -- Ashvane 153142 Dummies:144086    
-    if not Action.GetToggle(2, "CDs") and Player:InstanceDifficulty() == 16 and Target:NPCID() == 152236 
+    if not HR.CDsON() and Player:InstanceDifficulty() == 16 and Target:NPCID() == 152236 
     -- Need around 45sec to get to 5shards...
     and HL.CombatTime() > 35 then
         return true
@@ -613,19 +613,19 @@ local function APL()
         end
         -- use_items,if=cooldown.summon_darkglare.remains>70|time_to_die<20|((buff.active_uas.stack=5|soul_shard=0)&(!talent.phantom_singularity.enabled|cooldown.phantom_singularity.remains)&(!talent.deathbolt.enabled|cooldown.deathbolt.remains<=gcd|!cooldown.deathbolt.remains)&!cooldown.summon_darkglare.remains)
         -- fireblood,if=!cooldown.summon_darkglare.up
-        if S.Fireblood:IsCastableP() and Action.GetToggle(2, "CDs") and (not S.SummonDarkglare:CooldownUpP()) then
+        if S.Fireblood:IsCastableP() and HR.CDsON() and (not S.SummonDarkglare:CooldownUpP()) then
             if HR.Cast(S.Fireblood, Action.GetToggle(2, "OffGCDasOffGCD")) then return "fireblood 51"; end
         end
         -- blood_fury,if=!cooldown.summon_darkglare.up
-        if S.BloodFury:IsCastableP() and Action.GetToggle(2, "CDs") and (not S.SummonDarkglare:CooldownUpP()) then
+        if S.BloodFury:IsCastableP() and HR.CDsON() and (not S.SummonDarkglare:CooldownUpP()) then
             if HR.Cast(S.BloodFury, Action.GetToggle(2, "OffGCDasOffGCD")) then return "blood_fury 55"; end
         end
         -- memory_of_lucid_dreams,if=time>30
-        if S.MemoryofLucidDreams:IsCastableP() and  Action.GetToggle(2, "CDs") and (HL.CombatTime() > 30) then
+        if S.MemoryofLucidDreams:IsCastableP() and  HR.CDsON() and (HL.CombatTime() > 30) then
             if HR.Cast(S.UnleashHeartOfAzeroth, Action.GetToggle(2, "OffGCDasOffGCD")) then return ""; end
         end
         -- dark_soul,if=target.time_to_die<20+gcd|spell_targets.seed_of_corruption_aoe>1+raid_event.invulnerable.up|talent.sow_the_seeds.enabled&cooldown.summon_darkglare.remains>=cooldown.summon_darkglare.duration-10
-        if S.DarkSoulMisery:IsReadyP() and  Action.GetToggle(2, "CDs") and (Target:TimeToDie() < 20 + Player:GCD() or EnemiesCount > 1 or S.SowtheSeeds:IsAvailable() and S.SummonDarkglare:CooldownRemainsP() >= S.SummonDarkglare:BaseDuration() - 10) then
+        if S.DarkSoulMisery:IsReadyP() and  HR.CDsON() and (Target:TimeToDie() < 20 + Player:GCD() or EnemiesCount > 1 or S.SowtheSeeds:IsAvailable() and S.SummonDarkglare:CooldownRemainsP() >= S.SummonDarkglare:BaseDuration() - 10) then
             if HR.Cast(S.DarkSoulMisery, Action.GetToggle(2, "OffGCDasOffGCD")) then return ""; end
         end
         -- blood_of_the_enemy,if=pet.darkglare.remains|(!cooldown.deathbolt.remains|!talent.deathbolt.enabled)&cooldown.summon_darkglare.remains>=80&essence.blood_of_the_enemy.rank>1
@@ -724,15 +724,15 @@ local function APL()
             if HR.Cast(S.UnstableAffliction) then return "unstable_affliction 319"; end
         end
         -- unstable_affliction,line_cd=15,if=cooldown.deathbolt.remains<=gcd*2&spell_targets.seed_of_corruption_aoe=1+raid_event.invulnerable.up&cooldown.summon_darkglare.remains>20
-        if not Action.GetToggle(2, "CDs") and S.UnstableAffliction:IsReadyP() and Player:SoulShardsP() >= 1 and not ShouldStop and not bool(VarUseSeed) and contagion <= S.UnstableAffliction:CastTime() + VarPadding  then
+        if not HR.CDsON() and S.UnstableAffliction:IsReadyP() and Player:SoulShardsP() >= 1 and not ShouldStop and not bool(VarUseSeed) and contagion <= S.UnstableAffliction:CastTime() + VarPadding  then
             if HR.Cast(S.UnstableAffliction) then return "unstable_affliction 319"; end
         end
         -- call_action_list,name=db_refresh,if=talent.deathbolt.enabled&spell_targets.seed_of_corruption_aoe=1+raid_event.invulnerable.up&(dot.agony.remains<dot.agony.duration*0.75|dot.corruption.remains<dot.corruption.duration*0.75|dot.siphon_life.remains<dot.siphon_life.duration*0.75)&cooldown.deathbolt.remains<=action.agony.gcd*4&cooldown.summon_darkglare.remains>20
-        if Action.GetToggle(2, "CDs") and (S.Deathbolt:IsAvailable() and not ShouldStop and EnemiesCount == 1 and (Target:DebuffRemainsP(S.AgonyDebuff) < S.AgonyDebuff:BaseDuration() * 0.75 or Target:DebuffRemainsP(S.CorruptionDebuff) < S.CorruptionDebuff:BaseDuration() * 0.75 or Target:DebuffRemainsP(S.SiphonLifeDebuff) < S.SiphonLifeDebuff:BaseDuration() * 0.75) and S.Deathbolt:CooldownRemainsP() <= S.Agony:GCD() * 4 and S.SummonDarkglare:CooldownRemainsP() > 20) then
+        if HR.CDsON() and (S.Deathbolt:IsAvailable() and not ShouldStop and EnemiesCount == 1 and (Target:DebuffRemainsP(S.AgonyDebuff) < S.AgonyDebuff:BaseDuration() * 0.75 or Target:DebuffRemainsP(S.CorruptionDebuff) < S.CorruptionDebuff:BaseDuration() * 0.75 or Target:DebuffRemainsP(S.SiphonLifeDebuff) < S.SiphonLifeDebuff:BaseDuration() * 0.75) and S.Deathbolt:CooldownRemainsP() <= S.Agony:GCD() * 4 and S.SummonDarkglare:CooldownRemainsP() > 20) then
             local ShouldReturn = DbRefresh(); if ShouldReturn then return ShouldReturn; end
         end
         -- call_action_list,name=db_refresh,if=talent.deathbolt.enabled&spell_targets.seed_of_corruption_aoe=1+raid_event.invulnerable.up&cooldown.summon_darkglare.remains<=soul_shard*action.agony.gcd+action.agony.gcd*3&(dot.agony.remains<dot.agony.duration*1|dot.corruption.remains<dot.corruption.duration*1|dot.siphon_life.remains<dot.siphon_life.duration*1)
-        if Action.GetToggle(2, "CDs") and S.Deathbolt:IsAvailable() and not ShouldStop and EnemiesCount == 1 and S.SummonDarkglare:CooldownRemainsP() <= Player:SoulShardsP() * S.Agony:GCD() + S.Agony:GCD() * 3 and (Target:DebuffRemainsP(S.AgonyDebuff) < S.AgonyDebuff:BaseDuration() * 1 or Target:DebuffRemainsP(S.CorruptionDebuff) < S.CorruptionDebuff:BaseDuration() * 1 or Target:DebuffRemainsP(S.SiphonLifeDebuff) < S.SiphonLifeDebuff:BaseDuration() * 1) then
+        if HR.CDsON() and S.Deathbolt:IsAvailable() and not ShouldStop and EnemiesCount == 1 and S.SummonDarkglare:CooldownRemainsP() <= Player:SoulShardsP() * S.Agony:GCD() + S.Agony:GCD() * 3 and (Target:DebuffRemainsP(S.AgonyDebuff) < S.AgonyDebuff:BaseDuration() * 1 or Target:DebuffRemainsP(S.CorruptionDebuff) < S.CorruptionDebuff:BaseDuration() * 1 or Target:DebuffRemainsP(S.SiphonLifeDebuff) < S.SiphonLifeDebuff:BaseDuration() * 1) then
             local ShouldReturn = DbRefresh(); if ShouldReturn then return ShouldReturn; end
         end
         -- deathbolt,if=cooldown.summon_darkglare.remains>=30+gcd|cooldown.summon_darkglare.remains>140
@@ -877,15 +877,15 @@ local function APL()
             if HR.Cast(S.DrainLife) then return "drain_life 415"; end
         end
 		-- agony,target_if=min:dot.agony.remains,if=remains<=gcd+action.shadow_bolt.execute_time&target.time_to_die>8
-        if S.Agony:IsCastableP() and not ShouldStop and not Action.GetToggle(2, "CDs") and Target:DebuffRemainsP(S.AgonyDebuff) <= 5 then
+        if S.Agony:IsCastableP() and not ShouldStop and not HR.CDsON() and Target:DebuffRemainsP(S.AgonyDebuff) <= 5 then
             if HR.Cast(S.Agony) then return "siphon_life 770" end
         end
 	    -- agony,target_if=min:dot.agony.remains,if=remains<=gcd+action.shadow_bolt.execute_time&target.time_to_die>8
-        if S.Corruption:IsCastableP() and not ShouldStop and not Action.GetToggle(2, "CDs") and Target:DebuffRemainsP(S.CorruptionDebuff) <= 4 then
+        if S.Corruption:IsCastableP() and not ShouldStop and not HR.CDsON() and Target:DebuffRemainsP(S.CorruptionDebuff) <= 4 then
             if HR.Cast(S.Corruption) then return "siphon_life 770" end
         end
 	    -- agony,target_if=min:dot.agony.remains,if=remains<=gcd+action.shadow_bolt.execute_time&target.time_to_die>8
-        if S.SiphonLife:IsCastableP() and not ShouldStop and not Action.GetToggle(2, "CDs") and Target:DebuffRemainsP(S.SiphonLifeDebuff) <= 4 then
+        if S.SiphonLife:IsCastableP() and not ShouldStop and not HR.CDsON() and Target:DebuffRemainsP(S.SiphonLifeDebuff) <= 4 then
             if HR.Cast(S.SiphonLife) then return "siphon_life 770" end
         end
 		-- unstable_affliction,if=cooldown.summon_darkglare.remains<=soul_shard*(execute_time+azerite.dreadful_calling.rank)&(!talent.deathbolt.enabled|cooldown.deathbolt.remains<=soul_shard*execute_time)&(talent.sow_the_seeds.enabled|dot.phantom_singularity.remains|dot.vile_taint.remains)
@@ -932,7 +932,7 @@ local function APL()
             VarMaintainSe = num(EnemiesCount <= 1 + num(S.WritheInAgony:IsAvailable()) + num(S.AbsoluteCorruption:IsAvailable()) * 2 + num((S.WritheInAgony:IsAvailable() and S.SowtheSeeds:IsAvailable() and EnemiesCount > 2)) + num((S.SiphonLife:IsAvailable() and not S.CreepingDeath:IsAvailable() and not S.DrainSoul:IsAvailable())))
         end
         -- call_action_list,name=cooldowns
-        if (true) and Action.GetToggle(2, "CDs") then
+        if (true) and HR.CDsON() then
             local ShouldReturn = Cooldowns(); if ShouldReturn then return ShouldReturn; end
         end
         -- drain_soul,interrupt_global=1,chain=1,cycle_targets=1,if=target.time_to_die<=gcd&soul_shard<5
@@ -944,7 +944,7 @@ local function APL()
             if HR.Cast(S.Haunt) then return "haunt 714"; end
         end
         -- summon_darkglare,if=dot.agony.ticking&dot.corruption.ticking&(buff.active_uas.stack=5|soul_shard=0)&(!talent.phantom_singularity.enabled|dot.phantom_singularity.remains)&(!talent.deathbolt.enabled|cooldown.deathbolt.remains<=gcd|!cooldown.deathbolt.remains|spell_targets.seed_of_corruption_aoe>1+raid_event.invulnerable.up)
-        if S.SummonDarkglare:IsCastableP() and Action.GetToggle(2, "CDs") and (Target:DebuffP(S.AgonyDebuff) and (Target:DebuffP(S.CorruptionDebuff) or S.AbsoluteCorruption:IsAvailable()) and (ActiveUAs() == 5 or Player:SoulShardsP() == 0) and (not S.PhantomSingularity:IsAvailable() or Target:DebuffP(S.PhantomSingularityDebuff)) and (not S.Deathbolt:IsAvailable() or S.Deathbolt:CooldownRemainsP() <= Player:GCD() or S.Deathbolt:CooldownUpP() or EnemiesCount > 1)) then
+        if S.SummonDarkglare:IsCastableP() and HR.CDsON() and (Target:DebuffP(S.AgonyDebuff) and (Target:DebuffP(S.CorruptionDebuff) or S.AbsoluteCorruption:IsAvailable()) and (ActiveUAs() == 5 or Player:SoulShardsP() == 0) and (not S.PhantomSingularity:IsAvailable() or Target:DebuffP(S.PhantomSingularityDebuff)) and (not S.Deathbolt:IsAvailable() or S.Deathbolt:CooldownRemainsP() <= Player:GCD() or S.Deathbolt:CooldownUpP() or EnemiesCount > 1)) then
             if HR.Cast(S.SummonDarkglare, Action.GetToggle(2, "OffGCDasOffGCD")) then return "summon_darkglare 716"; end
         end
         -- deathbolt,if=cooldown.summon_darkglare.remains&spell_targets.seed_of_corruption_aoe=1+raid_event.invulnerable.up&(!essence.vision_of_perfection.minor&!azerite.dreadful_calling.rank|cooldown.summon_darkglare.remains>30)
@@ -952,7 +952,7 @@ local function APL()
             if HR.Cast(S.Deathbolt) then return "deathbolt 734"; end
         end 
         -- deathbolt,if=shard<=1&!cooldowns
-        if S.Deathbolt:IsCastableP() and not ShouldStop and not Action.GetToggle(2, "CDs") and Player:SoulShardsP() <= 1 then
+        if S.Deathbolt:IsCastableP() and not ShouldStop and not HR.CDsON() and Player:SoulShardsP() <= 1 then
             if HR.Cast(S.Deathbolt) then return "deathbolt 734"; end
         end 
         -- the_unbound_force,if=buff.reckless_force.remains
@@ -964,7 +964,7 @@ local function APL()
             if HR.Cast(S.Agony) then return "agony 770" end
         end
         -- agony,target_if=min:dot.agony.remains,if=remains<=gcd+action.shadow_bolt.execute_time&target.time_to_die>8
-        if S.Agony:IsCastableP() and not ShouldStop and not Action.GetToggle(2, "CDs") and Target:DebuffRemainsP(S.AgonyDebuff) <= 5 then
+        if S.Agony:IsCastableP() and not ShouldStop and not HR.CDsON() and Target:DebuffRemainsP(S.AgonyDebuff) <= 5 then
             if HR.Cast(S.Agony) then return "agony 770" end
         end
         -- memory_of_lucid_dreams,if=time<30
@@ -985,7 +985,7 @@ local function APL()
             if HR.Cast(S.SiphonLife) then return "siphon_life 774"; end
         end
 	    -- agony,target_if=min:dot.agony.remains,if=remains<=gcd+action.shadow_bolt.execute_time&target.time_to_die>8
-        if S.SiphonLife:IsCastableP() and not ShouldStop and not Action.GetToggle(2, "CDs") and Target:DebuffRemainsP(S.SiphonLifeDebuff) <= 4 then
+        if S.SiphonLife:IsCastableP() and not ShouldStop and not HR.CDsON() and Target:DebuffRemainsP(S.SiphonLifeDebuff) <= 4 then
             if HR.Cast(S.SiphonLife) then return "siphon_life 770" end
         end
         -- unstable_affliction,target_if=!contagion&target.time_to_die<=8
@@ -1033,15 +1033,15 @@ local function APL()
             if HR.Cast(S.VileTaint) then return "vile_taint 883"; end
         end
         -- dark_soul,if=cooldown.summon_darkglare.remains<15+soul_shard*azerite.dreadful_calling.enabled&(dot.phantom_singularity.remains|dot.vile_taint.remains|!talent.phantom_singularity.enabled&!talent.vile_taint.enabled)|target.time_to_die<20+gcd|spell_targets.seed_of_corruption_aoe>1+raid_event.invulnerable.up
-        if S.DarkSoulMisery:IsCastableP() and Action.GetToggle(2, "CDs") and (S.SummonDarkglare:CooldownRemainsP() < 15 + Player:SoulShardsP() * num(S.DreadfulCalling:AzeriteEnabled()) and (Target:DebuffP(S.PhantomSingularityDebuff) or Target:DebuffP(S.PhantomSingularityDebuff) or not S.PhantomSingularity:IsAvailable() and not S.VileTaint:IsAvailable()) or Target:TimeToDie() < 20 + Player:GCD() or EnemiesCount > 1) then
+        if S.DarkSoulMisery:IsCastableP() and HR.CDsON() and (S.SummonDarkglare:CooldownRemainsP() < 15 + Player:SoulShardsP() * num(S.DreadfulCalling:AzeriteEnabled()) and (Target:DebuffP(S.PhantomSingularityDebuff) or Target:DebuffP(S.PhantomSingularityDebuff) or not S.PhantomSingularity:IsAvailable() and not S.VileTaint:IsAvailable()) or Target:TimeToDie() < 20 + Player:GCD() or EnemiesCount > 1) then
             if HR.Cast(S.DarkSoulMisery, Action.GetToggle(2, "OffGCDasOffGCD")) then return "dark_soul 885"; end
         end
         -- guardian_of_azeroth,if=cooldown.summon_darkglare.remains<15+soul_shard*azerite.dreadful_calling.enabled|(azerite.dreadful_calling.rank|essence.vision_of_perfection.rank)&time>30&target.time_to_die>=210)&(dot.phantom_singularity.remains|dot.vile_taint.remains|!talent.phantom_singularity.enabled&!talent.vile_taint.enabled)|target.time_to_die<30+gcd
-        if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and Action.GetToggle(2, "CDs") and S.SummonDarkglare:CooldownRemainsP() < 15 + Player:SoulShardsP() * num(S.DreadfulCalling:AzeriteEnabled()) or ((S.DreadfulCalling:AzeriteEnabled() or S.VisionofPerfectionMinor:IsAvailable()) and HL.CombatTime() > 30 and Target:TimeToDie() >= 210) and (Target:DebuffP(S.PhantomSingularityDebuff) or Target:DebuffP(S.VileTaint) or not S.PhantomSingularity:IsAvailable() and not S.VileTaint:IsAvailable()) then
+        if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and HR.CDsON() and S.SummonDarkglare:CooldownRemainsP() < 15 + Player:SoulShardsP() * num(S.DreadfulCalling:AzeriteEnabled()) or ((S.DreadfulCalling:AzeriteEnabled() or S.VisionofPerfectionMinor:IsAvailable()) and HL.CombatTime() > 30 and Target:TimeToDie() >= 210) and (Target:DebuffP(S.PhantomSingularityDebuff) or Target:DebuffP(S.VileTaint) or not S.PhantomSingularity:IsAvailable() and not S.VileTaint:IsAvailable()) then
             if HR.Cast(S.GuardianofAzeroth) then return ""; end
         end
         -- berserking
-        if S.Berserking:IsReadyP() and Action.GetToggle(2, "CDs") then
+        if S.Berserking:IsReadyP() and HR.CDsON() then
             if HR.Cast(S.Berserking, Action.GetToggle(2, "OffGCDasOffGCD")) then return "berserking 891"; end
         end
         -- call_action_list,name=spenders

@@ -318,7 +318,7 @@ local function APL()
     
 	local function SingleTarget()
         -- siegebreaker
-        if S.Siegebreaker:IsCastableP("Melee") and Action.GetToggle(2, "CDs") then
+        if S.Siegebreaker:IsCastableP("Melee") and HR.CDsON() then
             if HR.Cast(S.Siegebreaker, Action.GetToggle(2, "OffGCDasOffGCD")) then return "siegebreaker 18"; end
         end
         -- rampage,if=(buff.recklessness.up|buff.memory_of_lucid_dreams.up)|(talent.frothing_berserker.enabled|talent.carnage.enabled&(buff.enrage.remains<gcd|rage>90)|talent.massacre.enabled&(buff.enrage.remains<gcd|rage>90))
@@ -334,7 +334,7 @@ local function APL()
             if HR.Cast(S.FuriousSlash) then return "furious_slash 36"; end
         end
         -- bladestorm,if=prev_gcd.1.rampage
-        if S.Bladestorm:IsCastableP("Melee") and Action.GetToggle(2, "CDs") and (Player:PrevGCDP(1, S.Rampage)) then
+        if S.Bladestorm:IsCastableP("Melee") and HR.CDsON() and (Player:PrevGCDP(1, S.Rampage)) then
             if HR.Cast(S.Bladestorm) then return "bladestorm 37"; end
         end
         -- bloodthirst,if=buff.enrage.down|azerite.cold_steel_hot_blood.rank>1
@@ -342,7 +342,7 @@ local function APL()
             if HR.Cast(S.Bloodthirst) then return "bloodthirst 38"; end
         end
         -- dragon_roar,if=buff.enrage.up
-        if S.DragonRoar:IsCastableP(12) and Action.GetToggle(2, "CDs") and (Player:BuffP(S.EnrageBuff)) then
+        if S.DragonRoar:IsCastableP(12) and HR.CDsON() and (Player:BuffP(S.EnrageBuff)) then
             if HR.Cast(S.DragonRoar) then return "dragon_roar 39"; end
         end
         -- raging_blow,if=charges=2
@@ -475,7 +475,7 @@ local function APL()
             if HR.Cast(S.MemoryofLucidDreams, Action.GetToggle(2, "OffGCDasOffGCD")) then return "memory_of_lucid_dreams"; end
         end
         -- recklessness,if=!essence.condensed_lifeforce.major&!essence.blood_of_the_enemy.major|cooldown.guardian_of_azeroth.remains>20|buff.guardian_of_azeroth.up|cooldown.blood_of_the_enemy.remains<gcd
-        if S.Recklessness:IsCastableP() and Action.GetToggle(2, "CDs") and (not S.CondensedLifeforce:IsAvailable() and not S.BloodoftheEnemy:IsAvailable() or S.GuardianofAzeroth:CooldownRemainsP() > 20 or Player:BuffP(S.GuardianofAzeroth) or S.BloodoftheEnemy:CooldownRemainsP() < Player:GCD()) then
+        if S.Recklessness:IsCastableP() and HR.CDsON() and (not S.CondensedLifeforce:IsAvailable() and not S.BloodoftheEnemy:IsAvailable() or S.GuardianofAzeroth:CooldownRemainsP() > 20 or Player:BuffP(S.GuardianofAzeroth) or S.BloodoftheEnemy:CooldownRemainsP() < Player:GCD()) then
             if HR.Cast(S.Recklessness, Action.GetToggle(2, "OffGCDasOffGCD")) then return "recklessness 112"; end
         end
         -- whirlwind,if=spell_targets.whirlwind>1&!buff.meat_cleaver.up
@@ -487,23 +487,23 @@ local function APL()
             if HR.Cast(I.AshvanesRazorCoral) then return "ashvanes_razor_coral 115"; end
         end
         -- blood_fury
-        if S.BloodFury:IsCastableP() and Action.GetToggle(2, "CDs") then
+        if S.BloodFury:IsCastableP() and HR.CDsON() then
             if HR.Cast(S.BloodFury, Action.GetToggle(2, "OffGCDasOffGCD")) then return "blood_fury 118"; end
         end
         -- berserking
-        if S.Berserking:IsCastableP() and Action.GetToggle(2, "CDs") then
+        if S.Berserking:IsCastableP() and HR.CDsON() then
             if HR.Cast(S.Berserking, Action.GetToggle(2, "OffGCDasOffGCD")) then return "berserking 122"; end
         end
        -- lights_judgment,if=buff.recklessness.down
-        if S.LightsJudgment:IsCastableP() and Action.GetToggle(2, "CDs") and (Player:BuffDownP(S.RecklessnessBuff)) then
+        if S.LightsJudgment:IsCastableP() and HR.CDsON() and (Player:BuffDownP(S.RecklessnessBuff)) then
             if HR.Cast(S.LightsJudgment) then return "lights_judgment 126"; end
         end
         -- fireblood
-        if S.Fireblood:IsCastableP() and Action.GetToggle(2, "CDs") then
+        if S.Fireblood:IsCastableP() and HR.CDsON() then
             if HR.Cast(S.Fireblood, Action.GetToggle(2, "OffGCDasOffGCD")) then return "fireblood 130"; end
         end
         -- ancestral_call
-        if S.AncestralCall:IsCastableP() and Action.GetToggle(2, "CDs") then
+        if S.AncestralCall:IsCastableP() and HR.CDsON() then
             if HR.Cast(S.AncestralCall, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ancestral_call 134"; end
         end
         -- run_action_list,name=single_target

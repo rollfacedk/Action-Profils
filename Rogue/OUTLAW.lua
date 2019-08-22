@@ -518,8 +518,124 @@ local function TrinketON()
 	end
 end
 
+-- Marked for Death Sniping
+local BestUnit, BestUnitTTD;
+local function MfDSniping (MarkedforDeath)
+    if MarkedforDeath:IsCastable() then
+        -- Get Units up to 30y for MfD.
+        HL.GetEnemies(30);
+
+        BestUnit, BestUnitTTD = nil, 60;
+        local MOTTD = MouseOver:IsInRange(30) and MouseOver:TimeToDie() or 11111;
+        local TTD;
+        for _, Unit in pairs(Cache.Enemies[30]) do
+            TTD = Unit:TimeToDie();
+            -- Note: Increased the SimC condition by 50% since we are slower.
+            if not Unit:IsMfdBlacklisted() and TTD < Player:ComboPointsDeficit()*1.5 and TTD < BestUnitTTD then
+                if MOTTD - TTD > 1 then
+                    BestUnit, BestUnitTTD = Unit, TTD;
+                else
+                   BestUnit, BestUnitTTD = MouseOver, MOTTD;
+                end
+            end
+        end
+        if BestUnit and BestUnit:GUID() ~= Target:GUID() then
+            HR.CastLeftNameplate(BestUnit, MarkedforDeath);
+        end
+    end
+end
+-- HeroLib EnemiesCount handler
+local EnemyRanges = {"Melee", 6, 9}
+local function UpdateRanges()
+    for _, i in ipairs(EnemyRanges) do
+        HL.GetEnemies(i);
+    end
+end
+
+-- AoE Detection Mode
+local function GetEnemiesCount(range)
+    -- Unit Update - Update differently depending on if splash data is being used
+    if HR.AoEON() then
+        if Action.GetToggle(2, "AoeDetectionMode") == "USE COMBAT LOGS" then
+	        return active_enemies()
+	    elseif Action.GetToggle(2, "AoeDetectionMode") == "USE SPLASH DATA" then
+            return active_enemies()
+	    else 
+            UpdateRanges()
+            return Cache.EnemiesCount[range]
+        end
+    else
+        return 1
+    end
+end
+
+local function InitBurstCDTimer()
+    if not Player:AffectingCombat() and Action.GetToggle(2, "TempBurst") and not Action.GetToggle(2, "CDs") then
+	    -- Activate CDs if disabled but user got BurstMode
+		Action.SetToggle({2, "CDs"})
+		Action.Print("Auto Burst : Enabled CDs")
+	else 
+		if Action.GetToggle(2, "TempBurst") and Action.GetToggle(2, "CDs") and Player:AffectingCombat() then
+	     	local burstCDtimer = HL.CombatTime()
+		   	if burstCDtimer >= 10 then
+		       	return true
+		   	else
+		       	return false
+		   	end
+	   	else 
+	       	burstCDtimer = 0
+	   	end
+	end
+end
+
+local function ToggleBurstMode()    
+    if Action.GetToggle(2, "TempBurst") and Action.GetToggle(2, "CDs") then
+        if InitBurstCDTimer() then			
+			--Action.SetToggle({2, "CDs"}, nil)
+			Action.SetToggle({2, "CDs"})
+			Action.Print("Auto Burst : Disabled CDs")
+		else
+		    return
+        end
+    else
+	    return
+	end
+end
+
+--- ======= ACTION LISTS =======
+local function APL() 
+    
+	-- Action specifics remap
+	local ShouldStop = Action.ShouldStop()
+	local Pull = Action.BossMods_Pulling()	
+
+    -- Unit Update
+    BladeFlurryRange = S.AcrobaticStrikes:IsAvailable() and 9 or 6;
+    InitBurstCDTimer()
+    ToggleBurstMode()
+	HL.GetEnemies(BladeFlurryRange);
+    HL.GetEnemies("Melee");
+	EnemiesCount = GetEnemiesCount(BladeFlurryRange)
+	CheckGoodBuffs()
+	--print(EnemiesCount)
+	
+	-- Anti channel interrupt
+	if Player:IsCasting() or Player:IsChanneling() then
+	    ShouldStop = true
+	else
+	    ShouldStop = false
+	end
+    
+	-- Defensives
+    -- Crimson Vial
+    ShouldReturn = CrimsonVial(S.CrimsonVial);
+    if ShouldReturn then return ShouldReturn; end
+    -- Feint
+    ShouldReturn = Feint(S.Feint);
+    if ShouldReturn then return ShouldReturn; end
+	
 -- # Essences
-local function Essences ()
+local function Essences()
     -- blood_of_the_enemy,if=variable.blade_flurry_sync&cooldown.between_the_eyes.up&variable.bte_condition
     if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and Blade_Flurry_Sync() and S.BetweentheEyes:CooldownUpP() and BtECondition() then
         if HR.Cast(S.BloodoftheEnemy) then return "Cast BloodoftheEnemy"; end
@@ -559,7 +675,7 @@ local function Essences ()
     return false;
 end
 
-local function CDs ()
+local function CDs()
     if Target:IsInRange(S.SinisterStrike) then
         -- actions.cds+=/call_action_list,name=essences,if=!stealthed.all
         if HR.CDsON() and not Player:IsStealthedP(true, true) then
@@ -568,7 +684,7 @@ local function CDs ()
         end
 
         -- actions.cds+=/adrenaline_rush,if=!buff.adrenaline_rush.up&energy.time_to_max>1&(!equipped.azsharas_font_of_power|cooldown.latent_arcana.remains>20)
-        if S.AdrenalineRush:IsCastableP() and not Player:BuffP(S.AdrenalineRush) and EnergyTimeToMaxRounded() > 1 and (not I.FontOfPower:IsEquipped() or I.FontOfPower:CooldownRemains() > 20) then
+        if S.AdrenalineRush:IsCastableP() and HR.CDsON() and not Player:BuffP(S.AdrenalineRush) and EnergyTimeToMaxRounded() > 1 and (not I.FontOfPower:IsEquipped() or I.FontOfPower:CooldownRemains() > 20) then
             if HR.Cast(S.AdrenalineRush, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Adrenaline Rush"; end
         end
 
@@ -690,7 +806,7 @@ local function CDs ()
     end
 end
 
-local function Stealth ()
+local function Stealth()
     if Target:IsInRange(S.SinisterStrike) then
         -- actions.stealth=ambush
         if S.Ambush:IsCastable() then
@@ -699,7 +815,7 @@ local function Stealth ()
     end
 end
 
-local function Finish ()
+local function Finish()
     -- # BtE over RtB rerolls with 2+ Deadshot traits or Ruthless Precision.
     -- actions.finish=between_the_eyes,if=variable.bte_condition
     if S.BetweentheEyes:IsCastableP(20) and BtECondition() then
@@ -731,7 +847,7 @@ local function Finish ()
     end
 end
 
-local function Build ()
+local function Build()
     -- actions.build=pistol_shot,if=buff.opportunity.up&(buff.keep_your_wits_about_you.stack<10|buff.deadshot.up|energy<45)
     if S.PistolShot:IsCastable(20) and Player:BuffP(S.Opportunity) and (Player:BuffStackP(S.KeepYourWitsBuff) < 10 or Player:BuffP(S.DeadshotBuff) or Player:EnergyPredicted() < 45) then
         if HR.Cast(S.PistolShot) then return "Cast Pistol Shot"; end
@@ -741,122 +857,6 @@ local function Build ()
         if HR.Cast(S.SinisterStrike) then return "Cast Sinister Strike"; end
     end
 end
-
--- Marked for Death Sniping
-local BestUnit, BestUnitTTD;
-local function MfDSniping (MarkedforDeath)
-    if MarkedforDeath:IsCastable() then
-        -- Get Units up to 30y for MfD.
-        HL.GetEnemies(30);
-
-        BestUnit, BestUnitTTD = nil, 60;
-        local MOTTD = MouseOver:IsInRange(30) and MouseOver:TimeToDie() or 11111;
-        local TTD;
-        for _, Unit in pairs(Cache.Enemies[30]) do
-            TTD = Unit:TimeToDie();
-            -- Note: Increased the SimC condition by 50% since we are slower.
-            if not Unit:IsMfdBlacklisted() and TTD < Player:ComboPointsDeficit()*1.5 and TTD < BestUnitTTD then
-                if MOTTD - TTD > 1 then
-                    BestUnit, BestUnitTTD = Unit, TTD;
-                else
-                   BestUnit, BestUnitTTD = MouseOver, MOTTD;
-                end
-            end
-        end
-        if BestUnit and BestUnit:GUID() ~= Target:GUID() then
-            HR.CastLeftNameplate(BestUnit, MarkedforDeath);
-        end
-    end
-end
--- HeroLib EnemiesCount handler
-local EnemyRanges = {"Melee", 6, 9}
-local function UpdateRanges()
-    for _, i in ipairs(EnemyRanges) do
-        HL.GetEnemies(i);
-    end
-end
-
--- AoE Detection Mode
-local function GetEnemiesCount(range)
-    -- Unit Update - Update differently depending on if splash data is being used
-    if HR.AoEON() then
-        if Action.GetToggle(2, "AoeDetectionMode") == "USE COMBAT LOGS" then
-	        return active_enemies()
-	    elseif Action.GetToggle(2, "AoeDetectionMode") == "USE SPLASH DATA" then
-            return active_enemies()
-	    else 
-            UpdateRanges()
-            return Cache.EnemiesCount[range]
-        end
-    else
-        return 1
-    end
-end
-
-local function InitBurstCDTimer()
-    if not Player:AffectingCombat() and Action.GetToggle(2, "TempBurst") and not Action.GetToggle(2, "CDs") then
-	    -- Activate CDs if disabled but user got BurstMode
-		Action.SetToggle({2, "CDs"})
-		Action.Print("Auto Burst : Enabled CDs")
-	else 
-		if Action.GetToggle(2, "TempBurst") and Action.GetToggle(2, "CDs") and Player:AffectingCombat() then
-	     	local burstCDtimer = HL.CombatTime()
-		   	if burstCDtimer >= 10 then
-		       	return true
-		   	else
-		       	return false
-		   	end
-	   	else 
-	       	burstCDtimer = 0
-	   	end
-	end
-end
-
-local function ToggleBurstMode()    
-    if Action.GetToggle(2, "TempBurst") and Action.GetToggle(2, "CDs") then
-        if InitBurstCDTimer() then			
-			--Action.SetToggle({2, "CDs"}, nil)
-			Action.SetToggle({2, "CDs"})
-			Action.Print("Auto Burst : Disabled CDs")
-		else
-		    return
-        end
-    else
-	    return
-	end
-end
-
---- ======= ACTION LISTS =======
-local function APL() 
-    
-	-- Action specifics remap
-	local ShouldStop = Action.ShouldStop()
-	local Pull = Action.BossMods_Pulling()	
-
-    -- Unit Update
-    BladeFlurryRange = S.AcrobaticStrikes:IsAvailable() and 9 or 6;
-    InitBurstCDTimer()
-    ToggleBurstMode()
-	HL.GetEnemies(BladeFlurryRange);
-    HL.GetEnemies("Melee");
-	EnemiesCount = GetEnemiesCount(BladeFlurryRange)
-	CheckGoodBuffs()
-	--print(EnemiesCount)
-	
-	-- Anti channel interrupt
-	if Player:IsCasting() or Player:IsChanneling() then
-	    ShouldStop = true
-	else
-	    ShouldStop = false
-	end
-    
-	-- Defensives
-    -- Crimson Vial
-    ShouldReturn = CrimsonVial(S.CrimsonVial);
-    if ShouldReturn then return ShouldReturn; end
-    -- Feint
-    ShouldReturn = Feint(S.Feint);
-    if ShouldReturn then return ShouldReturn; end
 
     -- Out of Combat
     if not Player:AffectingCombat() then
@@ -878,7 +878,7 @@ local function APL()
                     if HR.Cast(I.ComputationDevice) then return "Cast Computation Device"; end
                 end
                 -- AR
-                if Action.GetToggle(2, "PrecombatAR") and not usingTrinket and S.AdrenalineRush:IsCastableP() and not Player:BuffP(S.AdrenalineRush) then
+                if Action.GetToggle(2, "PrecombatAR") and HR.CDsON() and not usingTrinket and S.AdrenalineRush:IsCastableP() and not Player:BuffP(S.AdrenalineRush) then
                     if HR.Cast(S.AdrenalineRush, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Adrenaline Rush (OOC)"; end
                 end
             --end
