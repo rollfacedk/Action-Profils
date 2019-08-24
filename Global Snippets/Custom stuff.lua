@@ -60,7 +60,7 @@ if currentClass == "DRUID" then
 	Action.Print("Automatically loaded profile : [Taste]Action - Druid")
 end
 
-if currentClass == "DEMON HUNTER" then
+if currentClass == "DEMONHUNTER" then
     Action.Data.DefaultProfile[currentClass] = "[Taste]Action - Demon Hunter"
 	Action.Print("Automatically loaded profile : [Taste]Action - Demon Hunter")
 end

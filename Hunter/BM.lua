@@ -76,6 +76,8 @@ Action[ACTION_CONST_HUNTER_BM] = {
     -- Potions
     PotionofUnbridledFury                = Action.Create({ Type = "Potion", ID = 169299, QueueForbidden = true }),
     -- Trinkets
+	GenericTrinket1                       = Action.Create({ Type = "Trinket", ID = 114616, QueueForbidden = true }),
+    GenericTrinket2                       = Action.Create({ Type = "Trinket", ID = 114081, QueueForbidden = true }),
 	AshvanesRazorCoral                   = Action.Create({ Type = "Trinket", ID = 169311, QueueForbidden = true }),
     TidestormCodex                       = Action.Create({ Type = "Trinket", ID = 165576, QueueForbidden = true }),
     MalformedHeraldsLegwraps             = Action.Create({ Type = "Trinket", ID = 167835, QueueForbidden = true }),
@@ -127,7 +129,7 @@ Action[ACTION_CONST_HUNTER_BM] = {
     ConcentratedFlame3                   = Action.Create({ Type = "HeartOfAzeroth", ID = 299353, Hidden = true}),
     GuardianofAzeroth                    = Action.Create({ Type = "HeartOfAzeroth", ID = 295840, Hidden = true}),
     GuardianofAzeroth2                   = Action.Create({ Type = "HeartOfAzeroth", ID = 299355, Hidden = true}),
-    GuardianofAzeroth3                   = Action.Create({ Type = "HeartOfAzeroth", ID = 295840, Hidden = true}),
+    GuardianofAzeroth3                   = Action.Create({ Type = "HeartOfAzeroth", ID = 299358, Hidden = true}),
     FocusedAzeriteBeam                   = Action.Create({ Type = "HeartOfAzeroth", ID = 295258, Hidden = true}),
     FocusedAzeriteBeam2                  = Action.Create({ Type = "HeartOfAzeroth", ID = 299336, Hidden = true}),
     FocusedAzeriteBeam3                  = Action.Create({ Type = "HeartOfAzeroth", ID = 299338, Hidden = true}),
@@ -347,6 +349,15 @@ local function APL()
     HL.GetEnemies(40) -- To populate Cache.Enemies[40] for CastCycles
     DetermineEssenceRanks()
 
+	    -- Handle all generics trinkets	
+	local function GeneralTrinkets()
+        if trinketReady(1) then
+        	if HR.Cast(I.GenericTrinket1) then return "GenericTrinket1"; end
+        end
+		if trinketReady(2) then
+            if HR.Cast(I.GenericTrinket2) then return "GenericTrinket2"; end
+        end
+    end
 	
 	if Player:IsCasting() or Player:IsChanneling() then
 	    ShouldStop = true
@@ -392,7 +403,7 @@ local function APL()
             if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam"; end
         end
         -- aspect_of_the_wild,precast_time=1.1,if=!azerite.primal_instincts.enabled&!essence.essence_of_the_focusing_iris.major&(equipped.azsharas_font_of_power|!equipped.cyclotronic_blast)
-        if S.AspectoftheWild:IsCastableP() and (not S.PrimalInstincts:AzeriteEnabled() and not S.FocusedAzeriteBeam:IsAvailable() and (I.AzsharasFontofPower:IsEquipped() or not S.CyclotronicBlast:IsAvailable())) then
+        if S.AspectoftheWild:IsCastableP() and HR.CDsON() and (not S.PrimalInstincts:AzeriteEnabled() and not S.FocusedAzeriteBeam:IsAvailable() and (I.AzsharasFontofPower:IsEquipped() or not S.CyclotronicBlast:IsAvailable())) then
             if HR.Cast(S.AspectoftheWild, Action.GetToggle(2, "OffGCDasOffGCD")) then return "aspect_of_the_wild 8"; end
         end
         -- bestial_wrath,precast_time=1.5,if=azerite.primal_instincts.enabled&!essence.essence_of_the_focusing_iris.major&(equipped.azsharas_font_of_power|!equipped.cyclotronic_blast)
@@ -459,7 +470,7 @@ local function APL()
             if HR.Cast(S.BarbedShot) then return "barbed_shot 86"; end
         end
         -- aspect_of_the_wild
-        if S.AspectoftheWild:IsCastableP() then
+        if S.AspectoftheWild:IsCastableP() and HR.CDsON() then
             if HR.Cast(S.AspectoftheWild, Action.GetToggle(2, "OffGCDasOffGCD")) then return "aspect_of_the_wild 94"; end
         end
         -- stampede,if=buff.aspect_of_the_wild.up&buff.bestial_wrath.up|target.time_to_die<15
@@ -538,7 +549,7 @@ local function APL()
             if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame 165"; end
         end
         -- aspect_of_the_wild,if=cooldown.barbed_shot.charges<2|pet.cat.buff.frenzy.stack>2|!azerite.primal_instincts.enabled
-        if S.AspectoftheWild:IsCastableP() and (S.BarbedShot:ChargesP() < 2 or Pet:BuffStackP(S.FrenzyBuff) > 2 or not S.PrimalInstincts:AzeriteEnabled()) then
+        if S.AspectoftheWild:IsCastableP() and HR.CDsON()  and (S.BarbedShot:ChargesP() < 2 or Pet:BuffStackP(S.FrenzyBuff) > 2 or not S.PrimalInstincts:AzeriteEnabled()) then
             if HR.Cast(S.AspectoftheWild, Action.GetToggle(2, "OffGCDasOffGCD")) then return "aspect_of_the_wild 180"; end
         end
         -- stampede,if=buff.aspect_of_the_wild.up&buff.bestial_wrath.up|target.time_to_die<15
@@ -680,6 +691,10 @@ local function APL()
         if (EnemiesCount > 1) then
             local ShouldReturn = Cleave(); if ShouldReturn then return ShouldReturn; end
         end
+        -- run_action_list,name=trinkets
+        if (true) then
+            local ShouldReturn = GeneralTrinkets(); if ShouldReturn then return ShouldReturn; end
+        end	
 		-- Pool icon
         if HR.Cast(S.Channeling) then return "Pooling Focus"; end
 

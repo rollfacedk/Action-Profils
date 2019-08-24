@@ -59,6 +59,8 @@ Action[ACTION_CONST_PALADIN_RETRIBUTION] = {
   ConcentratedFlameBurn                = Action.Create({ Type = "Spell", ID = 295368, Hidden = true     }),
   RazorCoralDebuff                     = Action.Create({ Type = "Spell", ID = 303568, Hidden = true     }),
   -- Trinkets
+  GenericTrinket1                       = Action.Create({ Type = "Trinket", ID = 114616, QueueForbidden = true }),
+  GenericTrinket2                       = Action.Create({ Type = "Trinket", ID = 114081, QueueForbidden = true }),
   AshvanesRazorCoral                    = Action.Create({ Type = "Trinket", ID = 169311, QueueForbidden = true }),
   DribblingInkpod                       = Action.Create({ Type = "Trinket", ID = 169319, QueueForbidden = true }),
   AzsharasFontofPower                   = Action.Create({ Type = "Trinket", ID = 169314, QueueForbidden = true }),
@@ -261,6 +263,16 @@ local function APL()
 	else
 	    ShouldStop = false
 	end
+	
+	    -- Handle all generics trinkets	
+	local function GeneralTrinkets()
+        if trinketReady(1) then
+        	if HR.Cast(I.GenericTrinket1) then return "GenericTrinket1"; end
+        end
+		if trinketReady(2) then
+            if HR.Cast(I.GenericTrinket2) then return "GenericTrinket2"; end
+        end
+    end
 	
     local function Precombat()
         -- flask
@@ -477,6 +489,10 @@ local function APL()
         if (true) then
             local ShouldReturn = Generators(); if ShouldReturn then return ShouldReturn; end
         end
+        -- run_action_list,name=trinkets
+        if (true) then
+            local ShouldReturn = GeneralTrinkets(); if ShouldReturn then return ShouldReturn; end
+        end	
     end
 end
 -- Finished

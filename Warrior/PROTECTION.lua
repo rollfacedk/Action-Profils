@@ -61,6 +61,8 @@ Action[ACTION_CONST_WARRIOR_PROT] = {
     -- Debuffs 
     RazorCoralDebuff                      = Action.Create({ Type = "Spell", ID = 303568, Hidden = true     }),	
     -- Trinkets
+	GenericTrinket1                       = Action.Create({ Type = "Trinket", ID = 114616, QueueForbidden = true }),
+    GenericTrinket2                       = Action.Create({ Type = "Trinket", ID = 114081, QueueForbidden = true }),
     TrinketTest                           = Action.Create({ Type = "Trinket", ID = 122530, QueueForbidden = true }),
     TrinketTest2                          = Action.Create({ Type = "Trinket", ID = 159611, QueueForbidden = true }), 
     AzsharasFontofPower                   = Action.Create({ Type = "Trinket", ID = 169314, QueueForbidden = true }),
@@ -75,8 +77,7 @@ Action[ACTION_CONST_WARRIOR_PROT] = {
     -- Potions
     PotionofUnbridledFury                 = Action.Create({ Type = "Potion", ID = 169299, QueueForbidden = true }),
     PotionTest                            = Action.Create({ Type = "Potion", ID = 142117, QueueForbidden = true }),
-    SuperiorBattlePotionofStrength        = Action.Create({ Type = "Potion", ID = 168500, QueueForbidden = true }),	
-	
+    SuperiorBattlePotionofStrength        = Action.Create({ Type = "Potion", ID = 168500, QueueForbidden = true }),		
     -- Misc
     CyclotronicBlast                      = Action.Create({ Type = "Spell", ID = 293491, Hidden = true}),	
     -- Hidden Heart of Azeroth
@@ -92,7 +93,7 @@ Action[ACTION_CONST_WARRIOR_PROT] = {
     ConcentratedFlame3                    = Action.Create({ Type = "HeartOfAzeroth", ID = 299353, Hidden = true}),
     GuardianofAzeroth                     = Action.Create({ Type = "HeartOfAzeroth", ID = 295840, Hidden = true}),
     GuardianofAzeroth2                    = Action.Create({ Type = "HeartOfAzeroth", ID = 299355, Hidden = true}),
-    GuardianofAzeroth3                    = Action.Create({ Type = "HeartOfAzeroth", ID = 295840, Hidden = true}),
+    GuardianofAzeroth3                    = Action.Create({ Type = "HeartOfAzeroth", ID = 299358, Hidden = true}),
     FocusedAzeriteBeam                    = Action.Create({ Type = "HeartOfAzeroth", ID = 295258, Hidden = true}),
     FocusedAzeriteBeam2                   = Action.Create({ Type = "HeartOfAzeroth", ID = 299336, Hidden = true}),
     FocusedAzeriteBeam3                   = Action.Create({ Type = "HeartOfAzeroth", ID = 299338, Hidden = true}),
@@ -324,6 +325,16 @@ local function APL()
 	    ShouldStop = false
 	end
     
+	    -- Handle all generics trinkets	
+	local function GeneralTrinkets()
+        if trinketReady(1) then
+        	if HR.Cast(I.GenericTrinket1) then return "GenericTrinket1"; end
+        end
+		if trinketReady(2) then
+            if HR.Cast(I.GenericTrinket2) then return "GenericTrinket2"; end
+        end
+    end
+	
     local function Precombat()
         -- flask
         -- food
@@ -587,6 +598,10 @@ local function APL()
         if (true) then
             local ShouldReturn = St(); if ShouldReturn then return ShouldReturn; end
         end
+        -- run_action_list,name=trinkets
+        if (true) then
+            local ShouldReturn = GeneralTrinkets(); if ShouldReturn then return ShouldReturn; end
+        end	
     end
 end
 -- Finished

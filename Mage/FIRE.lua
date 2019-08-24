@@ -77,6 +77,8 @@ Action[ACTION_CONST_MAGE_FIRE] = {
     -- Potions
     PotionofUnbridledFury                = Action.Create({ Type = "Potion", ID = 169299, QueueForbidden = true }),
     -- Trinkets
+	GenericTrinket1                       = Action.Create({ Type = "Trinket", ID = 114616, QueueForbidden = true }),
+    GenericTrinket2                       = Action.Create({ Type = "Trinket", ID = 114081, QueueForbidden = true }),
     TidestormCodex                       = Action.Create({ Type = "Trinket", ID = 165576, QueueForbidden = true }),
     MalformedHeraldsLegwraps             = Action.Create({ Type = "Trinket", ID = 167835, QueueForbidden = true }),
     PocketsizedComputationDevice         = Action.Create({ Type = "Trinket", ID = 167555, QueueForbidden = true }),
@@ -357,6 +359,16 @@ local function APL()
 	else
 	    ShouldStop = false
 	end
+	
+	    -- Handle all generics trinkets	
+	local function GeneralTrinkets()
+        if trinketReady(1) then
+        	if HR.Cast(I.GenericTrinket1) then return "GenericTrinket1"; end
+        end
+		if trinketReady(2) then
+            if HR.Cast(I.GenericTrinket2) then return "GenericTrinket2"; end
+        end
+    end
 	
 	local function Precombat_DBM()
         -- flask
@@ -958,7 +970,10 @@ local function APL()
         if (true) then
             local ShouldReturn = StandardRotation(); if ShouldReturn then return ShouldReturn; end
         end
-
+        -- run_action_list,name=trinkets
+        if (true) then
+            local ShouldReturn = GeneralTrinkets(); if ShouldReturn then return ShouldReturn; end
+        end	
     end
 end
 -- Finished

@@ -80,6 +80,8 @@ Action[ACTION_CONST_DRUID_BALANCE] = {
     -- Misc
     Channeling                            = Action.Create({ Type = "Spell", ID = 209274, Hidden = true     }),	
     -- Trinkets
+    GenericTrinket1                       = Action.Create({ Type = "Trinket", ID = 114616, QueueForbidden = true }),
+    GenericTrinket2                       = Action.Create({ Type = "Trinket", ID = 114081, QueueForbidden = true }),
     TrinketTest                           = Action.Create({ Type = "Trinket", ID = 122530, QueueForbidden = true }),
     TrinketTest2                          = Action.Create({ Type = "Trinket", ID = 159611, QueueForbidden = true }), 
     AzsharasFontofPower                   = Action.Create({ Type = "Trinket", ID = 169314, QueueForbidden = true }),
@@ -107,7 +109,7 @@ Action[ACTION_CONST_DRUID_BALANCE] = {
     ConcentratedFlame3                    = Action.Create({ Type = "HeartOfAzeroth", ID = 299353, Hidden = true}),
     GuardianofAzeroth                     = Action.Create({ Type = "HeartOfAzeroth", ID = 295840, Hidden = true}),
     GuardianofAzeroth2                    = Action.Create({ Type = "HeartOfAzeroth", ID = 299355, Hidden = true}),
-    GuardianofAzeroth3                    = Action.Create({ Type = "HeartOfAzeroth", ID = 295840, Hidden = true}),
+    GuardianofAzeroth3                    = Action.Create({ Type = "HeartOfAzeroth", ID = 299358, Hidden = true}),
     FocusedAzeriteBeam                    = Action.Create({ Type = "HeartOfAzeroth", ID = 295258, Hidden = true}),
     FocusedAzeriteBeam2                   = Action.Create({ Type = "HeartOfAzeroth", ID = 299336, Hidden = true}),
     FocusedAzeriteBeam3                   = Action.Create({ Type = "HeartOfAzeroth", ID = 299338, Hidden = true}),
@@ -405,6 +407,16 @@ local function APL()
 	else
 	    ShouldStop = false
 	end
+	
+    -- Handle all generics trinkets	
+	local function GeneralTrinkets()
+        if trinketReady(1) then
+        	if HR.Cast(I.GenericTrinket1) then return "GenericTrinket1"; end
+        end
+		if trinketReady(2) then
+            if HR.Cast(I.GenericTrinket2) then return "GenericTrinket2"; end
+        end
+    end
     
     local function Precombat()
         -- flask
@@ -599,7 +611,7 @@ local function APL()
             if HR.Cast(S.Incarnation, Action.GetToggle(2, "GCDasOffGCD")) then return "incarnation 228" end
         end
         -- celestial_alignment,if=!buff.ca_inc.up&(!talent.starlord.enabled|buff.starlord.up)&(buff.memory_of_lucid_dreams.up|((cooldown.memory_of_lucid_dreams.remains>20|!essence.memory_of_lucid_dreams.major)&ap_check))&(!azerite.lively_spirit.enabled|buff.lively_spirit.up),target_if=(dot.sunfire.remains>2&dot.moonfire.ticking&(dot.stellar_flare.ticking|!talent.stellar_flare.enabled))
-        if S.CelestialAlignment:IsCastableP() and (Player:BuffDownP(CaInc()) and (not S.Starlord:IsAvailable() or Player:BuffP(S.StarlordBuff)) and (Player:BuffP(S.MemoryofLucidDreams) or ((S.MemoryofLucidDreams:CooldownRemainsP() > 20 or not S.MemoryofLucidDreams:IsAvailable()) and AP_Check(S.CelestialAlignment))) and (not S.LivelySpirit:AzeriteEnabled() or Player:BuffP(S.LivelySpiritBuff)) and (Target:DebuffRemainsP(S.SunfireDebuff) > 2 and Target:DebuffP(S.MoonfireDebuff) and (Target:DebuffP(S.StellarFlareDebuff) or not S.StellarFlare:IsAvailable()))) then
+        if S.CelestialAlignment:IsCastableP() and HR.CDsON() and (Player:BuffDownP(CaInc()) and (not S.Starlord:IsAvailable() or Player:BuffP(S.StarlordBuff)) and (Player:BuffP(S.MemoryofLucidDreams) or ((S.MemoryofLucidDreams:CooldownRemainsP() > 20 or not S.MemoryofLucidDreams:IsAvailable()) and AP_Check(S.CelestialAlignment))) and (not S.LivelySpirit:AzeriteEnabled() or Player:BuffP(S.LivelySpiritBuff)) and (Target:DebuffRemainsP(S.SunfireDebuff) > 2 and Target:DebuffP(S.MoonfireDebuff) and (Target:DebuffP(S.StellarFlareDebuff) or not S.StellarFlare:IsAvailable()))) then
             if HR.Cast(S.CelestialAlignment, Action.GetToggle(2, "GCDasOffGCD")) then return "celestial_alignment 253" end
         end
         -- fury_of_elune,if=(buff.ca_inc.up|cooldown.ca_inc.remains>30)&solar_wrath.ap_check
@@ -611,7 +623,7 @@ local function APL()
             -- if HR.Cancel(S.StarlordBuff) then return ""; end
         -- end
         -- starfall,if=(buff.starlord.stack<3|buff.starlord.remains>=8)&spell_targets>=variable.sf_targets&(target.time_to_die+1)*spell_targets>cost%2.5
-        if S.Starfall:IsReadyP() and ((Player:BuffStackP(S.StarlordBuff) < 3 or Player:BuffRemainsP(S.StarlordBuff) >= 8) and EnemiesCount >= VarSfTargets and (Target:TimeToDie() + 1) * EnemiesCount > S.Starfall:Cost() / 2.5) then
+        if S.Starfall:IsReadyP() and EnemiesCount > 3 and ((Player:BuffStackP(S.StarlordBuff) < 3 or Player:BuffRemainsP(S.StarlordBuff) >= 8) and EnemiesCount >= VarSfTargets and (Target:TimeToDie() + 1) * EnemiesCount > S.Starfall:Cost() / 2.5) then
             if HR.Cast(S.Starfall, Action.GetToggle(2, "GCDasOffGCD")) then return "starfall 164"; end
         end
         -- starsurge,if=(talent.starlord.enabled&(buff.starlord.stack<3|buff.starlord.remains>=5&buff.arcanic_pulsar.stack<8)|!talent.starlord.enabled&(buff.arcanic_pulsar.stack<8|buff.ca_inc.up))&spell_targets.starfall<variable.sf_targets&buff.lunar_empowerment.stack+buff.solar_empowerment.stack<4&buff.solar_empowerment.stack<3&buff.lunar_empowerment.stack<3&(!variable.az_ss|!buff.ca_inc.up|!prev.starsurge)|target.time_to_die<=execute_time*astral_power%40|!solar_wrath.ap_check
@@ -662,6 +674,10 @@ local function APL()
         if S.Sunfire:IsCastableP() then
             if HR.Cast(S.Sunfire) then return "sunfire 399"; end
         end	
+        -- run_action_list,name=trinkets
+        if (true) then
+            local ShouldReturn = GeneralTrinkets(); if ShouldReturn then return ShouldReturn; end
+        end
     end
 end
 -- Finished

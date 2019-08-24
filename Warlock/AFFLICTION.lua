@@ -81,6 +81,8 @@ Action[ACTION_CONST_WARLOCK_AFFLI] = {
     AgonyDebuff                          = Action.Create({ Type = "Spell", ID = 980, Hidden = true}),
     CorruptionDebuff                     = Action.Create({ Type = "Spell", ID = 146739, Hidden = true     }),
     -- Trinkets
+    GenericTrinket1                       = Action.Create({ Type = "Trinket", ID = 114616, QueueForbidden = true }),
+    GenericTrinket2                       = Action.Create({ Type = "Trinket", ID = 114081, QueueForbidden = true }),
     TrinketTest                          = Action.Create({ Type = "Trinket", ID = 122530, QueueForbidden = true }),
     TrinketTest2                         = Action.Create({ Type = "Trinket", ID = 159611, QueueForbidden = true }), 
     AzsharasFontofPower                  = Action.Create({ Type = "Trinket", ID = 169314, QueueForbidden = true }),
@@ -109,7 +111,7 @@ Action[ACTION_CONST_WARLOCK_AFFLI] = {
     ConcentratedFlame3                    = Action.Create({ Type = "HeartOfAzeroth", ID = 299353, Hidden = true}),
     GuardianofAzeroth                     = Action.Create({ Type = "HeartOfAzeroth", ID = 295840, Hidden = true}),
     GuardianofAzeroth2                    = Action.Create({ Type = "HeartOfAzeroth", ID = 299355, Hidden = true}),
-    GuardianofAzeroth3                    = Action.Create({ Type = "HeartOfAzeroth", ID = 295840, Hidden = true}),
+    GuardianofAzeroth3                    = Action.Create({ Type = "HeartOfAzeroth", ID = 299358, Hidden = true}),
     FocusedAzeriteBeam                    = Action.Create({ Type = "HeartOfAzeroth", ID = 295258, Hidden = true}),
     FocusedAzeriteBeam2                   = Action.Create({ Type = "HeartOfAzeroth", ID = 299336, Hidden = true}),
     FocusedAzeriteBeam3                   = Action.Create({ Type = "HeartOfAzeroth", ID = 299338, Hidden = true}),
@@ -537,6 +539,15 @@ local function APL()
         print("No Pet Data") 
     end	
 	
+	    -- Handle all generics trinkets	
+	local function GeneralTrinkets()
+        if trinketReady(1) then
+        	if HR.Cast(I.GenericTrinket1) then return "GenericTrinket1"; end
+        end
+		if trinketReady(2) then
+            if HR.Cast(I.GenericTrinket2) then return "GenericTrinket2"; end
+        end
+    end
 	
 	local function Precombat_DBM()
         -- summon_pet
@@ -783,7 +794,7 @@ local function APL()
             if HR.Cast(S.UnleashHeartOfAzeroth) then return "purifying_blast 465"; end
         end
         -- concentrated_flame,if=!dot.concentrated_flame_burn.remains&!action.concentrated_flame.in_flight
-        if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and (Target:DebuffDownP(S.ConcentratedFlameBurn) and not S.ConcentratedFlame:InFlight()) then
+        if S.ConcentratedFlame:IsReadyP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and (Target:DebuffDownP(S.ConcentratedFlameBurn) and not S.ConcentratedFlame:InFlight()) then
             if HR.Cast(S.UnleashHeartOfAzeroth) then return "concentrated_flame 467"; end
         end
         -- drain_soul,interrupt_global=1,chain=1,interrupt=1,cycle_targets=1,if=target.time_to_die<=gcd
@@ -1051,6 +1062,10 @@ local function APL()
         if (true) and not ShouldStop then
             local ShouldReturn = Fillers(); if ShouldReturn then return ShouldReturn; end
         end
+        -- run_action_list,name=trinkets
+        if (true) then
+            local ShouldReturn = GeneralTrinkets(); if ShouldReturn then return ShouldReturn; end
+        end	
     end
 end
 -- Finished

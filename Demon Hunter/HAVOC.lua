@@ -73,6 +73,9 @@ Action[ACTION_CONST_DEMONHUNTER_HAVOC] = {
   RazorCoralDebuff                      = Action.Create({ Type = "Spell", ID = 303568, Hidden = true}),
   ConductiveInkDebuff                   = Action.Create({ Type = "Spell", ID = 302565, Hidden = true}),
   -- Trinkets
+  GenericTrinket1                       = Action.Create({ Type = "Trinket", ID = 114616, QueueForbidden = true }),
+  GenericTrinket2                       = Action.Create({ Type = "Trinket", ID = 114081, QueueForbidden = true }),
+  AshvanesRazorCoral                    = Action.Create({ Type = "Trinket", ID = 169311, QueueForbidden = true }),
   AshvanesRazorCoral                    = Action.Create({ Type = "Trinket", ID = 169311, QueueForbidden = true }),
   DribblingInkpod                       = Action.Create({ Type = "Trinket", ID = 169319, QueueForbidden = true }),
   AzsharasFontofPower                   = Action.Create({ Type = "Trinket", ID = 169314, QueueForbidden = true }),
@@ -286,7 +289,7 @@ local function trinketReady(trinketPosition)
 	
     return true
 end
-
+	
 local function TrinketON()
     if trinketReady(1) or trinketReady(2) then
         return true
@@ -356,6 +359,16 @@ local function APL()
 	--else
 	--    ShouldStop = false
 	--end
+	
+    -- Handle all generics trinkets	
+	local function GeneralTrinkets()
+        if trinketReady(1) then
+        	if HR.Cast(I.GenericTrinket1) then return "GenericTrinket1"; end
+        end
+		if trinketReady(2) then
+            if HR.Cast(I.GenericTrinket2) then return "GenericTrinket2"; end
+        end
+    end
 	
     local function Precombat_DBM()
         -- flask
@@ -708,7 +721,7 @@ local function APL()
         if HR.CDsON() then
             local ShouldReturn = Cooldown(); if ShouldReturn then return ShouldReturn; end
         end
-    
+
         -- pick_up_fragment,if=fury.deficit>=35&(!azerite.eyes_of_rage.enabled|cooldown.eye_beam.remains>1.4)
         -- TODO: Can't detect when orbs actually spawn, we could possibly show a suggested icon when we DON'T want to pick up souls so people can avoid moving?
     
@@ -726,6 +739,10 @@ local function APL()
         if (true) then
             local ShouldReturn = Normal(); if ShouldReturn then return ShouldReturn; end
         end
+        -- run_action_list,name=trinkets
+        if (true) then
+            local ShouldReturn = GeneralTrinkets(); if ShouldReturn then return ShouldReturn; end
+        end		
     end
 end
 -- Finished
