@@ -83,23 +83,7 @@ A.Data.ProfileUI = {
                 }, 
                 
             },  
-            { -- [2] 2nd Row
-                {
-                    E = "Checkbox", 
-                    DB = "OffGCDasOffGCD",
-                    DBV = true,
-                    L = { 
-                        enUS = "Use spells OffGCD", 
-                        ruRU = "Используйте заклинания OffGCD", 
-                        frFR = "Utiliser les spells OffGCD",
-                    }, 
-                    TT = { 
-                        enUS = "Will force certains spells to be used as off GCD", 
-                        ruRU = "Вынудит определенные заклинания использоваться как вне GCD", 
-                        frFR = "Forcera certains spells à être utilisés sur le GCD",
-                    }, 
-                    M = {},
-                },  
+            { -- [2] 2nd Row  
 				-- Splash Data
                 {
                     E = "Dropdown",                                                         
@@ -303,22 +287,6 @@ A.Data.ProfileUI = {
                 },                 
             }, 
             { -- [2] 2nd Row
-                {
-                    E = "Checkbox", 
-                    DB = "OffGCDasOffGCD",
-                    DBV = true,
-                    L = { 
-                        enUS = "Use spells OffGCD", 
-                        ruRU = "Используйте заклинания OffGCD", 
-                        frFR = "Utiliser les spells OffGCD",
-                    }, 
-                    TT = { 
-                        enUS = "Will force certains spells to be used as off GCD", 
-                        ruRU = "Вынудит определенные заклинания использоваться как вне GCD", 
-                        frFR = "Forcera certains spells à être utilisés sur le GCD",
-                    }, 
-                    M = {},
-                }, 
 				-- Splash Data
                 {
                     E = "Dropdown",                                                         

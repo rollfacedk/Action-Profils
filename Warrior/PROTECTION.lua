@@ -499,6 +499,14 @@ local function APL()
          	end 
       	end 
         -- auto_attack
+		-- Avatar on CD option
+        if S.Avatar:IsCastableP() and HR.CDsON() and Action.GetToggle(2, "AvatarOnCD") then
+            if HR.Cast(S.Avatar) then return "avatar 114"; end
+        end
+		-- DemoralizingShout on CD option
+        if S.DemoralizingShout:IsCastableP() and HR.CDsON() and Action.GetToggle(2, "DSOnCD") then
+            if HR.Cast(S.DemoralizingShout) then return "DemoralizingShout 114"; end
+        end
         -- intercept,if=time=0
         if S.Intercept:IsCastableP(25) and (HL.CombatTime() == 0 and not Target:IsInRange(8)) then
             if HR.Cast(S.Intercept) then return "intercept 84"; end

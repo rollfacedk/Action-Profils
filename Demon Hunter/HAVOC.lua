@@ -680,7 +680,14 @@ local function APL()
         if S.ConsumeMagic:IsReady() and not ShouldStop and Action.AuraIsValid("player", "UsePurge", "PurgeHigh") then
             if HR.Cast(S.ConsumeMagic) then return "" end
         end	
-    
+        -- Utilities
+        if S.Darkness:IsReady() and Player:HealthPercentage() <= Action.GetToggle(2, "Darkness") then
+            if HR.Cast(S.Darkness) then return "Darkness 267"; end
+        end
+
+        if S.Blur:IsReady() and Player:HealthPercentage() <= Action.GetToggle(2, "Blur") then
+            if HR.Cast(S.Blur) then return "Blur 267"; end
+        end
         -- Set Variables
         -- variable,name=blade_dance,value=talent.first_blood.enabled|spell_targets.blade_dance1>=(3-talent.trail_of_ruin.enabled)
         VarBladeDance = num(S.FirstBlood:IsAvailable() or Cache.EnemiesCount[8] >= (3 - num(S.TrailofRuin:IsAvailable())))

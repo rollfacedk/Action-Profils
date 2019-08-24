@@ -84,22 +84,25 @@ A.Data.ProfileUI = {
                 
             },  
             { -- [2] 2nd Row
+				-- Splash Data
                 {
-                    E = "Checkbox", 
-                    DB = "OffGCDasOffGCD",
-                    DBV = true,
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
+                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
+                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
+                    },
+                    DB = "AoeDetectionMode",
+                    DBV = "USE COMBAT LOGS",
                     L = { 
-                        enUS = "Use spells OffGCD", 
-                        ruRU = "Используйте заклинания OffGCD", 
-                        frFR = "Utiliser les spells OffGCD",
+                        ANY = "AoE Detection Mode",
                     }, 
                     TT = { 
-                        enUS = "Will force certains spells to be used as off GCD", 
-                        ruRU = "Вынудит определенные заклинания использоваться как вне GCD", 
-                        frFR = "Forcera certains spells à être utilisés sur le GCD",
+                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
                     }, 
                     M = {},
-                },  
+                },	 				
             },
             { -- [4] 4th Row
 
@@ -256,24 +259,6 @@ A.Data.ProfileUI = {
                 }, 
                 {
                     E = "Checkbox", 
-                    DB = "CDs",
-                    DBV = true,
-                    L = { 
-                        enUS = "Use Cooldowns", 
-                        ruRU = "Использовать Cooldowns", 
-                        frFR = "Utiliser les Cooldowns"
-                    }, 
-                    TT = { 
-                        enUS = "Enable cooldowns usage in rotation", 
-                        ruRU = "Включить использование перезарядки в ротации", 
-                        frFR = "Activer l'usage des cooldowns par la rotation",
-                    }, 
-                    M = {},
-                },                 
-            }, 
-            { -- [2] 2nd Row
-                {
-                    E = "Checkbox", 
                     DB = "OffGCDasOffGCD",
                     DBV = true,
                     L = { 
@@ -287,7 +272,62 @@ A.Data.ProfileUI = {
                         frFR = "Forcera certains spells à être utilisés sur le GCD",
                     }, 
                     M = {},
-                },  
+                }, 
+            }, 
+            { -- [1] 1st Row                           
+                {
+                    E = "Checkbox", 
+                    DB = "AvatarOnCD",
+                    DBV = true,
+                    L = { 
+                        enUS = "Use Avatar on cooldown", 
+                        ruRU = "Use Avatar on cooldown", 
+                        frFR = "Use Avatar on cooldown", 
+                    }, 
+                    TT = { 
+                        enUS = "Use Avatar on cooldown", 
+                        ruRU = "Use Avatar on cooldown", 
+                        frFR = "Use Avatar on cooldown", 
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Checkbox", 
+                    DB = "DSOnCD",
+                    DBV = true,
+                    L = { 
+                        enUS = "Use Demoralizing Shout on cooldown", 
+                        ruRU = "Use Demoralizing Shout on cooldown",  
+                        frFR = "Use Demoralizing Shout on cooldown", 
+                    }, 
+                    TT = { 
+                        enUS = "Use Demoralizing Shout on cooldown", 
+                        ruRU = "Use Demoralizing Shout on cooldown",  
+                        frFR = "Use Demoralizing Shout on cooldown", 
+                    }, 
+                    M = {},
+                }, 
+            }, 
+            { -- [2] 2nd Row
+				-- Splash Data
+                {
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
+                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
+                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
+                    },
+                    DB = "AoeDetectionMode",
+                    DBV = "USE COMBAT LOGS",
+                    L = { 
+                        ANY = "AoE Detection Mode",
+                    }, 
+                    TT = { 
+                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                    }, 
+                    M = {},
+                },	 				
             },
             { -- [4] 4th Row
 

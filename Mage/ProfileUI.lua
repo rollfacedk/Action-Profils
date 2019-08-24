@@ -12,7 +12,7 @@ local Env = CNDT.Env
 local A = Action
 A.Data.ProfileEnabled[TMW.db:GetCurrentProfile()] = true
 A.Data.ProfileUI = {    
-    DateTime = "v4 (01.08.2019)",
+    DateTime = "v1 (24.08.2019)",
     -- Class settings
     [2] = {        
         [ACTION_CONST_MAGE_FIRE] = {  
@@ -84,38 +84,6 @@ A.Data.ProfileUI = {
                 
             }, 
             { -- [2] 2nd Row
-                {
-                    E = "Checkbox", 
-                    DB = "UseTrinkets",
-                    DBV = true,
-                    L = { 
-                        enUS = "Use Trinkets", 
-                        ruRU = "Используйте Брелки", 
-                        frFR = "Utiliser les bijoux",
-                    }, 
-                    TT = { 
-                        enUS = "Use Trinkets as part of the rotation", 
-                        ruRU = "Используйте Брелки как часть вращения", 
-                        frFR = "Utilisez les bijoux dans le cadre de la rotation",
-                    }, 
-                    M = {},
-                }, 
-                {
-                    E = "Checkbox", 
-                    DB = "OffGCDasOffGCD",
-                    DBV = true,
-                    L = { 
-                        enUS = "Use spells OffGCD", 
-                        ruRU = "Используйте заклинания OffGCD", 
-                        frFR = "Utiliser les spells OffGCD",
-                    }, 
-                    TT = { 
-                        enUS = "Will force certains spells to be used as off GCD", 
-                        ruRU = "Вынудит определенные заклинания использоваться как вне GCD", 
-                        frFR = "Forcera certains spells à être utilisés sur le GCD",
-                    }, 
-                    M = {},
-                }, 
 				-- Splash Data
                 {
                     E = "Dropdown",                                                         

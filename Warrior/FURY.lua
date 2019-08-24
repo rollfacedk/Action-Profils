@@ -276,6 +276,7 @@ local function APL()
     UpdateExecuteID()
 	ExecuteRange()
 	DetermineEssenceRanks()
+	
 	if Player:IsCasting() or Player:IsChanneling() then
 	    ShouldStop = true
 	else

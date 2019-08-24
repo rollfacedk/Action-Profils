@@ -84,23 +84,26 @@ A.Data.ProfileUI = {
                 }, 
                 
             },  
-            { -- [2] 2nd Row
+            { -- [2] 2nd Row 
+				-- Splash Data
                 {
-                    E = "Checkbox", 
-                    DB = "OffGCDasOffGCD",
-                    DBV = true,
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
+                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
+                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
+                    },
+                    DB = "AoeDetectionMode",
+                    DBV = "USE COMBAT LOGS",
                     L = { 
-                        enUS = "Use spells OffGCD", 
-                        ruRU = "Используйте заклинания OffGCD", 
-                        frFR = "Utiliser les spells OffGCD",
+                        ANY = "AoE Detection Mode",
                     }, 
                     TT = { 
-                        enUS = "Will force certains spells to be used as off GCD", 
-                        ruRU = "Вынудит определенные заклинания использоваться как вне GCD", 
-                        frFR = "Forcera certains spells à être utilisés sur le GCD",
+                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
                     }, 
                     M = {},
-                },  
+                },	
             },
             { -- [4] 4th Row
 
@@ -272,23 +275,53 @@ A.Data.ProfileUI = {
                     M = {},
                 },                 
             }, 
-            { -- [2] 2nd Row
+            { -- [4] 4th Row	 		
+			    -- Moonkin Form reminder
                 {
                     E = "Checkbox", 
-                    DB = "OffGCDasOffGCD",
+                    DB = "ShowMoonkinFormOOC",
                     DBV = true,
                     L = { 
-                        enUS = "Use spells OffGCD", 
-                        ruRU = "Используйте заклинания OffGCD", 
-                        frFR = "Utiliser les spells OffGCD",
+                        enUS = "Show Moonkin Form Out of Combat", 
+                        ruRU = "Show Moonkin Form Out of Combat", 
+                        frFR = "Show Moonkin Form Out of Combat",
                     }, 
                     TT = { 
-                        enUS = "Will force certains spells to be used as off GCD", 
-                        ruRU = "Вынудит определенные заклинания использоваться как вне GCD", 
-                        frFR = "Forcera certains spells à être utilisés sur le GCD",
+                        enUS = "Enable this if you want the addon to show you the Moonkin Form reminder out of combat.", 
+                        ruRU = "Enable this if you want the addon to show you the Moonkin Form reminder out of combat.", 
+                        frFR = "Enable this if you want the addon to show you the Moonkin Form reminder out of combat.",
                     }, 
                     M = {},
-                },  
+                }, 		
+                {
+                    E = "LayoutSpace",                                                                         
+                },
+            },
+            { -- [2] 2nd Row 
+				-- Splash Data
+                {
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
+                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
+                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
+                    },
+                    DB = "AoeDetectionMode",
+                    DBV = "USE COMBAT LOGS",
+                    L = { 
+                        ANY = "AoE Detection Mode",
+                    }, 
+                    TT = { 
+                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                    }, 
+                    M = {},
+                },	
+            },
+            { -- [3] 3rd Row
+			    {
+                    E = "LayoutSpace",                                                                         
+                },
             },
             { -- [3] 3rd Row 
                 {
@@ -316,47 +349,6 @@ A.Data.ProfileUI = {
                     M = {},
                 },
 
-            },
-            { -- [4] 4th Row
-				-- Splash Data
-                {
-                    E = "Dropdown",                                                         
-                    OT = {
-                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
-                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
-                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
-                    },
-                    DB = "AoeDetectionMode",
-                    DBV = "USE COMBAT LOGS",
-                    L = { 
-                        ANY = "AoE Detection Mode",
-                    }, 
-                    TT = { 
-                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
-                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
-                    }, 
-                    M = {},
-                },	 		
-			    -- Moonkin Form reminder
-                {
-                    E = "Checkbox", 
-                    DB = "ShowMoonkinFormOOC",
-                    DBV = true,
-                    L = { 
-                        enUS = "Show Moonkin Form Out of Combat", 
-                        ruRU = "Show Moonkin Form Out of Combat", 
-                        frFR = "Show Moonkin Form Out of Combat",
-                    }, 
-                    TT = { 
-                        enUS = "Enable this if you want the addon to show you the Moonkin Form reminder out of combat.", 
-                        ruRU = "Enable this if you want the addon to show you the Moonkin Form reminder out of combat.", 
-                        frFR = "Enable this if you want the addon to show you the Moonkin Form reminder out of combat.",
-                    }, 
-                    M = {},
-                }, 		
-                {
-                    E = "LayoutSpace",                                                                         
-                },
             }, 
             { -- [7]
                 {
