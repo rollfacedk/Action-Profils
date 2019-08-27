@@ -7,7 +7,7 @@ local CNDT = TMW.CNDT
 local Env = CNDT.Env
 local Action = Action
 
-Action[ACTION_CONST_HUNTER_BM] = {
+Action[ACTION_CONST_HUNTER_BEASTMASTER] = {
     -- Racials
     ArcaneTorrent                        = Action.Create({ Type = "Spell", ID = 50613     }),
     BloodFury                            = Action.Create({ Type = "Spell", ID = 20572      }),

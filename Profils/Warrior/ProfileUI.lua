@@ -210,7 +210,7 @@ A.Data.ProfileUI = {
                 },
             },
         },
-        [ACTION_CONST_WARRIOR_PROT] = {        
+        [ACTION_CONST_WARRIOR_PROTECTION] = {        
             { -- [7]
                 {
                     E = "Header",

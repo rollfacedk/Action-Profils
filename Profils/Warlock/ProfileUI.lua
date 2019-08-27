@@ -10,7 +10,7 @@ A.Data.ProfileUI = {
     DateTime = "v1.3 (27.08.2019)",
     -- Class settings
     [2] = {        
-        [ACTION_CONST_WARLOCK_AFFLI] = {  
+        [ACTION_CONST_WARLOCK_AFFLICTION] = {  
             { -- [7]
                 {
                     E = "Header",
@@ -222,7 +222,7 @@ A.Data.ProfileUI = {
                 },
             },
         },
-        [ACTION_CONST_WARLOCK_DEMO] = {  
+        [ACTION_CONST_WARLOCK_DEMONOLOGY] = {  
             { -- [7]
                 {
                     E = "Header",
@@ -395,7 +395,7 @@ A.Data.ProfileUI = {
     },
     -- MSG Actions UI
     [7] = {
-        [ACTION_CONST_WARLOCK_AFFLI] = { 
+        [ACTION_CONST_WARLOCK_AFFLICTION] = { 
             -- MSG Action Pet Dispell
             ["dispell"] = { Enabled = true, Key = "PetDispell", LUA = [[
                 return     A.DispellMagic:IsReady(unit, true) and 
@@ -433,7 +433,7 @@ A.Data.ProfileUI = {
                         Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
             ]] },
         },
-        [ACTION_CONST_WARLOCK_DEMO] = { 
+        [ACTION_CONST_WARLOCK_DEMONOLOGY] = { 
             -- MSG Action Pet Dispell
             ["dispell"] = { Enabled = true, Key = "PetDispell", LUA = [[
                 return     A.DispellMagic:IsReady(unit, true) and 

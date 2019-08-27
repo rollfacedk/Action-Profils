@@ -7,7 +7,7 @@ local CNDT = TMW.CNDT
 local Env = CNDT.Env
 local Action = Action
 
-Action[ACTION_CONST_WARLOCK_DEMO] = {
+Action[ACTION_CONST_WARLOCK_DEMONOLOGY] = {
     -- Racial
     ArcaneTorrent                        = Action.Create({ Type = "Spell", ID = 50613     }),
     BloodFury                            = Action.Create({ Type = "Spell", ID = 20572      }),

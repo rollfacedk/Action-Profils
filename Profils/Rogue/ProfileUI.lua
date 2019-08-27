@@ -10,7 +10,7 @@ A.Data.ProfileUI = {
     DateTime = "v1.4 (27.08.2019)",
     -- Class settings
     [2] = {        
-        [ACTION_CONST_ROGUE_OUT] = {       
+        [ACTION_CONST_ROGUE_OUTLAW] = {       
             { -- [7]
                 {
                     E = "Header",
@@ -339,7 +339,7 @@ A.Data.ProfileUI = {
     },
     -- MSG Actions UI
     [7] = {
-        [ACTION_CONST_ROGUE_OUT] = { 
+        [ACTION_CONST_ROGUE_OUTLAW] = { 
             -- MSG Action Pet Dispell
             ["dispell"] = { Enabled = true, Key = "PetDispell", LUA = [[
                 return     A.DispellMagic:IsReady(unit, true) and 

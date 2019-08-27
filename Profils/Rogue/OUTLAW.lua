@@ -7,7 +7,7 @@ local CNDT = TMW.CNDT
 local Env = CNDT.Env
 local Action = Action
 
-Action[ACTION_CONST_ROGUE_OUT] = {
+Action[ACTION_CONST_ROGUE_OUTLAW] = {
     -- Racial
     ArcaneTorrent                        = Action.Create({ Type = "Spell", ID = 50613     }),
     BloodFury                            = Action.Create({ Type = "Spell", ID = 20572      }),
