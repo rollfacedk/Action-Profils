@@ -134,12 +134,12 @@ Action[ACTION_CONST_WARLOCK_AFFLICTION] = {
 }
 
 -- To create essences use next code:
-Action:CreateEssencesFor(ACTION_CONST_WARLOCK_AFFLI)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
+Action:CreateEssencesFor(ACTION_CONST_WARLOCK_AFFLICTION)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 
 -- This code making shorter access to both tables Action[PLAYERSPEC] and Action
 -- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady(), it doesn't make any conflict if you will skip shorter access
 -- So with shorter access you can just do Action.Guard:IsReady() instead of Action[PLAYERSPEC].Guard:IsReady()
-local A = setmetatable(Action[ACTION_CONST_WARLOCK_AFFLI], { __index = Action })
+local A = setmetatable(Action[ACTION_CONST_WARLOCK_AFFLICTION], { __index = Action })
 
 local GetSpellCount = 
 GetSpellCount

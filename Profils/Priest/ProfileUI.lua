@@ -222,7 +222,7 @@ A.Data.ProfileUI = {
                 },
             },
         },
-        [ACTION_CONST_PRIEST_DISCI] = {  
+        [ACTION_CONST_PRIEST_DISCIPLINE] = {  
             { -- [7]
                 {
                     E = "Header",
@@ -433,7 +433,7 @@ A.Data.ProfileUI = {
                         Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
             ]] },
         },
-        [ACTION_CONST_PRIEST_DISCI] = { 
+        [ACTION_CONST_PRIEST_DISCIPLINE] = { 
             -- MSG Action Pet Dispell
             ["dispell"] = { Enabled = true, Key = "PetDispell", LUA = [[
                 return     A.DispellMagic:IsReady(unit, true) and 

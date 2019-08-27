@@ -142,12 +142,12 @@ Action[ACTION_CONST_ROGUE_OUTLAW] = {
 }
 
 -- To create essences use next code:
-Action:CreateEssencesFor(ACTION_CONST_ROGUE_OUT)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
+Action:CreateEssencesFor(ACTION_CONST_ROGUE_OUTLAW)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 
 -- This code making shorter access to both tables Action[PLAYERSPEC] and Action
 -- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady(), it doesn't make any conflict if you will skip shorter access
 -- So with shorter access you can just do A.Guard:IsReady() instead of Action[PLAYERSPEC].Guard:IsReady()
-local A = setmetatable(Action[ACTION_CONST_ROGUE_OUT], { __index = Action })
+local A = setmetatable(Action[ACTION_CONST_ROGUE_OUTLAW], { __index = Action })
 
 -- Simcraft Imported
 -- HeroLib

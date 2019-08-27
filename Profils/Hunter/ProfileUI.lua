@@ -10,7 +10,7 @@ A.Data.ProfileUI = {
     DateTime = "v1.1 (27.08.2019)",
     -- Class settings
     [2] = {        
-        [ACTION_CONST_HUNTER_BEASTMASTER] = { 
+        [ACTION_CONST_HUNTER_BEASTMASTERY] = { 
             { -- [7]
                 {
                     E = "Header",
@@ -203,7 +203,7 @@ A.Data.ProfileUI = {
     },
     -- MSG Actions UI
     [7] = {
-        [ACTION_CONST_HUNTER_BEASTMASTER] = { 
+        [ACTION_CONST_HUNTER_BEASTMASTERY] = { 
             -- MSG Action Pet Dispell
             ["dispell"] = { Enabled = true, Key = "PetDispell", LUA = [[
                 return     A.DispellMagic:IsReady(unit, true) and 
