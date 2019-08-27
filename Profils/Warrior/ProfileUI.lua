@@ -1,10 +1,5 @@
 --------------------
 -- Taste TMW Action ProfileUI
--- Last Update : 05/08/2019
-
-ACTION_CONST_WARRIOR_FURY = 72
-ACTION_CONST_WARRIOR_ARMS = 71
-ACTION_CONST_WARRIOR_PROT = 73
 
 local TMW = TMW 
 local CNDT = TMW.CNDT 
@@ -12,7 +7,7 @@ local Env = CNDT.Env
 local A = Action
 A.Data.ProfileEnabled[TMW.db:GetCurrentProfile()] = true
 A.Data.ProfileUI = {    
-    DateTime = "v4 (01.08.2019)",
+    DateTime = "v1.4 (27.08.2019)",
     -- Class settings
     [2] = {        
         [ACTION_CONST_WARRIOR_FURY] = { 

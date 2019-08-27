@@ -1,10 +1,5 @@
 --------------------
 -- Taste TMW Action ProfileUI
--- Last Update : 05/08/2019
-
-ACTION_CONST_WARLOCK_AFFLI = 265
-ACTION_CONST_WARLOCK_DEMO = 266
-ACTION_CONST_WARLOCK_DESTRU = 267
 
 local TMW = TMW 
 local CNDT = TMW.CNDT 
@@ -12,7 +7,7 @@ local Env = CNDT.Env
 local A = Action
 A.Data.ProfileEnabled[TMW.db:GetCurrentProfile()] = true
 A.Data.ProfileUI = {    
-    DateTime = "v1 (23.08.2019)",
+    DateTime = "v1.3 (27.08.2019)",
     -- Class settings
     [2] = {        
         [ACTION_CONST_WARLOCK_AFFLI] = {  
