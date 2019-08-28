@@ -57,7 +57,7 @@ Action[ACTION_CONST_DEMONHUNTER_HAVOC] = {
   Blur                                  = Action.Create({ Type = "Spell", ID = 198589}),
   ConsumeMagic                          = Action.Create({ Type = "Spell", ID = 278326}),
   Darkness                              = Action.Create({ Type = "Spell", ID = 196718}),
-  RecklessForceCounter1                 = Action.Create({ Type = "Spell", ID = 298409}),
+  RecklessForceCounter                 = Action.Create({ Type = "Spell", ID = 298409}),
   RecklessForceCounter2                 = Action.Create({ Type = "Spell", ID = 302917}),
   ConcentratedFlameBurn                 = Action.Create({ Type = "Spell", ID = 295368}),
   -- Buffs
@@ -87,6 +87,7 @@ Action[ACTION_CONST_DEMONHUNTER_HAVOC] = {
   PotionofFocusedResolve                = Action.Create({ Type = "Potion", ID = 168506, QueueForbidden = true }),
   -- Misc
   CyclotronicBlast                      = Action.Create({ Type = "Spell", ID = 293491, Hidden = true}),
+  Channeling                            = Action.Create({ Type = "Spell", ID = 209274, Hidden = true     }),
   -- Hidden Heart of Azeroth
   VisionofPerfectionMinor               = Action.Create({ Type = "Spell", ID = 296320, Hidden = true}),
   VisionofPerfectionMinor2              = Action.Create({ Type = "Spell", ID = 299367, Hidden = true}),
@@ -256,6 +257,7 @@ local function DetermineEssenceRanks()
     S.VisionofPerfectionMinor = S.VisionofPerfectionMinor3:IsAvailable() and S.VisionofPerfectionMinor3 or S.VisionofPerfectionMinor
     S.GuardianofAzeroth = S.GuardianofAzeroth2:IsAvailable() and S.GuardianofAzeroth2 or S.GuardianofAzeroth
     S.GuardianofAzeroth = S.GuardianofAzeroth3:IsAvailable() and S.GuardianofAzeroth3 or S.GuardianofAzeroth
+	S.RecklessForceCounter = S.RecklessForceCounter2:IsAvailable() and S.RecklessForceCounter2 or S.RecklessForceCounter
 end
 
 -- Trinkets checker handler

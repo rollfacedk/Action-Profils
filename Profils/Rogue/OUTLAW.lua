@@ -105,7 +105,8 @@ Action[ACTION_CONST_ROGUE_OUTLAW] = {
 	ConcentratedFlameBurn                 = Action.Create({ Type = "Spell", ID = 295368, Hidden = true}),
     BloodoftheEnemyDebuff                 = Action.Create({ Type = "Spell", ID = 297108, Hidden = true}),
     RecklessForceBuff                     = Action.Create({ Type = "Spell", ID = 302932, Hidden = true}),
-    RecklessForceCounter                  = Action.Create({ Type = "Spell", ID = 302917, Hidden = true}),
+    RecklessForceCounter                  = Action.Create({ Type = "Spell", ID = 298409}),
+    RecklessForceCounter2                 = Action.Create({ Type = "Spell", ID = 302917}),
     -- Hidden Heart of Azeroth
     VisionofPerfectionMinor               = Action.Create({ Type = "Spell", ID = 296320, Hidden = true}),
     VisionofPerfectionMinor2              = Action.Create({ Type = "Spell", ID = 299367, Hidden = true}),
@@ -478,6 +479,7 @@ local function DetermineEssenceRanks()
     S.VisionofPerfectionMinor = S.VisionofPerfectionMinor3:IsAvailable() and S.VisionofPerfectionMinor3 or S.VisionofPerfectionMinor
     S.GuardianofAzeroth = S.GuardianofAzeroth2:IsAvailable() and S.GuardianofAzeroth2 or S.GuardianofAzeroth
     S.GuardianofAzeroth = S.GuardianofAzeroth3:IsAvailable() and S.GuardianofAzeroth3 or S.GuardianofAzeroth
+	S.RecklessForceCounter = S.RecklessForceCounter2:IsAvailable() and S.RecklessForceCounter2 or S.RecklessForceCounter
 end
 
 -- Trinkets checker handler
