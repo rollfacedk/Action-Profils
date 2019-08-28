@@ -601,7 +601,7 @@ local function APL()
          	end 
       	end 
         -- charge
-        if S.Charge:IsReadyP() and S.Charge:ChargesP() >= 1 then
+        if S.Charge:IsReadyP() and S.Charge:ChargesP() >= 1 and Target:MaxDistanceToPlayer(true) >= 8 then
             if HR.Cast(S.Charge, Action.GetToggle(2, "OffGCDasOffGCD")) then return "charge 351"; end
         end
         -- auto_attack
