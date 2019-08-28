@@ -197,7 +197,7 @@ local function bool(val)
 end
 
 local function DeathStrikeHeal()
-  return (Action.GetToggle(2, "SoloMode") and Player:HealthPercentage() < Settings.Commons.UseDeathStrikeHP) and true or false;
+  return (Action.GetToggle(2, "SoloMode") and Player:HealthPercentage() < Action.GetToggle(2, "UseDeathStrikeHP")) and true or false;
 end
 
 -- Local essence ranks (Is it really usefull?)

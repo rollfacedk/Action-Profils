@@ -52,7 +52,10 @@ Action[ACTION_CONST_HUNTER_BEASTMASTERY] = {
     CounterShot                           = Action.Create({ Type = "Spell", ID = 147362 }),
     Exhilaration                          = Action.Create({ Type = "Spell", ID = 109304 }),
     DanceofDeath                          = Action.Create({ Type = "Spell", ID = 274441 }),
-    -- Utilities
+    -- Pet
+    CallPet                               = Action.Create({ Type = "Spell", ID = 883 }),
+    MendPet                               = Action.Create({ Type = "Spell", ID = 136 }),
+    RevivePet                             = Action.Create({ Type = "Spell", ID = 982 }),
 	-- Defensives
 	AspectoftheTurtle                    = Action.Create({ Type = "Spell", ID = 274441 }),
     -- Misc
@@ -323,6 +326,9 @@ local function TrinketON()
 	    return false
 	end
 end
+
+S.CallPet.TextureSpellID = { S.MendPet:ID() }
+S.RevivePet.TextureSpellID = { S.MendPet:ID() }
 
 -- Initiate Nucleus Ability registration
 local function Init()
@@ -630,7 +636,7 @@ local function APL()
 		    return S.AspectoftheTurtle:Cast()
         end
         -- Exhilaration
-        if S.Exhilaration:IsCastable() and Player:HealthPercentage() <= Action.GetToggle(2, "Exhilaration") then
+        if S.Exhilaration:IsCastable() and Player:HealthPercentage() <= Action.GetToggle(2, "ExhilarationHP") then
             return S.Exhilaration:Cast()
         end	
 	end	
@@ -669,8 +675,18 @@ local function APL()
          	end 
       	end 		
 		-- Self heal, if below setting value
-        if S.Exhilaration:IsCastableP() and Player:HealthPercentage() <= Action.GetToggle(2, "Exhilaration") then
+        if S.Exhilaration:IsCastableP() and Player:HealthPercentage() <= Action.GetToggle(2, "ExhilarationHP") then
             if HR.Cast(S.Exhilaration, Action.GetToggle(2, "OffGCDasOffGCD")) then return "exhilaration"; end
+        end
+        -- mendpet
+        if S.MendPet:IsCastable() and Pet:IsActive() and Pet:HealthPercentage() > 0 and Pet:HealthPercentage() <= Action.GetToggle(2, "MendPet") and not Pet:Buff(S.MendPet) then
+			if HR.Cast(S.MendPet, true) then return "MendPet 5"; end
+        end
+	    -- summon_pet if dead or ghost
+        if Pet:IsDeadOrGhost() then
+			if HR.Cast(S.MendPet, true) then return "MendPet 5"; end
+        elseif not Pet:IsActive() then
+		    if HR.Cast(S.CallPet, true) then return "CallPet 5"; end
         end
         -- auto_shot
         -- use_items

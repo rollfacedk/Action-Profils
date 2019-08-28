@@ -119,11 +119,23 @@ A.Data.ProfileUI = {
                     E = "Slider",                                                     
                     MIN = -1, 
                     MAX = 100,                            
-                    DB = "Exhilaration",
+                    DB = "ExhilarationHP",
                     DBV = 90, -- Set healthpercentage @99% life. 
                     ONOFF = true,
                     L = { 
                         ANY = A.GetSpellInfo(109304) .. " (%)",
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Slider",                                                     
+                    MIN = -1, 
+                    MAX = 100,                            
+                    DB = "MendPet",
+                    DBV = 90, -- Set healthpercentage @99% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = A.GetSpellInfo(136) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -267,7 +279,25 @@ A.Data.ProfileUI = {
                     M = {},
                 }, 
                 
-            }, 
+            },
+            { -- [1] 1st Row
+                {
+                    E = "Checkbox", 
+                    DB = "AspectoftheEagle",
+                    DBV = true,
+                    L = { 
+                        enUS = "Show Aspect of the Eagle", 
+                        ruRU = "Show Aspect of the Eagle", 
+                        frFR = "Show Aspect of the Eagle",
+                    }, 
+                    TT = { 
+                        enUS = "Show Aspect of the Eagle when out of Melee Range.", 
+                        ruRU = "Show Aspect of the Eagle when out of Melee Range.", 
+                        frFR = "Show Aspect of the Eagle when out of Melee Range.",
+                    }, 
+                    M = {},
+                },      				
+            }, 			
             { -- [2] 2nd Row
 
 				-- Splash Data
@@ -309,7 +339,7 @@ A.Data.ProfileUI = {
                     E = "Slider",                                                     
                     MIN = -1, 
                     MAX = 100,                            
-                    DB = "Exhilaration",
+                    DB = "ExhilarationHP",
                     DBV = 90, -- Set healthpercentage @99% life. 
                     ONOFF = true,
                     L = { 
@@ -326,6 +356,18 @@ A.Data.ProfileUI = {
                     ONOFF = true,
                     L = { 
                         ANY = A.GetSpellInfo(186265) .. " (%)",
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Slider",                                                     
+                    MIN = -1, 
+                    MAX = 100,                            
+                    DB = "MendPet",
+                    DBV = 90, -- Set healthpercentage @99% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = A.GetSpellInfo(136) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -458,6 +500,41 @@ A.Data.ProfileUI = {
                 }, 
                 
             }, 
+            { -- [1] 1st Row
+		
+                {
+                    E = "Checkbox", 
+                    DB = "UseLoneWolf",
+                    DBV = true,
+                    L = { 
+                        enUS = "Use Lone Wolf", 
+                        ruRU = "Use Lone Wolf", 
+                        frFR = "Use Lone Wolf", 
+                    }, 
+                    TT = { 
+                        enUS = "Enable this if you want to use Lone Wolf and not be notified to summon a pet.", 
+                        ruRU = "Enable this if you want to use Lone Wolf and not be notified to summon a pet.", 
+                        frFR = "Enable this if you want to use Lone Wolf and not be notified to summon a pet.",
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Checkbox", 
+                    DB = "EnableMovementRotation",
+                    DBV = true,
+                    L = { 
+                        enUS = "Enable Movement Rotation", 
+                        ruRU = "Enable Movement Rotation", 
+                        frFR = "Enable Movement Rotation",
+                    }, 
+                    TT = { 
+                        enUS = "Enable this to show a special rotation while Moving. The optimal standing ability will be shown as a suggestion.", 
+                        ruRU = "Enable this to show a special rotation while Moving. The optimal standing ability will be shown as a suggestion.", 
+                        frFR = "Enable this to show a special rotation while Moving. The optimal standing ability will be shown as a suggestion.",
+                    }, 
+                    M = {},
+                },                 
+            },
             { -- [2] 2nd Row
 
 				-- Splash Data
@@ -499,7 +576,7 @@ A.Data.ProfileUI = {
                     E = "Slider",                                                     
                     MIN = -1, 
                     MAX = 100,                            
-                    DB = "Exhilaration",
+                    DB = "ExhilarationHP",
                     DBV = 90, -- Set healthpercentage @99% life. 
                     ONOFF = true,
                     L = { 

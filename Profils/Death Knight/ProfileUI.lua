@@ -154,27 +154,7 @@ A.Data.ProfileUI = {
                 },
             },
             { -- [4] 4th Row
-                {
-                    E = "Dropdown",                                                         
-                    OT = {
-                        { text = "Main Icon", value = "MAINICON" },
-                        { text = "Suggested", value = "SUGGESTED" },                    
-                        { text = "Cooldown", value = "COOLDOWN" },
-                    },
-                    DB = "FelRushDisplay",
-                    DBV = "SUGGESTED",
-                    L = { 
-                        enUS = "Fel Rush Display Style", 
-                        ruRU = "Стиль отображения Скверны", 
-                        frFR = "Style d'affichage de Ruée Fulgurante",
-                    }, 
-                    TT = { 
-                        enUS = "Define which icon display style to use for Fel Rush.", 
-                        ruRU = "Определите, какой стиль отображения значков использовать для Рывок Скверны", 
-                        frFR = "Définit le style d'affichage des icônes à utiliser pour Ruée Fulgurante.",
-					},
-                    M = {},
-                },
+
                 {
                     E = "LayoutSpace",                                                                         
                 },
@@ -354,49 +334,18 @@ A.Data.ProfileUI = {
                 {
                     E = "Slider",                                                     
                     MIN = -1, 
-                    MAX = 100,                            
-                    DB = "MetamorphosisHealthThreshold",
-                    DBV = 30, -- Set healthpercentage @30% life. 
+                    MAX = 5,                            
+                    DB = "UseDeathStrikeHP",
+                    DBV = 60, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = "Metamorphosis Health Threshold",
+                        ANY = "Use Deathstrike on low HP",
                     }, 
-                    M = {},
-                },
-                {
-                    E = "Slider",                                                     
-                    MIN = -1, 
-                    MAX = 100,                            
-                    DB = "FieryBrandHealthThreshold",
-                    DBV = 30, -- Set healthpercentage @30% life. 
-                    ONOFF = true,
-                    L = { 
-                        ANY = "Fiery Brand Health Threshold",
-                    }, 
-                    M = {},
-                },
-                {
-                    E = "Slider",                                                     
-                    MIN = -1, 
-                    MAX = 100,                            
-                    DB = "DemonSpikesHealthThreshold",
-                    DBV = 30, -- Set healthpercentage @30% life. 
-                    ONOFF = true,
-                    L = { 
-                        ANY = "Demon Spikes Health Threshold",
-                    }, 
-                    M = {},
-                },
-                {
-                    E = "Slider",                                                     
-                    MIN = -1, 
-                    MAX = 100,                            
-                    DB = "Blur",
-                    DBV = 30, -- Set healthpercentage @30% life. 
-                    ONOFF = true,
-                    L = { 
-                        ANY = "Blur Health Threshold",
-                    }, 
+                    TT = { 
+                        enUS = "Set the HP threshold to use DeathStrike.", 
+                        ruRU = "Set the HP threshold to use DeathStrike.", 
+                        frFR = "Set the HP threshold to use DeathStrike.", 
+                    },
                     M = {},
                 },
             },
@@ -665,7 +614,7 @@ A.Data.ProfileUI = {
                     MIN = -1, 
                     MAX = 5,                            
                     DB = "UseDeathStrikeHP",
-                    DBV = 30, -- Set healthpercentage @30% life. 
+                    DBV = 60, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
                         ANY = "Use Deathstrike on low HP",

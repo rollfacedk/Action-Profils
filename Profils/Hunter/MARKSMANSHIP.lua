@@ -27,13 +27,10 @@ Action[ACTION_CONST_HUNTER_MARKSMANSHIP] = {
     EveryManforHimself                   = Action.Create({ Type = "Spell", ID = 59752    }), -- not usable in APL but user can Queue it
     -- Generics Spells    
     SummonPet                             = Action.Create({ Type = "Spell", ID = 883     }),
-    HuntersMarkDebuff                     = Action.Create({ Type = "Spell", ID = 257284     }),
     HuntersMark                           = Action.Create({ Type = "Spell", ID = 257284     }),
     DoubleTap                             = Action.Create({ Type = "Spell", ID = 260402     }),
-    TrueshotBuff                          = Action.Create({ Type = "Spell", ID = 288613     }),
     Trueshot                              = Action.Create({ Type = "Spell", ID = 288613     }),
     AimedShot                             = Action.Create({ Type = "Spell", ID = 19434     }),
-    UnerringVisionBuff                    = Action.Create({ Type = "Spell", ID = 274447     }),
     UnerringVision                        = Action.Create({ Type = "Spell", ID = 274444     }),
     CallingtheShots                       = Action.Create({ Type = "Spell", ID = 260404     }),
     SurgingShots                          = Action.Create({ Type = "Spell", ID = 287707     }),
@@ -46,43 +43,34 @@ Action[ACTION_CONST_HUNTER_MARKSMANSHIP] = {
     Barrage                               = Action.Create({ Type = "Spell", ID = 120360     }),
     AMurderofCrows                        = Action.Create({ Type = "Spell", ID = 131894     }),
     SerpentSting                          = Action.Create({ Type = "Spell", ID = 271788     }),
-    SerpentStingDebuff                    = Action.Create({ Type = "Spell", ID = 271788     }),
     ArcaneShot                            = Action.Create({ Type = "Spell", ID = 185358     }),
     MasterMarksman                        = Action.Create({ Type = "Spell", ID = 260309     }),
-    MasterMarksmanBuff                    = Action.Create({ Type = "Spell", ID = 269576     }),
-    PreciseShotsBuff                      = Action.Create({ Type = "Spell", ID = 260242     }),
     IntheRhythm                           = Action.Create({ Type = "Spell", ID = 264198     }),
     PiercingShot                          = Action.Create({ Type = "Spell", ID = 198670     }),
     SteadyFocus                           = Action.Create({ Type = "Spell", ID = 193533     }),
     SteadyShot                            = Action.Create({ Type = "Spell", ID = 56641     }),
-    TrickShotsBuff                        = Action.Create({ Type = "Spell", ID = 257622     }),
     Multishot                             = Action.Create({ Type = "Spell", ID = 257620     }),
     CounterShot                           = Action.Create({ Type = "Spell", ID = 147362     }),
-    Exhilaration                          = Action.Create({ Type = "Spell", ID = 109304     }),
-    RazorCoralDebuff                      = Action.Create({ Type = "Spell", ID = 303568     }),  
+    Exhilaration                          = Action.Create({ Type = "Spell", ID = 109304     }), 
     -- Utilities
 	-- Defensives
 	AspectoftheTurtle                    = Action.Create({ Type = "Spell", ID = 274441 }),
     -- Misc
     Channeling                           = Action.Create({ Type = "Spell", ID = 209274, Hidden = true     }),
-    RecklessForceBuff                    = Action.Create({ Type = "Spell", ID = 302932, Hidden = true     }),
     ConcentratedFlameBurn                = Action.Create({ Type = "Spell", ID = 295368, Hidden = true     }),
     CyclotronicBlast                     = Action.Create({ Type = "Spell", ID = 167672, Hidden = true     }),
     HarmonicDematerializer               = Action.Create({ Type = "Spell", ID = 293512, Hidden = true     }),
     -- Buffs
-
-
-
-
-
-
+    RecklessForceBuff                    = Action.Create({ Type = "Spell", ID = 302932, Hidden = true     }),
+    TrickShotsBuff                        = Action.Create({ Type = "Spell", ID = 257622, Hidden = true     }),
+    MasterMarksmanBuff                    = Action.Create({ Type = "Spell", ID = 269576, Hidden = true     }),
+    PreciseShotsBuff                      = Action.Create({ Type = "Spell", ID = 260242, Hidden = true     }),
+    UnerringVisionBuff                    = Action.Create({ Type = "Spell", ID = 274447, Hidden = true     }),
+    TrueshotBuff                          = Action.Create({ Type = "Spell", ID = 288613, Hidden = true     }),
 	-- Debuffs 
-
-
-
-
-
-
+    RazorCoralDebuff                      = Action.Create({ Type = "Spell", ID = 303568, Hidden = true     }),
+    SerpentStingDebuff                    = Action.Create({ Type = "Spell", ID = 271788, Hidden = true     }),
+    HuntersMarkDebuff                     = Action.Create({ Type = "Spell", ID = 257284, Hidden = true     }),
     -- Potions
     PotionofUnbridledFury                = Action.Create({ Type = "Potion", ID = 169299, QueueForbidden = true }),
     -- Trinkets
@@ -240,6 +228,7 @@ local function GetEnemiesCount(range)
     end
 end
 
+S.SerpentSting:RegisterInFlight()
 S.ConcentratedFlame:RegisterInFlight()
 
 local function num(val)
@@ -250,20 +239,8 @@ local function bool(val)
   return val ~= 0
 end
 
-local function EvaluateTargetIfFilterBarbedShot74(TargetUnit)
-  return TargetUnit:DebuffRemainsP(S.BarbedShot)
-end
-
-local function EvaluateTargetIfBarbedShot75(TargetUnit)
-  return (Pet:BuffP(S.FrenzyBuff) and Pet:BuffRemainsP(S.FrenzyBuff) <= Player:GCD() + 0.150)
-end
-
-local function EvaluateTargetIfBarbedShot85(TargetUnit)
-  return (S.BarbedShot:FullRechargeTimeP() < Player:GCD() + 0.150 and bool(S.BestialWrath:CooldownRemainsP()))
-end
-
-local function EvaluateTargetIfBarbedShot123(TargetUnit)
-  return (Pet:BuffDownP(S.FrenzyBuff) and (S.BarbedShot:ChargesFractionalP() > 1.8 or Player:BuffP(S.BestialWrathBuff)) or S.AspectoftheWild:CooldownRemainsP() < S.FrenzyBuff:BaseDuration() - Player:GCD() + 0.150 and S.PrimalInstincts:AzeriteEnabled() or S.BarbedShot:ChargesFractionalP() > 1.4 or Target:TimeToDie() < 9)
+local function MasterMarksmanBuffCheck()
+  return (Player:BuffP(S.MasterMarksmanBuff) or (Player:IsCasting(S.AimedShot) and S.MasterMarksman:IsAvailable()))
 end
 
 local function DetermineEssenceRanks()
@@ -333,14 +310,9 @@ local function TrinketON()
 end
 
 -- Initiate Nucleus Ability registration
-local function Init()
-  -- Register Splash Data Nucleus Abilities
-  HL.RegisterNucleusAbility(2643, 8, 6)               -- Multi-Shot
-  HL.RegisterNucleusAbility(194392, 8, 6)             -- Volley
-  HL.RegisterNucleusAbility({171454, 171457}, 8, 6)   -- Chimaera Shot
-  HL.RegisterNucleusAbility(118459, 10, 6)            -- Beast Cleave
-  HL.RegisterNucleusAbility(201754, 10, 6)            -- Stomp
-  HL.RegisterNucleusAbility(271686, 3, 6)             -- Head My Call
+local function Init ()
+  HL.RegisterNucleusAbility(257620, 10, 6)               -- Multi-Shot
+  HL.RegisterNucleusAbility(120360, 40, 6)               -- Barrage
 end
 
 -- Init data for splash data (To Check)
@@ -355,12 +327,10 @@ local function APL()
 	
 	-- Local functions remap
     GCDMax = Player:GCD() + 0.150
-    EnemiesCount = GetEnemiesCount(40)
-	--print(EnemiesCount)
-    HL.GetEnemies(40) -- To populate Cache.Enemies[40] for CastCycles
+    EnemiesCount = GetEnemiesCount(10)
     DetermineEssenceRanks()
 
-	    -- Handle all generics trinkets	
+    -- Handle all generics trinkets	
 	local function GeneralTrinkets()
         if trinketReady(1) then
         	if HR.Cast(I.GenericTrinket1) then return "GenericTrinket1"; end
@@ -380,254 +350,230 @@ local function APL()
         -- flask
         -- augmentation
         -- food
-        -- summon_pet
-        if S.SummonPet:IsCastableP() and not Pet:Exists() then
-            if HR.Cast(S.SummonPet, Action.GetToggle(2, "OffGCDasOffGCD")) then return "summon_pet 3"; end
-        end
-        -- potion
-        if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
-            if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_agility 6"; end
-        end
-        -- use_item,name=azsharas_font_of_power
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and TrinketON() then
-            if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power"; end
-        end
-        -- worldvein_resonance
-        if S.WorldveinResonance:IsCastableP() then
-            if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance"; end
-        end
-        -- guardian_of_azeroth
-        if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
-            if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth"; end
-        end
-        -- memory_of_lucid_dreams
-        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
-            if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams"; end
-        end
-        -- use_item,effect_name=cyclotronic_blast,if=!raid_event.invulnerable.exists&(trinket.1.has_cooldown+trinket.2.has_cooldown<2|equipped.variable_intensity_gigavolt_oscillating_reactor)
-        -- Needs to be updated to the 2nd half of the condition
-        if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and S.CyclotronicBlast:IsAvailable() and TrinketON() then
-            if HR.Cast(I.PocketsizedComputationDevice) then return "cyclotronic_blast precombat"; end
-        end
-        -- focused_azerite_beam,if=!raid_event.invulnerable.exists
-        if S.FocusedAzeriteBeam:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
-            if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam"; end
-        end
-        -- aspect_of_the_wild,precast_time=1.1,if=!azerite.primal_instincts.enabled&!essence.essence_of_the_focusing_iris.major&(equipped.azsharas_font_of_power|!equipped.cyclotronic_blast)
-        if S.AspectoftheWild:IsCastableP() and HR.CDsON() and (not S.PrimalInstincts:AzeriteEnabled() and not S.FocusedAzeriteBeam:IsAvailable() and (I.AzsharasFontofPower:IsEquipped() or not S.CyclotronicBlast:IsAvailable())) then
-            if HR.Cast(S.AspectoftheWild, Action.GetToggle(2, "OffGCDasOffGCD")) then return "aspect_of_the_wild 8"; end
-        end
-        -- bestial_wrath,precast_time=1.5,if=azerite.primal_instincts.enabled&!essence.essence_of_the_focusing_iris.major&(equipped.azsharas_font_of_power|!equipped.cyclotronic_blast)
-        if S.BestialWrath:IsCastableP() and (S.PrimalInstincts:AzeriteEnabled() and not S.FocusedAzeriteBeam:IsAvailable() and (I.AzsharasFontofPower:IsEquipped() or not S.CyclotronicBlast:IsAvailable())) then
-            if HR.Cast(S.BestialWrath, Action.GetToggle(2, "OffGCDasOffGCD")) then return "bestial_wrath 16"; end
-        end
-
+        -- snapshot_stats
+        --if Everyone.TargetIsValid() then
+            -- potion
+            if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
+                if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_agility 12"; end
+            end
+            -- hunters_mark
+            if S.HuntersMark:IsCastableP() and Target:DebuffDown(S.HuntersMarkDebuff) then
+                if HR.Cast(S.HuntersMark, Action.GetToggle(2, "OffGCDasOffGCD")) then return "hunters_mark 14"; end
+            end
+            -- double_tap,precast_time=10
+            if S.DoubleTap:IsCastableP() then
+                if HR.Cast(S.DoubleTap, Action.GetToggle(2, "OffGCDasOffGCD")) then return "double_tap 18"; end
+            end
+            -- worldvein_resonance
+            if S.WorldveinResonance:IsCastableP() then
+                if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance"; end
+            end
+            -- guardian_of_azeroth
+            if S.GuardianofAzeroth:IsCastableP() then
+                if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth"; end
+            end
+            -- memory_of_lucid_dreams
+            if S.MemoryofLucidDreams:IsCastableP() then
+                if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams"; end
+            end
+            -- use_item,name=azsharas_font_of_power
+            if I.AzsharasFontofPower:IsEquipReady() and TrinketON() then
+                if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power"; end
+            end
+            -- trueshot,precast_time=1.5,if=active_enemies>2
+            if S.Trueshot:IsCastableP() and Player:BuffDownP(S.TrueshotBuff) and (EnemiesCount > 2) then
+                if HR.Cast(S.Trueshot, Action.GetToggle(2, "OffGCDasOffGCD")) then return "trueshot 20"; end
+            end
+            -- aimed_shot,if=active_enemies<3
+            if S.AimedShot:IsReadyP() and (EnemiesCount < 3) then
+                if HR.Cast(S.AimedShot) then return "aimed_shot 38"; end
+            end
+        --end
     end
-	
     local function Cds()
-    -- ancestral_call,if=cooldown.bestial_wrath.remains>30
-        if S.AncestralCall:IsCastableP() and HR.CDsON() and (S.BestialWrath:CooldownRemainsP() > 30) then
-            if HR.Cast(S.AncestralCall, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ancestral_call 24"; end
+        -- hunters_mark,if=debuff.hunters_mark.down&!buff.trueshot.up
+        if S.HuntersMark:IsCastableP() and (Target:DebuffDown(S.HuntersMarkDebuff) and Player:BuffDownP(S.TrueshotBuff)) then
+            if HR.Cast(S.HuntersMark, Action.GetToggle(2, "OffGCDasOffGCD")) then return "hunters_mark 46"; end
         end
-        -- fireblood,if=cooldown.bestial_wrath.remains>30
-        if S.Fireblood:IsCastableP() and HR.CDsON() and (S.BestialWrath:CooldownRemainsP() > 30) then
-            if HR.Cast(S.Fireblood, Action.GetToggle(2, "OffGCDasOffGCD")) then return "fireblood 28"; end
+        -- double_tap,if=cooldown.rapid_fire.remains<gcd|cooldown.rapid_fire.remains<cooldown.aimed_shot.remains|target.time_to_die<20
+        if S.DoubleTap:IsCastableP() and (S.RapidFire:CooldownRemainsP() < Player:GCD() or S.RapidFire:CooldownRemainsP() < S.AimedShot:CooldownRemainsP() or Target:TimeToDie() < 20) then
+            if HR.Cast(S.DoubleTap, Action.GetToggle(2, "OffGCDasOffGCD")) then return "double_tap 50"; end
         end
-        -- berserking,if=buff.aspect_of_the_wild.up&(target.time_to_die>cooldown.berserking.duration+duration|(target.health.pct<35|!talent.killer_instinct.enabled))|target.time_to_die<13
-        if S.Berserking:IsCastableP() and HR.CDsON() and (Player:BuffP(S.AspectoftheWildBuff) and (Target:TimeToDie() > S.Berserking:BaseDuration() + S.BerserkingBuff:BaseDuration() or (Target:HealthPercentage() < 35 or not S.KillerInstinct:IsAvailable())) or Target:TimeToDie() < 13) then
-            if HR.Cast(S.Berserking, Action.GetToggle(2, "OffGCDasOffGCD")) then return "berserking 32"; end
+        -- berserking,if=buff.trueshot.up&(target.time_to_die>cooldown.berserking.duration+duration|(target.health.pct<20|!talent.careful_aim.enabled))|target.time_to_die<13
+        if S.Berserking:IsCastableP() and HR.CDsON() and (Player:BuffP(S.TrueshotBuff) and (Target:TimeToDie() > S.Berserking:CooldownRemainsP() + S.Berserking:BaseDuration() or (Target:HealthPercentage() < 20 or not S.CarefulAim:IsAvailable())) or Target:TimeToDie() < 13) then
+            if HR.Cast(S.Berserking, Action.GetToggle(2, "OffGCDasOffGCD")) then return "berserking 86"; end
         end
-        -- blood_fury,if=buff.aspect_of_the_wild.up&(target.time_to_die>cooldown.blood_fury.duration+duration|(target.health.pct<35|!talent.killer_instinct.enabled))|target.time_to_die<16
-        if S.BloodFury:IsCastableP() and HR.CDsON() and (Player:BuffP(S.AspectoftheWildBuff) and (Target:TimeToDie() > S.BloodFury:BaseDuration() + S.BloodFuryBuff:BaseDuration() or (Target:HealthPercentage() < 35 or not S.KillerInstinct:IsAvailable())) or Target:TimeToDie() < 16) then
-            if HR.Cast(S.BloodFury, Action.GetToggle(2, "OffGCDasOffGCD")) then return "blood_fury 46"; end
+        -- blood_fury,if=buff.trueshot.up&(target.time_to_die>cooldown.blood_fury.duration+duration|(target.health.pct<20|!talent.careful_aim.enabled))|target.time_to_die<16
+        if S.BloodFury:IsCastableP() and HR.CDsON() and (Player:BuffP(S.TrueshotBuff) and (Target:TimeToDie() > S.BloodFury:CooldownRemainsP() + S.BloodFury:BaseDuration() or (Target:HealthPercentage() < 20 or not S.CarefulAim:IsAvailable())) or Target:TimeToDie() < 16) then
+            if HR.Cast(S.BloodFury, Action.GetToggle(2, "OffGCDasOffGCD")) then return "blood_fury 90"; end
         end
-        -- lights_judgment,if=pet.cat.buff.frenzy.up&pet.cat.buff.frenzy.remains>gcd.max|!pet.cat.buff.frenzy.up
-        if S.LightsJudgment:IsCastableP() and HR.CDsON() and (Pet:BuffP(S.FrenzyBuff) and Pet:BuffRemainsP(S.FrenzyBuff) > GCDMax or not Pet:BuffP(S.FrenzyBuff)) then
-            if HR.Cast(S.LightsJudgment) then return "lights_judgment 60"; end
+        -- ancestral_call,if=buff.trueshot.up&(target.time_to_die>cooldown.ancestral_call.duration+duration|(target.health.pct<20|!talent.careful_aim.enabled))|target.time_to_die<16
+        if S.AncestralCall:IsCastableP() and HR.CDsON() and (Player:BuffP(S.TrueshotBuff) and (Target:TimeToDie() > S.AncestralCall:CooldownRemainsP() + S.AncestralCall:BaseDuration() or (Target:HealthPercentage() < 20 or not S.CarefulAim:IsAvailable())) or Target:TimeToDie() < 16) then
+            if HR.Cast(S.AncestralCall, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ancestral_call 94"; end
         end
-        -- potion,if=buff.bestial_wrath.up&buff.aspect_of_the_wild.up&(target.health.pct<35|!talent.killer_instinct.enabled)|(consumable.potion_of_unbridled_fury&target.time_to_die<61|target.time_to_die<26)
-        if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") and (Player:BuffP(S.BestialWrathBuff) and Player:BuffP(S.AspectoftheWildBuff) and (Target:HealthPercentage() < 35 or not S.KillerInstinct:IsAvailable()) or Target:TimeToDie() < 61) then
-            if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_agility 68"; end
+        -- fireblood,if=buff.trueshot.up&(target.time_to_die>cooldown.fireblood.duration+duration|(target.health.pct<20|!talent.careful_aim.enabled))|target.time_to_die<9
+        if S.Fireblood:IsCastableP() and HR.CDsON() and (Player:BuffP(S.TrueshotBuff) and (Target:TimeToDie() > S.Fireblood:CooldownRemainsP() + S.Fireblood:BaseDuration() or (Target:HealthPercentage() < 20 or not S.CarefulAim:IsAvailable())) or Target:TimeToDie() < 9) then
+            if HR.Cast(S.Fireblood, Action.GetToggle(2, "OffGCDasOffGCD")) then return "fireblood 98"; end
         end
-        -- worldvein_resonance,if=buff.lifeblood.stack<4
-        if S.WorldveinResonance:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffStackP(S.LifebloodBuff) < 4) then
+        -- lights_judgment
+        if S.LightsJudgment:IsCastableP() and HR.CDsON() then
+            if HR.Cast(S.LightsJudgment) then return "lights_judgment 102"; end
+        end
+        -- worldvein_resonance,if=buff.lifeblood.stack<4&!buff.trueshot.up
+        if S.WorldveinResonance:IsCastableP() and (Player:BuffStackP(S.LifebloodBuff) < 4 and Player:BuffDownP(S.TrueshotBuff)) then
             if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance"; end
         end
-        -- guardian_of_azeroth,if=cooldown.aspect_of_the_wild.remains<10|target.time_to_die>cooldown+duration|target.time_to_die<30
-        if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (S.AspectoftheWild:CooldownRemainsP() < 10 or Target:TimeToDie() > S.GuardianofAzeroth:Cooldown() + S.GuardianofAzeroth:BaseDuration() or Target:TimeToDie() < 30) then
+        -- guardian_of_azeroth,if=(ca_execute|target.time_to_die>cooldown.guardian_of_azeroth.duration+duration)&(buff.trueshot.up|cooldown.trueshot.remains<16)|target.time_to_die<30
+        if S.GuardianofAzeroth:IsCastableP() and (((Target:HealthPercentage() < 20 or Target:HealthPercentage() > 80) or Target:TimeToDie() > S.GuardianofAzeroth:Cooldown() + S.GuardianofAzeroth:BaseDuration()) and (Player:BuffP(S.TrueshotBuff) or S.Trueshot:CooldownRemainsP() < 16) or Target:TimeToDie() < 31) then
             if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth"; end
         end
-        -- ripple_in_space
-        if S.RippleInSpace:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
+        -- ripple_in_space,if=cooldown.trueshot.remains<7
+        if S.RippleInSpace:IsCastableP() and (S.Trueshot:CooldownRemainsP() < 7) then
             if HR.Cast(S.RippleInSpace) then return "ripple_in_space"; end
         end
-        -- memory_of_lucid_dreams
-        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
+        -- memory_of_lucid_dreams,if=!buff.trueshot.up
+        if S.MemoryofLucidDreams:IsCastableP() and (Player:BuffDownP(S.TrueshotBuff)) then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams"; end
         end
+        -- potion,if=buff.trueshot.react&buff.bloodlust.react|buff.trueshot.up&ca_execute|(consumable.potion_of_unbridled_fury&target.time_to_die<61|target.time_to_die<26)
+        if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") and (Player:BuffP(S.TrueshotBuff) and Player:HasHeroism() or Player:BuffP(S.TrueshotBuff) and ((Target:HealthPercentage() < 20 or Target:HealthPercentage() > 80) and S.CarefulAim:IsAvailable()) or Target:TimeToDie() < 61) then
+            if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_agility 104"; end
+        end
+        -- trueshot,if=focus>60&(buff.precise_shots.down&cooldown.rapid_fire.remains&target.time_to_die>cooldown.trueshot.duration_guess+duration|target.health.pct<20|!talent.careful_aim.enabled)|target.time_to_die<15
+        if S.Trueshot:IsCastableP() and (Player:Focus() > 60 and (Player:BuffDownP(S.PreciseShotsBuff) and S.RapidFire:CooldownRemainsP() > 0 and Target:TimeToDie() > S.Trueshot:CooldownRemainsP() + S.Trueshot:BaseDuration() or Target:HealthPercentage() < 20 or not S.CarefulAim:IsAvailable()) or Target:TimeToDie() < 15) then
+            if HR.Cast(S.Trueshot, Action.GetToggle(2, "OffGCDasOffGCD")) then return "trueshot 112"; end
+        end
     end
-    
-	local function Cleave()
-        -- barbed_shot,target_if=min:dot.barbed_shot.remains,if=pet.cat.buff.frenzy.up&pet.cat.buff.frenzy.remains<=gcd.max
-        if S.BarbedShot:IsCastableP() and EvaluateTargetIfFilterBarbedShot74(Target) and EvaluateTargetIfBarbedShot75(Target) then
-            if HR.Cast(S.BarbedShot) then return "barbed_shot 76"; end
+    local function St()
+        -- explosive_shot
+        if S.ExplosiveShot:IsCastableP() then
+            if HR.Cast(S.ExplosiveShot) then return "explosive_shot 126"; end
         end
-        -- multishot,if=gcd.max-pet.cat.buff.beast_cleave.remains>0.25
-        if S.Multishot:IsCastableP() and (GCDMax - Pet:BuffRemainsP(S.BeastCleaveBuff) > 0.25) then
-            if HR.Cast(S.Multishot) then return "multishot 82"; end
-        end
-        -- barbed_shot,target_if=min:dot.barbed_shot.remains,if=full_recharge_time<gcd.max&cooldown.bestial_wrath.remains
-        if S.BarbedShot:IsCastableP() and EvaluateTargetIfFilterBarbedShot74(Target) and EvaluateTargetIfBarbedShot85(Target) then
-            if HR.Cast(S.BarbedShot) then return "barbed_shot 86"; end
-        end
-        -- aspect_of_the_wild
-        if S.AspectoftheWild:IsCastableP() and HR.CDsON() then
-            if HR.Cast(S.AspectoftheWild, Action.GetToggle(2, "OffGCDasOffGCD")) then return "aspect_of_the_wild 94"; end
-        end
-        -- stampede,if=buff.aspect_of_the_wild.up&buff.bestial_wrath.up|target.time_to_die<15
-        if S.Stampede:IsCastableP() and (Player:BuffP(S.AspectoftheWildBuff) and Player:BuffP(S.BestialWrathBuff) or Target:TimeToDie() < 15) then
-            if HR.Cast(S.Stampede, Action.GetToggle(2, "OffGCDasOffGCD")) then return "stampede 96"; end
-        end
-        -- bestial_wrath,if=cooldown.aspect_of_the_wild.remains>20|talent.one_with_the_pack.enabled|target.time_to_die<15
-        if S.BestialWrath:IsCastableP() and (S.AspectoftheWild:CooldownRemainsP() > 20 or S.OneWithThePack:IsAvailable() or Target:TimeToDie() < 15) then
-            if HR.Cast(S.BestialWrath, Action.GetToggle(2, "OffGCDasOffGCD")) then return "bestial_wrath 102"; end
-        end
-        -- chimaera_shot
-        if S.ChimaeraShot:IsCastableP() then
-            if HR.Cast(S.ChimaeraShot) then return "chimaera_shot 106"; end
+        -- barrage,if=active_enemies>1
+        if S.Barrage:IsReadyP() and (EnemiesCount > 1) then
+            if HR.Cast(S.Barrage) then return "barrage 128"; end
         end
         -- a_murder_of_crows
         if S.AMurderofCrows:IsCastableP() then
-            if HR.Cast(S.AMurderofCrows, Action.GetToggle(2, "OffGCDasOffGCD")) then return "a_murder_of_crows 108"; end
+            if HR.Cast(S.AMurderofCrows, Action.GetToggle(2, "OffGCDasOffGCD")) then return "a_murder_of_crows 136"; end
         end
-        -- barrage
-        if S.Barrage:IsReadyP() then
-            if HR.Cast(S.Barrage) then return "barrage 110"; end
+        -- serpent_sting,if=refreshable&!action.serpent_sting.in_flight
+        if S.SerpentSting:IsCastableP() and (Target:DebuffRefreshableCP(S.SerpentStingDebuff) and not S.SerpentSting:InFlight()) then
+            if HR.Cast(S.SerpentSting) then return "serpent_sting 138"; end
         end
-        -- kill_command,if=active_enemies<4|!azerite.rapid_reload.enabled
-        if S.KillCommand:IsCastableP() and (EnemiesCount < 4 or not S.RapidReload:AzeriteEnabled()) then
-            if HR.Cast(S.KillCommand) then return "kill_command 112"; end
+        -- rapid_fire,if=buff.trueshot.down|focus<70
+        if S.RapidFire:IsCastableP() and (Player:BuffDownP(S.TrueshotBuff) or Player:Focus() < 70) then
+            if HR.Cast(S.RapidFire) then return "rapid_fire 152"; end
         end
-        -- dire_beast
-        if S.DireBeast:IsCastableP() then
-            if HR.Cast(S.DireBeast) then return "dire_beast 122"; end
+        -- blood_of_the_enemy,if=buff.trueshot.up&(buff.unerring_vision.stack>4|!azerite.unerring_vision.enabled)|target.time_to_die<11
+        if S.BloodoftheEnemy:IsCastableP() and (Player:BuffP(S.TrueshotBuff) and (Player:BuffStackP(S.UnerringVisionBuff) > 4 or not S.UnerringVision:AzeriteEnabled()) or Target:TimeToDie() < 11) then
+            if HR.Cast(S.BloodoftheEnemy) then return "blood_of_the_enemy st"; end
         end
-        -- barbed_shot,target_if=min:dot.barbed_shot.remains,if=pet.cat.buff.frenzy.down&(charges_fractional>1.8|buff.bestial_wrath.up)|cooldown.aspect_of_the_wild.remains<pet.cat.buff.frenzy.duration-gcd&azerite.primal_instincts.enabled|charges_fractional>1.4|target.time_to_die<9
-        if S.BarbedShot:IsCastableP() and EvaluateTargetIfFilterBarbedShot74(Target) and EvaluateTargetIfBarbedShot123(Target) then
-            if HR.Cast(S.BarbedShot) then return "barbed_shot 124"; end
+        -- focused_azerite_beam,if=!buff.trueshot.up|target.time_to_die<5
+        if S.FocusedAzeriteBeam:IsCastableP() and (Player:BuffDownP(S.TrueshotBuff) or Target:TimeToDie() < 5) then
+            if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam st"; end
         end
-        -- focused_azerite_beam
-        if S.FocusedAzeriteBeam:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
-            if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam"; end
+        -- arcane_shot,if=buff.trueshot.up&buff.master_marksman.up&!buff.memory_of_lucid_dreams.up
+        if S.ArcaneShot:IsCastableP() and (Player:BuffP(S.TrueshotBuff) and MasterMarksmanBuffCheck() and not Player:BuffP(S.MemoryofLucidDreams)) then
+            if HR.Cast(S.ArcaneShot) then return "arcane_shot 158"; end
         end
-        -- purifying_blast
-        if S.PurifyingBlast:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
-           if HR.Cast(S.PurifyingBlast) then return "focused_azerite_beam"; end
+        -- aimed_shot,if=buff.trueshot.up|(buff.double_tap.down|ca_execute)&buff.precise_shots.down|full_recharge_time<cast_time&cooldown.trueshot.remains
+        if S.AimedShot:IsReadyP() and (Player:BuffP(S.TrueshotBuff) or (Player:BuffDownP(S.DoubleTap) or ((Target:HealthPercentage() < 20 or Target:HealthPercentage() > 80) and S.CarefulAim:IsAvailable())) and Player:BuffDownP(S.PreciseShotsBuff) or S.AimedShot:FullRechargeTimeP() < S.AimedShot:CastTime() and bool(S.Trueshot:CooldownRemainsP())) then
+            if HR.Cast(S.AimedShot) then return "aimed_shot 170"; end
         end
-        -- concentrated_flame
-        if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
-            if HR.Cast(S.ConcentratedFlame) then return "focused_azerite_beam"; end
+        -- arcane_shot,if=buff.trueshot.up&buff.master_marksman.up&buff.memory_of_lucid_dreams.up
+        if S.ArcaneShot:IsCastableP() and (Player:BuffP(S.TrueshotBuff) and MasterMarksmanBuffCheck() and Player:BuffP(S.MemoryofLucidDreams)) then
+            if HR.Cast(S.ArcaneShot) then return "arcane_shot 176"; end
         end
-        -- blood_of_the_enemy
-        if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
-            if HR.Cast(S.BloodoftheEnemy) then return "focused_azerite_beam"; end
+        -- piercing_shot
+        if S.PiercingShot:IsCastableP() then
+            if HR.Cast(S.PiercingShot) then return "piercing_shot 198"; end
         end
-        -- the_unbound_force,if=buff.reckless_force.up|buff.reckless_force_counter.stack<10
-        if S.TheUnboundForce:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.RecklessForceBuff) or Player:BuffStackP(S.RecklessForceCounter) < 10) then
-            if HR.Cast(S.TheUnboundForce) then return "focused_azerite_beam"; end
+        -- purifying_blast,if=!buff.trueshot.up|target.time_to_die<8
+        if S.PurifyingBlast:IsCastableP() and (Player:BuffDownP(S.TrueshotBuff) or Target:TimeToDie() < 8) then
+            if HR.Cast(S.PurifyingBlast) then return "purifying_blast"; end
         end
-        -- multishot,if=azerite.rapid_reload.enabled&active_enemies>2
-        if S.Multishot:IsCastableP() and (S.RapidReload:AzeriteEnabled() and EnemiesCount > 2) then
-            if HR.Cast(S.Multishot) then return "multishot 140"; end
-        end
-        -- cobra_shot,if=cooldown.kill_command.remains>focus.time_to_max&(active_enemies<3|!azerite.rapid_reload.enabled)
-        if S.CobraShot:IsCastableP() and (S.KillCommand:CooldownRemainsP() > Player:FocusTimeToMaxPredicted() and (EnemiesCount < 3 or not S.RapidReload:AzeriteEnabled())) then
-            if HR.Cast(S.CobraShot) then return "cobra_shot 150"; end
-        end
-        -- spitting_cobra
-        if S.SpittingCobra:IsCastableP() then
-            if HR.Cast(S.SpittingCobra, Action.GetToggle(2, "OffGCDasOffGCD")) then return "spitting_cobra 162"; end
-        end
-    end
-  
-    local function St()
-        -- barbed_shot,if=pet.cat.buff.frenzy.up&pet.cat.buff.frenzy.remains<gcd|cooldown.bestial_wrath.remains&(full_recharge_time<gcd|azerite.primal_instincts.enabled&cooldown.aspect_of_the_wild.remains<gcd)
-        if S.BarbedShot:IsCastableP() and (Pet:BuffP(S.FrenzyBuff) and Pet:BuffRemainsP(S.FrenzyBuff) < Player:GCD() or bool(S.BestialWrath:CooldownRemainsP()) and (S.BarbedShot:FullRechargeTimeP() < Player:GCD() or S.PrimalInstincts:AzeriteEnabled() and S.AspectoftheWild:CooldownRemainsP() < Player:GCD())) then
-            if HR.Cast(S.BarbedShot) then return "barbed_shot 164"; end
-        end
-        -- concentrated_flame,if=focus+focus.regen*gcd<focus.max&buff.bestial_wrath.down&(!dot.concentrated_flame_burn.remains&!action.concentrated_flame.in_flight)|full_recharge_time<gcd|target.time_to_die<5
-        if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:Focus() + Player:FocusRegen() * Player:GCD() < Player:FocusMax() and Player:BuffDownP(S.BestialWrathBuff) and (Target:DebuffDownP(S.ConcentratedFlameBurn) and not S.ConcentratedFlame:InFlight()) or S.ConcentratedFlame:FullRechargeTimeP() < Player:GCD() or Target:TimeToDie() < 5) then
-            if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame 165"; end
-        end
-        -- aspect_of_the_wild,if=cooldown.barbed_shot.charges<2|pet.cat.buff.frenzy.stack>2|!azerite.primal_instincts.enabled
-        if S.AspectoftheWild:IsCastableP() and HR.CDsON()  and (S.BarbedShot:ChargesP() < 2 or Pet:BuffStackP(S.FrenzyBuff) > 2 or not S.PrimalInstincts:AzeriteEnabled()) then
-            if HR.Cast(S.AspectoftheWild, Action.GetToggle(2, "OffGCDasOffGCD")) then return "aspect_of_the_wild 180"; end
-        end
-        -- stampede,if=buff.aspect_of_the_wild.up&buff.bestial_wrath.up|target.time_to_die<15
-        if S.Stampede:IsCastableP() and (Player:BuffP(S.AspectoftheWildBuff) and Player:BuffP(S.BestialWrathBuff) or Target:TimeToDie() < 15) then
-            if HR.Cast(S.Stampede, Action.GetToggle(2, "OffGCDasOffGCD")) then return "stampede 182"; end
-        end
-        -- a_murder_of_crows,if=cooldown.bestial_wrath.remains
-        if S.AMurderofCrows:IsCastableP() and (bool(S.BestialWrath:CooldownRemainsP())) then
-            if HR.Cast(S.AMurderofCrows, Action.GetToggle(2, "OffGCDasOffGCD")) then return "a_murder_of_crows 183"; end
-        end
-        -- focused_azerite_beam,if=buff.bestial_wrath.down|target.time_to_die<5
-        if S.FocusedAzeriteBeam:IsCastableP() and (Player:BuffDownP(S.BestialWrathBuff) or Target:TimeToDie() < 5) then
-            if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam 184"; end
+        -- concentrated_flame,if=focus+focus.regen*gcd<focus.max&buff.trueshot.down&(!dot.concentrated_flame_burn.remains&!action.concentrated_flame.in_flight)|full_recharge_time<gcd|target.time_to_die<5
+        if S.ConcentratedFlame:IsCastableP() and (Player:Focus() + Player:FocusRegen() * Player:GCD() < Player:FocusMax() and Player:BuffDownP(S.TrueshotBuff) and (Target:DebuffDownP(S.ConcentratedFlameBurn) and not S.ConcentratedFlame:InFlight()) or S.ConcentratedFlame:FullRechargeTimeP() < Player:GCD() or Target:TimeToDie() < 5) then
+            if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame"; end
         end
         -- the_unbound_force,if=buff.reckless_force.up|buff.reckless_force_counter.stack<10|target.time_to_die<5
         if S.TheUnboundForce:IsCastableP() and (Player:BuffP(S.RecklessForceBuff) or Player:BuffStackP(S.RecklessForceCounter) < 10 or Target:TimeToDie() < 5) then
-            if HR.Cast(S.TheUnboundForce) then return "the_unbound_force 185"; end
+            if HR.Cast(S.TheUnboundForce) then return "the_unbound_force"; end
         end
-        -- bestial_wrath
-        if S.BestialWrath:IsCastableP() then
-            if HR.Cast(S.BestialWrath, Action.GetToggle(2, "OffGCDasOffGCD")) then return "bestial_wrath 190"; end
+        -- arcane_shot,if=buff.trueshot.down&(buff.precise_shots.up&(focus>41|buff.master_marksman.up)|(focus>50&azerite.focused_fire.enabled|focus>75)&(cooldown.trueshot.remains>5|focus>80)|target.time_to_die<5)
+        if S.ArcaneShot:IsCastableP() and (Player:BuffDownP(S.TrueshotBuff) and (Player:BuffP(S.PreciseShotsBuff) and (Player:Focus() > 41 or MasterMarksmanBuffCheck()) or (Player:Focus() > 50 and S.FocusedFire:IsAvailable() or Player:Focus() > 75) and (S.Trueshot:CooldownRemainsP() > 5 or Player:Focus() > 80) or Target:TimeToDie() < 5)) then
+            if HR.Cast(S.ArcaneShot) then return "arcane_shot 200"; end
         end
-        -- kill_command
-        if S.KillCommand:IsCastableP() then
-            if HR.Cast(S.KillCommand) then return "kill_command 194"; end
+        -- steady_shot
+        if S.SteadyShot:IsCastableP() then
+            if HR.Cast(S.SteadyShot) then return "steady_shot 208"; end
         end
-        -- chimaera_shot
-        if S.ChimaeraShot:IsCastableP() then
-            if HR.Cast(S.ChimaeraShot) then return "chimaera_shot 196"; end
-        end
-        -- dire_beast
-        if S.DireBeast:IsCastableP() then
-            if HR.Cast(S.DireBeast) then return "dire_beast 198"; end
-        end
-        -- barbed_shot,if=pet.cat.buff.frenzy.down&(charges_fractional>1.8|buff.bestial_wrath.up)|cooldown.aspect_of_the_wild.remains<pet.cat.buff.frenzy.duration-gcd&azerite.primal_instincts.enabled|azerite.dance_of_death.rank>1&buff.dance_of_death.down&crit_pct_current>40|target.time_to_die<9
-        if S.BarbedShot:IsCastableP() and (Pet:BuffDownP(S.FrenzyBuff) and (S.BarbedShot:ChargesFractionalP() > 1.8 or Player:BuffP(S.BestialWrathBuff)) or S.AspectoftheWild:CooldownRemainsP() < S.FrenzyBuff:BaseDuration() - GCDMax and S.PrimalInstincts:AzeriteEnabled() or S.DanceofDeath:AzeriteRank() > 1 and Player:BuffDownP(S.DanceofDeathBuff) and Player:CritChancePct() > 40 or Target:TimeToDie() < 9) then
-            if HR.Cast(S.BarbedShot) then return "barbed_shot 200"; end
-        end
-        -- purifying_blast,if=buff.bestial_wrath.down|target.time_to_die<8
-       if S.PurifyingBlast:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.BestialWrathBuff) or Target:TimeToDie() < 8) then
-            if HR.Cast(S.PurifyingBlast) then return "focused_azerite_beam"; end
-        end
-        -- blood_of_the_enemy
-        if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
-            if HR.Cast(S.BloodoftheEnemy) then return "focused_azerite_beam"; end
-        end
+    end
+    local function Trickshots()
         -- barrage
         if S.Barrage:IsReadyP() then
-            if HR.Cast(S.Barrage) then return "barrage 216"; end
+            if HR.Cast(S.Barrage) then return "barrage 210"; end
         end
-        -- Special pooling line for HeroRotation -- negiligible effective DPS loss (0.1%), but better for prediction accounting for latency
-        -- Avoids cases where Cobra Shot would be suggested but the GCD of Cobra Shot + latency would allow Barbed Shot to fall off
-        -- wait,if=pet.cat.buff.frenzy.up&pet.cat.buff.frenzy.remains<=gcd.max*2&focus.time_to_max>gcd.max*2
-        if Pet:BuffP(S.FrenzyBuff) and Pet:BuffRemainsP(S.FrenzyBuff) <= GCDMax * 2 and Player:FocusTimeToMaxPredicted() > GCDMax * 2 then
-            if HR.Cast(S.Channeling) then return "Barbed Shot Pooling"; end
+        -- explosive_shot
+        if S.ExplosiveShot:IsCastableP() then
+            if HR.Cast(S.ExplosiveShot) then return "explosive_shot 212"; end
         end
-        -- cobra_shot,if=(focus-cost+focus.regen*(cooldown.kill_command.remains-1)>action.kill_command.cost|cooldown.kill_command.remains>1+gcd|buff.memory_of_lucid_dreams.up)&cooldown.kill_command.remains>1
-        if S.CobraShot:IsCastableP() and ((Player:Focus() - S.CobraShot:Cost() + Player:FocusRegen() * (S.KillCommand:CooldownRemainsP() - 1) > S.KillCommand:Cost() or S.KillCommand:CooldownRemainsP() > 1 + GCDMax or Player:BuffP(S.MemoryofLucidDreams)) and S.KillCommand:CooldownRemainsP() > 1) then
-            if HR.Cast(S.CobraShot) then return "cobra_shot 218"; end
+        -- aimed_shot,if=buff.trick_shots.up&ca_execute&buff.double_tap.up
+        if S.AimedShot:IsReadyP() and (Player:BuffP(S.TrickShotsBuff) and ((Target:HealthPercentage() < 20 or Target:HealthPercentage() > 80) and S.CarefulAim:IsAvailable()) and Player:BuffP(S.DoubleTap)) then
+            if HR.Cast(S.AimedShot) then return "aimed_shot 213"; end
         end
-        -- spitting_cobra
-        if S.SpittingCobra:IsCastableP() then
-            if HR.Cast(S.SpittingCobra, Action.GetToggle(2, "OffGCDasOffGCD")) then return "spitting_cobra 234"; end
+        -- rapid_fire,if=buff.trick_shots.up&(azerite.focused_fire.enabled|azerite.in_the_rhythm.rank>1|azerite.surging_shots.enabled|talent.streamline.enabled)
+        if S.RapidFire:IsCastableP() and (Player:BuffP(S.TrickShotsBuff) and (S.FocusedFire:AzeriteEnabled() or S.IntheRhythm:AzeriteRank() > 1 or S.SurgingShots:AzeriteEnabled() or S.Streamline:IsAvailable())) then
+            if HR.Cast(S.RapidFire) then return "rapid_fire 214"; end
         end
-        -- barbed_shot,if=charges_fractional>1.4
-        if S.BarbedShot:IsCastableP() and (S.BarbedShot:ChargesFractionalP() > 1.4) then
-            if HR.Cast(S.BarbedShot) then return "barbed_shot 235"; end
+        -- aimed_shot,if=buff.trick_shots.up&(buff.precise_shots.down|cooldown.aimed_shot.full_recharge_time<action.aimed_shot.cast_time|buff.trueshot.up)
+        if S.AimedShot:IsReadyP() and (Player:BuffP(S.TrickShotsBuff) and (Player:BuffDownP(S.PreciseShotsBuff) or S.AimedShot:FullRechargeTimeP() < S.AimedShot:CastTime() or Player:BuffP(S.TrueshotBuff))) then
+            if HR.Cast(S.AimedShot) then return "aimed_shot 226"; end
+        end
+        -- rapid_fire,if=buff.trick_shots.up
+        if S.RapidFire:IsCastableP() and (Player:BuffP(S.TrickShotsBuff)) then
+            if HR.Cast(S.RapidFire) then return "rapid_fire 238"; end
+        end
+        -- multishot,if=buff.trick_shots.down|buff.precise_shots.up&!buff.trueshot.up|focus>70
+        if S.Multishot:IsCastableP() and (Player:BuffDownP(S.TrickShotsBuff) or Player:BuffP(S.PreciseShotsBuff) and Player:BuffDownP(S.TrueshotBuff) or Player:Focus() > 70) then
+            if HR.Cast(S.Multishot) then return "multishot 242"; end
+        end
+        -- focused_azerite_beam
+        if S.FocusedAzeriteBeam:IsCastableP() then
+            if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam"; end
+        end
+        -- purifying_blast
+        if S.PurifyingBlast:IsCastableP() then
+            if HR.Cast(S.PurifyingBlast) then return "purifying_blast"; end
+        end
+        -- concentrated_flame
+        if S.ConcentratedFlame:IsCastableP() then
+            if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame"; end
+        end
+        -- blood_of_the_enemy
+        if S.BloodoftheEnemy:IsCastableP() then
+            if HR.Cast(S.BloodoftheEnemy) then return "blood_of_the_enemy"; end
+        end
+        -- the_unbound_force,if=buff.reckless_force.up|buff.reckless_force_counter.stack<10
+        if S.TheUnboundForce:IsCastableP() and (Player:BuffP(S.RecklessForceBuff) or Player:BuffStackP(S.RecklessForceCounter) < 10) then
+            if HR.Cast(S.TheUnboundForce) then return "the_unbound_force"; end
+        end
+        -- piercing_shot
+        if S.PiercingShot:IsCastableP() then
+            if HR.Cast(S.PiercingShot) then return "piercing_shot 248"; end
+        end
+        -- a_murder_of_crows
+        if S.AMurderofCrows:IsCastableP() then
+            if HR.Cast(S.AMurderofCrows, Action.GetToggle(2, "OffGCDasOffGCD")) then return "a_murder_of_crows 250"; end
+        end
+        -- serpent_sting,if=refreshable&!action.serpent_sting.in_flight
+        if S.SerpentSting:IsCastableP() and (Target:DebuffRefreshableCP(S.SerpentStingDebuff) and not S.SerpentSting:InFlight()) then
+            if HR.Cast(S.SerpentSting) then return "serpent_sting 252"; end
+        end
+        -- steady_shot
+        if S.SteadyShot:IsCastableP() then
+            if HR.Cast(S.SteadyShot) then return "steady_shot 266"; end
         end
     end
 	
@@ -638,7 +584,7 @@ local function APL()
 		    return S.AspectoftheTurtle:Cast()
         end
         -- Exhilaration
-        if S.Exhilaration:IsCastable() and Player:HealthPercentage() <= Action.GetToggle(2, "Exhilaration") then
+        if S.Exhilaration:IsCastable() and Player:HealthPercentage() <= Action.GetToggle(2, "ExhilarationHP") then
             return S.Exhilaration:Cast()
         end	
 	end	
@@ -677,38 +623,35 @@ local function APL()
          	end 
       	end 		
 		-- Self heal, if below setting value
-        if S.Exhilaration:IsCastableP() and Player:HealthPercentage() <= Action.GetToggle(2, "Exhilaration") then
+        if S.Exhilaration:IsCastableP() and Player:HealthPercentage() <= Action.GetToggle(2, "ExhilarationHP") then
             if HR.Cast(S.Exhilaration, Action.GetToggle(2, "OffGCDasOffGCD")) then return "exhilaration"; end
         end
         -- auto_shot
-        -- use_items
-        -- use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.up&(prev_gcd.1.aspect_of_the_wild|!equipped.cyclotronic_blast&buff.aspect_of_the_wild.up)|(debuff.razor_coral_debuff.down|target.time_to_die<26)&target.time_to_die>(24*(cooldown.cyclotronic_blast.remains+4<target.time_to_die))
-        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and TrinketON() and (Target:DebuffP(S.RazorCoralDebuff) and (Player:PrevGCDP(1, S.AspectoftheWild) or not S.CyclotronicBlast:IsAvailable() and Player:BuffP(S.AspectoftheWildBuff)) or (Target:DebuffDownP(S.RazorCoralDebuff) or Target:TimeToDie() < 26) and Target:TimeToDie() > (24 * num(S.CyclotronicBlast:CooldownRemainsP() + 4 < Target:TimeToDie()))) then
+        -- use_item,name=azsharas_font_of_power,if=cooldown.trueshot.remains<18|target.time_to_die<40
+        if I.AzsharasFontofPower:IsEquipReady() and TrinketON() and (S.Trueshot:CooldownRemainsP() < 18 or Target:TimeToDie() < 40) then
+            if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power"; end
+        end
+        -- use_item,name=ashvanes_razor_coral,if=buff.trueshot.up&(buff.guardian_of_azeroth.up|!essence.condensed_lifeforce.major.rank3&ca_execute)|debuff.razor_coral_debuff.down|target.time_to_die<20
+        if I.AshvanesRazorCoral:IsEquipReady() and TrinketON() and (Player:BuffP(S.TrueshotBuff) and ((S.GuardianofAzeroth:IsAvailable() and S.GuardianofAzeroth:CooldownRemainsP() > 150) or not Spell(299358):IsAvailable() and (Target:HealthPercentage() < 20 or Target:HealthPercentage() > 80)) or Target:DebuffDownP(S.RazorCoralDebuff) or Target:TimeToDie() < 20) then
             if HR.Cast(I.AshvanesRazorCoral) then return "ashvanes_razor_coral"; end
         end
-        -- use_item,effect_name=cyclotronic_blast,if=buff.bestial_wrath.down|target.time_to_die<5
-        if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and S.CyclotronicBlast:IsAvailable() and TrinketON() and (Player:BuffDownP(S.BestialWrathBuff) or Target:TimeToDie() < 5) then
-            if HR.Cast(I.PocketsizedComputationDevice) then return "cyclotronic_blast"; end
+        -- use_item,name=pocketsized_computation_device,if=!buff.trueshot.up&!essence.blood_of_the_enemy.major.rank3|debuff.blood_of_the_enemy.up|target.time_to_die<5
+        if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and TrinketON() and (Player:BuffDownP(S.TrueshotBuff) and not S.BloodoftheEnemy:ID() == "298277" or Target:DebuffP(S.BloodoftheEnemy) or Target:TimeToDie() < 5) then
+            if Hr.Cast(I.PocketsizedComputationDevice) then return "pocketsized_computation_device"; end
         end
+        -- use_items,if=buff.trueshot.up|!talent.calling_the_shots.enabled|target.time_to_die<20
         -- call_action_list,name=cds
         if (HR.CDsON()) then
             local ShouldReturn = Cds(); if ShouldReturn then return ShouldReturn; end
         end
-        -- call_action_list,name=st,if=active_enemies<2
-        if (EnemiesCount < 2) then
+        -- call_action_list,name=st,if=active_enemies<3
+        if (EnemiesCount < 3) then
             local ShouldReturn = St(); if ShouldReturn then return ShouldReturn; end
         end
-        -- call_action_list,name=cleave,if=active_enemies>1
-        if (EnemiesCount > 1) then
-            local ShouldReturn = Cleave(); if ShouldReturn then return ShouldReturn; end
+        -- call_action_list,name=trickshots,if=active_enemies>2
+        if (EnemiesCount > 2) then
+            local ShouldReturn = Trickshots(); if ShouldReturn then return ShouldReturn; end
         end
-        -- run_action_list,name=trinkets
-        if (true) then
-            local ShouldReturn = GeneralTrinkets(); if ShouldReturn then return ShouldReturn; end
-        end	
-		-- Pool icon
-        if HR.Cast(S.Channeling) then return "Pooling Focus"; end
-
     end
 end
 -- Finished
@@ -720,7 +663,6 @@ end
 
 -- [3] Single Rotation
 A[3] = function(icon)
-
 
     if APL() then 
         return true 
