@@ -341,7 +341,7 @@ local function APL()
             if HR.Cast(S.ArcaneIntellect) then return "arcane_intellect 3"; end
         end
         -- summon_water_elemental
-        if S.SummonWaterElemental:IsCastableP() then
+        if S.SummonWaterElemental:IsCastableP() and not Pet:Exists() then
             if HR.Cast(S.SummonWaterElemental) then return "summon_water_elemental 7"; end
         end
         -- snapshot_stats
@@ -615,11 +615,11 @@ local function APL()
         if HR.Cast(S.Channeling) then return "" end
     end  
 	-- call DBM precombat
-    if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
-        local ShouldReturn = Precombat_DBM(); 
-            if ShouldReturn then return ShouldReturn; 
-        end    
-    end
+   --if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
+   --     local ShouldReturn = Precombat_DBM(); 
+    --        if ShouldReturn then return ShouldReturn; 
+   --     end    
+   -- end
     -- call non DBM precombat
     if not Player:AffectingCombat() and not Action.GetToggle(1, "DBM") and not Player:IsCasting() then        
         local ShouldReturn = Precombat(); 

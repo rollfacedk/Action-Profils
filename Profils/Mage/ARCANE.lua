@@ -77,6 +77,7 @@ Action[ACTION_CONST_MAGE_ARCANE] = {
     NetherTempestDebuff                   = Action.Create({ Type = "Spell", ID = 114923, Hidden = true     }),
     -- Potions
     PotionofUnbridledFury                = Action.Create({ Type = "Potion", ID = 169299, QueueForbidden = true }),
+    PotionofFocusedResolve                = Action.Create({ Type = "Potion", ID = 168506, QueueForbidden = true }),
     -- Trinkets
 	GenericTrinket1                       = Action.Create({ Type = "Trinket", ID = 114616, QueueForbidden = true }),
     GenericTrinket2                       = Action.Create({ Type = "Trinket", ID = 114081, QueueForbidden = true }),
@@ -202,7 +203,6 @@ HL:RegisterForEvent(function()
   VarConserveMana = 0
   VarTotalBurns = 0
   VarAverageBurnLength = 0
-end, "PLAYER_REGEN_ENABLED")
 end, "PLAYER_REGEN_ENABLED")
 
 local EnemyRanges = {40, 10}
@@ -570,7 +570,7 @@ local function APL()
             if HR.Cast(I.TidestormCodex) then return "tidestorm_codex 249"; end
         end
         -- use_item,effect_name=cyclotronic_blast,if=buff.rune_of_power.down&!buff.arcane_power.react&cooldown.arcane_power.remains>20
-        if if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and TrinketON() and (Player:BuffDownP(S.RuneofPowerBuff) and Player:BuffDownP(S.ArcanePowerBuff) and S.ArcanePower:CooldownRemainsP() > 20) then
+        if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and TrinketON() and (Player:BuffDownP(S.RuneofPowerBuff) and Player:BuffDownP(S.ArcanePowerBuff) and S.ArcanePower:CooldownRemainsP() > 20) then
             if HR.Cast(I.PocketsizedComputationDevice) then return "pocketsized_computation_device 250"; end
         end
         -- rune_of_power,if=buff.arcane_charge.stack=buff.arcane_charge.max_stack&(full_recharge_time<=execute_time|full_recharge_time<=cooldown.arcane_power.remains|target.time_to_die<=cooldown.arcane_power.remains)
@@ -679,11 +679,11 @@ local function APL()
         if HR.Cast(S.Channeling) then return "" end
     end  
 	-- call DBM precombat
-    if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
-        local ShouldReturn = Precombat_DBM(); 
-            if ShouldReturn then return ShouldReturn; 
-        end    
-    end
+    --if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
+    --    local ShouldReturn = Precombat_DBM(); 
+    --        if ShouldReturn then return ShouldReturn; 
+   --     end    
+   -- end
     -- call non DBM precombat
     if not Player:AffectingCombat() and not Action.GetToggle(1, "DBM") and not Player:IsCasting() then        
         local ShouldReturn = Precombat(); 

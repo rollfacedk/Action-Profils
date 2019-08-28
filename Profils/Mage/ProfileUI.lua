@@ -618,6 +618,82 @@ A.Data.ProfileUI = {
                         Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
             ]] },
         },
+        [ACTION_CONST_MAGE_ARCANE] = { 
+            -- MSG Action Pet Dispell
+            ["dispell"] = { Enabled = true, Key = "PetDispell", LUA = [[
+                return     A.DispellMagic:IsReady(unit, true) and 
+                        (
+                            ( 
+                                not Unit(thisunit):IsEnemy() and 
+                                (
+                                    (
+                                        not InPvP() and 
+                                        Env.Dispel(unit)
+                                    ) or 
+                                    (
+                                        InPvP() and 
+                                        EnemyTeam():PlayersInRange(1, 5)
+                                    ) 
+                                )
+                            ) or 
+                            ( 
+                                Unit(thisunit):IsEnemy() and 
+                                Unit(thisunit):GetRange() <= 5 and 
+                                Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"TotalImun", "DeffBuffsMagic"}, true) 
+                            )                
+                        ) 
+            ]] },
+            -- MSG Action Pet Kick
+            ["kick"] = { Enabled = true, Key = "Pet Kick", LUA = [[
+                return  SpellInRange(thisunit, Action[PlayerSpec].SpellLock.ID) and 
+                        select(2, CastTime(nil, thisunit)) > 0 and 
+                        Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
+            ]] },
+            -- MSG Action Fear
+            ["kick"] = { Enabled = true, Key = "Pet Kick", LUA = [[
+                return  SpellInRange(thisunit, Action[PlayerSpec].SpellLock.ID) and 
+                        select(2, CastTime(nil, thisunit)) > 0 and 
+                        Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
+            ]] },
+        },
+        [ACTION_CONST_MAGE_FROST] = { 
+            -- MSG Action Pet Dispell
+            ["dispell"] = { Enabled = true, Key = "PetDispell", LUA = [[
+                return     A.DispellMagic:IsReady(unit, true) and 
+                        (
+                            ( 
+                                not Unit(thisunit):IsEnemy() and 
+                                (
+                                    (
+                                        not InPvP() and 
+                                        Env.Dispel(unit)
+                                    ) or 
+                                    (
+                                        InPvP() and 
+                                        EnemyTeam():PlayersInRange(1, 5)
+                                    ) 
+                                )
+                            ) or 
+                            ( 
+                                Unit(thisunit):IsEnemy() and 
+                                Unit(thisunit):GetRange() <= 5 and 
+                                Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"TotalImun", "DeffBuffsMagic"}, true) 
+                            )                
+                        ) 
+            ]] },
+            -- MSG Action Pet Kick
+            ["kick"] = { Enabled = true, Key = "Pet Kick", LUA = [[
+                return  SpellInRange(thisunit, Action[PlayerSpec].SpellLock.ID) and 
+                        select(2, CastTime(nil, thisunit)) > 0 and 
+                        Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
+            ]] },
+            -- MSG Action Fear
+            ["kick"] = { Enabled = true, Key = "Pet Kick", LUA = [[
+                return  SpellInRange(thisunit, Action[PlayerSpec].SpellLock.ID) and 
+                        select(2, CastTime(nil, thisunit)) > 0 and 
+                        Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
+            ]] },
+        },
     },
 }
 -- Shared 
