@@ -411,7 +411,7 @@ local function APL()
         end
     end
 	
-    Precombat = function()
+    local function Precombat()
         -- flask
         -- food
         -- augmentation
@@ -441,7 +441,7 @@ local function APL()
             if HR.Cast(S.ArcaneBlast) then return "arcane_blast 20"; end
         end
     end
-    Burn = function()
+    local function Burn()
         -- variable,name=total_burns,op=add,value=1,if=!burn_phase
         if (not BurnPhase:On()) then
             VarTotalBurns = VarTotalBurns + 1
@@ -544,7 +544,7 @@ local function APL()
             if HR.Cast(S.ArcaneBarrage) then return "arcane_barrage 201"; end
         end
     end
-    Conserve = function()
+    local function Conserve()
         -- mirror_image
         if S.MirrorImage:IsCastableP() and HR.CDsON() then
             if HR.Cast(S.MirrorImage) then return "mirror_image 203"; end
@@ -602,7 +602,7 @@ local function APL()
             if HR.Cast(S.ArcaneBarrage) then return "arcane_barrage 335"; end
         end
     end
-    Essences = function()
+    local function Essences()
         -- blood_of_the_enemy,if=burn_phase&buff.arcane_power.down&buff.rune_of_power.down&buff.arcane_charge.stack=buff.arcane_charge.max_stack|time_to_die<cooldown.arcane_power.remains
         if S.BloodoftheEnemy:IsCastableP() and (BurnPhase:On() and Player:BuffDownP(S.ArcanePowerBuff) and Player:BuffDownP(S.RuneofPowerBuff) and Player:ArcaneChargesP() == Player:ArcaneChargesMax() or Target:TimeToDie() < S.ArcanePower:CooldownRemainsP()) then
             if HR.Cast(S.BloodoftheEnemy) then return "blood_of_the_enemy"; end
@@ -640,7 +640,7 @@ local function APL()
             if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance"; end
         end
     end
-    Movement = function()
+    local function Movement()
         -- blink_any,if=movement.distance>=10
         if BlinkAny:IsCastableP() and (not Target:IsInRange(S.ArcaneBlast:MaximumRange())) then
             if HR.Cast(BlinkAny) then return "blink_any 337"; end
