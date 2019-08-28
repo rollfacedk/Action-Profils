@@ -336,6 +336,658 @@ A.Data.ProfileUI = {
                 },
             },
         },
+        [ACTION_CONST_ROGUE_SUBTLETY] = {       
+            { -- [7]
+                {
+                    E = "Header",
+                    L = {
+                        ANY = " -- General -- ",
+                    },
+                },
+            },			
+            { -- [1] 1st Row
+		
+                {
+                    E = "Checkbox", 
+                    DB = "mouseover",
+                    DBV = true,
+                    L = { 
+                        enUS = "Use @mouseover", 
+                        ruRU = "Использовать @mouseover", 
+                        frFR = "Utiliser les fonctions @mouseover",
+                    }, 
+                    TT = { 
+                        enUS = "Will unlock use actions for @mouseover units\nExample: Resuscitate, Healing", 
+                        ruRU = "Разблокирует использование действий для @mouseover юнитов\nНапример: Воскрешение, Хилинг", 
+                        frFR = "Activera les actions via @mouseover\n Exemple: Ressusciter, Soigner",
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Checkbox", 
+                    DB = "AoE",
+                    DBV = true,
+                    L = { 
+                        enUS = "Use AoE", 
+                        ruRU = "Использовать AoE", 
+                        frFR = "Utiliser l'AoE",
+                    }, 
+                    TT = { 
+                        enUS = "Enable multiunits actions", 
+                        ruRU = "Включает действия для нескольких целей", 
+                        frFR = "Activer les actions multi-unités",
+                    }, 
+                    M = {
+					    Custom = "/run Action.AoEToggleMode()",
+						-- It does call func CraftMacro(L[CL], macro above, 1) -- 1 means perCharacter tab in MacroUI, if nil then will be used allCharacters tab in MacroUI
+						Value = value or nil, 
+						-- Very Very Optional, no idea why it will be need however.. 
+						TabN = '@number' or nil,								
+						Print = '@string' or nil,
+					},
+                }, 
+                {
+                    E = "Checkbox", 
+                    DB = "OffGCDasOffGCD",
+                    DBV = true,
+                    L = { 
+                        enUS = "Use spells OffGCD", 
+                        ruRU = "Используйте заклинания OffGCD", 
+                        frFR = "Utiliser les spells OffGCD",
+                    }, 
+                    TT = { 
+                        enUS = "Will force certains spells to be used as off GCD", 
+                        ruRU = "Вынудит определенные заклинания использоваться как вне GCD", 
+                        frFR = "Forcera certains spells à être utilisés sur le GCD",
+                    }, 
+                    M = {},
+                }, 
+                
+            },  
+            { -- [2] 2nd Row
+                {
+                    E = "Checkbox", 
+                    DB = "StealthOOC",
+                    DBV = true,
+                    L = { 
+                        enUS = "Stealth Reminder (OOC)", 
+                        ruRU = "Stealth Reminder (OOC)", 
+                        frFR = "Stealth Reminder (OOC)",
+                    }, 
+                    TT = { 
+                        enUS = "Show Stealth Reminder when out of combat.", 
+                        ruRU = "Show Stealth Reminder when out of combat.", 
+                        frFR = "Show Stealth Reminder when out of combat.",
+                    }, 
+                    M = {},
+                }, 
+                {
+                    E = "Checkbox", 
+                    DB = "UseDPSVanish",
+                    DBV = true,
+                    L = { 
+                        enUS = "Use Vanish for DPS", 
+                        ruRU = "Use Vanish for DPS", 
+                        frFR = "Use Vanish for DPS",
+                    }, 
+                    TT = { 
+                        enUS = "Suggest Vanish -> Ambush for DPS.Disable to save Vanish for utility purposes.", 
+                        ruRU = "Suggest Vanish -> Ambush for DPS.Disable to save Vanish for utility purposes.", 
+                        frFR = "Suggest Vanish -> Ambush for DPS.Disable to save Vanish for utility purposes.",
+                    }, 
+                    M = {},
+                }, 
+                {
+                    E = "Checkbox", 
+                    DB = "PrecombatAR",
+                    DBV = true,
+                    L = { 
+                        enUS = "Show Precombat Adrenaline Rush", 
+                        ruRU = "Показать предкомбат адреналина", 
+                        frFR = "Montrer Pousée d'Adrenaline en Precombat",
+                    }, 
+                    TT = { 
+                        enUS = "Display Adrenaline Rush when outside of combat with a valid target.", 
+                        ruRU = "Показывать выброс адреналина, когда вне боя с действительной целью.", 
+                        frFR = "Affichez la poussée d'adrénaline en dehors du combat avec une cible valide.",
+                    }, 
+                    M = {},
+                }, 
+                {
+                    E = "Checkbox", 
+                    DB = "SoloMode",
+                    DBV = false,
+                    L = { 
+                        enUS = "Activate Solo Mode", 
+                        ruRU = "Активировать Solo Mode", 
+                        frFR = "Activer le mode solo",
+                    }, 
+                    TT = { 
+                        enUS = "Activate Solo Mode to prioritize survivability over DPS.", 
+                        ruRU = "Активируйте Solo Mode для определения приоритета выживаемости над DPS", 
+                        frFR = "Activez le mode solo pour donner la priorité aux capacités de survie par rapport à DPS.",
+                    }, 
+                    M = {},
+                }, 						
+            },
+            { -- [3] 3nd Row 
+				-- Splash Data
+                {
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
+                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
+                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
+                    },
+                    DB = "AoeDetectionMode",
+                    DBV = "USE COMBAT LOGS",
+                    L = { 
+                        ANY = "AoE Detection Mode",
+                    }, 
+                    TT = { 
+                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                    }, 
+                    M = {},
+                },	
+            },
+            { -- [4] 4th Row
+
+                {
+                    E = "LayoutSpace",                                                                         
+                },
+            },
+            { -- [7] 
+                {
+                    E = "Header",
+                    L = {
+                        ANY = " -- Defensives -- ",
+                    },
+                },
+            },
+            { -- [3] 3rd Row 
+                {
+                    E = "Slider",                                                     
+                    MIN = -1, 
+                    MAX = 100,                            
+                    DB = "RolltheBonesLeechHP",
+                    DBV = 60, -- Set healthpercentage @60% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = A.GetSpellInfo(193316) .. " (%)",
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Slider",                                                     
+                    MIN = -1, 
+                    MAX = 100,                            
+                    DB = "CrimsonVialHP",
+                    DBV = 60, -- Set healthpercentage @60% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = A.GetSpellInfo(185311) .. " (%)",
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Slider",                                                     
+                    MIN = -1, 
+                    MAX = 100,                            
+                    DB = "FeintHP",
+                    DBV = 70, -- Set healthpercentage @70% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = A.GetSpellInfo(1966) .. " (%)",
+                    }, 
+                    M = {},
+                },
+            },
+            { -- [4] 4th Row
+                {
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "SIMC", value = "SIMC" },
+						{ text = "MYTHICPLUS", value = "MYTHICPLUS" },
+						{ text = "AOESTRAT", value = "AOESTRAT" },
+                        { text = "1BUFF", value = "1BUFF" },                    
+                        { text = "BROADSIDE", value = "BROADSIDE" },
+                        { text = "BURIEDTREASURE", value = "BURIEDTREASURE" },
+						{ text = "GRANDMELEE", value = "GRANDMELEE" },
+						{ text = "SKULLANDCROSS", value = "SKULLANDCROSS" },
+						{ text = "RUTHLESSPRECISION", value = "RUTHLESSPRECISION" },
+						{ text = "TRUEBEARING", value = "TRUEBEARING" },							
+                    },
+                    DB = "RolltheBonesLogic",
+                    DBV = "SIMC",
+                    L = { 
+                        enUS = "Roll the Bones Logic", 
+                        ruRU = "Бросок костей Логика", 
+                        frFR = "Logique pour les Jet d’osselets",
+                    }, 
+                    TT = { 
+                        enUS = "Define the Roll the Bones logic to follow.\n(SimC highly recommended!)", 
+                        ruRU = "Определите логику Бросок костей, которой нужно следовать. \ N (SimC настоятельно рекомендуется!)", 
+                        frFR = "Définissez la logique à suivre pour les Jet d’osselets.(SimC fortement recommandé!)",
+					},
+                    M = {},
+                },
+				-- Splash Data
+                {
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
+                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
+                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
+                    },
+                    DB = "AoeDetectionMode",
+                    DBV = "USE COMBAT LOGS",
+                    L = { 
+                        ANY = "AoE Detection Mode",
+                    }, 
+                    TT = { 
+                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                    }, 
+                    M = {},
+                },			
+                {
+                    E = "Checkbox", 
+                    DB = "TempBurst",
+                    DBV = false,
+                    L = { 
+                        enUS = "CD Mode: Burst", 
+                        ruRU = "CD Mode: Burst", 
+                        frFR = "CD Mode: Burst",
+                    }, 
+                    TT = { 
+                        enUS = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.", 
+                        ruRU = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.", 
+                        frFR = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.",
+                    }, 
+                    M = {},
+                }, 
+            }, 
+            { -- [7]
+                {
+                    E = "Header",
+                    L = {
+                        ANY = " -- PvP -- ",
+                    },
+                },
+            },
+            { -- [5] 5th Row     
+                {
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "ON MELEE BURST", value = "ON MELEE BURST" },
+                        { text = "ON COOLDOWN", value = "ON COOLDOWN" },                    
+                        { text = "OFF", value = "OFF" },
+                    },
+                    DB = "FearPvP",
+                    DBV = "ON MELEE BURST",
+                    L = { 
+                        ANY = "PvP " .. A.GetSpellInfo(5782),
+                    }, 
+                    TT = { 
+                        enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
+                        ruRU = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Только если игрок ближнего боя имеет бафы на урон\nON COOLDOWN - значит будет использовано по игрокам ближнего боя по восстановлению способности\nOFF - Выключает из ротации, но при этом позволяет Очередь и MSG системам работать\nЕсли нужно полностью выключить, тогда установите блокировку во вкладке 'Действия'", 
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "@arena1", value = 1 },
+                        { text = "@arena2", value = 2 },
+                        { text = "@arena3", value = 3 },
+                        { text = "primary", value = 4 },
+                    },
+                    MULT = true,
+                    DB = "FearPvPUnits",
+                    DBV = {
+                        [1] = true, 
+                        [2] = true,
+                        [3] = true,
+                        [4] = true,
+                    }, 
+                    L = { 
+                        ANY = "PvP " .. A.GetSpellInfo(5782) .. " units",
+                    }, 
+                    TT = { 
+                        enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 
+                        ruRU = "primary - это @target, @mouseover, @targettarget (эти юниты зависят от чекбоксов наверху)", 
+                    }, 
+                    M = {},
+                },
+            },
+        },
+        [ACTION_CONST_ROGUE_ASSASSINATION ] = {       
+            { -- [7]
+                {
+                    E = "Header",
+                    L = {
+                        ANY = " -- General -- ",
+                    },
+                },
+            },			
+            { -- [1] 1st Row
+		
+                {
+                    E = "Checkbox", 
+                    DB = "mouseover",
+                    DBV = true,
+                    L = { 
+                        enUS = "Use @mouseover", 
+                        ruRU = "Использовать @mouseover", 
+                        frFR = "Utiliser les fonctions @mouseover",
+                    }, 
+                    TT = { 
+                        enUS = "Will unlock use actions for @mouseover units\nExample: Resuscitate, Healing", 
+                        ruRU = "Разблокирует использование действий для @mouseover юнитов\nНапример: Воскрешение, Хилинг", 
+                        frFR = "Activera les actions via @mouseover\n Exemple: Ressusciter, Soigner",
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Checkbox", 
+                    DB = "AoE",
+                    DBV = true,
+                    L = { 
+                        enUS = "Use AoE", 
+                        ruRU = "Использовать AoE", 
+                        frFR = "Utiliser l'AoE",
+                    }, 
+                    TT = { 
+                        enUS = "Enable multiunits actions", 
+                        ruRU = "Включает действия для нескольких целей", 
+                        frFR = "Activer les actions multi-unités",
+                    }, 
+                    M = {
+					    Custom = "/run Action.AoEToggleMode()",
+						-- It does call func CraftMacro(L[CL], macro above, 1) -- 1 means perCharacter tab in MacroUI, if nil then will be used allCharacters tab in MacroUI
+						Value = value or nil, 
+						-- Very Very Optional, no idea why it will be need however.. 
+						TabN = '@number' or nil,								
+						Print = '@string' or nil,
+					},
+                }, 
+                {
+                    E = "Checkbox", 
+                    DB = "OffGCDasOffGCD",
+                    DBV = true,
+                    L = { 
+                        enUS = "Use spells OffGCD", 
+                        ruRU = "Используйте заклинания OffGCD", 
+                        frFR = "Utiliser les spells OffGCD",
+                    }, 
+                    TT = { 
+                        enUS = "Will force certains spells to be used as off GCD", 
+                        ruRU = "Вынудит определенные заклинания использоваться как вне GCD", 
+                        frFR = "Forcera certains spells à être utilisés sur le GCD",
+                    }, 
+                    M = {},
+                }, 
+                
+            },  
+            { -- [2] 2nd Row
+                {
+                    E = "Checkbox", 
+                    DB = "StealthOOC",
+                    DBV = true,
+                    L = { 
+                        enUS = "Stealth Reminder (OOC)", 
+                        ruRU = "Stealth Reminder (OOC)", 
+                        frFR = "Stealth Reminder (OOC)",
+                    }, 
+                    TT = { 
+                        enUS = "Show Stealth Reminder when out of combat.", 
+                        ruRU = "Show Stealth Reminder when out of combat.", 
+                        frFR = "Show Stealth Reminder when out of combat.",
+                    }, 
+                    M = {},
+                }, 
+                {
+                    E = "Checkbox", 
+                    DB = "UseDPSVanish",
+                    DBV = true,
+                    L = { 
+                        enUS = "Use Vanish for DPS", 
+                        ruRU = "Use Vanish for DPS", 
+                        frFR = "Use Vanish for DPS",
+                    }, 
+                    TT = { 
+                        enUS = "Suggest Vanish -> Ambush for DPS.Disable to save Vanish for utility purposes.", 
+                        ruRU = "Suggest Vanish -> Ambush for DPS.Disable to save Vanish for utility purposes.", 
+                        frFR = "Suggest Vanish -> Ambush for DPS.Disable to save Vanish for utility purposes.",
+                    }, 
+                    M = {},
+                }, 
+                {
+                    E = "Checkbox", 
+                    DB = "PrecombatAR",
+                    DBV = true,
+                    L = { 
+                        enUS = "Show Precombat Adrenaline Rush", 
+                        ruRU = "Показать предкомбат адреналина", 
+                        frFR = "Montrer Pousée d'Adrenaline en Precombat",
+                    }, 
+                    TT = { 
+                        enUS = "Display Adrenaline Rush when outside of combat with a valid target.", 
+                        ruRU = "Показывать выброс адреналина, когда вне боя с действительной целью.", 
+                        frFR = "Affichez la poussée d'adrénaline en dehors du combat avec une cible valide.",
+                    }, 
+                    M = {},
+                }, 
+                {
+                    E = "Checkbox", 
+                    DB = "SoloMode",
+                    DBV = false,
+                    L = { 
+                        enUS = "Activate Solo Mode", 
+                        ruRU = "Активировать Solo Mode", 
+                        frFR = "Activer le mode solo",
+                    }, 
+                    TT = { 
+                        enUS = "Activate Solo Mode to prioritize survivability over DPS.", 
+                        ruRU = "Активируйте Solo Mode для определения приоритета выживаемости над DPS", 
+                        frFR = "Activez le mode solo pour donner la priorité aux capacités de survie par rapport à DPS.",
+                    }, 
+                    M = {},
+                }, 						
+            },
+            { -- [3] 3nd Row 
+				-- Splash Data
+                {
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
+                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
+                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
+                    },
+                    DB = "AoeDetectionMode",
+                    DBV = "USE COMBAT LOGS",
+                    L = { 
+                        ANY = "AoE Detection Mode",
+                    }, 
+                    TT = { 
+                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                    }, 
+                    M = {},
+                },	
+            },
+            { -- [4] 4th Row
+
+                {
+                    E = "LayoutSpace",                                                                         
+                },
+            },
+            { -- [7] 
+                {
+                    E = "Header",
+                    L = {
+                        ANY = " -- Defensives -- ",
+                    },
+                },
+            },
+            { -- [3] 3rd Row 
+                {
+                    E = "Slider",                                                     
+                    MIN = -1, 
+                    MAX = 100,                            
+                    DB = "RolltheBonesLeechHP",
+                    DBV = 60, -- Set healthpercentage @60% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = A.GetSpellInfo(193316) .. " (%)",
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Slider",                                                     
+                    MIN = -1, 
+                    MAX = 100,                            
+                    DB = "CrimsonVialHP",
+                    DBV = 60, -- Set healthpercentage @60% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = A.GetSpellInfo(185311) .. " (%)",
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Slider",                                                     
+                    MIN = -1, 
+                    MAX = 100,                            
+                    DB = "FeintHP",
+                    DBV = 70, -- Set healthpercentage @70% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = A.GetSpellInfo(1966) .. " (%)",
+                    }, 
+                    M = {},
+                },
+            },
+            { -- [4] 4th Row
+                {
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "SIMC", value = "SIMC" },
+						{ text = "MYTHICPLUS", value = "MYTHICPLUS" },
+						{ text = "AOESTRAT", value = "AOESTRAT" },
+                        { text = "1BUFF", value = "1BUFF" },                    
+                        { text = "BROADSIDE", value = "BROADSIDE" },
+                        { text = "BURIEDTREASURE", value = "BURIEDTREASURE" },
+						{ text = "GRANDMELEE", value = "GRANDMELEE" },
+						{ text = "SKULLANDCROSS", value = "SKULLANDCROSS" },
+						{ text = "RUTHLESSPRECISION", value = "RUTHLESSPRECISION" },
+						{ text = "TRUEBEARING", value = "TRUEBEARING" },							
+                    },
+                    DB = "RolltheBonesLogic",
+                    DBV = "SIMC",
+                    L = { 
+                        enUS = "Roll the Bones Logic", 
+                        ruRU = "Бросок костей Логика", 
+                        frFR = "Logique pour les Jet d’osselets",
+                    }, 
+                    TT = { 
+                        enUS = "Define the Roll the Bones logic to follow.\n(SimC highly recommended!)", 
+                        ruRU = "Определите логику Бросок костей, которой нужно следовать. \ N (SimC настоятельно рекомендуется!)", 
+                        frFR = "Définissez la logique à suivre pour les Jet d’osselets.(SimC fortement recommandé!)",
+					},
+                    M = {},
+                },
+				-- Splash Data
+                {
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
+                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
+                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
+                    },
+                    DB = "AoeDetectionMode",
+                    DBV = "USE COMBAT LOGS",
+                    L = { 
+                        ANY = "AoE Detection Mode",
+                    }, 
+                    TT = { 
+                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                    }, 
+                    M = {},
+                },			
+                {
+                    E = "Checkbox", 
+                    DB = "TempBurst",
+                    DBV = false,
+                    L = { 
+                        enUS = "CD Mode: Burst", 
+                        ruRU = "CD Mode: Burst", 
+                        frFR = "CD Mode: Burst",
+                    }, 
+                    TT = { 
+                        enUS = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.", 
+                        ruRU = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.", 
+                        frFR = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.",
+                    }, 
+                    M = {},
+                }, 
+            }, 
+            { -- [7]
+                {
+                    E = "Header",
+                    L = {
+                        ANY = " -- PvP -- ",
+                    },
+                },
+            },
+            { -- [5] 5th Row     
+                {
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "ON MELEE BURST", value = "ON MELEE BURST" },
+                        { text = "ON COOLDOWN", value = "ON COOLDOWN" },                    
+                        { text = "OFF", value = "OFF" },
+                    },
+                    DB = "FearPvP",
+                    DBV = "ON MELEE BURST",
+                    L = { 
+                        ANY = "PvP " .. A.GetSpellInfo(5782),
+                    }, 
+                    TT = { 
+                        enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
+                        ruRU = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Только если игрок ближнего боя имеет бафы на урон\nON COOLDOWN - значит будет использовано по игрокам ближнего боя по восстановлению способности\nOFF - Выключает из ротации, но при этом позволяет Очередь и MSG системам работать\nЕсли нужно полностью выключить, тогда установите блокировку во вкладке 'Действия'", 
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "@arena1", value = 1 },
+                        { text = "@arena2", value = 2 },
+                        { text = "@arena3", value = 3 },
+                        { text = "primary", value = 4 },
+                    },
+                    MULT = true,
+                    DB = "FearPvPUnits",
+                    DBV = {
+                        [1] = true, 
+                        [2] = true,
+                        [3] = true,
+                        [4] = true,
+                    }, 
+                    L = { 
+                        ANY = "PvP " .. A.GetSpellInfo(5782) .. " units",
+                    }, 
+                    TT = { 
+                        enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 
+                        ruRU = "primary - это @target, @mouseover, @targettarget (эти юниты зависят от чекбоксов наверху)", 
+                    }, 
+                    M = {},
+                },
+            },
+        },
     },
     -- MSG Actions UI
     [7] = {
