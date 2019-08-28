@@ -7,7 +7,7 @@ local CNDT = TMW.CNDT
 local Env = CNDT.Env
 local Action = Action
 
-Action[ACTION_CONST_HUNTER_BEASTMASTERY] = {
+Action[ACTION_CONST_HUNTER_SURVIVAL] = {
     -- Racials
     ArcaneTorrent                        = Action.Create({ Type = "Spell", ID = 50613     }),
     BloodFury                            = Action.Create({ Type = "Spell", ID = 20572      }),
@@ -61,6 +61,8 @@ Action[ACTION_CONST_HUNTER_BEASTMASTERY] = {
     ConcentratedFlameBurn                = Action.Create({ Type = "Spell", ID = 295368, Hidden = true     }),
     CyclotronicBlast                     = Action.Create({ Type = "Spell", ID = 167672, Hidden = true     }),
     HarmonicDematerializer               = Action.Create({ Type = "Spell", ID = 293512, Hidden = true     }),
+    RecklessForceCounter                 = Action.Create({ Type = "Spell", ID = 298409}),
+    RecklessForceCounter2                 = Action.Create({ Type = "Spell", ID = 302917}),
 	--PoolFocus                             = Action.Create({ Type = "Spell", ID = 9999000010, Hidden = true     }),
     -- Buffs
     DanceofDeathBuff                      = Action.Create({ Type = "Spell", ID = 274443 }),
@@ -153,12 +155,12 @@ Action[ACTION_CONST_HUNTER_BEASTMASTERY] = {
 }
 
 -- To create essences use next code:
-Action:CreateEssencesFor(ACTION_CONST_HUNTER_BEASTMASTERY)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
+Action:CreateEssencesFor(ACTION_CONST_HUNTER_SURVIVAL)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 
 -- This code making shorter access to both tables Action[PLAYERSPEC] and Action
 -- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady(), it doesn't make any conflict if you will skip shorter access
 -- So with shorter access you can just do A.Guard:IsReady() instead of Action[PLAYERSPEC].Guard:IsReady()
-local A = setmetatable(Action[ACTION_CONST_HUNTER_BEASTMASTERY], { __index = Action })
+local A = setmetatable(Action[ACTION_CONST_HUNTER_SURVIVAL], { __index = Action })
 
 -- Simcraft Imported
 -- HeroLib
@@ -279,6 +281,7 @@ local function DetermineEssenceRanks()
     S.GuardianofAzeroth = S.GuardianofAzeroth3:IsAvailable() and S.GuardianofAzeroth3 or S.GuardianofAzeroth
     S.MemoryofLucidDreamsMinor = S.MemoryofLucidDreamsMinor2:IsAvailable() and S.MemoryofLucidDreamsMinor2 or S.MemoryofLucidDreamsMinor
     S.MemoryofLucidDreamsMinor = S.MemoryofLucidDreamsMinor3:IsAvailable() and S.MemoryofLucidDreamsMinor3 or S.MemoryofLucidDreamsMinor
+	S.RecklessForceCounter = S.RecklessForceCounter2:IsAvailable() and S.RecklessForceCounter2 or S.RecklessForceCounter
 end
 
 -- Trinkets checker handler
