@@ -305,15 +305,15 @@ local function APL()
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power"; end
         end
         -- memory_of_lucid_dreams
-        if S.MemoryofLucidDreams:IsCastableP() then
+        if S.MemoryofLucidDreams:IsCastableP() and not ShouldStop then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams"; end
         end
         -- guardian_of_azeroth
-        if S.GuardianofAzeroth:IsCastableP() then
+        if S.GuardianofAzeroth:IsCastableP() and not ShouldStop then
             if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth"; end
         end
         -- recklessness
-        if S.Recklessness:IsCastableP() then
+        if S.Recklessness:IsCastableP() and not ShouldStop then
             if HR.Cast(S.Recklessness) then return "recklessness precombat"; end
         end
         -- potion
@@ -324,58 +324,58 @@ local function APL()
     
 	local function Movement()
         -- heroic_leap
-        if S.HeroicLeap:IsCastableP() then
+        if S.HeroicLeap:IsCastableP() and not ShouldStop then
             if HR.Cast(S.HeroicLeap, Action.GetToggle(2, "OffGCDasOffGCD")) then return "heroic_leap 16"; end
         end
     end
     
 	local function SingleTarget()
         -- siegebreaker
-        if S.Siegebreaker:IsCastableP("Melee") then
+        if S.Siegebreaker:IsCastableP("Melee") and not ShouldStop then
             if HR.Cast(S.Siegebreaker, Action.GetToggle(2, "OffGCDasOffGCD")) then return "siegebreaker 18"; end
         end
         -- rampage,if=(buff.recklessness.up|buff.memory_of_lucid_dreams.up)|(talent.frothing_berserker.enabled|talent.carnage.enabled&(buff.enrage.remains<gcd|rage>90)|talent.massacre.enabled&(buff.enrage.remains<gcd|rage>90))
-        if S.Rampage:IsReadyP("Melee") and ((Player:BuffP(S.RecklessnessBuff) or Player:BuffP(S.MemoryofLucidDreams)) or (S.FrothingBerserker:IsAvailable() or S.Carnage:IsAvailable() and (Player:BuffRemainsP(S.EnrageBuff) < Player:GCD() or Player:Rage() > 90) or S.Massacre:IsAvailable() and (Player:BuffRemainsP(S.EnrageBuff) < Player:GCD() or Player:Rage() > 90))) then
+        if S.Rampage:IsReadyP("Melee") and not ShouldStop and ((Player:BuffP(S.RecklessnessBuff) or Player:BuffP(S.MemoryofLucidDreams)) or (S.FrothingBerserker:IsAvailable() or S.Carnage:IsAvailable() and (Player:BuffRemainsP(S.EnrageBuff) < Player:GCD() or Player:Rage() > 90) or S.Massacre:IsAvailable() and (Player:BuffRemainsP(S.EnrageBuff) < Player:GCD() or Player:Rage() > 90))) then
             if HR.Cast(S.Rampage) then return "rampage 20"; end
         end
         -- execute
-        if S.Execute:IsCastable("Melee") then
+        if S.Execute:IsCastable("Melee") and not ShouldStop then
             if HR.Cast(S.Execute) then return "execute 34"; end
         end
         -- furious_slash,if=!buff.bloodlust.up&buff.furious_slash.remains<3
-        if S.FuriousSlash:IsCastableP() and (not Player:HasHeroism() and Player:BuffRemainsP(S.FuriousSlashBuff) < 3) then
+        if S.FuriousSlash:IsCastableP() and not ShouldStop and (not Player:HasHeroism() and Player:BuffRemainsP(S.FuriousSlashBuff) < 3) then
             if HR.Cast(S.FuriousSlash) then return "furious_slash 36"; end
         end
         -- bladestorm,if=prev_gcd.1.rampage
-        if S.Bladestorm:IsCastableP("Melee") and HR.CDsON() and (Player:PrevGCDP(1, S.Rampage)) then
+        if S.Bladestorm:IsCastableP("Melee") and not ShouldStop and HR.CDsON() and (Player:PrevGCDP(1, S.Rampage)) then
             if HR.Cast(S.Bladestorm) then return "bladestorm 37"; end
         end
         -- bloodthirst,if=buff.enrage.down|azerite.cold_steel_hot_blood.rank>1
-        if S.Bloodthirst:IsCastableP("Melee") and (Player:BuffDownP(S.EnrageBuff) or S.ColdSteelHotBlood:AzeriteRank() > 1) then
+        if S.Bloodthirst:IsCastableP("Melee") and not ShouldStop and (Player:BuffDownP(S.EnrageBuff) or S.ColdSteelHotBlood:AzeriteRank() > 1) then
             if HR.Cast(S.Bloodthirst) then return "bloodthirst 38"; end
         end
         -- dragon_roar,if=buff.enrage.up
-        if S.DragonRoar:IsCastableP(12) and (Player:BuffP(S.EnrageBuff)) then
+        if S.DragonRoar:IsCastableP(12) and not ShouldStop and (Player:BuffP(S.EnrageBuff)) then
             if HR.Cast(S.DragonRoar) then return "dragon_roar 39"; end
         end
         -- raging_blow,if=charges=2
-        if S.RagingBlow:IsCastableP("Melee") and (S.RagingBlow:ChargesP() == 2) then
+        if S.RagingBlow:IsCastableP("Melee") and not ShouldStop and (S.RagingBlow:ChargesP() == 2) then
             if HR.Cast(S.RagingBlow) then return "raging_blow 42"; end
         end
         -- bloodthirst
-        if S.Bloodthirst:IsCastableP("Melee") then
+        if S.Bloodthirst:IsCastableP("Melee") and not ShouldStop then
             if HR.Cast(S.Bloodthirst) then return "bloodthirst 48"; end
         end
         -- raging_blow,if=talent.carnage.enabled|(talent.massacre.enabled&rage<80)|(talent.frothing_berserker.enabled&rage<90)
-        if S.RagingBlow:IsCastableP("Melee") and (S.Carnage:IsAvailable() or (S.Massacre:IsAvailable() and Player:Rage() < 80) or (S.FrothingBerserker:IsAvailable() and Player:Rage() < 90)) then
+        if S.RagingBlow:IsCastableP("Melee") and not ShouldStop and (S.Carnage:IsAvailable() or (S.Massacre:IsAvailable() and Player:Rage() < 80) or (S.FrothingBerserker:IsAvailable() and Player:Rage() < 90)) then
             if HR.Cast(S.RagingBlow) then return "raging_blow 62"; end
         end
         -- furious_slash,if=talent.furious_slash.enabled
-        if S.FuriousSlash:IsCastableP("Melee") and (S.FuriousSlash:IsAvailable()) then
+        if S.FuriousSlash:IsCastableP("Melee") and not ShouldStop and (S.FuriousSlash:IsAvailable()) then
             if HR.Cast(S.FuriousSlash) then return "furious_slash 70"; end
         end
         -- whirlwind
-        if S.Whirlwind:IsCastableP("Melee") then
+        if S.Whirlwind:IsCastableP("Melee") and not ShouldStop then
             if HR.Cast(S.Whirlwind) then return "whirlwind 74"; end
         end
     end
@@ -423,15 +423,15 @@ local function APL()
 			if HR.Cast(S.VictoryRush) then return ""; end
         end
 		-- ImpendingVictory
-        if S.ImpendingVictory:IsReady("Melee") and Player:HealthPercentage() <= Action.GetToggle(2, "ImpendingVictory") then
+        if S.ImpendingVictory:IsReady("Melee") and not ShouldStop and Player:HealthPercentage() <= Action.GetToggle(2, "ImpendingVictory") then
 		    if HR.Cast(S.VictoryRush) then return ""; end
         end
         -- execute,if=buff.enrage.upSuddenDeathBuff
-        if S.Execute:IsCastable("Melee") and (Player:BuffP(S.Enrage)) then
+        if S.Execute:IsCastable("Melee") and not ShouldStop and (Player:BuffP(S.Enrage)) then
 		    if HR.Cast(S.Execute) then return ""; end
         end
 			-- execute,if=buff.enrage.up
-        if S.Execute:IsCastable("Melee") and Player:BuffRemainsP(S.SuddenDeathBuff) > 1 then
+        if S.Execute:IsCastable("Melee") and not ShouldStop and Player:BuffRemainsP(S.SuddenDeathBuff) > 1 then
 		    if HR.Cast(S.Execute) then return ""; end
         end
         if S.RallyingCry:IsReady() and Player:HealthPercentage() <= Action.GetToggle(2, "RallyingCry")then
@@ -448,55 +448,55 @@ local function APL()
             if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_strength 84"; end
         end
         -- rampage,if=cooldown.recklessness.remains<3
-        if S.Rampage:IsReadyP("Melee") and (S.Recklessness:CooldownRemainsP() < 3) then
+        if S.Rampage:IsReadyP("Melee") and not ShouldStop and (S.Recklessness:CooldownRemainsP() < 3) then
             if HR.Cast(S.Rampage) then return "rampage 108"; end
         end
         -- blood_of_the_enemy,if=buff.recklessness.up
-        if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.RecklessnessBuff)) then
+        if S.BloodoftheEnemy:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.RecklessnessBuff)) then
             if HR.Cast(S.BloodoftheEnemy, Action.GetToggle(2, "OffGCDasOffGCD")) then return "blood_of_the_enemy"; end
         end
         -- purifying_blast,if=!buff.recklessness.up&!buff.siegebreaker.up
-        if S.PurifyingBlast:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.Recklessness) and Target:DebuffDownP(S.SiegebreakerDebuff)) then
+        if S.PurifyingBlast:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.Recklessness) and Target:DebuffDownP(S.SiegebreakerDebuff)) then
             if HR.Cast(S.PurifyingBlast, Action.GetToggle(2, "OffGCDasOffGCD")) then return "purifying_blast"; end
         end
         -- ripple_in_space,if=!buff.recklessness.up&!buff.siegebreaker.up
-        if S.RippleInSpace:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.Recklessness) and Target:DebuffDownP(S.SiegebreakerDebuff)) then
+        if S.RippleInSpace:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.Recklessness) and Target:DebuffDownP(S.SiegebreakerDebuff)) then
             if HR.Cast(S.RippleInSpace, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ripple_in_space"; end
         end
         -- worldvein_resonance,if=!buff.recklessness.up&!buff.siegebreaker.up
-        if S.WorldveinResonance:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.Recklessness) and Target:DebuffDownP(S.SiegebreakerDebuff)) then
+        if S.WorldveinResonance:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.Recklessness) and Target:DebuffDownP(S.SiegebreakerDebuff)) then
             if HR.Cast(S.WorldveinResonance, Action.GetToggle(2, "OffGCDasOffGCD")) then return "worldvein_resonance"; end
         end
         -- focused_azerite_beam,if=!buff.recklessness.up&!buff.siegebreaker.up
-        if S.FocusedAzeriteBeam:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.Recklessness) and Target:DebuffDownP(S.SiegebreakerDebuff)) then
+        if S.FocusedAzeriteBeam:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.Recklessness) and Target:DebuffDownP(S.SiegebreakerDebuff)) then
             if HR.Cast(S.FocusedAzeriteBeam, Action.GetToggle(2, "OffGCDasOffGCD")) then return "focused_azerite_beam"; end
         end
         -- concentrated_flame,if=!buff.recklessness.up&!buff.siegebreaker.up&dot.concentrated_flame_burn.remains=0
-        if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.Recklessness) and Target:DebuffDownP(S.SiegebreakerDebuff) and Target:DebuffDownP(S.ConcentratedFlameBurn)) then
+        if S.ConcentratedFlame:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.Recklessness) and Target:DebuffDownP(S.SiegebreakerDebuff) and Target:DebuffDownP(S.ConcentratedFlameBurn)) then
             if HR.Cast(S.ConcentratedFlame, Action.GetToggle(2, "OffGCDasOffGCD")) then return "concentrated_flame"; end
         end
         -- the_unbound_force,if=buff.reckless_force.up
-        if S.TheUnboundForce:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.RecklessForceBuff)) then
+        if S.TheUnboundForce:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.RecklessForceBuff)) then
             if HR.Cast(S.TheUnboundForce, Action.GetToggle(2, "OffGCDasOffGCD")) then return "the_unbound_force"; end
         end
         -- guardian_of_azeroth,if=!buff.recklessness.up
-        if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.RecklessnessBuff)) then
+        if S.GuardianofAzeroth:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.RecklessnessBuff)) then
             if HR.Cast(S.GuardianofAzeroth, Action.GetToggle(2, "OffGCDasOffGCD")) then return "guardian_of_azeroth"; end
         end
         -- memory_of_lucid_dreams,if=!buff.recklessness.up
-        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.RecklessnessBuff)) then
+        if S.MemoryofLucidDreams:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.RecklessnessBuff)) then
             if HR.Cast(S.MemoryofLucidDreams, Action.GetToggle(2, "OffGCDasOffGCD")) then return "memory_of_lucid_dreams"; end
         end
         -- Reck if rage is > 90 and SiegebreakerDebuff
-        if S.Recklessness:IsCastableP() and HR.CDsON() and (Target:DebuffRemainsP(S.SiegebreakerDebuff) > 1 or not S.Siegebreaker:IsAvailable()) and ( S.GuardianofAzeroth:CooldownRemainsP() > 20 or not S.GuardianofAzeroth:IsAvailable() ) then
+        if S.Recklessness:IsCastableP() and not ShouldStop and HR.CDsON() and (Target:DebuffRemainsP(S.SiegebreakerDebuff) > 1 or not S.Siegebreaker:IsAvailable()) and ( S.GuardianofAzeroth:CooldownRemainsP() > 20 or not S.GuardianofAzeroth:IsAvailable() ) then
             if HR.Cast(S.Recklessness, Action.GetToggle(2, "OffGCDasOffGCD")) then return "recklessness 112"; end
         end
         -- recklessness,if=!essence.condensed_lifeforce.major&!essence.blood_of_the_enemy.major|cooldown.guardian_of_azeroth.remains>20|buff.guardian_of_azeroth.up|cooldown.blood_of_the_enemy.remains<gcd
-        ---if S.Recklessness:IsCastableP() and HR.CDsON() and (not S.CondensedLifeforce:IsAvailable() and not S.BloodoftheEnemy:IsAvailable() or S.GuardianofAzeroth:CooldownRemainsP() > 20 or Player:BuffP(S.GuardianofAzeroth) or S.BloodoftheEnemy:CooldownRemainsP() < Player:GCD()) then
+        ---if S.Recklessness:IsCastableP() and not ShouldStop and HR.CDsON() and (not S.CondensedLifeforce:IsAvailable() and not S.BloodoftheEnemy:IsAvailable() or S.GuardianofAzeroth:CooldownRemainsP() > 20 or Player:BuffP(S.GuardianofAzeroth) or S.BloodoftheEnemy:CooldownRemainsP() < Player:GCD()) then
         ---    if HR.Cast(S.Recklessness, Action.GetToggle(2, "OffGCDasOffGCD")) then return "recklessness 112"; end
         ---end
         -- whirlwind,if=spell_targets.whirlwind>1&!buff.meat_cleaver.up
-        if S.Whirlwind:IsCastableP("Melee") and (Cache.EnemiesCount[8] > 1 and not Player:BuffP(S.MeatCleaverBuff)) then
+        if S.Whirlwind:IsCastableP("Melee") and not ShouldStop and (Cache.EnemiesCount[8] > 1 and not Player:BuffP(S.MeatCleaverBuff)) then
             if HR.Cast(S.Whirlwind) then return "whirlwind 114"; end
         end
         -- use_item,name=ashvanes_razor_coral,if=!debuff.razor_coral_debuff.up|(target.health.pct<30.1&debuff.conductive_ink_debuff.up)|(!debuff.conductive_ink_debuff.up&buff.memory_of_lucid_dreams.up|prev_gcd.2.guardian_of_azeroth|prev_gcd.2.recklessness&(buff.guardian_of_azeroth.up|!essence.memory_of_lucid_dreams.major&!essence.condensed_lifeforce.major))
@@ -504,23 +504,23 @@ local function APL()
             if HR.Cast(I.AshvanesRazorCoral) then return "ashvanes_razor_coral 115"; end
         end
         -- blood_fury
-        if S.BloodFury:IsCastableP() and HR.CDsON() then
+        if S.BloodFury:IsCastableP() and not ShouldStop and HR.CDsON() then
             if HR.Cast(S.BloodFury, Action.GetToggle(2, "OffGCDasOffGCD")) then return "blood_fury 118"; end
         end
         -- berserking
-        if S.Berserking:IsCastableP() and HR.CDsON() then
+        if S.Berserking:IsCastableP() and not ShouldStop and HR.CDsON() then
             if HR.Cast(S.Berserking, Action.GetToggle(2, "OffGCDasOffGCD")) then return "berserking 122"; end
         end
        -- lights_judgment,if=buff.recklessness.down
-        if S.LightsJudgment:IsCastableP() and HR.CDsON() and (Player:BuffDownP(S.RecklessnessBuff)) then
+        if S.LightsJudgment:IsCastableP() and not ShouldStop and HR.CDsON() and (Player:BuffDownP(S.RecklessnessBuff)) then
             if HR.Cast(S.LightsJudgment) then return "lights_judgment 126"; end
         end
         -- fireblood
-        if S.Fireblood:IsCastableP() and HR.CDsON() then
+        if S.Fireblood:IsCastableP() and not ShouldStop and HR.CDsON() then
             if HR.Cast(S.Fireblood, Action.GetToggle(2, "OffGCDasOffGCD")) then return "fireblood 130"; end
         end
         -- ancestral_call
-        if S.AncestralCall:IsCastableP() and HR.CDsON() then
+        if S.AncestralCall:IsCastableP() and not ShouldStop and HR.CDsON() then
             if HR.Cast(S.AncestralCall, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ancestral_call 134"; end
         end
         -- run_action_list,name=single_target
