@@ -332,7 +332,7 @@ local function APL()
         end
     end
 	
-    Precombat = function()
+    local function Precombat()
         -- flask
         -- food
         -- augmentation
@@ -360,7 +360,7 @@ local function APL()
             end
         --end
     end
-    Essences = function()
+    local function Essences()
         -- focused_azerite_beam,if=buff.rune_of_power.down|active_enemies>3
         if S.FocusedAzeriteBeam:IsCastableP() and (Player:BuffDownP(S.RuneofPowerBuff) or EnemiesCount > 3) then
             if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam"; end
@@ -394,7 +394,7 @@ local function APL()
             if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance"; end
         end
     end
-    Aoe = function()
+    local function Aoe()
         -- frozen_orb
         if S.FrozenOrb:IsCastableP() then
             if HR.Cast(S.FrozenOrb, Action.GetToggle(2, "OffGCDasOffGCD")) then return "frozen_orb 16"; end
@@ -458,7 +458,7 @@ local function APL()
             if HR.Cast(S.IceLance) then return "ice_lance 54"; end
         end
     end
-    Cooldowns = function()
+    local function Cooldowns()
         -- guardian_of_azeroth
         if S.GuardianofAzeroth:IsCastableP() then
             if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth"; end
@@ -513,7 +513,7 @@ local function APL()
             if HR.Cast(S.AncestralCall, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ancestral_call 109"; end
         end
     end
-    Movement = function()
+    local function Movement()
         -- blink,if=movement.distance>10
         if BlinkAny:IsCastableP() and (not Target:IsInRange(S.Frostbolt:MaximumRange())) then
             if HR.Cast(BlinkAny) then return "blink 111"; end
@@ -523,7 +523,7 @@ local function APL()
             if HR.Cast(S.IceFloes, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ice_floes 113"; end
         end
     end
-    Single = function()
+    local function Single()
         -- ice_nova,if=cooldown.ice_nova.ready&debuff.winters_chill.up
         if S.IceNova:IsCastableP() and (S.IceNova:CooldownUpP() and Target:DebuffP(S.WintersChillDebuff)) then
             if HR.Cast(S.IceNova) then return "ice_nova 117"; end
@@ -588,7 +588,7 @@ local function APL()
             if HR.Cast(S.IceLance) then return "ice_lance 223"; end
         end
     end
-    TalentRop = function()
+    local function TalentRop()
         -- rune_of_power,if=talent.glacial_spike.enabled&buff.icicles.stack=5&(buff.brain_freeze.react|talent.ebonbolt.enabled&cooldown.ebonbolt.remains<cast_time)
         if S.RuneofPower:IsCastableP() and (S.GlacialSpike:IsAvailable() and Player:BuffStackP(S.IciclesBuff) == 5 and (bool(Player:BuffStackP(S.BrainFreezeBuff)) or S.Ebonbolt:IsAvailable() and S.Ebonbolt:CooldownRemainsP() < S.RuneofPower:CastTime())) then
             if HR.Cast(S.RuneofPower, Action.GetToggle(2, "OffGCDasOffGCD")) then return "rune_of_power 225"; end
@@ -652,7 +652,7 @@ local function APL()
         end	
 		-- Emergency
 		local ShouldReturn = Emergency(); if ShouldReturn then return ShouldReturn; end		
-     -- call_action_list,name=cooldowns
+        -- call_action_list,name=cooldowns
         if (HR.CDsON()) then
             local ShouldReturn = Cooldowns(); if ShouldReturn then return ShouldReturn; end
         end
