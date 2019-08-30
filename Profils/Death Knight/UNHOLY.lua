@@ -161,8 +161,12 @@ Action.HeroSetHookAllTable(I, {
 --S.Brews                                 = Spell(115308)
 --S.BlackoutCombo                         = Spell(196736)
 --S.BlackoutComboBuff                     = Spell(228563)
-
 ---------------------------
+
+-- Rotation Var
+local ShouldReturn; -- Used to get the return string
+local ForceOffGCD = {true, false};
+local Everyone = HR.Commons.Everyone;
 
 -- Variables
 local VarPoolingForGargoyle = 0;

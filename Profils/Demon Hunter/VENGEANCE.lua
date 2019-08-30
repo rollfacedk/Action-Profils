@@ -154,6 +154,8 @@ Action.HeroSetHookAllTable(I, {
 
 -- Rotation Var
 local ShouldReturn; -- Used to get the return string
+local ForceOffGCD = {true, false};
+local Everyone = HR.Commons.Everyone;
 local CleaveRangeID = tostring(S.Disrupt:ID()); -- 20y range
 local SoulFragments, SoulFragmentsAdjusted, LastSoulFragmentAdjustment;
 local IsInMeleeRange, IsInAoERange;

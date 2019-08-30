@@ -185,6 +185,8 @@ Action.HeroSetHookAllTable(I, {
 
 -- Rotation Var
 local ShouldReturn; -- Used to get the return string
+local ForceOffGCD = {true, false};
+local Everyone = HR.Commons.Everyone;
 
 local function DetermineEssenceRanks()
     S.BloodoftheEnemy = S.BloodoftheEnemy2:IsAvailable() and S.BloodoftheEnemy2 or S.BloodoftheEnemy

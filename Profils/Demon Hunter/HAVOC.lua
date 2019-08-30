@@ -166,9 +166,7 @@ Action.HeroSetHookAllTable(I, {
 -- Rotation Var
 local ShouldReturn; -- Used to get the return string
 local ForceOffGCD = {true, false};
-
--- Rotation Var
-local ShouldReturn; -- Used to get the return string
+local Everyone = HR.Commons.Everyone;
 
 -- Variables
 local VarPoolingForMeta = 0;

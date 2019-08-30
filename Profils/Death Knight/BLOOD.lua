@@ -162,6 +162,7 @@ Action.HeroSetHookAllTable(I, {
 
 -- Rotation Var
 local ShouldReturn; -- Used to get the return string
+local Everyone = HR.Commons.Everyone;
 
 -- Interrupts List
 local StunInterrupts = {
