@@ -294,32 +294,32 @@ S.Rake:RegisterPMultiplier(
   {S.BloodtalonsBuff, 1.2}, {S.SavageRoar, 1.15}, {S.TigersFury, 1.15}
 )
 
-local function EvaluateCyclePrimalWrath95(TargetUnit)
-  return Cache.EnemiesCount[5] > 1 and TargetUnit:DebuffRemainsP(S.RipDebuff) < 4
+local function EvaluateCyclePrimalWrath95(Target)
+  return Cache.EnemiesCount[5] > 1 and Target:DebuffRemainsP(S.RipDebuff) < 4
 end
 
-local function EvaluateCyclePrimalWrath106(TargetUnit)
+local function EvaluateCyclePrimalWrath106(Target)
   return Cache.EnemiesCount[5] >= 2
 end
 
-local function EvaluateCycleRip115(TargetUnit)
-  return not TargetUnit:DebuffP(S.RipDebuff) or (TargetUnit:DebuffRemainsP(S.RipDebuff) <= S.RipDebuff:BaseDuration() * 0.3) and (not S.Sabertooth:IsAvailable()) or (TargetUnit:DebuffRemainsP(S.RipDebuff) <= S.RipDebuff:BaseDuration() * 0.8 and Player:PMultiplier(S.Rip) > TargetUnit:PMultiplier(S.Rip)) and TargetUnit:TimeToDie() > 8
+local function EvaluateCycleRip115(Target)
+  return not Target:DebuffP(S.RipDebuff) or (Target:DebuffRemainsP(S.RipDebuff) <= S.RipDebuff:BaseDuration() * 0.3) and (not S.Sabertooth:IsAvailable()) or (Target:DebuffRemainsP(S.RipDebuff) <= S.RipDebuff:BaseDuration() * 0.8 and Player:PMultiplier(S.Rip) > Target:PMultiplier(S.Rip)) and Target:TimeToDie() > 8
 end
 
-local function EvaluateCycleRake228(TargetUnit)
-  return not TargetUnit:DebuffP(S.RakeDebuff) or (not S.Bloodtalons:IsAvailable() and TargetUnit:DebuffRemainsP(S.RakeDebuff) < S.RakeDebuff:BaseDuration() * 0.3) and TargetUnit:TimeToDie() > 4
+local function EvaluateCycleRake228(Target)
+  return not Target:DebuffP(S.RakeDebuff) or (not S.Bloodtalons:IsAvailable() and Target:DebuffRemainsP(S.RakeDebuff) < S.RakeDebuff:BaseDuration() * 0.3) and Target:TimeToDie() > 4
 end
 
-local function EvaluateCycleRake257(TargetUnit)
-  return S.Bloodtalons:IsAvailable() and Player:BuffP(S.BloodtalonsBuff) and ((TargetUnit:DebuffRemainsP(S.RakeDebuff) <= 7) and Player:PMultiplier(S.Rake) > TargetUnit:PMultiplier(S.Rake) * 0.85) and TargetUnit:TimeToDie() > 4
+local function EvaluateCycleRake257(Target)
+  return S.Bloodtalons:IsAvailable() and Player:BuffP(S.BloodtalonsBuff) and ((Target:DebuffRemainsP(S.RakeDebuff) <= 7) and Player:PMultiplier(S.Rake) > Target:PMultiplier(S.Rake) * 0.85) and Target:TimeToDie() > 4
 end
 
-local function EvaluateCycleMoonfireCat302(TargetUnit)
-  return TargetUnit:DebuffRefreshableCP(S.MoonfireCatDebuff)
+local function EvaluateCycleMoonfireCat302(Target)
+  return Target:DebuffRefreshableCP(S.MoonfireCatDebuff)
 end
 
-local function EvaluateCycleFerociousBite418(TargetUnit)
-  return TargetUnit:DebuffP(S.RipDebuff) and TargetUnit:DebuffRemainsP(S.RipDebuff) < 3 and TargetUnit:TimeToDie() > 10 and (S.Sabertooth:IsAvailable())
+local function EvaluateCycleFerociousBite418(Target)
+  return Target:DebuffP(S.RipDebuff) and Target:DebuffRemainsP(S.RipDebuff) < 3 and Target:TimeToDie() > 10 and (S.Sabertooth:IsAvailable())
 end
 
 --- ======= ACTION LISTS =======

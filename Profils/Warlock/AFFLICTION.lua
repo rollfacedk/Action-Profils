@@ -376,123 +376,123 @@ S.SeedofCorruption:RegisterInFlight()
 S.ConcentratedFlame:RegisterInFlight()
 
 -- Evaluate Target cycle functions 
-local function EvaluateTargetIfFilterAgony160(TargetUnit)
-    return TargetUnit:DebuffRemainsP(S.AgonyDebuff)
+local function EvaluateTargetIfFilterAgony160(Target)
+    return Target:DebuffRemainsP(S.AgonyDebuff)
 end
 
-local function EvaluateTargetIfAgony201(TargetUnit)
-    return S.CreepingDeath:IsAvailable() and S.AgonyDebuff:ActiveDot() < 6 and TargetUnit:TimeToDie() > 10 and (TargetUnit:DebuffRemainsP(S.AgonyDebuff) <= Player:GCD() or S.SummonDarkglare:CooldownRemainsP() > 10 and (TargetUnit:DebuffRemainsP(S.AgonyDebuff) < 5 or not bool(S.PandemicInvocation:AzeriteRank()) and TargetUnit:DebuffRefreshableCP(S.AgonyDebuff)))
+local function EvaluateTargetIfAgony201(Target)
+    return S.CreepingDeath:IsAvailable() and S.AgonyDebuff:ActiveDot() < 6 and Target:TimeToDie() > 10 and (Target:DebuffRemainsP(S.AgonyDebuff) <= Player:GCD() or S.SummonDarkglare:CooldownRemainsP() > 10 and (Target:DebuffRemainsP(S.AgonyDebuff) < 5 or not bool(S.PandemicInvocation:AzeriteRank()) and Target:DebuffRefreshableCP(S.AgonyDebuff)))
 end
 
-local function EvaluateTargetIfFilterAgony207(TargetUnit)
-    return TargetUnit:DebuffRemainsP(S.AgonyDebuff)
+local function EvaluateTargetIfFilterAgony207(Target)
+    return Target:DebuffRemainsP(S.AgonyDebuff)
 end
 
-local function EvaluateTargetIfAgony248(TargetUnit)
-    return not S.CreepingDeath:IsAvailable() and S.AgonyDebuff:ActiveDot() < 8 and TargetUnit:TimeToDie() > 10 and (TargetUnit:DebuffRemainsP(S.AgonyDebuff) <= Player:GCD() or S.SummonDarkglare:CooldownRemainsP() > 10 and (TargetUnit:DebuffRemainsP(S.AgonyDebuff) < 5 or not bool(S.PandemicInvocation:AzeriteRank()) and TargetUnit:DebuffRefreshableCP(S.AgonyDebuff)))
+local function EvaluateTargetIfAgony248(Target)
+    return not S.CreepingDeath:IsAvailable() and S.AgonyDebuff:ActiveDot() < 8 and Target:TimeToDie() > 10 and (Target:DebuffRemainsP(S.AgonyDebuff) <= Player:GCD() or S.SummonDarkglare:CooldownRemainsP() > 10 and (Target:DebuffRemainsP(S.AgonyDebuff) < 5 or not bool(S.PandemicInvocation:AzeriteRank()) and Target:DebuffRefreshableCP(S.AgonyDebuff)))
 end
 
-local function EvaluateTargetIfFilterSiphonLife254(TargetUnit)
-    return TargetUnit:DebuffRemainsP(S.SiphonLifeDebuff)
+local function EvaluateTargetIfFilterSiphonLife254(Target)
+    return Target:DebuffRemainsP(S.SiphonLifeDebuff)
 end
 
-local function EvaluateTargetIfSiphonLife293(TargetUnit)
-    return (S.SiphonLifeDebuff:ActiveDot() < 8 - num(S.CreepingDeath:IsAvailable()) - EnemiesCount) and TargetUnit:TimeToDie() > 10 and TargetUnit:DebuffRefreshableCP(S.SiphonLifeDebuff) and (TargetUnit:DebuffDownP(S.SiphonLifeDebuff) and EnemiesCount == 1 or S.SummonDarkglare:CooldownRemainsP() > Player:SoulShardsP() * S.UnstableAffliction:ExecuteTime())
+local function EvaluateTargetIfSiphonLife293(Target)
+    return (S.SiphonLifeDebuff:ActiveDot() < 8 - num(S.CreepingDeath:IsAvailable()) - EnemiesCount) and Target:TimeToDie() > 10 and Target:DebuffRefreshableCP(S.SiphonLifeDebuff) and (Target:DebuffDownP(S.SiphonLifeDebuff) and EnemiesCount == 1 or S.SummonDarkglare:CooldownRemainsP() > Player:SoulShardsP() * S.UnstableAffliction:ExecuteTime())
 end
 
-local function EvaluateCycleCorruption300(TargetUnit)
-    return EnemiesCount < 3 + num(S.WritheInAgony:IsAvailable()) and (TargetUnit:DebuffRemainsP(S.CorruptionDebuff) <= Player:GCD() or S.SummonDarkglare:CooldownRemainsP() > 10 and TargetUnit:DebuffRemainsP(S.CorruptionDebuff) <= 4) and TargetUnit:TimeToDie() > 10
+local function EvaluateCycleCorruption300(Target)
+    return EnemiesCount < 3 + num(S.WritheInAgony:IsAvailable()) and (Target:DebuffRemainsP(S.CorruptionDebuff) <= Player:GCD() or S.SummonDarkglare:CooldownRemainsP() > 10 and Target:DebuffRemainsP(S.CorruptionDebuff) <= 4) and Target:TimeToDie() > 10
 end
 
-local function EvaluateCycleDrainSoul479(TargetUnit)
-    return TargetUnit:TimeToDie() <= Player:GCD()
+local function EvaluateCycleDrainSoul479(Target)
+    return Target:TimeToDie() <= Player:GCD()
 end
 
-local function EvaluateTargetIfFilterDrainSoul485(TargetUnit)
-    return TargetUnit:DebuffRemainsP(S.ShadowEmbraceDebuff)
+local function EvaluateTargetIfFilterDrainSoul485(Target)
+    return Target:DebuffRemainsP(S.ShadowEmbraceDebuff)
 end
 
-local function EvaluateTargetIfDrainSoul498(TargetUnit)
-    return S.ShadowEmbrace:IsAvailable() and bool(VarMaintainSe) and TargetUnit:DebuffDownP(S.ShadowEmbraceDebuff)
+local function EvaluateTargetIfDrainSoul498(Target)
+    return S.ShadowEmbrace:IsAvailable() and bool(VarMaintainSe) and Target:DebuffDownP(S.ShadowEmbraceDebuff)
 end
 
-local function EvaluateTargetIfFilterDrainSoul504(TargetUnit)
-    return TargetUnit:DebuffRemainsP(S.ShadowEmbraceDebuff)
+local function EvaluateTargetIfFilterDrainSoul504(Target)
+    return Target:DebuffRemainsP(S.ShadowEmbraceDebuff)
 end
 
-local function EvaluateTargetIfDrainSoul515(TargetUnit)
+local function EvaluateTargetIfDrainSoul515(Target)
     return S.ShadowEmbrace:IsAvailable() and bool(VarMaintainSe)
 end
 
-local function EvaluateCycleShadowBolt524(TargetUnit)
-    return S.ShadowEmbrace:IsAvailable() and bool(VarMaintainSe) and TargetUnit:DebuffDownP(S.ShadowEmbraceDebuff) and not S.ShadowBolt:InFlight()
+local function EvaluateCycleShadowBolt524(Target)
+    return S.ShadowEmbrace:IsAvailable() and bool(VarMaintainSe) and Target:DebuffDownP(S.ShadowEmbraceDebuff) and not S.ShadowBolt:InFlight()
 end
 
-local function EvaluateTargetIfFilterShadowBolt540(TargetUnit)
-    return TargetUnit:DebuffRemainsP(S.ShadowEmbraceDebuff)
+local function EvaluateTargetIfFilterShadowBolt540(Target)
+    return Target:DebuffRemainsP(S.ShadowEmbraceDebuff)
 end
 
-local function EvaluateTargetIfShadowBolt551(TargetUnit)
+local function EvaluateTargetIfShadowBolt551(Target)
     return S.ShadowEmbrace:IsAvailable() and bool(VarMaintainSe)
 end
 
-local function EvaluateCycleUnstableAffliction640(TargetUnit)
+local function EvaluateCycleUnstableAffliction640(Target)
     return not bool(VarUseSeed) and (not S.Deathbolt:IsAvailable() or S.Deathbolt:CooldownRemainsP() > time_to_shard or Player:SoulShardsP() > 1) and (not S.VileTaint:IsAvailable() or Player:SoulShardsP() > 1) and contagion <= S.UnstableAffliction:CastTime() + VarPadding and (not S.CascadingCalamity:AzeriteEnabled() or Player:BuffRemainsP(S.CascadingCalamityBuff) > time_to_shard)
 end
 
-local function EvaluateCycleDrainSoul711(TargetUnit)
-    return TargetUnit:TimeToDie() <= Player:GCD() and Player:SoulShardsP() < 5
+local function EvaluateCycleDrainSoul711(Target)
+    return Target:TimeToDie() <= Player:GCD() and Player:SoulShardsP() < 5
 end
 
-local function EvaluateTargetIfFilterAgony751(TargetUnit)
-    return TargetUnit:DebuffRemainsP(S.AgonyDebuff)
+local function EvaluateTargetIfFilterAgony751(Target)
+    return Target:DebuffRemainsP(S.AgonyDebuff)
 end
 
-local function EvaluateTargetIfAgony768(TargetUnit)
-    return TargetUnit:DebuffRemainsP(S.AgonyDebuff) <= Player:GCD() + S.ShadowBolt:ExecuteTime() and TargetUnit:TimeToDie() > 8
+local function EvaluateTargetIfAgony768(Target)
+    return Target:DebuffRemainsP(S.AgonyDebuff) <= Player:GCD() + S.ShadowBolt:ExecuteTime() and Target:TimeToDie() > 8
 end
 
-local function EvaluateCycleUnstableAffliction781(TargetUnit)
-    return not bool(contagion) and TargetUnit:TimeToDie() <= 8
+local function EvaluateCycleUnstableAffliction781(Target)
+    return not bool(contagion) and Target:TimeToDie() <= 8
 end
 
-local function EvaluateTargetIfFilterDrainSoul787(TargetUnit)
-    return TargetUnit:DebuffRemainsP(S.ShadowEmbraceDebuff)
+local function EvaluateTargetIfFilterDrainSoul787(Target)
+    return Target:DebuffRemainsP(S.ShadowEmbraceDebuff)
 end
 
-local function EvaluateTargetIfDrainSoul802(TargetUnit)
-    return S.ShadowEmbrace:IsAvailable() and bool(VarMaintainSe) and TargetUnit:DebuffP(S.ShadowEmbraceDebuff) and TargetUnit:DebuffRemainsP(S.ShadowEmbraceDebuff) <= Player:GCD() * 2
+local function EvaluateTargetIfDrainSoul802(Target)
+    return S.ShadowEmbrace:IsAvailable() and bool(VarMaintainSe) and Target:DebuffP(S.ShadowEmbraceDebuff) and Target:DebuffRemainsP(S.ShadowEmbraceDebuff) <= Player:GCD() * 2
 end
 
-local function EvaluateTargetIfFilterShadowBolt808(TargetUnit)
-    return TargetUnit:DebuffRemainsP(S.ShadowEmbraceDebuff)
+local function EvaluateTargetIfFilterShadowBolt808(Target)
+    return Target:DebuffRemainsP(S.ShadowEmbraceDebuff)
 end
 
-local function EvaluateTargetIfShadowBolt835(TargetUnit)
-    return S.ShadowEmbrace:IsAvailable() and bool(VarMaintainSe) and TargetUnit:DebuffP(S.ShadowEmbraceDebuff) and TargetUnit:DebuffRemainsP(S.ShadowEmbraceDebuff) <= S.ShadowBolt:ExecuteTime() * 2 + S.ShadowBolt:TravelTime() and not S.ShadowBolt:InFlight()
+local function EvaluateTargetIfShadowBolt835(Target)
+    return S.ShadowEmbrace:IsAvailable() and bool(VarMaintainSe) and Target:DebuffP(S.ShadowEmbraceDebuff) and Target:DebuffRemainsP(S.ShadowEmbraceDebuff) <= S.ShadowBolt:ExecuteTime() * 2 + S.ShadowBolt:TravelTime() and not S.ShadowBolt:InFlight()
 end
 
-local function EvaluateTargetIfFilterPhantomSingularity841(TargetUnit)
-    return TargetUnit:TimeToDie()
+local function EvaluateTargetIfFilterPhantomSingularity841(Target)
+    return Target:TimeToDie()
 end
 
-local function EvaluateTargetIfPhantomSingularity850(TargetUnit)
-    return HL.CombatTime() > 35 and TargetUnit:TimeToDie() > 16 * Player:SpellHaste() and (not S.VisionofPerfectionMinor:IsAvailable() and not bool(S.DreadfulCalling:AzeriteRank()) or S.SummonDarkglare:CooldownRemainsP() > 45 + Player:SoulShardsP() * S.DreadfulCalling:AzeriteRank() or S.SummonDarkglare:CooldownRemainsP() < 15 * Player:SpellHaste() + Player:SoulShardsP() * S.DreadfulCalling:AzeriteRank())
+local function EvaluateTargetIfPhantomSingularity850(Target)
+    return HL.CombatTime() > 35 and Target:TimeToDie() > 16 * Player:SpellHaste() and (not S.VisionofPerfectionMinor:IsAvailable() and not bool(S.DreadfulCalling:AzeriteRank()) or S.SummonDarkglare:CooldownRemainsP() > 45 + Player:SoulShardsP() * S.DreadfulCalling:AzeriteRank() or S.SummonDarkglare:CooldownRemainsP() < 15 * Player:SpellHaste() + Player:SoulShardsP() * S.DreadfulCalling:AzeriteRank())
 end
 
-local function EvaluateTargetIfFilterVileTaint856(TargetUnit)
-    return TargetUnit:TimeToDie()
+local function EvaluateTargetIfFilterVileTaint856(Target)
+    return Target:TimeToDie()
 end
 
-local function EvaluateTargetIfVileTaint859(TargetUnit)
-    return HL.CombatTime() > 15 and TargetUnit:TimeToDie() >= 10 and (S.SummonDarkglare:CooldownRemainsP() > 30 or S.SummonDarkglare:CooldownRemainsP() < 10 and Target:DebuffRemainsP(S.CorruptionDebuff) >= 10 and (Target:DebuffRemainsP(S.SiphonLifeDebuff) >= 10 or not S.SiphonLife:IsAvailable()))
+local function EvaluateTargetIfVileTaint859(Target)
+    return HL.CombatTime() > 15 and Target:TimeToDie() >= 10 and (S.SummonDarkglare:CooldownRemainsP() > 30 or S.SummonDarkglare:CooldownRemainsP() < 10 and Target:DebuffRemainsP(S.CorruptionDebuff) >= 10 and (Target:DebuffRemainsP(S.SiphonLifeDebuff) >= 10 or not S.SiphonLife:IsAvailable()))
 end
 
-local function EvaluateTargetIfFilterUnstableAffliction865(TargetUnit)
+local function EvaluateTargetIfFilterUnstableAffliction865(Target)
     return contagion
 end
 
-local function EvaluateTargetIfUnstableAffliction870(TargetUnit)
+local function EvaluateTargetIfUnstableAffliction870(Target)
     return not bool(VarUseSeed) and Player:SoulShardsP() == 5
 end
 

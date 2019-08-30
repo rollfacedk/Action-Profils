@@ -7,7 +7,7 @@ local Env = CNDT.Env
 local A = Action
 A.Data.ProfileEnabled[TMW.db:GetCurrentProfile()] = true
 A.Data.ProfileUI = {      
-    DateTime = "v1.2 (27.08.2019)",
+    DateTime = "v1.3 (30.08.2019)",
     -- Class settings
     [2] = {        
         [ACTION_CONST_DEMONHUNTER_HAVOC] = {          
@@ -520,7 +520,7 @@ A.Data.ProfileUI = {
                         Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
             ]] },
         },
-        [ACTION_CONST_DEMONHUNTER_VENGEANCE{ 
+        [ACTION_CONST_DEMONHUNTER_VENGEANCE] = { 
             -- MSG Action Pet Dispell
             ["dispell"] = { Enabled = true, Key = "PetDispell", LUA = [[
                 return     A.DispellMagic:IsReady(unit, true) and 

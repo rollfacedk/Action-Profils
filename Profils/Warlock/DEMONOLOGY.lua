@@ -263,8 +263,8 @@ local function bool(val)
   return val ~= 0
 end
 
-local function EvaluateCycleDoom198(TargetUnit)
-  return TargetUnit:DebuffRefreshableCP(S.DoomDebuff)
+local function EvaluateCycleDoom198(Target)
+  return Target:DebuffRefreshableCP(S.DoomDebuff)
 end
 
 -- AoE Detection Mode

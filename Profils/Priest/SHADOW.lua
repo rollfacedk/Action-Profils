@@ -292,27 +292,27 @@ local function ExecuteRange ()
 	return 20;
 end
 
-local function EvaluateCycleShadowWordDeath84(TargetUnit)
-  return (TargetUnit:TimeToDie() < 3 or Player:BuffDownP(S.VoidformBuff)) and (TargetUnit:HealthPercentage() < ExecuteRange ())
+local function EvaluateCycleShadowWordDeath84(Target)
+  return (Target:TimeToDie() < 3 or Player:BuffDownP(S.VoidformBuff)) and (Target:HealthPercentage() < ExecuteRange ())
 end
 
-local function EvaluateCycleMindBlast103(TargetUnit)
+local function EvaluateCycleMindBlast103(Target)
   return EnemiesCount < VarMindBlastTargets
 end
 
-local function EvaluateCycleShadowWordPain114(TargetUnit)
-  return (TargetUnit:DebuffRefreshableCP(S.ShadowWordPainDebuff) and TargetUnit:TimeToDie() > ((-1.2 + 3.3 * EnemiesCount) * VarSwpTraitRanksCheck * (1 - 0.012 * S.SearingDialogue:AzeriteRank() * EnemiesCount))) and (not S.Misery:IsAvailable())
+local function EvaluateCycleShadowWordPain114(Target)
+  return (Target:DebuffRefreshableCP(S.ShadowWordPainDebuff) and Target:TimeToDie() > ((-1.2 + 3.3 * EnemiesCount) * VarSwpTraitRanksCheck * (1 - 0.012 * S.SearingDialogue:AzeriteRank() * EnemiesCount))) and (not S.Misery:IsAvailable())
 end
 
-local function EvaluateCycleVampiricTouch133(TargetUnit)
-  return (TargetUnit:DebuffRefreshableCP(S.VampiricTouchDebuff)) and (TargetUnit:TimeToDie() > ((1 + 3.3 * EnemiesCount) * VarVtTraitRanksCheck * (1 + 0.10 * S.SearingDialogue:AzeriteRank() * EnemiesCount)))
+local function EvaluateCycleVampiricTouch133(Target)
+  return (Target:DebuffRefreshableCP(S.VampiricTouchDebuff)) and (Target:TimeToDie() > ((1 + 3.3 * EnemiesCount) * VarVtTraitRanksCheck * (1 + 0.10 * S.SearingDialogue:AzeriteRank() * EnemiesCount)))
 end
 
-local function EvaluateCycleVampiricTouch150(TargetUnit)
-  return (TargetUnit:DebuffRefreshableCP(S.ShadowWordPainDebuff)) and ((S.Misery:IsAvailable() and TargetUnit:TimeToDie() > ((1.0 + 2.0 * EnemiesCount) * VarVtMisTraitRanksCheck * (VarVtMisSdCheck * EnemiesCount))))
+local function EvaluateCycleVampiricTouch150(Target)
+  return (Target:DebuffRefreshableCP(S.ShadowWordPainDebuff)) and ((S.Misery:IsAvailable() and Target:TimeToDie() > ((1.0 + 2.0 * EnemiesCount) * VarVtMisTraitRanksCheck * (VarVtMisSdCheck * EnemiesCount))))
 end
 
-local function EvaluateCycleMindSear169(TargetUnit)
+local function EvaluateCycleMindSear169(Target)
   return EnemiesCount > 1
 end
 

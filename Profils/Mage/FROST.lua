@@ -25,6 +25,7 @@ Action[ACTION_CONST_MAGE_FROST] = {
     WilloftheForsaken                    = Action.Create({ Type = "Spell", ID = 7744        }), -- not usable in APL but user can Queue it    
     EscapeArtist                         = Action.Create({ Type = "Spell", ID = 20589    }), -- not usable in APL but user can Queue it
     EveryManforHimself                   = Action.Create({ Type = "Spell", ID = 59752    }), -- not usable in APL but user can Queue it
+    LightsJudgment                        = Action.Create({ Type = "Spell", ID = 255647     }),
     -- Generics Spells    
     ArcaneIntellect                       = Action.Create({ Type = "Spell", ID = 1459     }),
     SummonWaterElemental                  = Action.Create({ Type = "Spell", ID = 31687     }),
@@ -415,7 +416,7 @@ local function APL()
             if HR.Cast(S.IceNova) then return "ice_nova 22"; end
         end
         -- flurry,if=prev_gcd.1.ebonbolt|buff.brain_freeze.react&(prev_gcd.1.frostbolt&(buff.icicles.stack<4|!talent.glacial_spike.enabled)|prev_gcd.1.glacial_spike)
-        if S.Flurry:IsCastableP() and (Player:PrevGCDP(1, S.Ebonbolt) or bool(Player:BuffStackP(S.BrainFreezeBuff)) and (Player:PrevGCDP(1, S.Frostbolt) and (Player:BuffStackP(S.IciclesBuff) < 4 or not S.GlacialSpike:IsAvailable()) or Player:PrevGCDP(1, S.GlacialSpike))) then
+        if S.Flurry:IsCastableP() and Player:PrevGCDP(1, S.Ebonbolt) or bool(Player:BuffP(S.BrainFreezeBuff)) and (Player:PrevGCDP(1, S.Frostbolt) and (Player:BuffStackP(S.IciclesBuff) < 4 or not S.GlacialSpike:IsAvailable()) or Player:PrevGCDP(1, S.GlacialSpike)) then
             if HR.Cast(S.Flurry) then return "flurry 24"; end
         end
         -- ice_lance,if=buff.fingers_of_frost.react
@@ -530,11 +531,11 @@ local function APL()
             if HR.Cast(S.IceNova) then return "ice_nova 117"; end
         end
         -- flurry,if=talent.ebonbolt.enabled&prev_gcd.1.ebonbolt&buff.brain_freeze.react
-        if S.Flurry:IsCastableP() and (S.Ebonbolt:IsAvailable() and Player:PrevGCDP(1, S.Ebonbolt) and bool(Player:BuffStackP(S.BrainFreezeBuff))) then
+        if S.Flurry:IsCastableP() and S.Ebonbolt:IsAvailable() and Player:PrevGCDP(1, S.Ebonbolt) and bool(Player:BuffP(S.BrainFreezeBuff)) then
             if HR.Cast(S.Flurry) then return "flurry 123"; end
         end
         -- flurry,if=prev_gcd.1.glacial_spike&buff.brain_freeze.react
-        if S.Flurry:IsCastableP() and (Player:PrevGCDP(1, S.GlacialSpike) and bool(Player:BuffStackP(S.BrainFreezeBuff))) then
+        if S.Flurry:IsCastableP() and Player:PrevGCDP(1, S.GlacialSpike) and bool(Player:BuffP(S.BrainFreezeBuff)) then
             if HR.Cast(S.Flurry) then return "flurry 135"; end
         end
         -- call_action_list,name=essences
@@ -552,7 +553,7 @@ local function APL()
             if HR.Cast(S.CometStorm) then return "comet_storm 179"; end
         end
         -- ebonbolt,if=buff.icicles.stack=5&!buff.brain_freeze.react
-        if S.Ebonbolt:IsCastableP() and (Player:BuffStackP(S.IciclesBuff) == 5 and Player:BuffDownP(S.BrainFreezeBuff)) then
+        if S.Ebonbolt:IsCastableP() and Player:BuffStackP(S.IciclesBuff) == 5 and Player:BuffDownP(S.BrainFreezeBuff) then
             if HR.Cast(S.Ebonbolt) then return "ebonbolt 181"; end
         end
         -- glacial_spike,if=buff.brain_freeze.react|prev_gcd.1.ebonbolt|talent.incanters_flow.enabled&cast_time+travel_time>incanters_flow_time_to.5.up&cast_time+travel_time<incanters_flow_time_to.4.down
@@ -591,7 +592,7 @@ local function APL()
     end
     local function TalentRop()
         -- rune_of_power,if=talent.glacial_spike.enabled&buff.icicles.stack=5&(buff.brain_freeze.react|talent.ebonbolt.enabled&cooldown.ebonbolt.remains<cast_time)
-        if S.RuneofPower:IsCastableP() and (S.GlacialSpike:IsAvailable() and Player:BuffStackP(S.IciclesBuff) == 5 and (bool(Player:BuffStackP(S.BrainFreezeBuff)) or S.Ebonbolt:IsAvailable() and S.Ebonbolt:CooldownRemainsP() < S.RuneofPower:CastTime())) then
+        if S.RuneofPower:IsCastableP() and (S.GlacialSpike:IsAvailable() and Player:BuffStackP(S.IciclesBuff) == 5 and (bool(Player:BuffP(S.BrainFreezeBuff)) or S.Ebonbolt:IsAvailable() and S.Ebonbolt:CooldownRemainsP() < S.RuneofPower:CastTime())) then
             if HR.Cast(S.RuneofPower, Action.GetToggle(2, "OffGCDasOffGCD")) then return "rune_of_power 225"; end
         end
         -- rune_of_power,if=!talent.glacial_spike.enabled&(talent.ebonbolt.enabled&cooldown.ebonbolt.remains<cast_time|talent.comet_storm.enabled&cooldown.comet_storm.remains<cast_time|talent.ray_of_frost.enabled&cooldown.ray_of_frost.remains<cast_time|charges_fractional>1.9)

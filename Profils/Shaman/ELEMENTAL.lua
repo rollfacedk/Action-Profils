@@ -32,14 +32,14 @@ Action[ACTION_CONST_SHAMAN_ELEMENTAL] = {
     FireElemental                         = Action.Create({ Type = "Spell", ID = 198067     }),
     StormElemental                        = Action.Create({ Type = "Spell", ID = 192249     }),
     ElementalBlast                        = Action.Create({ Type = "Spell", ID = 117014     }),
-    LavaBurst                             = Action.Create({ Type = "Spell", ID = 51505     }),
+    LavaBurst                             = Action.Create({ Type = "Spell", ID = 51505      }),
     ChainLightning                        = Action.Create({ Type = "Spell", ID = 188443     }),
     FlameShock                            = Action.Create({ Type = "Spell", ID = 188389     }),
     Ascendance                            = Action.Create({ Type = "Spell", ID = 114050     }),
     Icefury                               = Action.Create({ Type = "Spell", ID = 210714     }),
     LiquidMagmaTotem                      = Action.Create({ Type = "Spell", ID = 192222     }),
-    Earthquake                            = Action.Create({ Type = "Spell", ID = 61882     }),
-    MasteroftheElements                   = Action.Create({ Type = "Spell", ID = 16166     }),
+    Earthquake                            = Action.Create({ Type = "Spell", ID = 61882      }),
+    MasteroftheElements                   = Action.Create({ Type = "Spell", ID = 16166      }),
     FrostShock                            = Action.Create({ Type = "Spell", ID = 196840     }),
     LavaBeam                              = Action.Create({ Type = "Spell", ID = 114074     }),
     IgneousPotential                      = Action.Create({ Type = "Spell", ID = 279829     }),
@@ -49,13 +49,17 @@ Action[ACTION_CONST_SHAMAN_ELEMENTAL] = {
     LavaShock                             = Action.Create({ Type = "Spell", ID = 273448     }),
     TectonicThunder                       = Action.Create({ Type = "Spell", ID = 286949     }),
     CalltheThunder                        = Action.Create({ Type = "Spell", ID = 260897     }),
-    EarthShock                            = Action.Create({ Type = "Spell", ID = 8042     }),
+    EarthShock                            = Action.Create({ Type = "Spell", ID = 8042       }),
     EchooftheElementals                   = Action.Create({ Type = "Spell", ID = 275381     }),
     EchooftheElements                     = Action.Create({ Type = "Spell", ID = 108283     }),
-    WindShear                             = Action.Create({ Type = "Spell", ID = 57994     }),
+    WindShear                             = Action.Create({ Type = "Spell", ID = 57994      }),
     ConcentratedFlameBurn                 = Action.Create({ Type = "Spell", ID = 295368     }),
 	-- Utilities
     LightningLasso                        = Action.Create({ Type = "Spell", ID = 305483     }),
+    CapacitorTotem                        = Action.Create({ Type = "Spell", ID = 192058     }),
+    Purge                                 = Action.Create({ Type = "Spell", ID = 370     }),
+    -- Defensive
+	AstralShift                           = Action.Create({ Type = "Spell", ID = 108271     }),	
     -- Buffs
     RecklessForceBuff                     = Action.Create({ Type = "Spell", ID = 302932     }),
     ResonanceTotemBuff                    = Action.Create({ Type = "Spell", ID = 202192     }),
@@ -281,32 +285,32 @@ local function bool(val)
   return val ~= 0
 end
 
-local function EvaluateCycleFlameShock47(TargetUnit)
-  return TargetUnit:DebuffRefreshableCP(S.FlameShockDebuff) and (EnemiesCount < (5 - num(not S.TotemMastery:IsAvailable())) or not S.StormElemental:IsAvailable() and (S.FireElemental:CooldownRemainsP() > (120 + 14 * Player:SpellHaste()) or S.FireElemental:CooldownRemainsP() < (24 - 14 * Player:SpellHaste()))) and (not S.StormElemental:IsAvailable() or S.StormElemental:CooldownRemainsP() < 120 or EnemiesCount == 3 and Player:BuffStackP(S.WindGustBuff) < 14)
+local function EvaluateCycleFlameShock47(Target)
+  return Target:DebuffRefreshableCP(S.FlameShockDebuff) and (EnemiesCount < (5 - num(not S.TotemMastery:IsAvailable())) or not S.StormElemental:IsAvailable() and (S.FireElemental:CooldownRemainsP() > (120 + 14 * Player:SpellHaste()) or S.FireElemental:CooldownRemainsP() < (24 - 14 * Player:SpellHaste()))) and (not S.StormElemental:IsAvailable() or S.StormElemental:CooldownRemainsP() < 120 or EnemiesCount == 3 and Player:BuffStackP(S.WindGustBuff) < 14)
 end
 
-local function EvaluateCycleFlameShock148(TargetUnit)
-  return TargetUnit:DebuffRefreshableCP(S.FlameShockDebuff)
+local function EvaluateCycleFlameShock148(Target)
+  return Target:DebuffRefreshableCP(S.FlameShockDebuff)
 end
 
-local function EvaluateCycleFlameShock163(TargetUnit)
-  return (not TargetUnit:DebuffP(S.FlameShockDebuff) or S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 2 * Player:GCD() or TargetUnit:DebuffRemainsP(S.FlameShockDebuff) <= Player:GCD() or S.Ascendance:IsAvailable() and TargetUnit:DebuffRemainsP(S.FlameShockDebuff) < (S.Ascendance:CooldownRemainsP() + S.AscendanceBuff:BaseDuration()) and S.Ascendance:CooldownRemainsP() < 4 and (not S.StormElemental:IsAvailable() or S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 120)) and (Player:BuffStackP(S.WindGustBuff) < 14 or S.IgneousPotential:AzeriteRank() >= 2 or Player:BuffP(S.LavaSurgeBuff) or not Player:HasHeroism()) and not Player:BuffP(S.SurgeofPowerBuff)
+local function EvaluateCycleFlameShock163(Target)
+  return (not Target:DebuffP(S.FlameShockDebuff) or S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 2 * Player:GCD() or Target:DebuffRemainsP(S.FlameShockDebuff) <= Player:GCD() or S.Ascendance:IsAvailable() and Target:DebuffRemainsP(S.FlameShockDebuff) < (S.Ascendance:CooldownRemainsP() + S.AscendanceBuff:BaseDuration()) and S.Ascendance:CooldownRemainsP() < 4 and (not S.StormElemental:IsAvailable() or S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 120)) and (Player:BuffStackP(S.WindGustBuff) < 14 or S.IgneousPotential:AzeriteRank() >= 2 or Player:BuffP(S.LavaSurgeBuff) or not Player:HasHeroism()) and not Player:BuffP(S.SurgeofPowerBuff)
 end
 
-local function EvaluateCycleFlameShock390(TargetUnit)
-  return TargetUnit:DebuffRefreshableCP(S.FlameShockDebuff) and EnemiesCount > 1 and Player:BuffP(S.SurgeofPowerBuff)
+local function EvaluateCycleFlameShock390(Target)
+  return Target:DebuffRefreshableCP(S.FlameShockDebuff) and EnemiesCount > 1 and Player:BuffP(S.SurgeofPowerBuff)
 end
 
-local function EvaluateCycleFlameShock511(TargetUnit)
-  return TargetUnit:DebuffRefreshableCP(S.FlameShockDebuff) and not Player:BuffP(S.SurgeofPowerBuff)
+local function EvaluateCycleFlameShock511(Target)
+  return Target:DebuffRefreshableCP(S.FlameShockDebuff) and not Player:BuffP(S.SurgeofPowerBuff)
 end
 
-local function EvaluateCycleFlameShock562(TargetUnit)
-  return TargetUnit:DebuffRefreshableCP(S.FlameShockDebuff)
+local function EvaluateCycleFlameShock562(Target)
+  return Target:DebuffRefreshableCP(S.FlameShockDebuff)
 end
 
-local function EvaluateCycleFlameShock702(TargetUnit)
-  return ((TargetUnit:DebuffDownP(S.FlameShockDebuff) or S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 2 * Player:GCD() or TargetUnit:DebuffRemainsP(S.FlameShockDebuff) <= Player:GCD() or S.Ascendance:IsAvailable() and TargetUnit:DebuffRemainsP(S.FlameShockDebuff) < (S.Ascendance:CooldownRemainsP() + S.AscendanceBuff:BaseDuration()) and S.Ascendance:CooldownRemainsP() < 4 and (not S.StormElemental:IsAvailable() or S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 120)) and (Player:BuffStackP(S.WindGustBuff) < 14 or S.IgneousPotential:AzeriteRank() >= 2 or Player:BuffP(S.LavaSurgeBuff) or not Player:HasHeroism()) and Player:BuffDownP(S.SurgeofPowerBuff))
+local function EvaluateCycleFlameShock702(Target)
+  return ((not Target:DebuffP(S.FlameShockDebuff) or S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 2 * Player:GCD() or Target:DebuffRemainsP(S.FlameShockDebuff) <= Player:GCD() or S.Ascendance:IsAvailable() and Target:DebuffRemainsP(S.FlameShockDebuff) < (S.Ascendance:CooldownRemainsP() + S.AscendanceBuff:BaseDuration()) and S.Ascendance:CooldownRemainsP() < 4 and (not S.StormElemental:IsAvailable() or S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 120)) and (Player:BuffStackP(S.WindGustBuff) < 14 or S.IgneousPotential:AzeriteRank() >= 2 or Player:BuffP(S.LavaSurgeBuff) or not Player:HasHeroism()) and Player:BuffDownP(S.SurgeofPowerBuff))
 end
 
 -- Initiate Nucleus Ability registration
@@ -363,14 +367,14 @@ local function APL()
             end
             -- fire_elemental,if=!talent.storm_elemental.enabled
             if S.FireElemental:IsCastableP() and HR.CDsON() and (not S.StormElemental:IsAvailable()) then
-                if HR.Cast(S.FireElemental, Settings.Elemental.GCDasOffGCD.FireElemental) then return "fire_elemental 19"; end
+                if HR.Cast(S.FireElemental, Action.GetToggle(2, "OffGCDasOffGCD")) then return "fire_elemental 19"; end
             end
             -- storm_elemental,if=talent.storm_elemental.enabled
             if S.StormElemental:IsCastableP() and HR.CDsON() and (S.StormElemental:IsAvailable()) then
-                if HR.Cast(S.StormElemental, Settings.Elemental.GCDasOffGCD.StormElemental) then return "storm_elemental 23"; end
+                if HR.Cast(S.StormElemental, Action.GetToggle(2, "OffGCDasOffGCD")) then return "storm_elemental 23"; end
             end
             -- potion
-            if I.PotionofUnbridledFury:IsReady() and Settings.Commons.UsePotions then
+            if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
                 if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 27"; end
             end
             -- elemental_blast,if=talent.elemental_blast.enabled
@@ -402,7 +406,7 @@ local function APL()
         end
         -- ascendance,if=talent.ascendance.enabled&(talent.storm_elemental.enabled&cooldown.storm_elemental.remains<120&cooldown.storm_elemental.remains>15|!talent.storm_elemental.enabled)&(!talent.icefury.enabled|!buff.icefury.up&!cooldown.icefury.up)
         if S.Ascendance:IsCastableP() and HR.CDsON() and (S.Ascendance:IsAvailable() and (S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 120 and S.StormElemental:CooldownRemainsP() > 15 or not S.StormElemental:IsAvailable()) and (not S.Icefury:IsAvailable() or not Player:BuffP(S.IcefuryBuff) and not S.Icefury:CooldownUpP())) then
-            if HR.Cast(S.Ascendance, Settings.Elemental.GCDasOffGCD.Ascendance) then return "ascendance 70"; end
+            if HR.Cast(S.Ascendance, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ascendance 70"; end
         end
         -- liquid_magma_totem,if=talent.liquid_magma_totem.enabled
         if S.LiquidMagmaTotem:IsCastableP() and (S.LiquidMagmaTotem:IsAvailable()) then
@@ -460,7 +464,7 @@ local function APL()
         end
         -- ascendance,if=talent.ascendance.enabled&(time>=60|buff.bloodlust.up)&cooldown.lava_burst.remains>0&(cooldown.storm_elemental.remains<120|!talent.storm_elemental.enabled)&(!talent.icefury.enabled|!buff.icefury.up&!cooldown.icefury.up)
         if S.Ascendance:IsCastableP() and (S.Ascendance:IsAvailable() and (HL.CombatTime() >= 60 or Player:HasHeroism()) and bool(S.LavaBurst:CooldownRemainsP()) and (S.StormElemental:CooldownRemainsP() < 120 or not S.StormElemental:IsAvailable()) and (not S.Icefury:IsAvailable() or Player:BuffDownP(S.IcefuryBuff) and not S.Icefury:CooldownUpP())) then
-            if HR.Cast(S.Ascendance, Settings.Elemental.GCDasOffGCD.Ascendance) then return "ascendance 706"; end
+            if HR.Cast(S.Ascendance, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ascendance 706"; end
         end
         -- elemental_blast,if=talent.elemental_blast.enabled&(talent.master_of_the_elements.enabled&buff.master_of_the_elements.up&maelstrom<60|!talent.master_of_the_elements.enabled)&(!(cooldown.storm_elemental.remains>120&talent.storm_elemental.enabled)|azerite.natural_harmony.rank=3&buff.wind_gust.stack<14)
         if S.ElementalBlast:IsCastableP() and (S.ElementalBlast:IsAvailable() and (S.MasteroftheElements:IsAvailable() and Player:BuffP(S.MasteroftheElementsBuff) and Player:Maelstrom() < 60 or not S.MasteroftheElements:IsAvailable()) and (not (S.StormElemental:CooldownRemainsP() > 120 and S.StormElemental:IsAvailable()) or S.NaturalHarmony:AzeriteRank() == 3 and Player:BuffStackP(S.WindGustBuff) < 14)) then
@@ -576,7 +580,7 @@ local function APL()
         end
         -- ascendance,if=talent.ascendance.enabled&(time>=60|buff.bloodlust.up)&cooldown.lava_burst.remains>0&(cooldown.storm_elemental.remains<120|!talent.storm_elemental.enabled)&(!talent.icefury.enabled|!buff.icefury.up&!cooldown.icefury.up)
         if S.Ascendance:IsCastableP() and HR.CDsON() and (S.Ascendance:IsAvailable() and (HL.CombatTime() >= 60 or Player:HasHeroism()) and S.LavaBurst:CooldownRemainsP() > 0 and (S.StormElemental:CooldownRemainsP() < 120 or not S.StormElemental:IsAvailable()) and (not S.Icefury:IsAvailable() or not Player:BuffP(S.IcefuryBuff) and not S.Icefury:CooldownUpP())) then
-            if HR.Cast(S.Ascendance, Settings.Elemental.GCDasOffGCD.Ascendance) then return "ascendance 202"; end
+            if HR.Cast(S.Ascendance, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ascendance 202"; end
         end
         -- elemental_blast,if=talent.elemental_blast.enabled&(talent.master_of_the_elements.enabled&buff.master_of_the_elements.up&maelstrom<60|!talent.master_of_the_elements.enabled)&(!(cooldown.storm_elemental.remains>120&talent.storm_elemental.enabled)|azerite.natural_harmony.rank=3&buff.wind_gust.stack<14)
         if S.ElementalBlast:IsCastableP() and (S.ElementalBlast:IsAvailable() and (S.MasteroftheElements:IsAvailable() and Player:BuffP(S.MasteroftheElementsBuff) and Player:Maelstrom() < 60 or not S.MasteroftheElements:IsAvailable()) and (not (S.StormElemental:CooldownRemainsP() > 120 and S.StormElemental:IsAvailable()) or S.NaturalHarmony:AzeriteRank() == 3 and Player:BuffStackP(S.WindGustBuff) < 14)) then
@@ -725,28 +729,32 @@ local function APL()
   		local unit = "target"
    		local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
         
-  	    -- SkullBash
-  	    if useKick and S.SkullBash:IsReady() and Target:IsInterruptible() then 
+  	    -- WindShear
+  	    if useKick and S.WindShear:IsReady() and Target:IsInterruptible() then 
 		  	if Target:CastPercentage() >= randomInterrupt then
-          	    if HR.Cast(S.SkullBash, true) then return "SkullBash 5"; end
+          	    if HR.Cast(S.WindShear, true) then return "WindShear 5"; end
          	else 
           	    return
          	end 
       	end 
 	
-     	-- MightyBash
-      	if useCC and S.MightyBash:IsAvailable() and S.MightyBash:IsReady() and Target:IsInterruptible() then 
+     	-- CapacitorTotem
+      	if useCC and not S.WindShear:IsReady() and S.CapacitorTotem:IsReady() and Target:IsInterruptible() then 
 	  		if Target:CastPercentage() >= randomInterrupt then
-     	        if HR.Cast(S.MightyBash, true) then return "MightyBash 5"; end
+     	        if HR.Cast(S.CapacitorTotem, true) then return "CapacitorTotem 5"; end
      	    else 
      	        return
      	    end 
      	end 
-        -- Interrupts
-        Everyone.Interrupt(30, S.WindShear, Settings.Commons.OffGCDasOffGCD.WindShear, false);
+		-- Purge
+		-- Note: Toggles  ("UseDispel", "UsePurge", "UseExpelEnrage")
+        -- Category ("Dispel", "MagicMovement", "PurgeFriendly", "PurgeHigh", "PurgeLow", "Enrage")
+        if S.Purge:IsReady() and not ShouldStop and Action.AuraIsValid("target", "UsePurge", "PurgeHigh") then
+            if HR.Cast(S.Purge) then return "" end
+        end	
         -- bloodlust,if=azerite.ancestral_resonance.enabled
         -- potion,if=expected_combat_length-time<30|cooldown.fire_elemental.remains>120|cooldown.storm_elemental.remains>120
-        if I.PotionofUnbridledFury:IsReady() and Settings.Commons.UsePotions and (Target:TimeToDie() < 30 or S.FireElemental:CooldownRemainsP() > 120 or S.StormElemental:CooldownRemainsP() > 120) then
+        if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") and (Target:TimeToDie() < 30 or S.FireElemental:CooldownRemainsP() > 120 or S.StormElemental:CooldownRemainsP() > 120) then
             if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 577"; end
         end
         -- totem_mastery,if=talent.totem_mastery.enabled&buff.resonance_totem.remains<2
@@ -756,64 +764,64 @@ local function APL()
         -- use_items
         -- fire_elemental,if=!talent.storm_elemental.enabled
         if S.FireElemental:IsCastableP() and HR.CDsON() and (not S.StormElemental:IsAvailable()) then
-            if HR.Cast(S.FireElemental, Settings.Elemental.GCDasOffGCD.FireElemental) then return "fire_elemental 591"; end
+            if HR.Cast(S.FireElemental, Action.GetToggle(2, "OffGCDasOffGCD")) then return "fire_elemental 591"; end
         end
         -- storm_elemental,if=talent.storm_elemental.enabled&(!talent.icefury.enabled|!buff.icefury.up&!cooldown.icefury.up)&(!talent.ascendance.enabled|!cooldown.ascendance.up)
         if S.StormElemental:IsCastableP() and HR.CDsON() and (S.StormElemental:IsAvailable() and (not S.Icefury:IsAvailable() or not Player:BuffP(S.IcefuryBuff) and not S.Icefury:CooldownUpP()) and (not S.Ascendance:IsAvailable() or not S.Ascendance:CooldownUpP())) then
-            if HR.Cast(S.StormElemental, Settings.Elemental.GCDasOffGCD.StormElemental) then return "storm_elemental 595"; end
+            if HR.Cast(S.StormElemental, Action.GetToggle(2, "OffGCDasOffGCD")) then return "storm_elemental 595"; end
         end
         -- earth_elemental,if=!talent.primal_elementalist.enabled|talent.primal_elementalist.enabled&(cooldown.fire_elemental.remains<120&!talent.storm_elemental.enabled|cooldown.storm_elemental.remains<120&talent.storm_elemental.enabled)
         -- concentrated_flame
         if S.ConcentratedFlame:IsCastableP() then
-            if HR.Cast(S.ConcentratedFlame, nil, Settings.Commons.EssenceDisplayStyle) then return "concentrated_flame"; end
+            if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame"; end
         end
         -- blood_of_the_enemy
         if S.BloodoftheEnemy:IsCastableP() then
-            if HR.CasT(S.BloodoftheEnemy, nil, Settings.Commons.EssenceDisplayStyle) then return "blood_of_the_enemy"; end
+            if HR.CasT(S.BloodoftheEnemy) then return "blood_of_the_enemy"; end
         end
         -- guardian_of_azeroth
         if S.GuardianofAzeroth:IsCastableP() then
-            if HR.Cast(S.GuardianofAzeroth, nil, Settings.Commons.EssenceDisplayStyle) then return "guardian_of_azeroth"; end
+            if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth"; end
         end
         -- focused_azerite_beam
         if S.FocusedAzeriteBeam:IsCastableP() then
-            if HR.Cast(S.FocusedAzeriteBeam, nil, Settings.Commons.EssenceDisplayStyle) then return "focused_azerite_beam"; end
+            if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam"; end
         end
         -- purifying_blast
         if S.PurifyingBlast:IsCastableP() then
-            if HR.Cast(S.PurifyingBlast, nil, Settings.Commons.EssenceDisplayStyle) then return "purifying_blast"; end
+            if HR.Cast(S.PurifyingBlast) then return "purifying_blast"; end
         end
         -- the_unbound_force
         if S.TheUnboundForce:IsCastableP() then
-            if HR.Cast(S.TheUnboundForce, nil, Settings.Commons.EssenceDisplayStyle) then return "the_unbound_force"; end
+            if HR.Cast(S.TheUnboundForce) then return "the_unbound_force"; end
         end
         -- memory_of_lucid_dreams
         if S.MemoryofLucidDreams:IsCastableP() then
-            if HR.Cast(S.MemoryofLucidDreams, nil, Settings.Commons.EssenceDisplayStyle) then return "memory_of_lucid_dreams"; end
+            if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams"; end
         end
         -- ripple_in_space
         if S.RippleInSpace:IsCastableP() then
-            if HR.Cast(S.RippleInSpace, nil, Settings.Commons.EssenceDisplayStyle) then return "ripple_in_space"; end
+            if HR.Cast(S.RippleInSpace) then return "ripple_in_space"; end
         end
         -- worldvein_resonance
         if S.WorldveinResonance:IsCastableP() then
-            if HR.Cast(S.WorldveinResonance, nil, Settings.Commons.EssenceDisplayStyle) then return "worldvein_resonance"; end
+            if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance"; end
         end
         -- blood_fury,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
         if S.BloodFury:IsCastableP() and HR.CDsON() and (not S.Ascendance:IsAvailable() or Player:BuffP(S.AscendanceBuff) or S.Ascendance:CooldownRemainsP() > 50) then
-            if HR.Cast(S.BloodFury, Settings.Commons.OffGCDasOffGCD.Racials) then return "blood_fury 611"; end
+            if HR.Cast(S.BloodFury, Action.GetToggle(2, "OffGCDasOffGCD")) then return "blood_fury 611"; end
         end
         -- berserking,if=!talent.ascendance.enabled|buff.ascendance.up
         if S.Berserking:IsCastableP() and HR.CDsON() and (not S.Ascendance:IsAvailable() or Player:BuffP(S.AscendanceBuff)) then
-            if HR.Cast(S.Berserking, Settings.Commons.OffGCDasOffGCD.Racials) then return "berserking 619"; end
+            if HR.Cast(S.Berserking, Action.GetToggle(2, "OffGCDasOffGCD")) then return "berserking 619"; end
         end
         -- fireblood,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
         if S.Fireblood:IsCastableP() and HR.CDsON() and (not S.Ascendance:IsAvailable() or Player:BuffP(S.AscendanceBuff) or S.Ascendance:CooldownRemainsP() > 50) then
-            if HR.Cast(S.Fireblood, Settings.Commons.OffGCDasOffGCD.Racials) then return "fireblood 625"; end
+            if HR.Cast(S.Fireblood, Action.GetToggle(2, "OffGCDasOffGCD")) then return "fireblood 625"; end
         end
         -- ancestral_call,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
         if S.AncestralCall:IsCastableP() and HR.CDsON() and (not S.Ascendance:IsAvailable() or Player:BuffP(S.AscendanceBuff) or S.Ascendance:CooldownRemainsP() > 50) then
-            if HR.Cast(S.AncestralCall, Settings.Commons.OffGCDasOffGCD.Racials) then return "ancestral_call 633"; end
+            if HR.Cast(S.AncestralCall, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ancestral_call 633"; end
         end
         -- run_action_list,name=aoe,if=active_enemies>2&(spell_targets.chain_lightning>2|spell_targets.lava_beam>2)
         if (EnemiesCount > 2) then

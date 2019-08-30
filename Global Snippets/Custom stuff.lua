@@ -34,6 +34,16 @@ if currentClass == "ROGUE" then
 	Action.Print("Automatically loaded profile : [Taste]Action - Rogue")
 end
 
+if currentClass == "SHAMAN" then
+    Action.Data.DefaultProfile[currentClass] = "[Taste]Action - Shaman"
+	Action.Print("Automatically loaded profile : [Taste]Action - Shaman")
+end
+
+if currentClass == "DEATHKNIGHT" then
+    Action.Data.DefaultProfile[currentClass] = "[Taste]Action - Death Knight"
+	Action.Print("Automatically loaded profile : [Taste]Action - Death Knight")
+end
+
 if currentClass == "PRIEST" then
     Action.Data.DefaultProfile[currentClass] = "[Taste]Action - Priest"
 	Action.Print("Automatically loaded profile : [Taste]Action - Priest")
