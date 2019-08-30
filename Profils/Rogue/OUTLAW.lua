@@ -366,7 +366,7 @@ local function RtB_Reroll()
         elseif Action.GetToggle(2, "RolltheBonesLogic") == "MYTHICPLUS" then
             Cache.APLVar.RtB_Reroll = CheckGoodBuffs()
         -- Broadside
-        elseif Action.GetToggle(2, "RolltheBonesLogic") == "AOESTRAT" and EnemiesCount >= 2 or (not Target:IsInBossList()) then
+        elseif Action.GetToggle(2, "RolltheBonesLogic") == "AOESTRAT" and Cache.EnemiesCount[BladeFlurryRange] >= 2 or (not Target:IsInBossList()) then
             Cache.APLVar.RtB_Reroll = CheckGoodBuffs()
         -- Broadside
         elseif Action.GetToggle(2, "RolltheBonesLogic") == "BROADSIDE" then
@@ -430,7 +430,7 @@ end
 -- # With multiple targets, this variable is checked to decide whether some CDs should be synced with Blade Flurry
 -- actions+=/variable,name=blade_flurry_sync,value=spell_targets.blade_flurry<2&raid_event.adds.in>20|buff.blade_flurry.up
 local function Blade_Flurry_Sync ()
-    return not HR.AoEON() or EnemiesCount < 2 or Player:BuffP(S.BladeFlurry)
+    return not HR.AoEON() or Cache.EnemiesCount[BladeFlurryRange] < 2 or Player:BuffP(S.BladeFlurry)
 end
 
 local function EnergyTimeToMaxRounded ()
@@ -550,28 +550,11 @@ local function MfDSniping (MarkedforDeath)
         end
     end
 end
--- HeroLib EnemiesCount handler
+-- HeroLib Cache.EnemiesCount[BladeFlurryRange] handler
 local EnemyRanges = {"Melee", 6, 9}
 local function UpdateRanges()
     for _, i in ipairs(EnemyRanges) do
         HL.GetEnemies(i);
-    end
-end
-
--- AoE Detection Mode
-local function GetEnemiesCount(range)
-    -- Unit Update - Update differently depending on if splash data is being used
-    if HR.AoEON() then
-        if Action.GetToggle(2, "AoeDetectionMode") == "USE COMBAT LOGS" then
-	        return active_enemies()
-	    elseif Action.GetToggle(2, "AoeDetectionMode") == "USE SPLASH DATA" then
-            return active_enemies()
-	    else 
-            UpdateRanges()
-            return Cache.EnemiesCount[range]
-        end
-    else
-        return 1
     end
 end
 
@@ -617,15 +600,14 @@ local function APL()
 
     -- Unit Update
     BladeFlurryRange = S.AcrobaticStrikes:IsAvailable() and 9 or 6;
+    HL.GetEnemies(BladeFlurryRange);
+    HL.GetEnemies("Melee");
     InitBurstCDTimer()
     ToggleBurstMode()
-	HL.GetEnemies(BladeFlurryRange);
-    HL.GetEnemies("Melee");
-	EnemiesCount = GetEnemiesCount(BladeFlurryRange)
 	CheckGoodBuffs()
-	--print(EnemiesCount)
+	--print(Cache.EnemiesCount[BladeFlurryRange])
 	
-	    -- Handle all generics trinkets	
+    -- Handle all generics trinkets	
 	local function GeneralTrinkets()
         if trinketReady(1) then
         	if HR.Cast(I.GenericTrinket1) then return "GenericTrinket1"; end
@@ -717,7 +699,7 @@ local function CDs()
         end
         if HR.CDsON() then
             -- actions.cds+=/blade_flurry,if=spell_targets.blade_flurry>=2&!buff.blade_flurry.up
-            if HR.AoEON() and S.BladeFlurry:IsCastable() and EnemiesCount >= 2 and not Player:BuffP(S.BladeFlurry) then
+            if HR.AoEON() and S.BladeFlurry:IsCastable() and Cache.EnemiesCount[BladeFlurryRange] >= 2 and not Player:BuffP(S.BladeFlurry) then
                 if Action.GetToggle(2, "OffGCDasOffGCD") then
                     HR.Cast(S.BladeFlurry);
                 else

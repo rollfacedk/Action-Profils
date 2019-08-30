@@ -321,6 +321,7 @@ local function APL()
     local IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target);
 	Init()
     UpdateRanges()
+	Everyone.AoEToggleEnemiesUpdate()
     UpdateSoulFragments();
     UpdateIsInMeleeRange();
     DetermineEssenceRanks()

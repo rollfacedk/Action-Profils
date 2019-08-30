@@ -275,6 +275,7 @@ local function APL()
 	
 	-- Local functions remap
     UpdateRanges()
+    Everyone.AoEToggleEnemiesUpdate()
     HL.GetEnemies(40, true) -- To populate Cache.Enemies[40] for CastCycles
     UpdateExecuteID()
 	ExecuteRange()

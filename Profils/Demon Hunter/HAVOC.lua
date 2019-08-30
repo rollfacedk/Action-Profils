@@ -348,9 +348,8 @@ local function APL()
 	local ShouldStop = Action.ShouldStop()
 	local Pull = Action.BossMods_Pulling()
 	
-	-- Local functions remap
-    EnemiesCount = active_enemies()
-    UpdateRanges() -- To populate Cache.Enemies[range] for CastCycles
+    UpdateRanges()
+    Everyone.AoEToggleEnemiesUpdate()
     DetermineEssenceRanks()
 	
 	-- Anti channeling protection ? To see if its usefull
