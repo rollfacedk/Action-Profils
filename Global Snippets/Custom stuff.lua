@@ -16,7 +16,6 @@ function Action.AoEToggleMode()
     TMW:Fire("TMW_ACTION_AOE_MODE_CHANGED")
 end 
 
-
 -- Load default profils for each class
 local currentClass = select(2, UnitClass("player"))
 
@@ -64,4 +63,3 @@ if currentClass == "DEMONHUNTER" then
     Action.Data.DefaultProfile[currentClass] = "[Taste]Action - Demon Hunter"
 	Action.Print("Automatically loaded profile : [Taste]Action - Demon Hunter")
 end
-
