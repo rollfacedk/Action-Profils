@@ -26,6 +26,7 @@ Action[ACTION_CONST_ROGUE_ASSASSINATION] = {
     EscapeArtist                         = Action.Create({ Type = "Spell", ID = 20589    }), -- not usable in APL but user can Queue it
     EveryManforHimself                   = Action.Create({ Type = "Spell", ID = 59752    }), -- not usable in APL but user can Queue it
     PetKick                              = Action.Create({ Type = "Spell", ID = 47482, Color = "RED", Desc = "RED" }),  
+    LightsJudgment                        = Action.Create({ Type = "Spell", ID = 255647     }),
     -- Generics Spells
     Envenom                                = Action.Create({ Type = "Spell", ID = 32645     }),
     FanofKnives                            = Action.Create({ Type = "Spell", ID = 51723     }),
@@ -63,6 +64,7 @@ Action[ACTION_CONST_ROGUE_ASSASSINATION] = {
     -- Utility
     Blind                                  = Action.Create({ Type = "Spell", ID = 2094     }),
     Kick                                   = Action.Create({ Type = "Spell", ID = 1766     }),
+    Sprint                               = Action.Create({ Type = "Spell", ID = 2983       }),
     -- Poisons
     CripplingPoison                        = Action.Create({ Type = "Spell", ID = 3408     }),
     DeadlyPoison                           = Action.Create({ Type = "Spell", ID = 2823     }),
@@ -185,10 +187,12 @@ local S, I = A:HeroCreate()
 Action.HeroSetHookAllTable(S, {
         [3] = "TellMeWhen_Group4_Icon3",
         [4] = "TellMeWhen_Group4_Icon4",
+		[6] = "TellMeWhen_Group4_Icon6", 
 })
 Action.HeroSetHookAllTable(I, {
         [3] = "TellMeWhen_Group4_Icon3",
         [4] = "TellMeWhen_Group4_Icon4",
+		[6] = "TellMeWhen_Group4_Icon6",
 })
 -- Adding manually missed staff
 --S.Brews                                 = Spell(115308)
@@ -199,6 +203,13 @@ Action.HeroSetHookAllTable(I, {
 
 -- Rotation Var
 local ShouldReturn; -- Used to get the return string
+local ForceOffGCD = {true, false};
+local Everyone = HR.Commons.Everyone;
+local BleedTickTime, ExsanguinatedBleedTickTime = 2 / Player:SpellHaste(), 1 / Player:SpellHaste();
+local Stealth;
+local RuptureThreshold, RuptureDMGThreshold, GarroteDMGThreshold;
+local ComboPoints, ComboPointsDeficit, Energy_Regen_Combined, PoisonedBleeds;
+local PriorityRotation;
 
 local function num(val)
   if val then return 1 else return 0 end
@@ -209,11 +220,13 @@ local Interrupts = {
   {S.Blind, "Cast Blind (Interrupt)", function () return true; end},
 };
 
--- Arguments Variables
-local DestGUID, SpellID;
+-----------------------------------------------------------------------------
+----------------------------- EVENTS HANDLERS -------------------------------
+  -- Arguments Variables
+  local DestGUID, SpellID;
 
--- TODO: Register/Unregister Events on SpecChange
-HL.BleedTable = {
+  -- TODO: Register/Unregister Events on SpecChange
+  HL.BleedTable = {
     Assassination = {
       Garrote = {},
       Rupture = {}
@@ -221,9 +234,9 @@ HL.BleedTable = {
     Subtlety = {
       Nightblade = {},
     }
-};
-local BleedGUID;
--- Exsanguinated Handler
+  };
+  local BleedGUID;
+  --- Exsanguinated Handler
     -- Exsanguinate Expression
     local BleedDuration, BleedExpires;
     function HL.Exsanguinated (Unit, SpellName)
@@ -238,11 +251,11 @@ local BleedGUID;
               return HL.BleedTable.Assassination.Rupture[BleedGUID][3];
           end
         end
+      end
+      return false;
     end
-    return false;
-end
--- Exsanguinate OnCast Listener
-HL:RegisterForSelfCombatEvent(
+    -- Exsanguinate OnCast Listener
+    HL:RegisterForSelfCombatEvent(
       function (...)
         DestGUID, _, _, _, SpellID = select(8, ...);
 
@@ -257,10 +270,10 @@ HL:RegisterForSelfCombatEvent(
             end
           end
         end
-    end
-    , "SPELL_CAST_SUCCESS"
-);
--- Bleed infos
+      end
+      , "SPELL_CAST_SUCCESS"
+    );
+    -- Bleed infos
     local function GetBleedInfos (GUID, SpellID)
       -- Core API is not used since we don't want cached informations
       for i = 1, HL.MAXIMUM do
@@ -268,12 +281,12 @@ HL:RegisterForSelfCombatEvent(
         if auraInfo[10] == SpellID then
           return auraInfo[5];
         end
+      end
+      return nil
     end
-    return nil
-end
--- Bleed OnApply/OnRefresh Listener
-HL:RegisterForSelfCombatEvent(
-    function (...)
+    -- Bleed OnApply/OnRefresh Listener
+    HL:RegisterForSelfCombatEvent(
+      function (...)
         DestGUID, _, _, _, SpellID = select(8, ...);
 
         --- Record the Bleed Target and its Infos
@@ -286,13 +299,13 @@ HL:RegisterForSelfCombatEvent(
           BleedDuration, BleedExpires = GetBleedInfos(DestGUID, SpellID);
           HL.BleedTable.Assassination.Rupture[DestGUID] = {BleedDuration, BleedExpires, false};
         end
-    end
-    , "SPELL_AURA_APPLIED"
-    , "SPELL_AURA_REFRESH"
-);
--- Bleed OnRemove Listener
-HL:RegisterForSelfCombatEvent(
-    function (...)
+      end
+      , "SPELL_AURA_APPLIED"
+      , "SPELL_AURA_REFRESH"
+    );
+    -- Bleed OnRemove Listener
+    HL:RegisterForSelfCombatEvent(
+      function (...)
         DestGUID, _, _, _, SpellID = select(8, ...);
 
         -- Removes the Unit from Garrote Table
@@ -306,13 +319,13 @@ HL:RegisterForSelfCombatEvent(
               HL.BleedTable.Assassination.Rupture[DestGUID] = nil;
           end
         end
-    end
-    , "SPELL_AURA_REMOVED"
-);
--- Bleed OnUnitDeath Listener
-HL:RegisterForCombatEvent(
-    function (...)
-    DestGUID = select(8, ...);
+      end
+      , "SPELL_AURA_REMOVED"
+    );
+    -- Bleed OnUnitDeath Listener
+    HL:RegisterForCombatEvent(
+      function (...)
+        DestGUID = select(8, ...);
 
         -- Removes the Unit from Garrote Table
         if HL.BleedTable.Assassination.Garrote[DestGUID] then
@@ -323,17 +336,218 @@ HL:RegisterForCombatEvent(
           HL.BleedTable.Assassination.Rupture[DestGUID] = nil;
         end
       end
-    , "UNIT_DIED"
-    , "UNIT_DESTROYED"
-);
-  
--- Stealth
-local function Stealth(Stealth, Setting)
-    if Action.GetToggle(2, "StealthOOC") and Stealth:IsCastable() and not Player:IsStealthed() then
-        if HR.Cast(Stealth, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Stealth (OOC)"; end
+      , "UNIT_DIED"
+      , "UNIT_DESTROYED"
+    );
+
+  --- Finality Nightblade Handler
+    function HL.Finality (Unit)
+      BleedGUID = Unit:GUID();
+      if BleedGUID then
+        if HL.BleedTable.Subtlety.Nightblade[BleedGUID] then
+          return HL.BleedTable.Subtlety.Nightblade[BleedGUID];
+        end
+      end
+      return false;
     end
-    return false;
-end
+    -- Nightblade OnApply/OnRefresh Listener
+    HL:RegisterForSelfCombatEvent(
+      function (...)
+        DestGUID, _, _, _, SpellID = select(8, ...);
+
+        if SpellID == 195452 then
+          HL.BleedTable.Subtlety.Nightblade[DestGUID] = true;
+        end
+      end
+      , "SPELL_AURA_APPLIED"
+      , "SPELL_AURA_REFRESH"
+    );
+    -- Nightblade OnRemove Listener
+    HL:RegisterForSelfCombatEvent(
+      function (...)
+        DestGUID, _, _, _, SpellID = select(8, ...);
+
+        if SpellID == 195452 then
+          if HL.BleedTable.Subtlety.Nightblade[DestGUID] then
+            HL.BleedTable.Subtlety.Nightblade[DestGUID] = nil;
+          end
+        end
+      end
+      , "SPELL_AURA_REMOVED"
+    );
+    -- Nightblade OnUnitDeath Listener
+    HL:RegisterForCombatEvent(
+      function (...)
+        DestGUID = select(8, ...);
+
+        if HL.BleedTable.Subtlety.Nightblade[DestGUID] then
+          HL.BleedTable.Subtlety.Nightblade[DestGUID] = nil;
+        end
+      end
+      , "UNIT_DIED"
+      , "UNIT_DESTROYED"
+    );
+  --- Relentless Strikes Energy Prediction
+    -- Variables
+    Player.RSOffset = {
+      Offset = 0;
+      FinishDestGUID = nil;
+      FinishCount = 0;
+    };
+    -- Return RS adjusted Energy Predicted
+    function Player:EnergyPredictedWithRS()
+        return Player:EnergyPredicted() + Player.RSOffset.Offset;
+    end
+    -- Return RS adjusted Energy Deficit Predicted
+    function Player:EnergyDeficitPredictedWithRS()
+        return Player:EnergyDeficitPredicted() - Player.RSOffset.Offset;
+    end
+    -- Zero RSOffset after receiving relentless strikes energize
+    HL:RegisterForSelfCombatEvent(
+      function (...)
+        local rsspellid = select(12, ...)
+        if (rsspellid == 98440) then
+          Player.RSOffset.Offset = 0;
+        end
+      end
+      , "SPELL_ENERGIZE"
+    );
+    -- Running Combo Point tally to access after casting finisher
+    HL:RegisterForEvent(
+      function (...)
+        local type = select(3, ...)
+        if (type == "COMBO_POINTS") and (Player:ComboPoints() > 0) then
+          Player.RSOffset.Offsetvote = Player:ComboPoints()*6.0;
+        end
+      end
+      , "UNIT_POWER_UPDATE"
+    );
+    -- Set RSOffset when casting a finisher
+    HL:RegisterForSelfCombatEvent(
+      function (...)
+        local spellID = select(12, ...)
+        -- Evis & Nightblade & DfA spellIDs
+        if (spellID == 196819 or spellID == 195452 or spellID == 152150) then
+          Player.RSOffset.FinishDestGUID = select(8, ...);
+          Player.RSOffset.FinishCount = Player.RSOffset.FinishCount + 1;
+          Player.RSOffset.Offset = Player.RSOffset.Offsetvote;
+          -- Backup clear
+          C_Timer.After(2, function ()
+              if Player.RSOffset.FinishCount == 1 then
+                Player.RSOffset.Offset = 0;
+              end
+              Player.RSOffset.FinishCount = Player.RSOffset.FinishCount - 1;
+            end
+          );
+        end
+      end
+      , "SPELL_CAST_SUCCESS"
+    );
+    -- Prevent RSOffset getting stuck when target dies mid-finisher (mostly DfA)
+    HL:RegisterForCombatEvent(
+      function (...)
+        local DestGUID = select(8, ...);
+        if Player.RSOffset.FinishDestGUID == DestGUID then
+          Player.RSOffset.Offset = 0;
+        end
+      end
+      , "UNIT_DIED"
+      , "UNIT_DESTROYED"
+    );
+  --- Shadow Techniques Tracking
+    -- Variables
+    Player.ShadowTechniques = {
+      Counter = 0;
+      LastMH = 0;
+      LastOH = 0;
+    };
+    -- Return Time to x-th auto attack since last proc
+    function Player:TimeToSht(hit)
+      local mhSpeed, ohSpeed = UnitAttackSpeed("player");
+      local aaTable = {};
+      for i=1,5 do
+        table.insert(aaTable, Player.ShadowTechniques.LastMH + i * mhSpeed);
+        table.insert(aaTable, Player.ShadowTechniques.LastOH + i * ohSpeed);
+      end
+      table.sort(aaTable);
+      local hitInTable = min(5,max(1, hit - Player.ShadowTechniques.Counter));
+      return aaTable[hitInTable] - GetTime()
+    end
+    -- Reset on entering world
+    HL:RegisterForSelfCombatEvent(
+      function (...)
+        Player.ShadowTechniques.Counter = 0;
+        Player.ShadowTechniques.LastMH = GetTime();
+        Player.ShadowTechniques.LastOH = GetTime();
+      end
+      , "PLAYER_ENTERING_WORLD"
+    );
+    -- Reset counter on energize
+    HL:RegisterForSelfCombatEvent(
+      function (...)
+        SpellID = select(12, ...);
+        if SpellID == 196911 then
+          Player.ShadowTechniques.Counter = 0;
+        end
+      end
+      , "SPELL_ENERGIZE"
+    );
+    -- Increment counter on cast succcess for Shadow Blades
+    HL:RegisterForSelfCombatEvent(
+      function (...)
+        SpellID = select(12, ...);
+        -- Shadow Blade: MH 121473, OH 121474
+        if SpellID == 121473 then
+          Player.ShadowTechniques.LastMH = GetTime();
+          Player.ShadowTechniques.Counter = Player.ShadowTechniques.Counter + 1;
+        elseif SpellID == 121474 then
+          Player.ShadowTechniques.LastOH = GetTime();
+          Player.ShadowTechniques.Counter = Player.ShadowTechniques.Counter + 1;
+        end
+      end
+      , "SPELL_CAST_SUCCESS"
+    );
+    -- Increment counter on successful swings
+    HL:RegisterForSelfCombatEvent(
+      function (...)
+        Player.ShadowTechniques.Counter = Player.ShadowTechniques.Counter + 1;
+        local IsOffHand = select(24, ...);
+        if IsOffHand then
+          Player.ShadowTechniques.LastOH = GetTime();
+        else
+          Player.ShadowTechniques.LastMH = GetTime();
+        end
+      end
+      , "SWING_DAMAGE"
+    );
+    -- Remember timers on Shadow Blade fails
+    HL:RegisterForSelfCombatEvent(
+      function (...)
+        SpellID = select(12, ...);
+        -- Shadow Blade: MH 121473, OH 121474
+        if SpellID == 121473 then
+          Player.ShadowTechniques.LastMH = GetTime();
+        elseif SpellID == 121474 then
+          Player.ShadowTechniques.LastOH = GetTime();
+        end
+      end
+      , "SPELL_CAST_FAILED"
+    );
+    -- Remember timers on swing misses
+    HL:RegisterForSelfCombatEvent(
+      function (...)
+        local IsOffHand = select(16, ...);
+        if IsOffHand then
+          Player.ShadowTechniques.LastOH = GetTime();
+        else
+          Player.ShadowTechniques.LastMH = GetTime();
+        end
+      end
+      , "SWING_MISSED"
+    );
+
+---------------------------------------------------
+ 
 
 local function DetermineEssenceRanks()
     S.BloodoftheEnemy = S.BloodoftheEnemy2:IsAvailable() and S.BloodoftheEnemy2 or S.BloodoftheEnemy
@@ -409,116 +623,16 @@ local function UpdateRanges()
     end
 end
 
--- Marked for Death Sniping
-local BestUnit, BestUnitTTD;
-local function MfDSniping (MarkedforDeath)
-    if MarkedforDeath:IsCastable() then
-    -- Get Units up to 30y for MfD.
-    HL.GetEnemies(30);
-
-    BestUnit, BestUnitTTD = nil, 60;
-    local MOTTD = MouseOver:IsInRange(30) and MouseOver:TimeToDie() or 11111;
-    local TTD;
-    for _, Unit in pairs(Cache.Enemies[30]) do
-        TTD = Unit:TimeToDie();
-        -- Note: Increased the SimC condition by 50% since we are slower.
-        if not Unit:IsMfdBlacklisted() and TTD < Player:ComboPointsDeficit()*1.5 and TTD < BestUnitTTD then
-            if MOTTD - TTD > 1 then
-                BestUnit, BestUnitTTD = Unit, TTD;
-            else
-                BestUnit, BestUnitTTD = MouseOver, MOTTD;
-            end
-        end
-    end
-    if BestUnit and BestUnit:GUID() ~= Target:GUID() then
-        HR.CastLeftNameplate(BestUnit, MarkedforDeath);
-        end
-    end
-end
-
 --- ======= SIMC CUSTOM FUNCTION / EXPRESSION =======
 -- cp_max_spend
-function Commons.CPMaxSpend ()
+local function CPMaxSpend()
     -- Should work for all 3 specs since they have same Deeper Stratagem Spell ID.
-    return Spell.Rogue.Subtlety.DeeperStratagem:IsAvailable() and 6 or 5;
+    return S.DeeperStratagem:IsAvailable() and 6 or 5;
 end
 
 -- "cp_spend"
-function Commons.CPSpend ()
-    return mathmin(Player:ComboPoints(), Commons.CPMaxSpend());
-end
-
--- poisoned
---[[ Original SimC Code
-    return dots.deadly_poison -> is_ticking() ||
-            debuffs.wound_poison -> check();
-]]
-function Commons.Poisoned (Unit)
-    return (Unit:Debuff(Spell.Rogue.Assassination.DeadlyPoisonDebuff) or Unit:Debuff(Spell.Rogue.Assassination.WoundPoisonDebuff)) and true or false;
-end
-
--- poison_remains
---[[ Original SimC Code
-    if ( dots.deadly_poison -> is_ticking() ) {
-      return dots.deadly_poison -> remains();
-    } else if ( debuffs.wound_poison -> check() ) {
-      return debuffs.wound_poison -> remains();
-    } else {
-      return timespan_t::from_seconds( 0.0 );
-    }
-]]
-function Commons.PoisonRemains (Unit)
-    return (Unit:Debuff(Spell.Rogue.Assassination.DeadlyPoisonDebuff) and Unit:DebuffRemainsP(Spell.Rogue.Assassination.DeadlyPoisonDebuff))
-      or (Unit:Debuff(Spell.Rogue.Assassination.WoundPoisonDebuff) and Unit:DebuffRemainsP(Spell.Rogue.Assassination.WoundPoisonDebuff))
-      or 0;
-end
-
--- bleeds
---[[ Original SimC Code
-    rogue_td_t* tdata = get_target_data( target );
-    return tdata -> dots.garrote -> is_ticking() +
-           tdata -> dots.internal_bleeding -> is_ticking() +
-           tdata -> dots.rupture -> is_ticking();
-  ]]
-function Commons.Bleeds ()
-    return (Target:Debuff(Spell.Rogue.Assassination.Garrote) and 1 or 0) + (Target:Debuff(Spell.Rogue.Assassination.Rupture) and 1 or 0)
-    + (Target:Debuff(Spell.Rogue.Assassination.CrimsonTempest) and 1 or 0) + (Target:Debuff(Spell.Rogue.Assassination.InternalBleeding) and 1 or 0);
-end
-
--- poisoned_bleeds
---[[ Original SimC Code
-    int poisoned_bleeds = 0;
-    for ( size_t i = 0, actors = sim -> target_non_sleeping_list.size(); i < actors; i++ )
-    {
-      player_t* t = sim -> target_non_sleeping_list[i];
-      rogue_td_t* tdata = get_target_data( t );
-      if ( tdata -> lethal_poisoned() ) {
-        poisoned_bleeds += tdata -> dots.garrote -> is_ticking() +
-                            tdata -> dots.internal_bleeding -> is_ticking() +
-                            tdata -> dots.rupture -> is_ticking();
-      }
-    }
-    return poisoned_bleeds;
-]]
-local PoisonedBleedsCount = 0;
-
-function Commons.PoisonedBleeds ()
-    PoisonedBleedsCount = 0;
-    for _, Unit in pairs(Cache.Enemies[50]) do
-        if Commons.Poisoned(Unit) then
-            -- TODO: For loop for this ? Not sure it's worth considering we would have to make 2 times spell object (Assa is init after Commons)
-            if Unit:Debuff(Spell.Rogue.Assassination.Garrote) then
-                PoisonedBleedsCount = PoisonedBleedsCount + 1;
-            end
-            if Unit:Debuff(Spell.Rogue.Assassination.InternalBleeding) then
-                PoisonedBleedsCount = PoisonedBleedsCount + 1;
-            end
-            if Unit:Debuff(Spell.Rogue.Assassination.Rupture) then
-                PoisonedBleedsCount = PoisonedBleedsCount + 1;
-            end
-        end
-    end
-    return PoisonedBleedsCount;
+local function CPSpend()
+    return mathmin(Player:ComboPoints(), CPMaxSpend());
 end
 
 -- Spells Damage
@@ -530,7 +644,7 @@ function ()
         -- Attack Power
         Player:AttackPowerDamageMod() *
         -- Combo Points
-        Rogue.CPSpend() *
+        CPSpend() *
         -- Envenom AP Coef
         0.16 *
         -- Aura Multiplier (SpellID: 137037)
@@ -572,25 +686,66 @@ S.Rupture:RegisterPMultiplier(
     {NighstalkerMultiplier}
 );
 
--- Rotation Var
-local ShouldReturn; -- Used to get the return string
-local ForceOffGCD = {true, false};
-local Everyone = HR.Commons.Everyone;
-local BleedTickTime, ExsanguinatedBleedTickTime = 2 / Player:SpellHaste(), 1 / Player:SpellHaste();
-local Stealth;
-local RuptureThreshold, RuptureDMGThreshold, GarroteDMGThreshold;
-local ComboPoints, ComboPointsDeficit, Energy_Regen_Combined, PoisonedBleeds;
-local PriorityRotation;
+-- Marked for Death Sniping
+local BestUnit, BestUnitTTD;
+local function MfDSniping (MarkedforDeath)
+    if MarkedforDeath:IsCastable() then
+    -- Get Units up to 30y for MfD.
+    HL.GetEnemies(30);
+
+    BestUnit, BestUnitTTD = nil, 60;
+    local MOTTD = MouseOver:IsInRange(30) and MouseOver:TimeToDie() or 11111;
+    local TTD;
+    for _, Unit in pairs(Cache.Enemies[30]) do
+        TTD = Unit:TimeToDie();
+        -- Note: Increased the SimC condition by 50% since we are slower.
+        if not Unit:IsMfdBlacklisted() and TTD < Player:ComboPointsDeficit()*1.5 and TTD < BestUnitTTD then
+            if MOTTD - TTD > 1 then
+                BestUnit, BestUnitTTD = Unit, TTD;
+            else
+                BestUnit, BestUnitTTD = MouseOver, MOTTD;
+            end
+        end
+    end
+    if BestUnit and BestUnit:GUID() ~= Target:GUID() then
+        HR.CastLeftNameplate(BestUnit, MarkedforDeath);
+        end
+    end
+end
+-- Spell ID Changes check
+  Stealth = S.Subterfuge:IsAvailable() and S.Stealth2 or S.Stealth; -- w/ or w/o Subterfuge Talent
+-- Stealth
+function Stealth(Stealth, Setting)
+    if Action.GetToggle(2, "StealthOOC") and Stealth:IsCastable() and not Player:IsStealthed() then
+        if HR.Cast(Stealth, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Stealth (OOC)"; end
+    end
+    return false;
+end
+
+-- Crimson Vial
+function CrimsonVial(CrimsonVial)
+    if CrimsonVial:IsCastable() and Player:HealthPercentage() <= Action.GetToggle(2, "CrimsonVialHP") then
+        if HR.Cast(CrimsonVial, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Crimson Vial (Defensives)"; end
+    end
+    return false;
+end
+
+-- Feint
+function Feint(Feint)
+    if Feint:IsCastable() and not Player:Buff(Feint) and Player:HealthPercentage() <= Action.GetToggle(2, "FeintHP") then
+        if HR.Cast(Feint, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Feint (Defensives)"; end
+    end
+end
 
 -- Check if the Priority Rotation variable should be set
 local function UsePriorityRotation()
     if Cache.EnemiesCount[10] < 2 then
         return false
     end
-    if Settings.Assassination.UsePriorityRotation == "Always" then
+    if Action.GetToggle(2, "UsePriorityRotation") == "Always" then
         return true
     end
-    if Settings.Assassination.UsePriorityRotation == "On Bosses" and Target:IsInBossList() then
+    if Action.GetToggle(2, "UsePriorityRotation") == "On Bosses" and Target:IsInBossList() then
         return true
     end
     -- Zul Mythic
@@ -606,7 +761,7 @@ local function SuggestCycleDoT(DoTSpell, DoTEvaluation, DoTMinTTD)
     local BestUnit, BestUnitTTD = nil, DoTMinTTD;
     local TargetGUID = Target:GUID();
     for _, CycleUnit in pairs(Cache.Enemies["Melee"]) do
-        if CycleUnit:GUID() ~= TargetGUID and UnitIsCycleValid(CycleUnit, BestUnitTTD, -CycleUnit:DebuffRemainsP(DoTSpell))
+        if CycleUnit:GUID() ~= TargetGUID and Everyone.UnitIsCycleValid(CycleUnit, BestUnitTTD, -CycleUnit:DebuffRemainsP(DoTSpell))
         and DoTEvaluation(CycleUnit) then
             BestUnit, BestUnitTTD = CycleUnit, CycleUnit:TimeToDie();
         end
@@ -614,10 +769,10 @@ local function SuggestCycleDoT(DoTSpell, DoTEvaluation, DoTMinTTD)
     if BestUnit then
         HR.CastLeftNameplate(BestUnit, DoTSpell);
     -- Check ranged units next, if the RangedMultiDoT option is enabled
-    elseif Settings.Assassination.RangedMultiDoT then
+    elseif Action.GetToggle(2, "MultiDoT") then
         BestUnit, BestUnitTTD = nil, DoTMinTTD;
         for _, CycleUnit in pairs(Cache.Enemies[10]) do
-            if CycleUnit:GUID() ~= TargetGUID and UnitIsCycleValid(CycleUnit, BestUnitTTD, -CycleUnit:DebuffRemainsP(DoTSpell))
+            if CycleUnit:GUID() ~= TargetGUID and Everyone.UnitIsCycleValid(CycleUnit, BestUnitTTD, -CycleUnit:DebuffRemainsP(DoTSpell))
             and DoTEvaluation(CycleUnit) then
                 BestUnit, BestUnitTTD = CycleUnit, CycleUnit:TimeToDie();
             end
@@ -665,7 +820,7 @@ local function CheckTargetIfTarget(Mode, ModeEvaluation, IfEvaluation)
 
     -- Prefer melee cycle units over ranged
     RunTargetIfCycler("Melee");
-    if Settings.Assassination.RangedMultiDoT then
+    if Action.GetToggle(2, "RangedMultiDoT") then
         RunTargetIfCycler(10);
     end
     -- Prefer current target if equal mode value results to prevent "flickering"
@@ -689,8 +844,8 @@ local function MasterAssassinRemains ()
 end
 
 -- Fake ss_buffed (wonky without Subterfuge but why would you, eh?)
-local function SSBuffed(TargetUnit)
-    return S.ShroudedSuffocation:AzeriteEnabled() and TargetUnit:PMultiplier(S.Garrote) > 1;
+local function SSBuffed(Target)
+    return S.ShroudedSuffocation:AzeriteEnabled() and Target:PMultiplier(S.Garrote) > 1;
 end
 
 -- non_ss_buffed_targets
@@ -815,7 +970,7 @@ local function CDs ()
             if Target:FilteredTimeToDie("<", Player:ComboPointsDeficit() * 1.5) then
                 if HR.Cast(S.MarkedforDeath, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Marked for Death"; end
             end
-            if ComboPointsDeficit >= Rogue.CPMaxSpend() then
+            if ComboPointsDeficit >= CPMaxSpend() then
                 HR.CastSuggested(S.MarkedforDeath);
             end
         end
@@ -825,20 +980,20 @@ local function CDs ()
             if S.Vendetta:IsCastable() and not Player:IsStealthedP(true, false) and Target:DebuffP(S.Rupture) and not Target:DebuffP(S.Vendetta)
                 and (not S.Subterfuge:IsAvailable() or not S.ShroudedSuffocation:AzeriteEnabled() or Target:PMultiplier(S.Garrote) > 1 and (Cache.EnemiesCount[10] < 6 or not S.Vanish:CooldownUpP()))
                 and (not S.Nightstalker:IsAvailable() or not S.Exsanguinate:IsAvailable() or S.Exsanguinate:CooldownRemainsP() < 5 - 2 * num(S.DeeperStratagem:IsAvailable()))
-                and (not Settings.Commons.UseTrinkets or not I.FontOfPower:IsEquipped() or S.ShroudedSuffocation:AzeriteEnabled() or S.RazorCoralDebuff:ActiveCount() == 0 or I.RazorCoral:CooldownRemains() < 10 and S.ToxicBlade:CooldownRemainsP() <= 1) then
+                and (not TrinketON() or not I.FontOfPower:IsEquipped() or S.ShroudedSuffocation:AzeriteEnabled() or S.RazorCoralDebuff:ActiveCount() == 0 or I.RazorCoral:CooldownRemains() < 10 and S.ToxicBlade:CooldownRemainsP() <= 1) then
                 if HR.Cast(S.Vendetta, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Vendetta"; end
             end
             if S.Vanish:IsCastable() and not Player:IsTanking(Target) then
                 local VanishSuggested = false;
                 -- actions.cds+=/vanish,if=talent.exsanguinate.enabled&(talent.nightstalker.enabled|talent.subterfuge.enabled&spell_targets.fan_of_knives<2)&combo_points>=cp_max_spend&cooldown.exsanguinate.remains<1&(!talent.subterfuge.enabled|!azerite.shrouded_suffocation.enabled|dot.garrote.pmultiplier<=1)
                 if not VanishSuggested and S.Exsanguinate:IsAvailable() and (S.Nightstalker:IsAvailable() or S.Subterfuge:IsAvailable() and Cache.EnemiesCount[10] < 2)
-                    and ComboPoints >= Rogue.CPMaxSpend() and S.Exsanguinate:CooldownRemainsP() < 1
+                    and ComboPoints >= CPMaxSpend() and S.Exsanguinate:CooldownRemainsP() < 1
                     and (not S.Subterfuge:IsAvailable() or not S.ShroudedSuffocation:AzeriteEnabled() or Target:PMultiplier(S.Garrote) <= 1) then
                     if HR.Cast(S.Vanish, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Vanish (Exsanguinate)"; end
                     VanishSuggested = true;
                 end
                 -- actions.cds+=/vanish,if=talent.nightstalker.enabled&!talent.exsanguinate.enabled&combo_points>=cp_max_spend&debuff.vendetta.up
-                if not VanishSuggested and S.Nightstalker:IsAvailable() and not S.Exsanguinate:IsAvailable() and ComboPoints >= Rogue.CPMaxSpend() and Target:Debuff(S.Vendetta) then
+                if not VanishSuggested and S.Nightstalker:IsAvailable() and not S.Exsanguinate:IsAvailable() and ComboPoints >= CPMaxSpend() and Target:Debuff(S.Vendetta) then
                     if HR.Cast(S.Vanish, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Vanish (Nightstalker)"; end
                     VanishSuggested = true;
                 end
@@ -870,7 +1025,7 @@ local function CDs ()
             end
             if S.Exsanguinate:IsCastable() then
                 -- actions.cds+=/exsanguinate,if=dot.rupture.remains>4+4*cp_max_spend&!dot.garrote.refreshable
-                if Target:DebuffRemainsP(S.Rupture) > 4+4*Rogue.CPMaxSpend() and not Target:DebuffRefreshableP(S.Garrote, 5.4) then
+                if Target:DebuffRemainsP(S.Rupture) > 4+4*CPMaxSpend() and not Target:DebuffRefreshableP(S.Garrote, 5.4) then
                     if HR.Cast(S.Exsanguinate) then return "Cast Exsanguinate"; end
                 end
             end
@@ -883,7 +1038,7 @@ local function CDs ()
         -- actions.cds=potion,if=buff.bloodlust.react|target.time_to_die<=60|debuff.vendetta.up&cooldown.vanish.remains<5
 
         -- Trinkets
-        if Settings.Commons.UseTrinkets then
+        if TrinketON() then
             -- use_item,name=galecallers_boon,if=cooldown.vendetta.remains>45
             if I.GalecallersBoon:IsEquipped() and I.GalecallersBoon:IsReady() and S.Vendetta:CooldownRemains() > 45 then
                 if HR.Cast(I.GalecallersBoon) then return "Cast Galecallers Boon"; end
@@ -945,13 +1100,13 @@ local function Stealthed ()
         -- actions.stealthed+=/garrote,if=azerite.shrouded_suffocation.enabled&buff.subterfuge.up&buff.subterfuge.remains<1.3&!ss_buffed
         -- Not implemented because this is special for simc and we can have a shifting main target in reality where simc checks only a fix target on all normal abilities.
         -- actions.stealthed+=/garrote,target_if=min:remains,if=talent.subterfuge.enabled&(remains<12|pmultiplier<=1)&target.time_to_die-remains>2
-        local function GarroteTargetIfFunc(TargetUnit)
-            return TargetUnit:DebuffRemainsP(S.Garrote);
+        local function GarroteTargetIfFunc(Target)
+            return Target:DebuffRemainsP(S.Garrote);
         end
-        local function GarroteIfFunc(TargetUnit)
-            return (TargetUnit:DebuffRemainsP(S.Garrote) < 12 or TargetUnit:PMultiplier(S.Garrote) <= 1)
-                and (TargetUnit:FilteredTimeToDie(">", 2, -TargetUnit:DebuffRemainsP(S.Garrote)) or TargetUnit:TimeToDieIsNotValid())
-                and CanDoTUnit(TargetUnit, GarroteDMGThreshold);
+        local function GarroteIfFunc(Target)
+            return (Target:DebuffRemainsP(S.Garrote) < 12 or Target:PMultiplier(S.Garrote) <= 1)
+                and (Target:FilteredTimeToDie(">", 2, -Target:DebuffRemainsP(S.Garrote)) or Target:TimeToDieIsNotValid())
+                and Everyone.CanDoTUnit(Target, GarroteDMGThreshold);
         end
         if HR.AoEON() then
             local TargetIfUnit = CheckTargetIfTarget("min", GarroteTargetIfFunc, GarroteIfFunc);
@@ -970,14 +1125,14 @@ local function Stealthed ()
     end
     if S.Garrote:IsCastable("Melee") and S.Subterfuge:IsAvailable() then
         -- actions.stealthed+=/garrote,target_if=min:remains,if=talent.subterfuge.enabled&azerite.shrouded_suffocation.enabled&target.time_to_die>remains&(remains<18|!ss_buffed)
-        local function GarroteTargetIfFunc(TargetUnit)
-            return TargetUnit:DebuffRemainsP(S.Garrote);
+        local function GarroteTargetIfFunc(Target)
+            return Target:DebuffRemainsP(S.Garrote);
         end
-        local function GarroteIfFunc(TargetUnit)
+        local function GarroteIfFunc(Target)
             return S.ShroudedSuffocation:AzeriteEnabled()
-                and (TargetUnit:FilteredTimeToDie(">", 0, -TargetUnit:DebuffRemainsP(S.Garrote)) or TargetUnit:TimeToDieIsNotValid())
-                and (TargetUnit:DebuffRemainsP(S.Garrote) < 18 or not SSBuffed(TargetUnit))
-                and CanDoTUnit(TargetUnit, GarroteDMGThreshold);
+                and (Target:FilteredTimeToDie(">", 0, -Target:DebuffRemainsP(S.Garrote)) or Target:TimeToDieIsNotValid())
+                and (Target:DebuffRemainsP(S.Garrote) < 18 or not SSBuffed(Target))
+                and Everyone.CanDoTUnit(Target, GarroteDMGThreshold);
         end
         if HR.AoEON() then
             local TargetIfUnit = CheckTargetIfTarget("min", GarroteTargetIfFunc, GarroteIfFunc);
@@ -989,7 +1144,7 @@ local function Stealthed ()
             if HR.Cast(S.Garrote) then return "Cast Garrote (Shrouded Suffocation)"; end
         end
         -- actions.stealthed+=/garrote,if=talent.subterfuge.enabled&talent.exsanguinate.enabled&cooldown.exsanguinate.remains<1&prev_gcd.1.rupture&dot.rupture.remains>5+4*cp_max_spend
-        if S.Exsanguinate:IsAvailable() and S.Exsanguinate:CooldownRemainsP() < 1 and Player:PrevGCD(1, S.Rupture) and Target:DebuffRemainsP(S.Rupture) > 5+4*Rogue.CPMaxSpend() then
+        if S.Exsanguinate:IsAvailable() and S.Exsanguinate:CooldownRemainsP() < 1 and Player:PrevGCD(1, S.Rupture) and Target:DebuffRemainsP(S.Rupture) > 5+4*CPMaxSpend() then
             -- actions.stealthed+=/pool_resource,for_next=1
             if Player:EnergyPredicted() < 45 then
                 if HR.Cast(S.Channeling) then return "Pool for Garrote (Exsanguinate)"; end
@@ -1012,24 +1167,24 @@ local function Dot ()
 
     -- actions.dot=rupture,if=talent.exsanguinate.enabled&((combo_points>=cp_max_spend&cooldown.exsanguinate.remains<1)|(!ticking&(time>10|combo_points>=2)))
     if HR.CDsON() and S.Rupture:IsCastable("Melee") and ComboPoints > 0 and S.Exsanguinate:IsAvailable()
-        and ((ComboPoints >= Rogue.CPMaxSpend() and S.Exsanguinate:CooldownRemainsP() < 1)
+        and ((ComboPoints >= CPMaxSpend() and S.Exsanguinate:CooldownRemainsP() < 1)
             or (not Target:DebuffP(S.Rupture) and (HL.CombatTime() > 10 or (ComboPoints >= 2)))) then
         if HR.Cast(S.Rupture) then return "Cast Rupture (Exsanguinate)"; end
     end
     -- actions.dot+=/garrote,if=(!talent.subterfuge.enabled|!(cooldown.vanish.up&cooldown.vendetta.remains<=4))&combo_points.deficit>=1+3*(azerite.shrouded_suffocation.enabled&cooldown.vanish.up)&refreshable&(pmultiplier<=1|remains<=tick_time&spell_targets.fan_of_knives>=3+azerite.shrouded_suffocation.enabled)&(!exsanguinated|remains<=tick_time*2&spell_targets.fan_of_knives>=3+azerite.shrouded_suffocation.enabled)&!ss_buffed&(target.time_to_die-remains)>4&(master_assassin_remains=0|!ticking&azerite.shrouded_suffocation.enabled)
     -- actions.dot+=/garrote,cycle_targets=1,if=!variable.skip_cycle_garrote&target!=self.target&(!talent.subterfuge.enabled|!(cooldown.vanish.up&cooldown.vendetta.remains<=4))&combo_points.deficit>=1+3*(azerite.shrouded_suffocation.enabled&cooldown.vanish.up)&refreshable&(pmultiplier<=1|remains<=tick_time&spell_targets.fan_of_knives>=3+azerite.shrouded_suffocation.enabled)&(!exsanguinated|remains<=tick_time*2&spell_targets.fan_of_knives>=3+azerite.shrouded_suffocation.enabled)&!ss_buffed&(target.time_to_die-remains)>12&(master_assassin_remains=0|!ticking&azerite.shrouded_suffocation.enabled)
     local EmpoweredDotRefresh = Cache.EnemiesCount[10] >= 3 + num(S.ShroudedSuffocation:AzeriteEnabled())
-    if S.Garrote:IsCastable() and (Settings.Assassination.AlwaysSuggestGarrote or not S.Subterfuge:IsAvailable()
+    if S.Garrote:IsCastable() and (Action.GetToggle(2, "AlwaysSuggestGarrote") or not S.Subterfuge:IsAvailable()
         or not HR.CDsON() or not (S.Vanish:CooldownUpP() and S.Vendetta:CooldownRemainsP() <= 4))
         and (ComboPointsDeficit >= 1 + 3 * num(S.ShroudedSuffocation:AzeriteEnabled() and S.Vanish:CooldownUpP())) then
-        local function Evaluate_Garrote_Target(TargetUnit)
-            return TargetUnit:DebuffRefreshableP(S.Garrote, 5.4)
-                and (TargetUnit:PMultiplier(S.Garrote) <= 1 or TargetUnit:DebuffRemainsP(S.Garrote)
-                    <= (HL.Exsanguinated(TargetUnit, "Garrote") and ExsanguinatedBleedTickTime or BleedTickTime) and EmpoweredDotRefresh)
-                and (not HL.Exsanguinated(TargetUnit, "Garrote") or TargetUnit:DebuffRemainsP(S.Garrote) <= 1.5 and EmpoweredDotRefresh)
-                and not SSBuffed(TargetUnit)
+        local function Evaluate_Garrote_Target(Target)
+            return Target:DebuffRefreshableP(S.Garrote, 5.4)
+                and (Target:PMultiplier(S.Garrote) <= 1 or Target:DebuffRemainsP(S.Garrote)
+                    <= (HL.Exsanguinated(Target, "Garrote") and ExsanguinatedBleedTickTime or BleedTickTime) and EmpoweredDotRefresh)
+                and (not HL.Exsanguinated(Target, "Garrote") or Target:DebuffRemainsP(S.Garrote) <= 1.5 and EmpoweredDotRefresh)
+                and not SSBuffed(Target)
                 and (MasterAssassinRemains() <= 0 or not Target:DebuffP(S.Garrote) and S.ShroudedSuffocation:AzeriteEnabled())
-                and CanDoTUnit(TargetUnit, GarroteDMGThreshold);
+                and Everyone.CanDoTUnit(Target, GarroteDMGThreshold);
         end
         if Target:IsInRange("Melee") and Evaluate_Garrote_Target(Target)
             and (Target:FilteredTimeToDie(">", 4, -Target:DebuffRemainsP(S.Garrote)) or Target:TimeToDieIsNotValid()) then
@@ -1051,12 +1206,12 @@ local function Dot ()
     -- actions.dot+=/rupture,if=!variable.skip_rupture&combo_points>=4&refreshable&(pmultiplier<=1|remains<=tick_time&spell_targets.fan_of_knives>=3+azerite.shrouded_suffocation.enabled)&(!exsanguinated|remains<=tick_time*2&spell_targets.fan_of_knives>=3+azerite.shrouded_suffocation.enabled)&target.time_to_die-remains>4
     -- actions.dot+=/rupture,cycle_targets=1,if=!variable.skip_cycle_rupture&!variable.skip_rupture&target!=self.target&combo_points>=4&refreshable&(pmultiplier<=1|remains<=tick_time&spell_targets.fan_of_knives>=3+azerite.shrouded_suffocation.enabled)&(!exsanguinated|remains<=tick_time*2&spell_targets.fan_of_knives>=3+azerite.shrouded_suffocation.enabled)&target.time_to_die-remains>4
     if not SkipRupture and ComboPoints >= 4 then
-        local function Evaluate_Rupture_Target(TargetUnit)
-            return TargetUnit:DebuffRefreshableP(S.Rupture, RuptureThreshold)
-                and (TargetUnit:PMultiplier(S.Rupture) <= 1 or TargetUnit:DebuffRemainsP(S.Rupture)
-                    <= (HL.Exsanguinated(TargetUnit, "Rupture") and ExsanguinatedBleedTickTime or BleedTickTime) and EmpoweredDotRefresh)
-                and (not HL.Exsanguinated(TargetUnit, "Rupture") or TargetUnit:DebuffRemainsP(S.Rupture) <= ExsanguinatedBleedTickTime*2 and EmpoweredDotRefresh)
-                and CanDoTUnit(TargetUnit, RuptureDMGThreshold);
+        local function Evaluate_Rupture_Target(Target)
+            return Target:DebuffRefreshableP(S.Rupture, RuptureThreshold)
+                and (Target:PMultiplier(S.Rupture) <= 1 or Target:DebuffRemainsP(S.Rupture)
+                    <= (HL.Exsanguinated(Target, "Rupture") and ExsanguinatedBleedTickTime or BleedTickTime) and EmpoweredDotRefresh)
+                and (not HL.Exsanguinated(Target, "Rupture") or Target:DebuffRemainsP(S.Rupture) <= ExsanguinatedBleedTickTime*2 and EmpoweredDotRefresh)
+                and Everyone.CanDoTUnit(Target, RuptureDMGThreshold);
         end
         if Target:IsInRange("Melee") and Evaluate_Rupture_Target(Target)
             and (Target:FilteredTimeToDie(">", 4, -Target:DebuffRemainsP(S.Rupture)) or Target:TimeToDieIsNotValid()) then
@@ -1129,39 +1284,39 @@ local function Direct ()
     return false;
 end
 
+
 local function Init()
     S.RazorCoralDebuff:RegisterAuraTracking();
 end
-
+Init()
 --- ======= ACTION LISTS =======
 local function APL() 
     
 	-- Action specifics remap
 	local ShouldStop = Action.ShouldStop()
 	local Pull = Action.BossMods_Pulling()	
-    Init()
+
     -- Spell ID Changes check
     Stealth = S.Subterfuge:IsAvailable() and S.Stealth2 or S.Stealth; -- w/ or w/o Subterfuge Talent
     -- Unit Update
-    HL.GetEnemies(50); -- Used for Rogue.PoisonedBleeds()
+    HL.GetEnemies(50); -- Used for PoisonedBleeds()
     HL.GetEnemies(30); -- Used for Poisoned Knife Poison refresh
     HL.GetEnemies(10, true); -- Fan of Knives
     HL.GetEnemies("Melee"); -- Melee
-
     -- Compute Cache
     ComboPoints = Player:ComboPoints();
     ComboPointsDeficit = Player:ComboPointsMax() - ComboPoints;
     RuptureThreshold = (4 + ComboPoints * 4) * 0.3;
-    RuptureDMGThreshold = S.Envenom:Damage()*Settings.Assassination.EnvenomDMGOffset; -- Used to check if Rupture is worth to be casted since it's a finisher.
-    GarroteDMGThreshold = S.Mutilate:Damage()*Settings.Assassination.MutilateDMGOffset; -- Used as TTD Not Valid fallback since it's a generator.
+    RuptureDMGThreshold = S.Envenom:Damage()*Action.GetToggle(2, "EnvenomDMGOffset"); -- Used to check if Rupture is worth to be casted since it's a finisher.
+    GarroteDMGThreshold = S.Mutilate:Damage()*Action.GetToggle(2, "MutilateDMGOffset"); -- Used as TTD Not Valid fallback since it's a generator.
     PriorityRotation = UsePriorityRotation();
 
     -- Defensives
     -- Crimson Vial
-    ShouldReturn = Rogue.CrimsonVial(S.CrimsonVial);
+    ShouldReturn = CrimsonVial(S.CrimsonVial);
     if ShouldReturn then return ShouldReturn; end
     -- Feint
-    ShouldReturn = Rogue.Feint(S.Feint);
+    ShouldReturn = Feint(S.Feint);
     if ShouldReturn then return ShouldReturn; end
 	
     -- Handle all generics trinkets	
@@ -1180,39 +1335,30 @@ local function APL()
 	else
 	    ShouldStop = false
 	end
-    
-	-- Defensives
-    -- Crimson Vial
-    ShouldReturn = CrimsonVial(S.CrimsonVial);
-    if ShouldReturn then return ShouldReturn; end
-    -- Feint
-    ShouldReturn = Feint(S.Feint);
-    if ShouldReturn then return ShouldReturn; end
-	
+   	
     -- Out of Combat
     if not Player:AffectingCombat() then
         -- Stealth
-        if not Player:Buff(S.VanishBuff) then
-            ShouldReturn = Rogue.Stealth(Stealth);
-            if ShouldReturn then return ShouldReturn; end
+        if not Player:Buff(S.VanishBuff) and Action.GetToggle(2, "StealthOOC") and Stealth:IsCastable() and not Player:IsStealthed() then
+            if HR.Cast(Stealth, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Stealth (OOC)"; end
         end
         -- Flask
         -- Food
         -- Rune
         -- PrePot w/ Bossmod Countdown
         -- Opener
-        --if Everyone.TargetIsValid() and Target:IsInRange("Melee") then
+        if Everyone.TargetIsValid() and Target:IsInRange("Melee") then
             -- Precombat CDs
             if HR.CDsON() then
-                if S.MarkedforDeath:IsCastableP() and Player:ComboPointsDeficit() >= Rogue.CPMaxSpend() then
+                if S.MarkedforDeath:IsCastableP() and Player:ComboPointsDeficit() >= CPMaxSpend() then
                     if HR.Cast(S.MarkedforDeath, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Marked for Death (OOC)"; end
                 end
                 -- actions.precombat+=/use_item,name=azsharas_font_of_power
-                if Settings.Commons.UseTrinkets and I.FontOfPower:IsEquipped() and I.FontOfPower:IsReady() then
+                if TrinketON() and I.FontOfPower:IsEquipped() and I.FontOfPower:IsReady() then
                     if HR.Cast(I.FontOfPower) then return "Use Font of Power (OOC)"; end
                 end
             end
-        --end
+        end
     end
     
 	-- In Combat
@@ -1259,11 +1405,11 @@ local function APL()
         if ShouldReturn then return ShouldReturn; end
 
         -- actions=variable,name=energy_regen_combined,value=energy.regen+poisoned_bleeds*7%(2*spell_haste)
-        PoisonedBleeds = Rogue.PoisonedBleeds()
+        PoisonedBleeds = Everyone.PoisonedBleeds()
         Energy_Regen_Combined = Player:EnergyRegen() + PoisonedBleeds * 7 / (2 * Player:SpellHaste());
 
         -- Special Font of Power Handling
-        if Settings.Commons.UseTrinkets then
+        if TrinketON() then
             -- use_item,name=azsharas_font_of_power,if=!stealthed.all&master_assassin_remains=0&cooldown.vendetta.remains<10+10*equipped.ashvanes_razor_coral&!debuff.vendetta.up&!debuff.toxic_blade.up
             if I.FontOfPower:IsEquipped() and I.FontOfPower:IsReady() and MasterAssassinRemains() <= 0
                 and S.Vendetta:CooldownRemains() < 10 + 10 * num(I.RazorCoral:IsEquipped()) and not Target:DebuffP(S.Vendetta) and not Target:DebuffP(S.ToxicBladeDebuff) then
@@ -1276,7 +1422,7 @@ local function APL()
             if ShouldReturn then return ShouldReturn .. " (Stealthed)"; end
         end
         -- actions+=/call_action_list,name=cds,if=(!talent.master_assassin.enabled|dot.garrote.ticking)&(!equipped.azsharas_font_of_power|!trinket.azsharas_font_of_power.cooldown.up)
-        if not S.MasterAssassin:IsAvailable() or Target:DebuffP(S.Garrote) and (not Settings.Commons.UseTrinkets or not I.FontOfPower:IsEquipped() or not I.FontOfPower:IsReady()) then
+        if not S.MasterAssassin:IsAvailable() or Target:DebuffP(S.Garrote) and (not TrinketON() or not I.FontOfPower:IsEquipped() or not I.FontOfPower:IsReady()) then
             ShouldReturn = CDs();
             if ShouldReturn then return ShouldReturn; end
         end

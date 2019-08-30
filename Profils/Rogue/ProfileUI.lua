@@ -224,41 +224,6 @@ A.Data.ProfileUI = {
                         frFR = "Définissez la logique à suivre pour les Jet d’osselets.(SimC fortement recommandé!)",
 					},
                     M = {},
-                },
-				-- Splash Data
-                {
-                    E = "Dropdown",                                                         
-                    OT = {
-                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
-                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
-                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
-                    },
-                    DB = "AoeDetectionMode",
-                    DBV = "USE COMBAT LOGS",
-                    L = { 
-                        ANY = "AoE Detection Mode",
-                    }, 
-                    TT = { 
-                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
-                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
-                    }, 
-                    M = {},
-                },			
-                {
-                    E = "Checkbox", 
-                    DB = "TempBurst",
-                    DBV = false,
-                    L = { 
-                        enUS = "CD Mode: Burst", 
-                        ruRU = "CD Mode: Burst", 
-                        frFR = "CD Mode: Burst",
-                    }, 
-                    TT = { 
-                        enUS = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.", 
-                        ruRU = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.", 
-                        frFR = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.",
-                    }, 
-                    M = {},
                 }, 
             }, 
             { -- [7]
@@ -324,8 +289,7 @@ A.Data.ProfileUI = {
                     },
                 },
             },			
-            { -- [1] 1st Row
-		
+            { -- [1] 1st Row		
                 {
                     E = "Checkbox", 
                     DB = "mouseover",
@@ -384,92 +348,145 @@ A.Data.ProfileUI = {
                 
             },  
             { -- [2] 2nd Row
-                {
-                    E = "Checkbox", 
-                    DB = "StealthOOC",
-                    DBV = true,
+               {
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "Always", value = "Always" },
+                        { text = "On Bosses", value = "On Bosses" },                    
+                        { text = "On Bosses not in Dungeons", value = "On Bosses not in Dungeons" },
+                    },
+                    DB = "BurnShadowDance",
+                    DBV = "On Bosses not in Dungeons",
                     L = { 
-                        enUS = "Stealth Reminder (OOC)", 
-                        ruRU = "Stealth Reminder (OOC)", 
-                        frFR = "Stealth Reminder (OOC)",
+                        ANY = "Burn Shadow Dance before Death.",
                     }, 
                     TT = { 
-                        enUS = "Show Stealth Reminder when out of combat.", 
-                        ruRU = "Show Stealth Reminder when out of combat.", 
-                        frFR = "Show Stealth Reminder when out of combat.",
+                        enUS = "Use remaining Shadow Dance charges when the target is about to die.", 
+                        ruRU = "Use remaining Shadow Dance charges when the target is about to die.", 
                     }, 
                     M = {},
-                }, 
-                {
-                    E = "Checkbox", 
-                    DB = "UseDPSVanish",
-                    DBV = true,
-                    L = { 
-                        enUS = "Use Vanish for DPS", 
-                        ruRU = "Use Vanish for DPS", 
-                        frFR = "Use Vanish for DPS",
-                    }, 
-                    TT = { 
-                        enUS = "Suggest Vanish -> Ambush for DPS.Disable to save Vanish for utility purposes.", 
-                        ruRU = "Suggest Vanish -> Ambush for DPS.Disable to save Vanish for utility purposes.", 
-                        frFR = "Suggest Vanish -> Ambush for DPS.Disable to save Vanish for utility purposes.",
-                    }, 
-                    M = {},
-                }, 
-                {
-                    E = "Checkbox", 
-                    DB = "PrecombatAR",
-                    DBV = true,
-                    L = { 
-                        enUS = "Show Precombat Adrenaline Rush", 
-                        ruRU = "Показать предкомбат адреналина", 
-                        frFR = "Montrer Pousée d'Adrenaline en Precombat",
-                    }, 
-                    TT = { 
-                        enUS = "Display Adrenaline Rush when outside of combat with a valid target.", 
-                        ruRU = "Показывать выброс адреналина, когда вне боя с действительной целью.", 
-                        frFR = "Affichez la poussée d'adrénaline en dehors du combat avec une cible valide.",
-                    }, 
-                    M = {},
-                }, 
-                {
-                    E = "Checkbox", 
-                    DB = "SoloMode",
-                    DBV = false,
-                    L = { 
-                        enUS = "Activate Solo Mode", 
-                        ruRU = "Активировать Solo Mode", 
-                        frFR = "Activer le mode solo",
-                    }, 
-                    TT = { 
-                        enUS = "Activate Solo Mode to prioritize survivability over DPS.", 
-                        ruRU = "Активируйте Solo Mode для определения приоритета выживаемости над DPS", 
-                        frFR = "Activez le mode solo pour donner la priorité aux capacités de survie par rapport à DPS.",
-                    }, 
-                    M = {},
-                }, 						
-            },
-            { -- [3] 3nd Row 
-				-- Splash Data
+                },
                 {
                     E = "Dropdown",                                                         
                     OT = {
-                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
-                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
-                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
+                        { text = "Never", value = "Never" },
+                        { text = "On Bosses", value = "On Bosses" },                    
+                        { text = "Always", value = "Always" },
                     },
-                    DB = "AoeDetectionMode",
-                    DBV = "USE COMBAT LOGS",
+                    DB = "UsePriorityRotation",
+                    DBV = "Never",
                     L = { 
-                        ANY = "AoE Detection Mode",
+                        ANY = "Use Priority Rotation",
                     }, 
                     TT = { 
-                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
-                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                        enUS = "Select when to show rotation for maximum priority damage (at the cost of overall AoE damage.)", 
+                        ruRU = "Select when to show rotation for maximum priority damage (at the cost of overall AoE damage.)", 
                     }, 
                     M = {},
-                },	
+                },				
             },
+			{
+                {
+                    E = "Slider",                                                     
+                    MIN = 1, 
+                    MAX = 5,  
+                    Precision = 0.25, 	-- accuracy of slider move (default 2)					
+                    DB = "EviscerateDMGOffset",
+                    DBV = 3, -- Set healthpercentage @60% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = "Eviscerate DMG Offset",
+                    },
+                    TT = { 
+                        enUS = "Set the Eviscerate DMG Offset.", 
+                        ruRU = "Set the Eviscerate DMG Offset.", 
+                    }, 					
+                    M = {},
+                },
+                {
+                    E = "Slider",                                                     
+                    MIN = 2, 
+                    MAX = 3,         
+                    Precision = 0.1, 	-- accuracy of slider move (default 2)					
+                    DB = "ShDEcoCharge",
+                    DBV = 2.55, -- Set healthpercentage @60% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = "ShD Eco Charge",
+                    }, 
+                    TT = { 
+                        enUS = "Set the Shadow Dance Eco Charge threshold.", 
+                        ruRU = "Set the Shadow Dance Eco Charge threshold.", 
+                    }, 
+                    M = {},
+                },			
+			},
+			{
+                {
+                    E = "Checkbox", 
+                    DB = "STMfDAsDPSCD",
+                    DBV = false,
+                    L = { 
+                        enUS = "ST Marked for Death as DPS CD", 
+                        ruRU = "ST Marked for Death as DPS CD", 
+                        frFR = "ST Marked for Death as DPS CD",
+                    }, 
+                    TT = { 
+                        enUS = "Enable if you want to put Single Target Marked for Death shown as Off GCD (top icons) instead of Suggested.", 
+                        ruRU = "Enable if you want to put Single Target Marked for Death shown as Off GCD (top icons) instead of Suggested.", 
+                        frFR = "Enable if you want to put Single Target Marked for Death shown as Off GCD (top icons) instead of Suggested.",
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Checkbox", 
+                    DB = "Vanish",
+                    DBV = true,
+                    L = { 
+                        enUS = "Stealth Combo - Vanish", 
+                        ruRU = "Stealth Combo - Vanish", 
+                        frFR = "Stealth Combo - Vanish",
+                    }, 
+                    TT = { 
+                        enUS = "Allow suggesting Vanish stealth ability combos (recommended)", 
+                        ruRU = "Allow suggesting Vanish stealth ability combos (recommended)", 
+                        frFR = "Allow suggesting Vanish stealth ability combos (recommended)",
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Checkbox", 
+                    DB = "Shadowmeld",
+                    DBV = true,
+                    L = { 
+                        enUS = "Stealth Combo - Shadowmeld", 
+                        ruRU = "Stealth Combo - Shadowmeld", 
+                        frFR = "Stealth Combo - Shadowmeld",
+                    }, 
+                    TT = { 
+                        enUS = "Allow suggesting Shadowmeld stealth ability combos (recommended)", 
+                        ruRU = "Allow suggesting Shadowmeld stealth ability combos (recommended)", 
+                        frFR = "Allow suggesting Shadowmeld stealth ability combos (recommended)",
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Checkbox", 
+                    DB = "ShadowDance",
+                    DBV = true,
+                    L = { 
+                        enUS = "Stealth Combo - Shadow Dance", 
+                        ruRU = "Stealth Combo - Shadow Dance", 
+                        frFR = "Stealth Combo - Shadow Dance",
+                    }, 
+                    TT = { 
+                        enUS = "Allow suggesting Shadow Dance stealth ability combos (recommended)", 
+                        ruRU = "Allow suggesting Shadow Dance stealth ability combos (recommended)", 
+                        frFR = "Allow suggesting Shadow Dance stealth ability combos (recommended)",
+                    }, 
+                    M = {},
+                },
+			},
             { -- [4] 4th Row
 
                 {
@@ -486,17 +503,21 @@ A.Data.ProfileUI = {
             },
             { -- [3] 3rd Row 
                 {
-                    E = "Slider",                                                     
-                    MIN = -1, 
-                    MAX = 100,                            
-                    DB = "RolltheBonesLeechHP",
-                    DBV = 60, -- Set healthpercentage @60% life. 
-                    ONOFF = true,
+                    E = "Checkbox", 
+                    DB = "StealthOOC",
+                    DBV = true,
                     L = { 
-                        ANY = A.GetSpellInfo(193316) .. " (%)",
+                        enUS = "Stealth Reminder (OOC)", 
+                        ruRU = "Stealth Reminder (OOC)", 
+                        frFR = "Stealth Reminder (OOC)",
+                    }, 
+                    TT = { 
+                        enUS = "Show Stealth Reminder when out of combat.", 
+                        ruRU = "Show Stealth Reminder when out of combat.", 
+                        frFR = "Show Stealth Reminder when out of combat.",
                     }, 
                     M = {},
-                },
+                }, 
                 {
                     E = "Slider",                                                     
                     MIN = -1, 
@@ -521,71 +542,6 @@ A.Data.ProfileUI = {
                     }, 
                     M = {},
                 },
-            },
-            { -- [4] 4th Row
-                {
-                    E = "Dropdown",                                                         
-                    OT = {
-                        { text = "SIMC", value = "SIMC" },
-						{ text = "MYTHICPLUS", value = "MYTHICPLUS" },
-						{ text = "AOESTRAT", value = "AOESTRAT" },
-                        { text = "1BUFF", value = "1BUFF" },                    
-                        { text = "BROADSIDE", value = "BROADSIDE" },
-                        { text = "BURIEDTREASURE", value = "BURIEDTREASURE" },
-						{ text = "GRANDMELEE", value = "GRANDMELEE" },
-						{ text = "SKULLANDCROSS", value = "SKULLANDCROSS" },
-						{ text = "RUTHLESSPRECISION", value = "RUTHLESSPRECISION" },
-						{ text = "TRUEBEARING", value = "TRUEBEARING" },							
-                    },
-                    DB = "RolltheBonesLogic",
-                    DBV = "SIMC",
-                    L = { 
-                        enUS = "Roll the Bones Logic", 
-                        ruRU = "Бросок костей Логика", 
-                        frFR = "Logique pour les Jet d’osselets",
-                    }, 
-                    TT = { 
-                        enUS = "Define the Roll the Bones logic to follow.\n(SimC highly recommended!)", 
-                        ruRU = "Определите логику Бросок костей, которой нужно следовать. \ N (SimC настоятельно рекомендуется!)", 
-                        frFR = "Définissez la logique à suivre pour les Jet d’osselets.(SimC fortement recommandé!)",
-					},
-                    M = {},
-                },
-				-- Splash Data
-                {
-                    E = "Dropdown",                                                         
-                    OT = {
-                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
-                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
-                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
-                    },
-                    DB = "AoeDetectionMode",
-                    DBV = "USE COMBAT LOGS",
-                    L = { 
-                        ANY = "AoE Detection Mode",
-                    }, 
-                    TT = { 
-                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
-                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
-                    }, 
-                    M = {},
-                },			
-                {
-                    E = "Checkbox", 
-                    DB = "TempBurst",
-                    DBV = false,
-                    L = { 
-                        enUS = "CD Mode: Burst", 
-                        ruRU = "CD Mode: Burst", 
-                        frFR = "CD Mode: Burst",
-                    }, 
-                    TT = { 
-                        enUS = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.", 
-                        ruRU = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.", 
-                        frFR = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.",
-                    }, 
-                    M = {},
-                }, 
             }, 
             { -- [7]
                 {
@@ -606,7 +562,7 @@ A.Data.ProfileUI = {
                     DB = "FearPvP",
                     DBV = "ON MELEE BURST",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(5782),
+                        ANY = "PvP " .. A.GetSpellInfo(2094),
                     }, 
                     TT = { 
                         enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
@@ -631,7 +587,7 @@ A.Data.ProfileUI = {
                         [4] = true,
                     }, 
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(5782) .. " units",
+                        ANY = "PvP " .. A.GetSpellInfo(2094) .. " units",
                     }, 
                     TT = { 
                         enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 
@@ -710,92 +666,135 @@ A.Data.ProfileUI = {
                 
             },  
             { -- [2] 2nd Row
-                {
-                    E = "Checkbox", 
-                    DB = "StealthOOC",
-                    DBV = true,
-                    L = { 
-                        enUS = "Stealth Reminder (OOC)", 
-                        ruRU = "Stealth Reminder (OOC)", 
-                        frFR = "Stealth Reminder (OOC)",
-                    }, 
-                    TT = { 
-                        enUS = "Show Stealth Reminder when out of combat.", 
-                        ruRU = "Show Stealth Reminder when out of combat.", 
-                        frFR = "Show Stealth Reminder when out of combat.",
-                    }, 
-                    M = {},
-                }, 
-                {
-                    E = "Checkbox", 
-                    DB = "UseDPSVanish",
-                    DBV = true,
-                    L = { 
-                        enUS = "Use Vanish for DPS", 
-                        ruRU = "Use Vanish for DPS", 
-                        frFR = "Use Vanish for DPS",
-                    }, 
-                    TT = { 
-                        enUS = "Suggest Vanish -> Ambush for DPS.Disable to save Vanish for utility purposes.", 
-                        ruRU = "Suggest Vanish -> Ambush for DPS.Disable to save Vanish for utility purposes.", 
-                        frFR = "Suggest Vanish -> Ambush for DPS.Disable to save Vanish for utility purposes.",
-                    }, 
-                    M = {},
-                }, 
-                {
-                    E = "Checkbox", 
-                    DB = "PrecombatAR",
-                    DBV = true,
-                    L = { 
-                        enUS = "Show Precombat Adrenaline Rush", 
-                        ruRU = "Показать предкомбат адреналина", 
-                        frFR = "Montrer Pousée d'Adrenaline en Precombat",
-                    }, 
-                    TT = { 
-                        enUS = "Display Adrenaline Rush when outside of combat with a valid target.", 
-                        ruRU = "Показывать выброс адреналина, когда вне боя с действительной целью.", 
-                        frFR = "Affichez la poussée d'adrénaline en dehors du combat avec une cible valide.",
-                    }, 
-                    M = {},
-                }, 
-                {
-                    E = "Checkbox", 
-                    DB = "SoloMode",
-                    DBV = false,
-                    L = { 
-                        enUS = "Activate Solo Mode", 
-                        ruRU = "Активировать Solo Mode", 
-                        frFR = "Activer le mode solo",
-                    }, 
-                    TT = { 
-                        enUS = "Activate Solo Mode to prioritize survivability over DPS.", 
-                        ruRU = "Активируйте Solo Mode для определения приоритета выживаемости над DPS", 
-                        frFR = "Activez le mode solo pour donner la priorité aux capacités de survie par rapport à DPS.",
-                    }, 
-                    M = {},
-                }, 						
-            },
-            { -- [3] 3nd Row 
-				-- Splash Data
-                {
+               {
                     E = "Dropdown",                                                         
                     OT = {
-                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
-                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
-                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
+                        { text = "Never", value = "Never" },
+                        { text = "On Bosses", value = "On Bosses" },                    
+                        { text = "Always", value = "Always" },
                     },
-                    DB = "AoeDetectionMode",
-                    DBV = "USE COMBAT LOGS",
+                    DB = "UsePriorityRotation",
+                    DBV = "Never",
                     L = { 
-                        ANY = "AoE Detection Mode",
+                        ANY = "Use Priority Rotation",
                     }, 
                     TT = { 
-                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
-                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                        enUS = "Select when to show rotation for maximum priority damage (at the cost of overall AoE damage.)", 
+                        ruRU = "Select when to show rotation for maximum priority damage (at the cost of overall AoE damage.)", 
                     }, 
                     M = {},
-                },	
+                },				
             },
+            { -- [2] 2nd Row
+                {
+                    E = "Checkbox", 
+                    DB = "RangedMultiDoT",
+                    DBV = true,
+                    L = { 
+                        enUS = "Suggest Ranged Multi-DoT", 
+                        ruRU = "Suggest Ranged Multi-DoT", 
+                        frFR = "Suggest Ranged Multi-DoT",
+                    }, 
+                    TT = { 
+                        enUS = "Suggest multi-DoT targets at Fan of Knives range (10 yards) instead of only melee range. Disabling will only suggest DoT targets within melee range.", 
+                        ruRU = "Suggest multi-DoT targets at Fan of Knives range (10 yards) instead of only melee range. Disabling will only suggest DoT targets within melee range.", 
+                        frFR = "Suggest multi-DoT targets at Fan of Knives range (10 yards) instead of only melee range. Disabling will only suggest DoT targets within melee range.",
+                    }, 
+                    M = {},
+                }, 
+                {
+                    E = "Checkbox", 
+                    DB = "AlwaysSuggestGarrote",
+                    DBV = false,
+                    L = { 
+                        enUS = "Always Suggest Garrote", 
+                        ruRU = "Always Suggest Garrote", 
+                        frFR = "Always Suggest Garrote",
+                    }, 
+                    TT = { 
+                        enUS = "Don't prevent Garrote suggestions when using Subterfuge and Vanish is ready. These should ideally be synced, but can be useful if holding Vanish for specific fights.", 
+                        ruRU = "Don't prevent Garrote suggestions when using Subterfuge and Vanish is ready. These should ideally be synced, but can be useful if holding Vanish for specific fights.", 
+                        frFR = "Don't prevent Garrote suggestions when using Subterfuge and Vanish is ready. These should ideally be synced, but can be useful if holding Vanish for specific fights.",
+                    }, 
+                    M = {},
+                },  						
+            },
+			{
+                {
+                    E = "Slider",                                                     
+                    MIN = 1, 
+                    MAX = 5, 
+                    Precision = 0.25,					
+                    DB = "EnvenomDMGOffset",
+                    DBV = 3, -- Set healthpercentage @60% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = "Envenom DMG Offset",
+                    },
+                    TT = { 
+                        enUS = "Set the Envenom DMG Offset.", 
+                        ruRU = "Set the Envenom DMG Offset.", 
+                        frFR = "Set the Envenom DMG Offset.",
+					},					
+                    M = {},
+                },
+                {
+                    E = "Slider",                                                     
+                    MIN = -1, 
+                    MAX = 5,  
+                    Precision = 0.25,					
+                    DB = "MutilateDMGOffset",
+                    DBV = 3, -- Set healthpercentage @60% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = "Mutilate DMG Offset",
+                    },
+                    TT = { 
+                        enUS = "Set the Mutilate DMG Offset.", 
+                        ruRU = "Set the Mutilate DMG Offset.", 
+                        frFR = "Set the Mutilate DMG Offset.",
+					},					
+                    M = {},
+                },
+			},
+            {
+                {
+                    E = "Slider",                                                     
+                    MIN = 5, 
+                    MAX = 55, 
+                    Precision = 1,					
+                    DB = "PoisonRefresh",
+                    DBV = 15, -- Set healthpercentage @60% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = "OOC Poison Refresh",
+                    },
+                    TT = { 
+                        enUS = "Set the timer for the Poison Refresh (OOC)", 
+                        ruRU = "Set the timer for the Poison Refresh (OOC)", 
+                        frFR = "Set the timer for the Poison Refresh (OOC)",
+					},					
+                    M = {},
+                },
+                {
+                    E = "Slider",                                                     
+                    MIN = 0, 
+                    MAX = 55,             
+                    Precision = 1,					
+                    DB = "PoisonRefreshCombat",
+                    DBV = 3, -- Set healthpercentage @70% life. 
+                    ONOFF = true,
+                    L = { 
+                        ANY = "Combat Poison Refresh",
+                    },
+                    TT = { 
+                        enUS = "Set the timer for the Poison Refresh (In Combat)", 
+                        ruRU = "Set the timer for the Poison Refresh (In Combat)", 
+                        frFR = "Set the timer for the Poison Refresh (In Combat)",
+					},					
+                    M = {},
+                },
+			},
             { -- [4] 4th Row
 
                 {
@@ -812,17 +811,21 @@ A.Data.ProfileUI = {
             },
             { -- [3] 3rd Row 
                 {
-                    E = "Slider",                                                     
-                    MIN = -1, 
-                    MAX = 100,                            
-                    DB = "RolltheBonesLeechHP",
-                    DBV = 60, -- Set healthpercentage @60% life. 
-                    ONOFF = true,
+                    E = "Checkbox", 
+                    DB = "StealthOOC",
+                    DBV = true,
                     L = { 
-                        ANY = A.GetSpellInfo(193316) .. " (%)",
+                        enUS = "Stealth Reminder (OOC)", 
+                        ruRU = "Stealth Reminder (OOC)", 
+                        frFR = "Stealth Reminder (OOC)",
+                    }, 
+                    TT = { 
+                        enUS = "Show Stealth Reminder when out of combat.", 
+                        ruRU = "Show Stealth Reminder when out of combat.", 
+                        frFR = "Show Stealth Reminder when out of combat.",
                     }, 
                     M = {},
-                },
+                }, 
                 {
                     E = "Slider",                                                     
                     MIN = -1, 
@@ -848,71 +851,6 @@ A.Data.ProfileUI = {
                     M = {},
                 },
             },
-            { -- [4] 4th Row
-                {
-                    E = "Dropdown",                                                         
-                    OT = {
-                        { text = "SIMC", value = "SIMC" },
-						{ text = "MYTHICPLUS", value = "MYTHICPLUS" },
-						{ text = "AOESTRAT", value = "AOESTRAT" },
-                        { text = "1BUFF", value = "1BUFF" },                    
-                        { text = "BROADSIDE", value = "BROADSIDE" },
-                        { text = "BURIEDTREASURE", value = "BURIEDTREASURE" },
-						{ text = "GRANDMELEE", value = "GRANDMELEE" },
-						{ text = "SKULLANDCROSS", value = "SKULLANDCROSS" },
-						{ text = "RUTHLESSPRECISION", value = "RUTHLESSPRECISION" },
-						{ text = "TRUEBEARING", value = "TRUEBEARING" },							
-                    },
-                    DB = "RolltheBonesLogic",
-                    DBV = "SIMC",
-                    L = { 
-                        enUS = "Roll the Bones Logic", 
-                        ruRU = "Бросок костей Логика", 
-                        frFR = "Logique pour les Jet d’osselets",
-                    }, 
-                    TT = { 
-                        enUS = "Define the Roll the Bones logic to follow.\n(SimC highly recommended!)", 
-                        ruRU = "Определите логику Бросок костей, которой нужно следовать. \ N (SimC настоятельно рекомендуется!)", 
-                        frFR = "Définissez la logique à suivre pour les Jet d’osselets.(SimC fortement recommandé!)",
-					},
-                    M = {},
-                },
-				-- Splash Data
-                {
-                    E = "Dropdown",                                                         
-                    OT = {
-                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
-                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
-                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
-                    },
-                    DB = "AoeDetectionMode",
-                    DBV = "USE COMBAT LOGS",
-                    L = { 
-                        ANY = "AoE Detection Mode",
-                    }, 
-                    TT = { 
-                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
-                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
-                    }, 
-                    M = {},
-                },			
-                {
-                    E = "Checkbox", 
-                    DB = "TempBurst",
-                    DBV = false,
-                    L = { 
-                        enUS = "CD Mode: Burst", 
-                        ruRU = "CD Mode: Burst", 
-                        frFR = "CD Mode: Burst",
-                    }, 
-                    TT = { 
-                        enUS = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.", 
-                        ruRU = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.", 
-                        frFR = "This will make the CD to be turned off after 10 seconds of fight.\n\nUseful if you want a Burst opener.",
-                    }, 
-                    M = {},
-                }, 
-            }, 
             { -- [7]
                 {
                     E = "Header",
@@ -971,6 +909,82 @@ A.Data.ProfileUI = {
     -- MSG Actions UI
     [7] = {
         [ACTION_CONST_ROGUE_OUTLAW] = { 
+            -- MSG Action Pet Dispell
+            ["dispell"] = { Enabled = true, Key = "PetDispell", LUA = [[
+                return     A.DispellMagic:IsReady(unit, true) and 
+                        (
+                            ( 
+                                not Unit(thisunit):IsEnemy() and 
+                                (
+                                    (
+                                        not InPvP() and 
+                                        Env.Dispel(unit)
+                                    ) or 
+                                    (
+                                        InPvP() and 
+                                        EnemyTeam():PlayersInRange(1, 5)
+                                    ) 
+                                )
+                            ) or 
+                            ( 
+                                Unit(thisunit):IsEnemy() and 
+                                Unit(thisunit):GetRange() <= 5 and 
+                                Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"TotalImun", "DeffBuffsMagic"}, true) 
+                            )                
+                        ) 
+            ]] },
+            -- MSG Action Pet Kick
+            ["kick"] = { Enabled = true, Key = "Pet Kick", LUA = [[
+                return  SpellInRange(thisunit, Action[PlayerSpec].SpellLock.ID) and 
+                        select(2, CastTime(nil, thisunit)) > 0 and 
+                        Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
+            ]] },
+            -- MSG Action Fear
+            ["kick"] = { Enabled = true, Key = "Pet Kick", LUA = [[
+                return  SpellInRange(thisunit, Action[PlayerSpec].SpellLock.ID) and 
+                        select(2, CastTime(nil, thisunit)) > 0 and 
+                        Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
+            ]] },
+        },
+        [ACTION_CONST_ROGUE_ASSASSINATION] = { 
+            -- MSG Action Pet Dispell
+            ["dispell"] = { Enabled = true, Key = "PetDispell", LUA = [[
+                return     A.DispellMagic:IsReady(unit, true) and 
+                        (
+                            ( 
+                                not Unit(thisunit):IsEnemy() and 
+                                (
+                                    (
+                                        not InPvP() and 
+                                        Env.Dispel(unit)
+                                    ) or 
+                                    (
+                                        InPvP() and 
+                                        EnemyTeam():PlayersInRange(1, 5)
+                                    ) 
+                                )
+                            ) or 
+                            ( 
+                                Unit(thisunit):IsEnemy() and 
+                                Unit(thisunit):GetRange() <= 5 and 
+                                Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"TotalImun", "DeffBuffsMagic"}, true) 
+                            )                
+                        ) 
+            ]] },
+            -- MSG Action Pet Kick
+            ["kick"] = { Enabled = true, Key = "Pet Kick", LUA = [[
+                return  SpellInRange(thisunit, Action[PlayerSpec].SpellLock.ID) and 
+                        select(2, CastTime(nil, thisunit)) > 0 and 
+                        Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
+            ]] },
+            -- MSG Action Fear
+            ["kick"] = { Enabled = true, Key = "Pet Kick", LUA = [[
+                return  SpellInRange(thisunit, Action[PlayerSpec].SpellLock.ID) and 
+                        select(2, CastTime(nil, thisunit)) > 0 and 
+                        Action[PlayerSpec].SpellLock:AbsentImun(thisunit, {"KickImun", "TotalImun", "DeffBuffsMagic"}, true) 
+            ]] },
+        },
+        [ACTION_CONST_ROGUE_SUBTLETY] = { 
             -- MSG Action Pet Dispell
             ["dispell"] = { Enabled = true, Key = "PetDispell", LUA = [[
                 return     A.DispellMagic:IsReady(unit, true) and 

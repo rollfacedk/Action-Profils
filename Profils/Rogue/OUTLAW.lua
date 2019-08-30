@@ -25,6 +25,7 @@ Action[ACTION_CONST_ROGUE_OUTLAW] = {
     WilloftheForsaken                    = Action.Create({ Type = "Spell", ID = 7744        }), -- not usable in APL but user can Queue it    
     EscapeArtist                         = Action.Create({ Type = "Spell", ID = 20589    }), -- not usable in APL but user can Queue it
     EveryManforHimself                   = Action.Create({ Type = "Spell", ID = 59752    }), -- not usable in APL but user can Queue it
+    LightsJudgment                        = Action.Create({ Type = "Spell", ID = 255647     }),
     PetKick                              = Action.Create({ Type = "Spell", ID = 47482, Color = "RED", Desc = "RED" }),  
     -- Generics Spells
     AdrenalineRush                       = Action.Create({ Type = "Spell", ID = 13750        }),
@@ -59,6 +60,7 @@ Action[ACTION_CONST_ROGUE_OUTLAW] = {
     Blind                                = Action.Create({ Type = "Spell", ID = 2094       }),
     CheapShot                            = Action.Create({ Type = "Spell", ID = 1833       }),
     KidneyShot                           = Action.Create({ Type = "Spell", ID = 408       }),
+    Sprint                               = Action.Create({ Type = "Spell", ID = 2983       }),
 	-- Roll the Bones
     Broadside                            = Action.Create({ Type = "Spell", ID = 193356       }),
     BuriedTreasure                       = Action.Create({ Type = "Spell", ID = 199600       }),
@@ -215,7 +217,7 @@ local function CPSpend()
 end
   
 -- Stealth
-local function Stealth(Stealth, Setting)
+function Stealth(Stealth, Setting)
     if Action.GetToggle(2, "StealthOOC") and Stealth:IsCastable() and not Player:IsStealthed() then
         if HR.Cast(Stealth, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Stealth (OOC)"; end
     end
@@ -223,7 +225,7 @@ local function Stealth(Stealth, Setting)
 end
 
 -- Crimson Vial
-local function CrimsonVial(CrimsonVial)
+function CrimsonVial(CrimsonVial)
     if CrimsonVial:IsCastable() and Player:HealthPercentage() <= Action.GetToggle(2, "CrimsonVialHP") then
         if HR.Cast(CrimsonVial, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Crimson Vial (Defensives)"; end
     end
@@ -231,7 +233,7 @@ local function CrimsonVial(CrimsonVial)
 end
 
 -- Feint
-local function Feint(Feint)
+function Feint(Feint)
     if Feint:IsCastable() and not Player:Buff(Feint) and Player:HealthPercentage() <= Action.GetToggle(2, "FeintHP") then
         if HR.Cast(Feint, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Feint (Defensives)"; end
     end
@@ -882,9 +884,8 @@ end
             --end
         end
         -- Stealth
-        if not Player:Buff(S.VanishBuff) then
-            ShouldReturn = Stealth(S.Stealth);
-            if ShouldReturn then return ShouldReturn; end
+        if not Player:Buff(S.VanishBuff) and Action.GetToggle(2, "StealthOOC") and Stealth:IsCastable() and not Player:IsStealthed() then
+            if HR.Cast(Stealth, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Stealth (OOC)"; end
         end
         -- Flask
         -- Food

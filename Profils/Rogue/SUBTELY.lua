@@ -7,7 +7,7 @@ local CNDT = TMW.CNDT
 local Env = CNDT.Env
 local Action = Action
 
-Action[ACTION_CONST_ROGUE_OUTLAW] = {
+Action[ACTION_CONST_ROGUE_SUBTLETY] = {
     -- Racial
     ArcaneTorrent                        = Action.Create({ Type = "Spell", ID = 50613     }),
     BloodFury                            = Action.Create({ Type = "Spell", ID = 20572      }),
@@ -25,6 +25,7 @@ Action[ACTION_CONST_ROGUE_OUTLAW] = {
     WilloftheForsaken                    = Action.Create({ Type = "Spell", ID = 7744        }), -- not usable in APL but user can Queue it    
     EscapeArtist                         = Action.Create({ Type = "Spell", ID = 20589    }), -- not usable in APL but user can Queue it
     EveryManforHimself                   = Action.Create({ Type = "Spell", ID = 59752    }), -- not usable in APL but user can Queue it
+    LightsJudgment                        = Action.Create({ Type = "Spell", ID = 255647     }),
     PetKick                              = Action.Create({ Type = "Spell", ID = 47482, Color = "RED", Desc = "RED" }),  
     -- Abilities
     Backstab                              = Action.Create({ Type = "Spell", ID = 53     }),
@@ -76,6 +77,7 @@ Action[ACTION_CONST_ROGUE_OUTLAW] = {
     Blind                                = Action.Create({ Type = "Spell", ID = 2094       }),
     CheapShot                            = Action.Create({ Type = "Spell", ID = 1833       }),
     KidneyShot                           = Action.Create({ Type = "Spell", ID = 408       }),
+    Sprint                               = Action.Create({ Type = "Spell", ID = 2983       }),
     -- Misc
     Channeling                           = Action.Create({ Type = "Spell", ID = 209274, Hidden = true     }),	
     -- Buffs
@@ -150,12 +152,12 @@ Action[ACTION_CONST_ROGUE_OUTLAW] = {
 }
 
 -- To create essences use next code:
-Action:CreateEssencesFor(ACTION_CONST_ROGUE_OUTLAW)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
+Action:CreateEssencesFor(ACTION_CONST_ROGUE_SUBTLETY)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 
 -- This code making shorter access to both tables Action[PLAYERSPEC] and Action
 -- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady(), it doesn't make any conflict if you will skip shorter access
 -- So with shorter access you can just do A.Guard:IsReady() instead of Action[PLAYERSPEC].Guard:IsReady()
-local A = setmetatable(Action[ACTION_CONST_ROGUE_OUTLAW], { __index = Action })
+local A = setmetatable(Action[ACTION_CONST_ROGUE_SUBTLETY], { __index = Action })
 
 -- Simcraft Imported
 -- HeroLib
@@ -176,7 +178,7 @@ local mathmin = math.min;
 local pairs = pairs;
 local tableconcat = table.concat;
 local tostring = tostring;
-
+local tableinsert = table.insert;
 ---------------------------
 -- PORT TO ACTION 
 local S, I = A:HeroCreate()
@@ -259,30 +261,49 @@ local function TrinketON()
 	end
 end
 
+-- cp_max_spend
+local function CPMaxSpend()
+    -- Should work for all 3 specs since they have same Deeper Stratagem Spell ID.
+    return S.DeeperStratagem:IsAvailable() and 6 or 5;
+end
+
+-- "cp_spend"
+local function CPSpend()
+    return mathmin(Player:ComboPoints(), CPMaxSpend());
+end
+  
+-- Stealth
+function Stealth(Stealth, Setting)
+    if Action.GetToggle(2, "StealthOOC") and Stealth:IsCastable() and not Player:IsStealthed() then
+        if HR.Cast(Stealth, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Stealth (OOC)"; end
+    end
+    return false;
+end
+
 -- Marked for Death Sniping
 local BestUnit, BestUnitTTD;
 local function MfDSniping (MarkedforDeath)
     if MarkedforDeath:IsCastable() then
-      -- Get Units up to 30y for MfD.
-      HL.GetEnemies(30);
+        -- Get Units up to 30y for MfD.
+        HL.GetEnemies(30);
 
-      BestUnit, BestUnitTTD = nil, 60;
-      local MOTTD = MouseOver:IsInRange(30) and MouseOver:TimeToDie() or 11111;
-      local TTD;
-      for _, Unit in pairs(Cache.Enemies[30]) do
-        TTD = Unit:TimeToDie();
-        -- Note: Increased the SimC condition by 50% since we are slower.
-        if not Unit:IsMfdBlacklisted() and TTD < Player:ComboPointsDeficit()*1.5 and TTD < BestUnitTTD then
-          if MOTTD - TTD > 1 then
-            BestUnit, BestUnitTTD = Unit, TTD;
-          else
-            BestUnit, BestUnitTTD = MouseOver, MOTTD;
-          end
+        BestUnit, BestUnitTTD = nil, 60;
+        local MOTTD = MouseOver:IsInRange(30) and MouseOver:TimeToDie() or 11111;
+        local TTD;
+        for _, Unit in pairs(Cache.Enemies[30]) do
+            TTD = Unit:TimeToDie();
+            -- Note: Increased the SimC condition by 50% since we are slower.
+            if not Unit:IsMfdBlacklisted() and TTD < Player:ComboPointsDeficit()*1.5 and TTD < BestUnitTTD then
+                if MOTTD - TTD > 1 then
+                    BestUnit, BestUnitTTD = Unit, TTD;
+                else
+                   BestUnit, BestUnitTTD = MouseOver, MOTTD;
+                end
+            end
         end
-      end
-      if BestUnit and BestUnit:GUID() ~= Target:GUID() then
-        HR.CastLeftNameplate(BestUnit, MarkedforDeath);
-      end
+        if BestUnit and BestUnit:GUID() ~= Target:GUID() then
+            HR.CastLeftNameplate(BestUnit, MarkedforDeath);
+        end
     end
 end
 
@@ -298,7 +319,7 @@ S.Eviscerate:RegisterDamage(
         -- Attack Power
         Player:AttackPowerDamageMod() *
         -- Combo Points
-        Rogue.CPSpend() *
+        CPSpend() *
         -- Eviscerate R1 AP Coef
         0.176 *
         -- Eviscerate R2 Multiplier
@@ -329,7 +350,7 @@ S.Nightblade:RegisterPMultiplier(
 );
 -- Items
 if not Item.Rogue then Item.Rogue = {}; end
-Item.Rogue.Subtlety = {
+Item.Subtlety = {
   -- Trinkets
   GalecallersBoon       = Item(159614, {13, 14}),
   InvocationOfYulon     = Item(165568, {13, 14}),
@@ -339,7 +360,7 @@ Item.Rogue.Subtlety = {
   FontOfPower           = Item(169314, {13, 14}),
   RazorCoral            = Item(169311, {13, 14}),
 };
-local I = Item.Rogue.Subtlety;
+local I = Item.Subtlety;
 local AoETrinkets = { };
 
 -- Rotation Var
@@ -354,9 +375,9 @@ local function IsInMeleeRange ()
 end
 
 local function MayBurnShadowDance()
-  if Settings.Subtlety.BurnShadowDance == "On Bosses not in Dungeons" and Player:IsInDungeon() then
+  if Action.GetToggle(2, "BurnShadowDance") == "On Bosses not in Dungeons" and Player:IsInDungeon() then
     return false
-  elseif Settings.Subtlety.BurnShadowDance ~= "Always" and not Target:IsInBossList() then
+  elseif Action.GetToggle(2, "BurnShadowDance") ~= "Always" and not Target:IsInBossList() then
     return false
   else
     return true
@@ -367,10 +388,10 @@ local function UsePriorityRotation()
   if Cache.EnemiesCount[10] < 2 then
     return false
   end
-  if Settings.Subtlety.UsePriorityRotation == "Always" then
+  if Action.GetToggle(2, "UsePriorityRotation") == "Always" then
     return true
   end
-  if Settings.Subtlety.UsePriorityRotation == "On Bosses" and Target:IsInBossList() then
+  if Action.GetToggle(2, "UsePriorityRotation") == "On Bosses" and Target:IsInBossList() then
     return true
   end
   -- Zul Mythic
@@ -409,11 +430,11 @@ local function Finish (ReturnSpellOnly, StealthSpell)
   end
 
   if S.Nightblade:IsCastable() then
-    local NightbladeThreshold = (6+Rogue.CPSpend()*2)*0.3;
+    local NightbladeThreshold = (6+CPSpend()*2)*0.3;
     -- actions.finish+=/nightblade,if=(!talent.dark_shadow.enabled|!buff.shadow_dance.up)&target.time_to_die-remains>6&remains<tick_time*2
     if IsInMeleeRange() and (not S.DarkShadow:IsAvailable() or not ShadowDanceBuff)
       and (Target:FilteredTimeToDie(">", 6, -Target:DebuffRemainsP(S.Nightblade)) or Target:TimeToDieIsNotValid())
-      and Rogue.CanDoTUnit(Target, S.Eviscerate:Damage()*Settings.Subtlety.EviscerateDMGOffset)
+      and Everyone.CanDoTUnit(Target, S.Eviscerate:Damage()*Action.GetToggle(2, "EviscerateDMGOffset"))
       and Target:DebuffRemainsP(S.Nightblade) < 4 then
       if ReturnSpellOnly then
         return S.Nightblade;
@@ -427,7 +448,7 @@ local function Finish (ReturnSpellOnly, StealthSpell)
       local NBCount = 0;
       for _, Unit in pairs(Cache.Enemies["Melee"]) do
         if Everyone.UnitIsCycleValid(Unit, BestUnitTTD, -Unit:DebuffRemainsP(S.Nightblade))
-          and Everyone.CanDoTUnit(Unit, S.Eviscerate:Damage()*Settings.Subtlety.EviscerateDMGOffset)
+          and Everyone.CanDoTUnit(Unit, S.Eviscerate:Damage()*Action.GetToggle(2, "EviscerateDMGOffset"))
           and Unit:DebuffRefreshableP(S.Nightblade, NightbladeThreshold) then
           BestUnit, BestUnitTTD = Unit, Unit:TimeToDie();
         end
@@ -442,7 +463,7 @@ local function Finish (ReturnSpellOnly, StealthSpell)
     -- actions.finish+=/nightblade,if=remains<cooldown.symbols_of_death.remains+10&cooldown.symbols_of_death.remains<=5&target.time_to_die-remains>cooldown.symbols_of_death.remains+5
     if IsInMeleeRange() and Target:DebuffRemainsP(S.Nightblade) < S.SymbolsofDeath:CooldownRemainsP() + 10
       and S.SymbolsofDeath:CooldownRemainsP() <= 5
-      and Rogue.CanDoTUnit(Target, S.Eviscerate:Damage()*Settings.Subtlety.EviscerateDMGOffset)
+      and Everyone.CanDoTUnit(Target, S.Eviscerate:Damage()*Action.GetToggle(2, "EviscerateDMGOffset"))
       and (Target:FilteredTimeToDie(">", 5 + S.SymbolsofDeath:CooldownRemainsP(), -Target:DebuffRemainsP(S.Nightblade)) or Target:TimeToDieIsNotValid()) then
       if ReturnSpellOnly then
         return S.Nightblade;
@@ -551,14 +572,14 @@ local function StealthMacro (StealthSpell)
 
   -- Handle StealthMacro GUI options
   -- If false, just suggest them as off-GCD and bail out of the macro functionality
-  if StealthSpell == S.Vanish and not Settings.Subtlety.StealthMacro.Vanish then
-    if HR.Cast(S.Vanish, Settings.Commons.OffGCDasOffGCD.Vanish) then return "Cast Vanish"; end
+  if StealthSpell == S.Vanish then
+    if HR.Cast(S.Vanish, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Vanish"; end
     return false;
-  elseif StealthSpell == S.Shadowmeld and not Settings.Subtlety.StealthMacro.Shadowmeld then
-    if HR.Cast(S.Shadowmeld, Settings.Commons.OffGCDasOffGCD.Racials) then return "Cast Shadowmeld"; end
+  elseif StealthSpell == S.Shadowmeld then
+    if HR.Cast(S.Shadowmeld, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Shadowmeld"; end
     return false;
-  elseif StealthSpell == S.ShadowDance and not Settings.Subtlety.StealthMacro.ShadowDance then
-    if HR.Cast(S.ShadowDance, Settings.Subtlety.OffGCDasOffGCD.ShadowDance) then return "Cast Shadow Dance"; end
+  elseif StealthSpell == S.ShadowDance then
+    if HR.Cast(S.ShadowDance, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Shadow Dance"; end
     return false;
   end
 
@@ -576,39 +597,39 @@ end
 local function Essences ()
   -- blood_of_the_enemy,if=cooldown.symbols_of_death.up|target.time_to_die<=10
   if S.BloodoftheEnemy:IsCastableP() and (S.SymbolsofDeath:CooldownUpP() or Target:FilteredTimeToDie("<=", 10)) then
-    if HR.Cast(S.BloodoftheEnemy, nil, Settings.Commons.EssenceDisplayStyle) then return "Cast BloodoftheEnemy"; end
+    if HR.Cast(S.BloodoftheEnemy) then return "Cast BloodoftheEnemy"; end
   end
   -- concentrated_flame,if=energy.time_to_max>1&!buff.symbols_of_death.up&(!dot.concentrated_flame_burn.ticking&!action.concentrated_flame.in_flight|full_recharge_time<gcd.max)
   if S.ConcentratedFlame:IsCastableP() and Player:EnergyTimeToMaxPredicted() > 1 and not Player:BuffP(S.SymbolsofDeath) and (not Target:DebuffP(S.ConcentratedFlameBurn) and not Player:PrevGCD(1, S.ConcentratedFlame) or S.ConcentratedFlame:FullRechargeTime() < Player:GCD() + Player:GCDRemains()) then
-    if HR.Cast(S.ConcentratedFlame, nil, Settings.Commons.EssenceDisplayStyle) then return "Cast ConcentratedFlame"; end
+    if HR.Cast(S.ConcentratedFlame) then return "Cast ConcentratedFlame"; end
   end
   -- guardian_of_azeroth
   if S.GuardianofAzeroth:IsCastableP() then
-    if HR.Cast(S.GuardianofAzeroth, nil, Settings.Commons.EssenceDisplayStyle) then return "Cast GuardianofAzeroth"; end
+    if HR.Cast(S.GuardianofAzeroth) then return "Cast GuardianofAzeroth"; end
   end
   -- actions.essences+=/focused_azerite_beam,if=(spell_targets.shuriken_storm>=2|raid_event.adds.in>60)&!cooldown.symbols_of_death.up&!buff.symbols_of_death.up&energy.deficit>=30
   if S.FocusedAzeriteBeam:IsCastableP() and not S.SymbolsofDeath:CooldownUpP() and not Player:BuffP(S.SymbolsofDeath) and Player:EnergyDeficitPredicted() >= 30 then
-    if HR.Cast(S.FocusedAzeriteBeam, nil, Settings.Commons.EssenceDisplayStyle) then return "Cast FocusedAzeriteBeam"; end
+    if HR.Cast(S.FocusedAzeriteBeam) then return "Cast FocusedAzeriteBeam"; end
   end
   -- purifying_blast
   if S.PurifyingBlast:IsCastableP() then
-    if HR.Cast(S.PurifyingBlast, nil, Settings.Commons.EssenceDisplayStyle) then return "Cast PurifyingBlast"; end
+    if HR.Cast(S.PurifyingBlast) then return "Cast PurifyingBlast"; end
   end
   -- actions.essences+=/the_unbound_force,if=buff.reckless_force.up|buff.reckless_force_counter.stack<10
   if S.TheUnboundForce:IsCastableP() and (Player:BuffP(S.RecklessForceBuff) or Player:BuffStackP(S.RecklessForceCounter) < 10) then
-    if HR.Cast(S.TheUnboundForce, nil, Settings.Commons.EssenceDisplayStyle) then return "Cast TheUnboundForce"; end
+    if HR.Cast(S.TheUnboundForce) then return "Cast TheUnboundForce"; end
   end
   -- ripple_in_space
   if S.RippleInSpace:IsCastableP() then
-    if HR.Cast(S.RippleInSpace, nil, Settings.Commons.EssenceDisplayStyle) then return "Cast RippleInSpace"; end
+    if HR.Cast(S.RippleInSpace) then return "Cast RippleInSpace"; end
   end
   -- worldvein_resonance,if=buff.lifeblood.stack<3
   if S.WorldveinResonance:IsCastableP() and Player:BuffStackP(S.LifebloodBuff) < 3 then
-    if HR.Cast(S.WorldveinResonance, nil, Settings.Commons.EssenceDisplayStyle) then return "Cast WorldveinResonance"; end
+    if HR.Cast(S.WorldveinResonance) then return "Cast WorldveinResonance"; end
   end
   -- memory_of_lucid_dreams,if=energy<40&buff.symbols_of_death.up
   if S.MemoryofLucidDreams:IsCastableP() and Player:EnergyPredicted() < 40 and Player:BuffP(S.SymbolsofDeath) then
-    if HR.Cast(S.MemoryofLucidDreams, nil, Settings.Commons.EssenceDisplayStyle) then return "Cast MemoryofLucidDreams"; end
+    if HR.Cast(S.MemoryofLucidDreams) then return "Cast MemoryofLucidDreams"; end
   end
   return false;
 end
@@ -645,27 +666,27 @@ local function CDs ()
       and (not S.ShurikenTornado:IsAvailable() or S.ShadowFocus:IsAvailable() or S.ShurikenTornado:CooldownRemainsP() > 2)
       and (not S.BloodoftheEnemy:IsAvailable() or S.BloodoftheEnemy:CooldownRemainsP() > 2)
       and (S.NightsVengeancePower:AzeriteRank() < 2 or Player:BuffP(S.NightsVengeanceBuff)) then
-      if HR.Cast(S.SymbolsofDeath, Settings.Subtlety.OffGCDasOffGCD.SymbolsofDeath) then return "Cast Symbols of Death"; end
+      if HR.Cast(S.SymbolsofDeath, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Symbols of Death"; end
     end
     -- actions.cds+=/marked_for_death,target_if=min:target.time_to_die,if=target.time_to_die<combo_points.deficit
     if S.MarkedforDeath:IsCastable() and Target:FilteredTimeToDie("<", Player:ComboPointsDeficit()) then
-      if HR.Cast(S.MarkedforDeath, Settings.Commons.OffGCDasOffGCD.MarkedforDeath) then return "Cast Marked for Death"; end
+      if HR.Cast(S.MarkedforDeath, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Marked for Death"; end
     end
     -- actions.cds+=/marked_for_death,if=raid_event.adds.in>30&!stealthed.all&combo_points.deficit>=cp_max_spend
     -- Note: Without Settings.Subtlety.STMfDAsDPSCD
-    if not Settings.Subtlety.STMfDAsDPSCD and S.MarkedforDeath:IsCastable() and not Player:IsStealthedP(true, true) and Player:ComboPointsDeficit() >= Rogue.CPMaxSpend() then
+    if not Action.GetToggle(2, "STMfDAsDPSCD") and S.MarkedforDeath:IsCastable() and not Player:IsStealthedP(true, true) and Player:ComboPointsDeficit() >= CPMaxSpend() then
       HR.CastSuggested(S.MarkedforDeath);
     end
     if HR.CDsON() then
       -- actions.cds+=/marked_for_death,if=raid_event.adds.in>30&!stealthed.all&combo_points.deficit>=cp_max_spend
       -- Note: With Settings.Subtlety.STMfDAsDPSCD
-      if Settings.Subtlety.STMfDAsDPSCD and S.MarkedforDeath:IsCastable() and not Player:IsStealthedP(true, true) and Player:ComboPointsDeficit() >= Rogue.CPMaxSpend() then
-        if HR.Cast(S.MarkedforDeath, Settings.Commons.OffGCDasOffGCD.MarkedforDeath) then return "Cast Marked for Death"; end
+      if Action.GetToggle(2, "STMfDAsDPSCD") and S.MarkedforDeath:IsCastable() and not Player:IsStealthedP(true, true) and Player:ComboPointsDeficit() >= CPMaxSpend() then
+        if HR.Cast(S.MarkedforDeath, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Marked for Death"; end
       end
       -- actions.cds+=/shadow_blades,if=combo_points.deficit>=2+stealthed.all
       if S.ShadowBlades:IsCastable() and not Player:Buff(S.ShadowBlades)
         and Player:ComboPointsDeficit() >= 2 + num(Player:IsStealthedP(true, true)) then
-        if HR.Cast(S.ShadowBlades, Settings.Subtlety.GCDasOffGCD.ShadowBlades) then return "Cast Shadow Blades"; end
+        if HR.Cast(S.ShadowBlades, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Shadow Blades"; end
       end
       -- actions.cds+=/shuriken_tornado,if=talent.shadow_focus.enabled&dot.nightblade.ticking&buff.symbols_of_death.up
       if S.ShurikenTornado:IsCastableP() and S.ShadowFocus:IsAvailable() and Target:DebuffP(S.Nightblade) and Player:BuffP(S.SymbolsofDeath) then
@@ -683,43 +704,43 @@ local function CDs ()
       if Player:IsStealthedP(true, false) then
         -- actions.cds+=/blood_fury,if=buff.symbols_of_death.up
         if S.BloodFury:IsCastable() and Player:BuffP(S.SymbolsofDeath) then
-          if HR.Cast(S.BloodFury, Settings.Commons.OffGCDasOffGCD.Racials) then return "Cast Blood Fury"; end
+          if HR.Cast(S.BloodFury, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Blood Fury"; end
         end
         -- actions.cds+=/berserking,if=buff.symbols_of_death.up
         if S.Berserking:IsCastable() and Player:BuffP(S.SymbolsofDeath) then
-          if HR.Cast(S.Berserking, Settings.Commons.OffGCDasOffGCD.Racials) then return "Cast Berserking"; end
+          if HR.Cast(S.Berserking, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Berserking"; end
         end
         -- actions.cds+=/fireblood,if=buff.symbols_of_death.up
         if S.Fireblood:IsCastable() and Player:BuffP(S.SymbolsofDeath) then
-          if HR.Cast(S.Fireblood, Settings.Commons.OffGCDasOffGCD.Racials) then return "Cast Fireblood"; end
+          if HR.Cast(S.Fireblood, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Fireblood"; end
         end
         -- actions.cds+=/ancestral_call,if=buff.symbols_of_death.up
         if S.AncestralCall:IsCastable() and Player:BuffP(S.SymbolsofDeath) then
-          if HR.Cast(S.AncestralCall, Settings.Commons.OffGCDasOffGCD.Racials) then return "Cast Ancestral Call"; end
+          if HR.Cast(S.AncestralCall, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Ancestral Call"; end
         end
       end
 
       -- Trinkets
       -- actions.cds+=/use_items,if=buff.symbols_of_death.up|target.time_to_die<20
-      if Settings.Commons.UseTrinkets then
+      if TrinketON() then
         local DefaultTrinketCondition = Player:BuffP(S.SymbolsofDeath) or Target:FilteredTimeToDie("<", 20);
         if I.GalecallersBoon:IsEquipped() and I.GalecallersBoon:IsReady() and DefaultTrinketCondition then
-          if HR.Cast(I.GalecallersBoon, nil, Settings.Commons.TrinketDisplayStyle) then return "Cast GalecallersBoon"; end
+          if HR.Cast(I.GalecallersBoon) then return "Cast GalecallersBoon"; end
         end
         if I.LustrousGoldenPlumage:IsEquipped() and I.LustrousGoldenPlumage:IsReady() and DefaultTrinketCondition then
-          if HR.Cast(I.LustrousGoldenPlumage, nil, Settings.Commons.TrinketDisplayStyle) then return "Cast LustrousGoldenPlumage"; end
+          if HR.Cast(I.LustrousGoldenPlumage) then return "Cast LustrousGoldenPlumage"; end
         end
         if I.InvocationOfYulon:IsEquipped() and I.InvocationOfYulon:IsReady() and DefaultTrinketCondition then
-          if HR.Cast(I.InvocationOfYulon, nil, Settings.Commons.TrinketDisplayStyle) then return "Cast InvocationOfYulon"; end
+          if HR.Cast(I.InvocationOfYulon) then return "Cast InvocationOfYulon"; end
         end
         -- actions.cds+=/use_item,name=azsharas_font_of_power,if=!buff.shadow_dance.up&cooldown.symbols_of_death.remains<10
         if I.FontOfPower:IsEquipped() and I.FontOfPower:IsReady() and not Player:BuffP(S.SymbolsofDeath) and S.SymbolsofDeath:CooldownRemainsP() < 10 then
-          if HR.Cast(I.FontOfPower, nil, Settings.Commons.TrinketDisplayStyle) then return "Cast FontOfPower"; end
+          if HR.Cast(I.FontOfPower) then return "Cast FontOfPower"; end
         end
         -- if=!stealthed.all&dot.nightblade.ticking&!buff.symbols_of_death.up&energy.deficit>=30
         if I.ComputationDevice:IsEquipped() and I.ComputationDevice:IsReady() and not Player:IsStealthedP(true, true)
           and Target:DebuffP(S.Nightblade) and not Player:BuffP(S.SymbolsofDeath) and Player:EnergyDeficitPredicted() >= 30 then
-          if HR.Cast(I.ComputationDevice, nil, Settings.Commons.TrinketDisplayStyle) then return "Cast ComputationDevice"; end
+          if HR.Cast(I.ComputationDevice) then return "Cast ComputationDevice"; end
         end
         -- actions.cds+=/use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down|debuff.conductive_ink_debuff.up&target.health.pct<32&target.health.pct>=30|!debuff.conductive_ink_debuff.up&(debuff.razor_coral_debuff.stack>=25-10*debuff.blood_of_the_enemy.up|target.time_to_die<40)&buff.symbols_of_death.remains>8
         if I.RazorCoral:IsEquipped() and I.RazorCoral:IsReady() then
@@ -738,12 +759,12 @@ local function CDs ()
             end
           end
           if CastRazorCoral then
-            if HR.Cast(I.RazorCoral, nil, Settings.Commons.TrinketDisplayStyle) then return "Cast RazorCoral"; end
+            if HR.Cast(I.RazorCoral) then return "Cast RazorCoral"; end
           end
         end
         -- Emulate SimC default behavior to use at max stacks
         if I.VigorTrinket:IsEquipped() and I.VigorTrinket:IsReady() and Player:BuffStack(S.VigorTrinketBuff) == 6 then
-          if HR.Cast(I.VigorTrinket, nil, Settings.Commons.TrinketDisplayStyle) then return "Cast VigorTrinket"; end
+          if HR.Cast(I.VigorTrinket) then return "Cast VigorTrinket"; end
         end
       end
     end
@@ -776,7 +797,7 @@ local function Stealth_CDs ()
       ShdComboPoints = Player:ComboPointsDeficit() <= 1 + 2 * num(S.TheFirstDance:AzeriteEnabled());
     end
     -- actions.stealth_cds+=/shadow_dance,if=variable.shd_combo_points&(!talent.dark_shadow.enabled|dot.nightblade.remains>=5+talent.subterfuge.enabled)&(variable.shd_threshold|buff.symbols_of_death.remains>=1.2|spell_targets.shuriken_storm>=4&cooldown.symbols_of_death.remains>10)&(azerite.nights_vengeance.rank<2|buff.nights_vengeance.up)
-    if (HR.CDsON() or (S.ShadowDance:ChargesFractional() >= Settings.Subtlety.ShDEcoCharge - (S.DarkShadow:IsAvailable() and 0.75 or 0)))
+    if (HR.CDsON() or (S.ShadowDance:ChargesFractional() >= Action.GetToggle(2, "ShDEcoCharge") - (S.DarkShadow:IsAvailable() and 0.75 or 0)))
       and S.ShadowDance:IsCastable() and S.Vanish:TimeSinceLastDisplay() > 0.3
       and S.ShadowDance:TimeSinceLastDisplay() ~= 0 and S.Shadowmeld:TimeSinceLastDisplay() > 0.3 and S.ShadowDance:Charges() >= 1
       and ShdComboPoints
@@ -786,7 +807,7 @@ local function Stealth_CDs ()
       if StealthMacro(S.ShadowDance) then return "ShadowDance Macro 1"; end
     end
     -- actions.stealth_cds+=/shadow_dance,if=variable.shd_combo_points&target.time_to_die<cooldown.symbols_of_death.remains&!raid_event.adds.up
-    if (HR.CDsON() or (S.ShadowDance:ChargesFractional() >= Settings.Subtlety.ShDEcoCharge - (S.DarkShadow:IsAvailable() and 0.75 or 0)))
+    if (HR.CDsON() or (S.ShadowDance:ChargesFractional() >= Action.GetToggle(2, "ShDEcoCharge") - (S.DarkShadow:IsAvailable() and 0.75 or 0)))
       and S.ShadowDance:IsCastable() and MayBurnShadowDance() and S.Vanish:TimeSinceLastDisplay() > 0.3
       and S.ShadowDance:TimeSinceLastDisplay() ~= 0 and S.Shadowmeld:TimeSinceLastDisplay() > 0.3 and S.ShadowDance:Charges() >= 1
       and ShdComboPoints and Target:TimeToDie() < S.SymbolsofDeath:CooldownRemainsP() then
@@ -893,18 +914,17 @@ local function APL()
     
     --- Defensives
         -- Crimson Vial
-        ShouldReturn = Rogue.CrimsonVial (S.CrimsonVial);
+        ShouldReturn = CrimsonVial (S.CrimsonVial);
         if ShouldReturn then return ShouldReturn; end
         -- Feint
-        ShouldReturn = Rogue.Feint (S.Feint);
+        ShouldReturn = Feint (S.Feint);
         if ShouldReturn then return ShouldReturn; end
     --- Out of Combat
         if not Player:AffectingCombat() then
             -- Stealth
             -- Note: Since 7.2.5, Blizzard disallowed Stealth cast under ShD (workaround to prevent the Extended Stealth bug)
-            if not Player:Buff(S.ShadowDanceBuff) and not Player:Buff(VanishBuff) then
-                ShouldReturn = Rogue.Stealth(Stealth);
-                if ShouldReturn then return ShouldReturn; end
+            if not Player:Buff(S.ShadowDanceBuff) and not Player:Buff(VanishBuff) and Action.GetToggle(2, "StealthOOC") and Stealth:IsCastable() and not Player:IsStealthed() then
+                if HR.Cast(Stealth, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Stealth (OOC)"; end
             end
             -- Flask
             -- Food
@@ -914,15 +934,15 @@ local function APL()
             if Everyone.TargetIsValid() and (Target:IsInRange(S.Shadowstrike) or IsInMeleeRange()) then
                 -- Precombat CDs
                 if HR.CDsON() then
-                    if S.MarkedforDeath:IsCastableP() and Player:ComboPointsDeficit() >= Rogue.CPMaxSpend() then
-                        if HR.Cast(S.MarkedforDeath, Settings.Commons.OffGCDasOffGCD.MarkedforDeath) then return "Cast Marked for Death (OOC)"; end
+                    if S.MarkedforDeath:IsCastableP() and Player:ComboPointsDeficit() >= CPMaxSpend() then
+                        if HR.Cast(S.MarkedforDeath, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Marked for Death (OOC)"; end
                     end
                     -- actions.precombat+=/use_item,name=azsharas_font_of_power
-                    if Settings.Commons.UseTrinkets and I.FontOfPower:IsEquipped() and I.FontOfPower:IsReady() then
-                        if HR.Cast(I.FontOfPower, nil, Settings.Commons.TrinketDisplayStyle) then return "Cast Font of Power"; end
+                    if TrinketON() and I.FontOfPower:IsEquipped() and I.FontOfPower:IsReady() then
+                        if HR.Cast(I.FontOfPower) then return "Cast Font of Power"; end
                     end
                     if S.ShadowBlades:IsCastable() and not Player:Buff(S.ShadowBlades) then
-                        if HR.Cast(S.ShadowBlades, Settings.Subtlety.GCDasOffGCD.ShadowBlades) then return "Cast Shadow Blades (OOC)"; end
+                        if HR.Cast(S.ShadowBlades, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Shadow Blades (OOC)"; end
                     end
                 end
                 if Player:IsStealthedP(true, true) then
@@ -1009,7 +1029,7 @@ local function APL()
             -- actions+=/nightblade,if=target.time_to_die>6&remains<gcd.max&combo_points>=4-(time<10)*2
             if S.Nightblade:IsCastableP() and IsInMeleeRange()
                 and (Target:FilteredTimeToDie(">", 6) or Target:TimeToDieIsNotValid())
-                and Rogue.CanDoTUnit(Target, S.Eviscerate:Damage() * Settings.Subtlety.EviscerateDMGOffset)
+                and Everyone.CanDoTUnit(Target, S.Eviscerate:Damage() * Action.GetToggle(2, "EviscerateDMGOffset"))
                 and Target:DebuffRemainsP(S.Nightblade) < Player:GCD() and Player:ComboPoints() >= 4 - (HL.CombatTime() < 10 and 2 or 0) then
                 if HR.Cast(S.Nightblade) then return "Cast Nightblade (Low Duration)"; end
             end
@@ -1059,15 +1079,15 @@ local function APL()
             -- # Lowest priority in all of the APL because it causes a GCD
             -- actions+=/arcane_torrent,if=energy.deficit>=15+energy.regen
             if S.ArcaneTorrent:IsCastableP("Melee") and Player:EnergyDeficitPredicted() > 15 + Player:EnergyRegen() then
-                if HR.Cast(S.ArcaneTorrent, Settings.Commons.GCDasOffGCD.Racials) then return "Cast Arcane Torrent"; end
+                if HR.Cast(S.ArcaneTorrent, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Arcane Torrent"; end
             end
             -- actions+=/arcane_pulse
             if S.ArcanePulse:IsCastableP("Melee") then
-                if HR.Cast(S.ArcanePulse, Settings.Commons.GCDasOffGCD.Racials) then return "Cast Arcane Pulse"; end
+                if HR.Cast(S.ArcanePulse, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Arcane Pulse"; end
             end
             -- actions+=/lights_judgment
             if S.LightsJudgment:IsCastableP("Melee") then
-                if HR.Cast(S.LightsJudgment, Settings.Commons.GCDasOffGCD.Racials) then return "Cast Lights Judgment"; end
+                if HR.Cast(S.LightsJudgment, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Lights Judgment"; end
             end
 
             -- Shuriken Toss Out of Range
