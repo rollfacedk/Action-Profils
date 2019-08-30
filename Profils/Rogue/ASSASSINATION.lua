@@ -409,14 +409,9 @@ local function UpdateRanges()
     end
 end
 
--- Is the current unit valid during cycle ?
-function UnitIsCycleValid (Unit, BestUnitTTD, TimeToDieOffset)
-    return not Unit:IsFacingBlacklisted() and not Unit:IsUserCycleBlacklisted() and (not BestUnitTTD or Unit:FilteredTimeToDie(">", BestUnitTTD, TimeToDieOffset));
-end
-
 -- Marked for Death Sniping
 local BestUnit, BestUnitTTD;
-function Commons.MfDSniping (MarkedforDeath)
+local function MfDSniping (MarkedforDeath)
     if MarkedforDeath:IsCastable() then
     -- Get Units up to 30y for MfD.
     HL.GetEnemies(30);
@@ -441,11 +436,6 @@ function Commons.MfDSniping (MarkedforDeath)
     end
 end
 
--- Everyone CanDotUnit override, originally used for Mantle legendary
--- Is it worth to DoT the unit ?
-function CanDoTUnit (Unit, HealthThreshold)
-    return CanDoTUnit(Unit, HealthThreshold);
-end
 --- ======= SIMC CUSTOM FUNCTION / EXPRESSION =======
 -- cp_max_spend
 function Commons.CPMaxSpend ()
@@ -584,6 +574,8 @@ S.Rupture:RegisterPMultiplier(
 
 -- Rotation Var
 local ShouldReturn; -- Used to get the return string
+local ForceOffGCD = {true, false};
+local Everyone = HR.Commons.Everyone;
 local BleedTickTime, ExsanguinatedBleedTickTime = 2 / Player:SpellHaste(), 1 / Player:SpellHaste();
 local Stealth;
 local RuptureThreshold, RuptureDMGThreshold, GarroteDMGThreshold;
@@ -1225,7 +1217,7 @@ local function APL()
     
 	-- In Combat
     -- MfD Sniping
-    Rogue.MfDSniping(S.MarkedforDeath); 
+    MfDSniping(S.MarkedforDeath); 
 	if Player:AffectingCombat() then
 		
 		-- Mythic Dungeon
