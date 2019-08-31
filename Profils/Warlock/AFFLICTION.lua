@@ -551,6 +551,7 @@ local function APL()
     end
 	
 	local function Precombat_DBM()
+	if Everyone.TargetIsValid() then
         -- summon_pet
         if SummonPet:IsCastableP() and not ShouldStop and (not Player:IsMoving()) and not Player:ShouldStopCasting() and not Pet:IsActive() and (not bool(Player:BuffRemainsP(S.GrimoireofSacrificeBuff)))  then
             if HR.Cast(SummonPet, true) then return "summon_pet 3"; end
@@ -577,11 +578,13 @@ local function APL()
             if HR.Cast(S.ShadowBolt) then return "shadow_bolt 24"; end
         end
         return 0, 462338
+	end
     end
     
     local function Precombat()
         -- flask
         -- food
+		if Everyone.TargetIsValid() then
         -- augmentation
         -- summon_pet
         if SummonPet:IsCastableP() and not ShouldStop and not Pet:Exists() then
@@ -610,7 +613,7 @@ local function APL()
         if S.ShadowBolt:IsCastableP() and not ShouldStop and (not S.Haunt:IsAvailable() and EnemiesCount < 3 and not I.AzsharasFontofPower:IsEquipped()) then
             if HR.Cast(S.ShadowBolt) then return "shadow_bolt 24"; end
         end
-        --end
+        end
     end
     
     local function Cooldowns()

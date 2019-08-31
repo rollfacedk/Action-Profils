@@ -375,6 +375,7 @@ local function APL()
         -- flask
         -- food
         -- augmentation
+		if Everyone.TargetIsValid() then
         -- arcane_intellect
          if S.ArcaneIntellect:IsCastableP() and not ShouldStop and Player:BuffDownP(S.ArcaneIntellectBuff, true) then
             if HR.Cast(S.ArcaneIntellect) then return "arcane_intellect 3"; end
@@ -412,12 +413,14 @@ local function APL()
         if S.Pyroblast:IsCastableP() and not Player:PrevGCDP(1, S.Pyroblast) and not ShouldStop then
             if HR.Cast(S.Pyroblast) then return "pyroblast 14"; end
         end
+		end
     end
 
 	local function Precombat()
         -- flask
         -- food
         -- augmentation
+		if Everyone.TargetIsValid() then
         -- arcane_intellect
          if S.ArcaneIntellect:IsCastableP() and not ShouldStop and Player:BuffDownP(S.ArcaneIntellectBuff, true) then
             if HR.Cast(S.ArcaneIntellect) then return "arcane_intellect 3"; end
@@ -455,6 +458,7 @@ local function APL()
         if S.Pyroblast:IsCastableP() and not ShouldStop then
             if HR.Cast(S.Pyroblast) then return "pyroblast 14"; end
         end
+		end
     end
 	
     local function ActiveTalents()

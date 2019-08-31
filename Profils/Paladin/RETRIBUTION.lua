@@ -280,7 +280,7 @@ local function APL()
         -- food
         -- augmentation
         -- snapshot_stats
-        --if Everyone.TargetIsValid() then
+        if Everyone.TargetIsValid() then
             -- potion
             if I.PotionofFocusedResolve:IsReady() and Action.GetToggle(1, "Potion") then
                 if HR.CastSuggested(I.PotionofFocusedResolve) then return "battle_potion_of_strength 4"; end
@@ -293,7 +293,7 @@ local function APL()
             if S.ArcaneTorrent:IsCastableP() and HR.CDsON() and (not S.WakeofAshes:IsAvailable()) then
                 if HR.Cast(S.ArcaneTorrent, Action.GetToggle(2, "GCDasOffGCD")) then return "arcane_torrent 6"; end
             end
-        --end
+        end
     end
 	
     local function Cooldowns()

@@ -320,14 +320,14 @@ local function APL()
             VarOoUE = (I.NotoriousGladiatorsBadge:IsEquipped() or I.SinisterGladiatorsBadge:IsEquipped() or I.SinisterGladiatorsMedallion:IsEquipped() or I.VialofAnimatedBlood:IsEquipped() or I.FirstMatesSpyglass:IsEquipped() or I.JesHowler:IsEquipped() or I.NotoriousGladiatorsMedallion:IsEquipped() or I.AshvanesRazorCoral:IsEquipped())
         end
         -- opener
-       -- if Everyone.TargetIsValid() then
+        if Everyone.TargetIsValid() then
             if S.BreathofSindragosa:IsAvailable() and S.Obliterate:IsCastableP("Melee") and not ShouldStop then
                 if HR.Cast(S.Obliterate) then return ""; end
             end
             if S.HowlingBlast:IsCastableP(30, true) and not ShouldStop and (not Target:DebuffP(S.FrostFeverDebuff)) then
                 if HR.Cast(S.HowlingBlast) then return ""; end
             end
-       -- end
+        end
     end
     local function Aoe()
         -- remorseless_winter,if=talent.gathering_storm.enabled|(azerite.frozen_tempest.rank&spell_targets.remorseless_winter>=3&!buff.rime.up)
@@ -776,11 +776,11 @@ local function APL()
   --      if HR.Cast(S.Channeling) then return "" end
   --  end  
 	-- call DBM precombat
-    if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
-        local ShouldReturn = Precombat_DBM(); 
-            if ShouldReturn then return ShouldReturn; 
-        end    
-    end
+   -- if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
+    --    local ShouldReturn = Precombat_DBM(); 
+   --         if ShouldReturn then return ShouldReturn; 
+   --     end    
+   -- end
     -- call non DBM precombat
     if not Player:AffectingCombat() and not Action.GetToggle(1, "DBM") and not Player:IsCasting() then        
         local ShouldReturn = Precombat(); 

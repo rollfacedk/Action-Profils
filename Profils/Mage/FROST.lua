@@ -347,7 +347,7 @@ local function APL()
             if HR.Cast(S.SummonWaterElemental) then return "summon_water_elemental 7"; end
         end
         -- snapshot_stats
-        --if Everyone.TargetIsValid() then
+        if Everyone.TargetIsValid() then
             -- mirror_image
             if S.MirrorImage:IsCastableP() and HR.CDsON() then
                 if HR.Cast(S.MirrorImage, Action.GetToggle(2, "OffGCDasOffGCD")) then return "mirror_image 10"; end
@@ -360,7 +360,7 @@ local function APL()
             if S.Frostbolt:IsCastableP() then
                 if HR.Cast(S.Frostbolt) then return "frostbolt 14"; end
             end
-        --end
+        end
     end
     local function Essences()
         -- focused_azerite_beam,if=buff.rune_of_power.down|active_enemies>3

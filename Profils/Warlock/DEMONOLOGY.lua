@@ -726,7 +726,7 @@ local function APL()
 	    ShouldStop = false
 	end
     
-      Precombat = function()
+    local function Precombat()
     -- flask
     -- food
     -- augmentation
@@ -736,7 +736,7 @@ local function APL()
     end
     -- inner_demons,if=talent.inner_demons.enabled
     -- snapshot_stats
-    --if Everyone.TargetIsValid() then
+    if Everyone.TargetIsValid() then
         -- potion
         if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
           if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 10"; end
@@ -745,9 +745,9 @@ local function APL()
         if S.Demonbolt:IsCastableP() then
           if HR.Cast(S.Demonbolt) then return "demonbolt 12"; end
         end
-    --end
+    end
   end
-  BuildAShard = function()
+  local function BuildAShard()
     -- memory_of_lucid_dreams,if=soul_shard<2
     if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:SoulShardsP() < 2) then
         if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams build_a_shard"; end
@@ -761,7 +761,7 @@ local function APL()
         if HR.Cast(S.ShadowBolt) then return "shadow_bolt 20"; end
     end
   end
-  Opener = function()
+  local function Opener()
     -- hand_of_guldan,line_cd=30,if=azerite.explosive_potential.enabled
     if S.HandofGuldan:IsReadyP() and HL.CombatTime() < 2 and not Player:PrevGCDP(1, S.HandofGuldan) and Player:SoulShardsP() > 2 and (S.ExplosivePotential:AzeriteEnabled()) then
         if HR.Cast(S.HandofGuldan) then return "hand_of_guldan 30"; end
@@ -828,7 +828,7 @@ local function APL()
         local ShouldReturn = BuildAShard(); if ShouldReturn then return ShouldReturn; end
     end
   end
-  Implosion = function()
+  local function Implosion()
     -- implosion,if=(buff.wild_imps.stack>=6&(soul_shard<3|prev_gcd.1.call_dreadstalkers|buff.wild_imps.stack>=9|prev_gcd.1.bilescourge_bombers|(!prev_gcd.1.hand_of_guldan&!prev_gcd.2.hand_of_guldan))&!prev_gcd.1.hand_of_guldan&!prev_gcd.2.hand_of_guldan&buff.demonic_power.down)|(time_to_die<3&buff.wild_imps.stack>0)|(prev_gcd.2.call_dreadstalkers&buff.wild_imps.stack>2&!talent.demonic_calling.enabled)
     if S.Implosion:IsCastableP() and ((WildImpsCount() >= 6 and (Player:SoulShardsP() < 3 or Player:PrevGCDP(1, S.CallDreadstalkers) or WildImpsCount() >= 9 or Player:PrevGCDP(1, S.BilescourgeBombers) or (not Player:PrevGCDP(1, S.HandofGuldan) and not Player:PrevGCDP(2, S.HandofGuldan))) and not Player:PrevGCDP(1, S.HandofGuldan) and not Player:PrevGCDP(2, S.HandofGuldan) and Player:BuffDownP(S.DemonicPowerBuff)) or (Target:TimeToDie() < 3 and WildImpsCount() > 0) or (Player:PrevGCDP(2, S.CallDreadstalkers) and WildImpsCount() > 2 and not S.DemonicCalling:IsAvailable())) then
         if HR.Cast(S.Implosion) then return "implosion 96"; end
@@ -902,7 +902,7 @@ local function APL()
         local ShouldReturn = BuildAShard(); if ShouldReturn then return ShouldReturn; end
     end
   end
-  NetherPortal = function()
+  local function NetherPortal()
     -- call_action_list,name=nether_portal_building,if=cooldown.nether_portal.remains<20
     if (S.NetherPortal:CooldownRemainsP() < 20) then
         local ShouldReturn = NetherPortalBuilding(); if ShouldReturn then return ShouldReturn; end
@@ -912,7 +912,7 @@ local function APL()
         local ShouldReturn = NetherPortalActive(); if ShouldReturn then return ShouldReturn; end
     end
   end
-  NetherPortalActive = function()
+  local function NetherPortalActive()
     -- bilescourge_bombers
     if S.BilescourgeBombers:IsReadyP() then
         if HR.Cast(S.BilescourgeBombers) then return "bilescourge_bombers 217"; end
@@ -954,7 +954,7 @@ local function APL()
         local ShouldReturn = BuildAShard(); if ShouldReturn then return ShouldReturn; end
     end
   end
-  NetherPortalBuilding = function()
+  local function NetherPortalBuilding()
     -- use_item,name=azsharas_font_of_power,if=cooldown.nether_portal.remains<=5*spell_haste
     if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and TrinketON() and (S.NetherPortal:CooldownRemainsP() <= 5 * Player:SpellHaste()) then
         if HR.Cast(I.AzsharasFontofPower) then reutrn "azsharas_font_of_power 295"; end

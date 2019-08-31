@@ -743,7 +743,7 @@ local function APL()
     --    local ShouldReturn = Precombat_DBM(); 
     --        if ShouldReturn then return ShouldReturn; 
     --    end    
-    --end
+   -- end
     -- call non DBM precombat
     if not Player:AffectingCombat() and not Action.GetToggle(1, "DBM") and not Player:IsCasting() then        
         local ShouldReturn = Precombat(); 

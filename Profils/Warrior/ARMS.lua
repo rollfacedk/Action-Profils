@@ -313,7 +313,7 @@ local function APL()
         -- food
         -- augmentation
         -- snapshot_stats
-        --if Everyone.TargetIsValid() then
+        if Everyone.TargetIsValid() then
             -- use_item,name=azsharas_font_of_power
             if I.AzsharasFontofPower:IsEquipReady() and TrinketON() then
                 if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power"; end
@@ -330,7 +330,7 @@ local function APL()
             if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
                 if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_strength 4"; end
             end
-        --end
+        end
     end
     local function Movement()
         -- heroic_leap

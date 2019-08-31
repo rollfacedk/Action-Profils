@@ -416,6 +416,7 @@ local function APL()
     local function Precombat()
         -- flask
         -- food
+		if Everyone.TargetIsValid() then
         -- augmentation
         -- arcane_intellect
         if S.ArcaneIntellect:IsCastableP() and Player:BuffDownP(S.ArcaneIntellectBuff, true) then
@@ -442,6 +443,7 @@ local function APL()
         if S.ArcaneBlast:IsReadyP() then
             if HR.Cast(S.ArcaneBlast) then return "arcane_blast 20"; end
         end
+		end
     end
     local function Burn()
         -- variable,name=total_burns,op=add,value=1,if=!burn_phase

@@ -360,10 +360,11 @@ local function APL()
     end    
 
     local function Precombat()
-            -- flask
-            -- food
-            -- augmentation
-            -- snapshot_stats
+        -- flask
+        -- food
+        -- augmentation
+        -- snapshot_stats
+		if Everyone.TargetIsValid() then
             -- potion
             if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
                 if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 4"; end
@@ -400,6 +401,7 @@ local function APL()
             if S.VampiricTouch:IsCastableP() and Player:DebuffDownP(S.VampiricTouchDebuff)  and not Player:IsCasting(S.VampiricTouch) then
                 if HR.Cast(S.VampiricTouch) then return "vampiric_touch 54"; end
             end
+		end
     end
 	
     local function CritCds()
@@ -622,7 +624,7 @@ local function APL()
     -- Protect against interrupt of channeled spells
     --if Player:IsCasting() and Player:CastRemains() >= ((select(4, GetNetStats()) / 1000 * 2) + 0.05) or Player:IsChanneling() or ShouldStop then
     --    if HR.Cast(S.Channeling) then return "" end
-    --end  
+    end  
 	-- call DBM precombat
     --if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
     --    local ShouldReturn = Precombat_DBM(); 

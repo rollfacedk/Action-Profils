@@ -416,7 +416,7 @@ local function RtB_Reroll()
             end
 			return true
         end
-    --end
+    end
     return Cache.APLVar.RtB_Reroll;
 end
 -- # Condition to use Stealth cooldowns for Ambush
@@ -862,7 +862,7 @@ end
     if not Player:AffectingCombat() then
         -- Precombat CDs
         if HR.CDsON() then
-            --if Everyone.TargetIsValid() then
+            if Everyone.TargetIsValid() then
                 if S.MarkedforDeath:IsCastableP() and Player:ComboPointsDeficit() >= CPMaxSpend() then
                     if HR.Cast(S.MarkedforDeath, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Marked for Death (OOC)"; end
                 end
@@ -881,7 +881,7 @@ end
                 if Action.GetToggle(2, "PrecombatAR") and HR.CDsON() and not usingTrinket and S.AdrenalineRush:IsCastableP() and not Player:BuffP(S.AdrenalineRush) then
                     if HR.Cast(S.AdrenalineRush, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Adrenaline Rush (OOC)"; end
                 end
-            --end
+            end
         end
         -- Stealth
         if not Player:Buff(S.VanishBuff) and Action.GetToggle(2, "StealthOOC") and Stealth:IsCastable() and not Player:IsStealthed() then
@@ -892,7 +892,7 @@ end
         -- Rune
         -- PrePot w/ Bossmod Countdown
         -- Opener
-        --if Everyone.TargetIsValid() then
+        if Everyone.TargetIsValid() then
             if Player:ComboPoints() >= 5 then
                 ShouldReturn = Finish();
                 if ShouldReturn then return "Finish: " .. ShouldReturn; end
@@ -903,7 +903,7 @@ end
                     if HR.Cast(S.SinisterStrike) then return "Cast Sinister Strike (Opener)"; end
                 end
             end
-        --end
+        end
         return;
     end
 
@@ -973,7 +973,7 @@ end
         -- actions+=/lights_judgment
         --if S.LightsJudgment:IsCastableP(S.SinisterStrike) then
         --    if HR.Cast(S.LightsJudgment, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Lights Judgment"; end
-        --end
+        end
         -- OutofRange Pistol Shot
         if not Target:IsInRange(BladeFlurryRange) and S.PistolShot:IsCastable(20) and not Player:IsStealthedP(true, true)
             and Player:EnergyDeficitPredicted() < 25 and (Player:ComboPointsDeficit() >= 1 or EnergyTimeToMaxRounded() <= 1.2) then

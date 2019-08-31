@@ -355,6 +355,7 @@ local function APL()
         -- food
         -- augmentation
         -- snapshot_stats
+		if Everyone.TargetIsValid() then
         -- variable,name=use_thrash,value=0
         if (true) then
             VarUseThrash = 0
@@ -387,6 +388,8 @@ local function APL()
         if S.Berserk:IsCastableP() and Player:BuffDownP(S.BerserkBuff) and HR.CDsON() then
             if HR.Cast(S.Berserk, Action.GetToggle(2, "OffGCDasOffGCD")) then return "berserk 26"; end
         end
+		
+		end
     end
 	
     local function Cooldowns()

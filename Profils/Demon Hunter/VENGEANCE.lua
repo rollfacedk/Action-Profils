@@ -53,6 +53,10 @@ Action[ACTION_CONST_DEMONHUNTER_VENGEANCE] = {
   -- Utility
   Disrupt                               = Action.Create({ Type = "Spell", ID = 183752     }),
   Metamorphosis                         = Action.Create({ Type = "Spell", ID = 187827     }),
+  ChaosNova                             = Action.Create({ Type = "Spell", ID = 179057}),
+  Blur                                  = Action.Create({ Type = "Spell", ID = 198589}),
+  ConsumeMagic                          = Action.Create({ Type = "Spell", ID = 278326}),
+  Darkness                              = Action.Create({ Type = "Spell", ID = 196718}),
   -- Buffs
   -- Debuffs
   RazorCoralDebuff                      = Action.Create({ Type = "Spell", ID = 303568, Hidden = true}),
@@ -348,6 +352,7 @@ local function APL()
         -- flask
         -- augmentation
         -- food
+		if Everyone.TargetIsValid() then
         -- snapshot_stats
         -- potion
         if I.SuperiorSteelskinPotion:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") then
@@ -368,6 +373,7 @@ local function APL()
         if S.ImmolationAura:IsCastable() and not ShouldStop and IsInMeleeRange then
             if HR.Cast(S.ImmolationAura) then return "immolation_aura precombat"; end
         end
+		end
     end
     local function Defensives()
         -- Demon Spikes

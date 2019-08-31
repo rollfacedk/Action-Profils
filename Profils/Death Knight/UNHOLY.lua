@@ -324,7 +324,7 @@ local function APL()
         if S.RaiseDead:IsCastableP() and not ShouldStop then
             if HR.CastSuggested(S.RaiseDead) then return "raise_dead 6"; end
         end
-        --if Everyone.TargetIsValid() then
+        if Everyone.TargetIsValid() then
             -- use_item,name=azsharas_font_of_power
             if I.AzsharasFontofPower:IsEquipReady() and TrinketON() then
                 if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 7"; end
@@ -333,7 +333,7 @@ local function APL()
             if S.ArmyoftheDead:IsCastableP() and not ShouldStop then
                 if HR.Cast(S.ArmyoftheDead, Action.GetToggle(2, "OffGCDasOffGCD")) then return "army_of_the_dead 8"; end
             end
-        --end
+        end
     end
     local function Aoe()
         -- death_and_decay,if=cooldown.apocalypse.remains
@@ -419,7 +419,7 @@ local function APL()
             if HR.Cast(S.DarkTransformation, Action.GetToggle(2, "OffGCDasOffGCD")) then return "dark_transformation 119"; end
         end
         -- summon_gargoyle,if=runic_power.deficit<14
-        if S.SummonGargoyle:IsCastableP() and not ShouldStop and (Player:RunicPowerDeficit() < 14) then
+        if S.SummonGargoyle:IsCastableP() and not Pet:Exists() and not ShouldStop and (Player:RunicPowerDeficit() < 14) then
             if HR.Cast(S.SummonGargoyle) then return "summon_gargoyle 123"; end
         end
         -- unholy_frenzy,if=essence.vision_of_perfection.enabled|(essence.condensed_lifeforce.enabled&pet.apoc_ghoul.active)|debuff.festering_wound.stack<4&!(equipped.ramping_amplitude_gigavolt_engine|azerite.magus_of_the_dead.enabled)|cooldown.apocalypse.remains<2&(equipped.ramping_amplitude_gigavolt_engine|azerite.magus_of_the_dead.enabled)
@@ -526,11 +526,11 @@ local function APL()
   --      if HR.Cast(S.Channeling) then return "" end
   --  end  
 	-- call DBM precombat
-    if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
-        local ShouldReturn = Precombat_DBM(); 
-            if ShouldReturn then return ShouldReturn; 
-        end    
-    end
+    --if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
+    --    local ShouldReturn = Precombat_DBM(); 
+    --        if ShouldReturn then return ShouldReturn; 
+    --    end    
+   -- end
     -- call non DBM precombat
     if not Player:AffectingCombat() and not Action.GetToggle(1, "DBM") and not Player:IsCasting() then        
         local ShouldReturn = Precombat(); 

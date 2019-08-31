@@ -425,6 +425,7 @@ local function APL()
         -- food
         -- augmentation
         -- snapshot_stats
+		if Everyone.TargetIsValid() then
         -- variable,name=az_ss,value=azerite.streaking_stars.rank
         if (true) then
             VarAzSs = S.StreakingStars:AzeriteRank()
@@ -477,6 +478,7 @@ local function APL()
         if S.Starsurge:IsReadyP() then
             if HR.Cast(S.Starsurge) then return "starsurge 45"; end
         end
+		end
     end
 	
     -- Moonkin Form OOC, if setting is true

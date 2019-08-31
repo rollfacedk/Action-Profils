@@ -92,7 +92,7 @@ A.Data.ProfileUI = {
                     TT = { 
                         enUS = "Activate Solo Mode. Useful for low level chars or during leveling phase", 
                         ruRU = "Activate Solo Mode. Useful for low level chars or during leveling phase", 
-                        frFR = "Activate Solo Mode. Useful for low level chars or during leveling phase", , 
+                        frFR = "Activate Solo Mode. Useful for low level chars or during leveling phase", 
                     }, 
                     M = {},
                 }, 
@@ -108,7 +108,7 @@ A.Data.ProfileUI = {
                     TT = { 
                         enUS = "Enable this to option to remove ability checks against Army of the Dead. This can help smooth out the rotation if not using Army on cooldown.", 
                         ruRU = "Enable this to option to remove ability checks against Army of the Dead. This can help smooth out the rotation if not using Army on cooldown.", 
-                        frFR = "Enable this to option to remove ability checks against Army of the Dead. This can help smooth out the rotation if not using Army on cooldown.", , 
+                        frFR = "Enable this to option to remove ability checks against Army of the Dead. This can help smooth out the rotation if not using Army on cooldown.", 
                     }, 
                     M = {},
                 }, 					
@@ -295,7 +295,7 @@ A.Data.ProfileUI = {
                     TT = { 
                         enUS = "Activate Solo Mode. Useful for low level chars or during leveling phase", 
                         ruRU = "Activate Solo Mode. Useful for low level chars or during leveling phase", 
-                        frFR = "Activate Solo Mode. Useful for low level chars or during leveling phase", , 
+                        frFR = "Activate Solo Mode. Useful for low level chars or during leveling phase", 
                     }, 
                     M = {},
                 }, 

@@ -374,6 +374,7 @@ local function APL()
         -- augmentation
         -- food
         -- snapshot_stats
+	if Everyone.TargetIsValid() then
 		-- Immolation Aura
         if S.ImmolationAura:IsCastableP() and not ShouldStop and Pull > 1.5 and Pull <= 2  then
             if HR.Cast(S.ImmolationAura) then return "immolation_aura 5"; end
@@ -389,7 +390,7 @@ local function APL()
         -- use_item,name=azsharas_font_of_power
        -- if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and TrinketON() and not ShouldStop then
       --      if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 7"; end
-      --  end
+    end
     end
     
     local function Precombat()
@@ -398,6 +399,7 @@ local function APL()
         -- food
         -- snapshot_stats
         -- potion
+		if Everyone.TargetIsValid() then
         -- Immolation Aura
         if S.ImmolationAura:IsCastableP() and not ShouldStop then
             if HR.Cast(S.ImmolationAura) then return "immolation_aura 5"; end
@@ -410,6 +412,7 @@ local function APL()
         if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and TrinketON() and not ShouldStop then
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 7"; end
         end
+		end
     end
     
 	local function Essences()

@@ -326,7 +326,7 @@ local function APL()
 	    ShouldStop = false
 	end
     
-	    -- Handle all generics trinkets	
+	-- Handle all generics trinkets	
 	local function GeneralTrinkets()
         if trinketReady(1) then
         	if HR.Cast(I.GenericTrinket1) then return "GenericTrinket1"; end
@@ -340,6 +340,7 @@ local function APL()
         -- flask
         -- food
         -- augmentation
+		if Everyone.TargetIsValid() then
         -- snapshot_stats
         -- use_item,name=azsharas_font_of_power
         if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and TrinketON() then
@@ -357,6 +358,8 @@ local function APL()
         if I.SuperiorBattlePotionofStrength:IsReady() and Action.GetToggle(1, "Potion") then
             if HR.CastSuggested(I.SuperiorBattlePotionofStrength) then return "battle_potion_of_strength precombat"; end
         end
+		
+		end
     end
 	
     local function Defensive()
@@ -586,7 +589,7 @@ local function APL()
         -- mrdmnd comment - this is breaking shield block, probably need to check it against the anima equipped?
         -- if S.LastStand:IsCastableP() and (S.AnimaofDeath:CooldownRemainsP() <= 2) then
         --     if HR.Cast(S.LastStand, Action.GetToggle(2, "GCDasOffGCD")) then return "last_stand 112"; end
-        --end
+        end
         -- avatar
         if S.Avatar:IsCastableP() and HR.CDsON() and (Player:BuffDownP(S.AvatarBuff)) then
             if HR.Cast(S.Avatar,  Action.GetToggle(2, "GCDasOffGCD")) then return "avatar 113"; end
