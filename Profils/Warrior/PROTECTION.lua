@@ -591,7 +591,7 @@ local function APL()
         -- mrdmnd comment - this is breaking shield block, probably need to check it against the anima equipped?
         -- if S.LastStand:IsCastableP() and (S.AnimaofDeath:CooldownRemainsP() <= 2) then
         --     if HR.Cast(S.LastStand, Action.GetToggle(2, "GCDasOffGCD")) then return "last_stand 112"; end
-        end
+        --end
         -- avatar
         if S.Avatar:IsCastableP() and HR.CDsON() and (Player:BuffDownP(S.AvatarBuff)) then
             if HR.Cast(S.Avatar,  Action.GetToggle(2, "GCDasOffGCD")) then return "avatar 113"; end

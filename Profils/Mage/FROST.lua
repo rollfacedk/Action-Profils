@@ -55,7 +55,7 @@ Action[ACTION_CONST_MAGE_FROST] = {
 	Polymorph                            = Action.Create({ Type = "Spell", ID = 118}),
 	-- Defensives
     IceBlock                             = Action.Create({ Type = "Spell", ID = 45438}),
-    BlazingBarrier                       = Action.Create({ Type = "Spell", ID = 235313}),
+    IceBarrier                       = Action.Create({ Type = "Spell", ID = 11426}),
     -- Misc
     Channeling                           = Action.Create({ Type = "Spell", ID = 209274, Hidden = true     }),
     RecklessForceBuff                    = Action.Create({ Type = "Spell", ID = 302932, Hidden = true     }),
@@ -418,7 +418,7 @@ local function APL()
             if HR.Cast(S.IceNova) then return "ice_nova 22"; end
         end
         -- flurry,if=prev_gcd.1.ebonbolt|buff.brain_freeze.react&(prev_gcd.1.frostbolt&(buff.icicles.stack<4|!talent.glacial_spike.enabled)|prev_gcd.1.glacial_spike)
-        if S.Flurry:IsCastableP() and Player:PrevGCDP(1, S.Ebonbolt) or bool(Player:BuffP(S.BrainFreezeBuff)) and (Player:PrevGCDP(1, S.Frostbolt) and (Player:BuffStackP(S.IciclesBuff) < 4 or not S.GlacialSpike:IsAvailable()) or Player:PrevGCDP(1, S.GlacialSpike)) then
+        if S.Flurry:IsCastableP() and Player:PrevGCDP(1, S.Ebonbolt) or Player:BuffP(S.BrainFreezeBuff) and (Player:PrevGCDP(1, S.Frostbolt) and (Player:BuffStackP(S.IciclesBuff) < 4 or not S.GlacialSpike:IsAvailable()) or Player:PrevGCDP(1, S.GlacialSpike)) then
             if HR.Cast(S.Flurry) then return "flurry 24"; end
         end
         -- ice_lance,if=buff.fingers_of_frost.react
@@ -533,11 +533,15 @@ local function APL()
             if HR.Cast(S.IceNova) then return "ice_nova 117"; end
         end
         -- flurry,if=talent.ebonbolt.enabled&prev_gcd.1.ebonbolt&buff.brain_freeze.react
-        if S.Flurry:IsCastableP() and S.Ebonbolt:IsAvailable() and Player:PrevGCDP(1, S.Ebonbolt) and bool(Player:BuffP(S.BrainFreezeBuff)) then
+        if S.Flurry:IsCastableP() and S.Ebonbolt:IsAvailable() and Player:PrevGCDP(1, S.Ebonbolt) and Player:BuffP(S.BrainFreezeBuff) then
             if HR.Cast(S.Flurry) then return "flurry 123"; end
         end
         -- flurry,if=prev_gcd.1.glacial_spike&buff.brain_freeze.react
-        if S.Flurry:IsCastableP() and Player:PrevGCDP(1, S.GlacialSpike) and bool(Player:BuffP(S.BrainFreezeBuff)) then
+        if S.Flurry:IsCastableP() and Player:PrevGCDP(1, S.GlacialSpike) and Player:BuffP(S.BrainFreezeBuff) then
+            if HR.Cast(S.Flurry) then return "flurry 135"; end
+        end
+        -- flurry,if=prev_gcd.1.glacial_spike&buff.brain_freeze.react
+        if S.Flurry:IsCastableP() and Player:BuffP(S.BrainFreezeBuff) then
             if HR.Cast(S.Flurry) then return "flurry 135"; end
         end
         -- call_action_list,name=essences
@@ -594,7 +598,7 @@ local function APL()
     end
     local function TalentRop()
         -- rune_of_power,if=talent.glacial_spike.enabled&buff.icicles.stack=5&(buff.brain_freeze.react|talent.ebonbolt.enabled&cooldown.ebonbolt.remains<cast_time)
-        if S.RuneofPower:IsCastableP() and (S.GlacialSpike:IsAvailable() and Player:BuffStackP(S.IciclesBuff) == 5 and (bool(Player:BuffP(S.BrainFreezeBuff)) or S.Ebonbolt:IsAvailable() and S.Ebonbolt:CooldownRemainsP() < S.RuneofPower:CastTime())) then
+        if S.RuneofPower:IsCastableP() and (S.GlacialSpike:IsAvailable() and Player:BuffStackP(S.IciclesBuff) == 5 and (Player:BuffP(S.BrainFreezeBuff) or S.Ebonbolt:IsAvailable() and S.Ebonbolt:CooldownRemainsP() < S.RuneofPower:CastTime())) then
             if HR.Cast(S.RuneofPower, Action.GetToggle(2, "OffGCDasOffGCD")) then return "rune_of_power 225"; end
         end
         -- rune_of_power,if=!talent.glacial_spike.enabled&(talent.ebonbolt.enabled&cooldown.ebonbolt.remains<cast_time|talent.comet_storm.enabled&cooldown.comet_storm.remains<cast_time|talent.ray_of_frost.enabled&cooldown.ray_of_frost.remains<cast_time|charges_fractional>1.9)
@@ -609,8 +613,8 @@ local function APL()
             if HR.Cast(S.IceBlock) then return "IceBlock 786"; end
         end
 
-        if S.BlazingBarrier:IsReady() and not Player:Buff(S.BlazingBarrier) and  Player:HealthPercentage() <= Action.GetToggle(2, "BlazingBarrier") then
-            if HR.Cast(S.BlazingBarrier) then return "BlazingBarrier 786"; end
+        if S.IceBarrier:IsReady() and not Player:Buff(S.IceBarrier) and  Player:HealthPercentage() <= Action.GetToggle(2, "IceBarrier") then
+            if HR.Cast(S.Gla) then return "IceBarrier 786"; end
         end
 	end
     

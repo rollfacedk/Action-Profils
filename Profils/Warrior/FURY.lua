@@ -500,7 +500,7 @@ local function APL()
         -- recklessness,if=!essence.condensed_lifeforce.major&!essence.blood_of_the_enemy.major|cooldown.guardian_of_azeroth.remains>20|buff.guardian_of_azeroth.up|cooldown.blood_of_the_enemy.remains<gcd
         ---if S.Recklessness:IsCastableP() and not ShouldStop and HR.CDsON() and (not S.CondensedLifeforce:IsAvailable() and not S.BloodoftheEnemy:IsAvailable() or S.GuardianofAzeroth:CooldownRemainsP() > 20 or Player:BuffP(S.GuardianofAzeroth) or S.BloodoftheEnemy:CooldownRemainsP() < Player:GCD()) then
         ---    if HR.Cast(S.Recklessness, Action.GetToggle(2, "OffGCDasOffGCD")) then return "recklessness 112"; end
-        -end
+        --end
         -- whirlwind,if=spell_targets.whirlwind>1&!buff.meat_cleaver.up
         if S.Whirlwind:IsCastableP("Melee") and not ShouldStop and (Cache.EnemiesCount[8] > 1 and not Player:BuffP(S.MeatCleaverBuff)) then
             if HR.Cast(S.Whirlwind) then return "whirlwind 114"; end

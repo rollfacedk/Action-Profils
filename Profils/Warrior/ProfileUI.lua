@@ -7,7 +7,7 @@ local Env = CNDT.Env
 local A = Action
 A.Data.ProfileEnabled[TMW.db:GetCurrentProfile()] = true
 A.Data.ProfileUI = {    
-    DateTime = "v1.4 (27.08.2019)",
+    DateTime = "v1.4 (31.08.2019)",
     -- Class settings
     [2] = {        
         [ACTION_CONST_WARRIOR_FURY] = { 
@@ -257,27 +257,6 @@ A.Data.ProfileUI = {
                 }, 
                 
             },  
-            { -- [2] 2nd Row
-				-- Splash Data
-                {
-                    E = "Dropdown",                                                         
-                    OT = {
-                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
-                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
-                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
-                    },
-                    DB = "AoeDetectionMode",
-                    DBV = "USE COMBAT LOGS",
-                    L = { 
-                        ANY = "AoE Detection Mode",
-                    }, 
-                    TT = { 
-                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
-                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
-                    }, 
-                    M = {},
-                },	 				
-            },
             { -- [4] 4th Row
 
                 {
@@ -482,27 +461,6 @@ A.Data.ProfileUI = {
                     M = {},
                 }, 
             }, 
-            { -- [2] 2nd Row
-				-- Splash Data
-                {
-                    E = "Dropdown",                                                         
-                    OT = {
-                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
-                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
-                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
-                    },
-                    DB = "AoeDetectionMode",
-                    DBV = "USE COMBAT LOGS",
-                    L = { 
-                        ANY = "AoE Detection Mode",
-                    }, 
-                    TT = { 
-                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
-                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
-                    }, 
-                    M = {},
-                },	 				
-            },
             { -- [4] 4th Row
 
                 {
