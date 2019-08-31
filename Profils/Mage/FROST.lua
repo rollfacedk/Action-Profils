@@ -174,10 +174,12 @@ local S, I = A:HeroCreate()
 Action.HeroSetHookAllTable(S, {
         [3] = "TellMeWhen_Group4_Icon3",
         [4] = "TellMeWhen_Group4_Icon4",
+		[6] = "TellMeWhen_Group4_Icon6", 
 })
 Action.HeroSetHookAllTable(I, {
         [3] = "TellMeWhen_Group4_Icon3",
         [4] = "TellMeWhen_Group4_Icon4",
+		[6] = "TellMeWhen_Group4_Icon6",
 })
 -- Adding manually missed staff
 --S.Brews                                 = Spell(115308)
