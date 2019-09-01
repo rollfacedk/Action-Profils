@@ -177,10 +177,12 @@ local S, I = A:HeroCreate()
 Action.HeroSetHookAllTable(S, {
         [3] = "TellMeWhen_Group4_Icon3",
         [4] = "TellMeWhen_Group4_Icon4",
+		[6] = "TellMeWhen_Group4_Icon6", 
 })
 Action.HeroSetHookAllTable(I, {
         [3] = "TellMeWhen_Group4_Icon3",
         [4] = "TellMeWhen_Group4_Icon4",
+		[6] = "TellMeWhen_Group4_Icon6",
 })
 -- Adding manually missed staff
 --S.Brews                                 = Spell(115308)
@@ -352,7 +354,7 @@ local function APL()
         -- augmentation
         -- food
         -- snapshot_stats
-        --if Everyone.TargetIsValid() then
+        if Everyone.TargetIsValid() then
             -- potion
             if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
                 if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_agility 12"; end
@@ -389,7 +391,7 @@ local function APL()
             if S.AimedShot:IsReadyP() and (EnemiesCount < 3) then
                 if HR.Cast(S.AimedShot) then return "aimed_shot 38"; end
             end
-        --end
+        end
     end
     local function Cds()
         -- hunters_mark,if=debuff.hunters_mark.down&!buff.trueshot.up

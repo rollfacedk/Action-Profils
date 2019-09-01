@@ -177,7 +177,7 @@ A.Data.ProfileUI = {
                     DB = "FreezingTrapPvP",
                     DBV = "ON MELEE BURST",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(118),
+                        ANY = "PvP " .. A.GetSpellInfo(187650),
                     }, 
                     TT = { 
                         enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
@@ -202,7 +202,7 @@ A.Data.ProfileUI = {
                         [4] = true,
                     }, 
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(118) .. " units",
+                        ANY = "PvP " .. A.GetSpellInfo(187650) .. " units",
                     }, 
                     TT = { 
                         enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 
@@ -296,30 +296,40 @@ A.Data.ProfileUI = {
                         frFR = "Show Aspect of the Eagle when out of Melee Range.",
                     }, 
                     M = {},
-                },      				
-            }, 			
-            { -- [2] 2nd Row
-
-				-- Splash Data
+                },  
                 {
-                    E = "Dropdown",                                                         
-                    OT = {
-                        { text = "USE COMBAT LOGS", value = "USE COMBAT LOGS" }, 
-                        { text = "USE SPLASH DATA", value = "USE SPLASH DATA" },                   
-                        { text = "USE NAMEPLATES", value = "USE NAMEPLATES" },
-                    },
-                    DB = "AoeDetectionMode",
-                    DBV = "USE COMBAT LOGS",
+                    E = "Checkbox", 
+                    DB = "UseSteelTrap",
+                    DBV = true,
                     L = { 
-                        ANY = "AoE Detection Mode",
+                        enUS = "Use Steel Trap when available", 
+                        ruRU = "Use Steel Trap when available", 
+                        frFR = "Use Steel Trap when available",
                     }, 
                     TT = { 
-                        enUS = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
-                        ruRU = "Select the AoE Detection mode you feel better with\nUSE COMBAT LOGS - Will count AoE enemies you are in combat with using combat logs.\nUSE SPLASH DATA - Only count AoE enemies that are already hit by AoE abilities.\nUSE NAMEPLATES - Will count AoE enemies using visible nameplates.\nDefault: USE COMBAT LOGS", 
+                        enUS = "Show Steel Trap if available and out of Melee Range.", 
+                        ruRU = "Show Steel Trap if available and out of Melee Range.", 
+                        frFR = "Show Steel Trap if available and out of Melee Range.", 
                     }, 
                     M = {},
-                },				
-            },
+                },
+                {
+                    E = "Checkbox", 
+                    DB = "UseHarpoonOOR",
+                    DBV = true,
+                    L = { 
+                        enUS = "Use Harpoon when available", 
+                        ruRU = "Use Harpoon Trap when available", 
+                        frFR = "Use Harpoon Trap when available",
+                    }, 
+                    TT = { 
+                        enUS = "Show Harpoon if available and out of Melee Range.", 
+                        ruRU = "Show Harpoon if available and out of Melee Range.", 
+                        frFR = "Show Harpoon if available and out of Melee Range.", 
+                    }, 
+                    M = {},
+                },  				
+            }, 			
             { -- [4] 4th Row
 
                 {
@@ -397,7 +407,7 @@ A.Data.ProfileUI = {
                     DB = "FreezingTrapPvP",
                     DBV = "ON MELEE BURST",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(118),
+                        ANY = "PvP " .. A.GetSpellInfo(187650),
                     }, 
                     TT = { 
                         enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
@@ -422,7 +432,7 @@ A.Data.ProfileUI = {
                         [4] = true,
                     }, 
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(118) .. " units",
+                        ANY = "PvP " .. A.GetSpellInfo(187650) .. " units",
                     }, 
                     TT = { 
                         enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 
@@ -622,7 +632,7 @@ A.Data.ProfileUI = {
                     DB = "FreezingTrapPvP",
                     DBV = "ON MELEE BURST",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(118),
+                        ANY = "PvP " .. A.GetSpellInfo(187650),
                     }, 
                     TT = { 
                         enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
@@ -647,7 +657,7 @@ A.Data.ProfileUI = {
                         [4] = true,
                     }, 
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(118) .. " units",
+                        ANY = "PvP " .. A.GetSpellInfo(187650) .. " units",
                     }, 
                     TT = { 
                         enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 

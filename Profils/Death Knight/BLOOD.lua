@@ -51,6 +51,7 @@ Action[ACTION_CONST_DEATHKNIGHT_BLOOD] = {
   RuneTap                              = Action.Create({ Type = "Spell", ID = 194679     }),
   VampiricBlood                        = Action.Create({ Type = "Spell", ID = 55233     }),
   -- Utility
+  DeathGrip                            = Action.Create({ Type = "Spell", ID = 49576     }),
   -- Buffs
   HaemostasisBuff                      = Action.Create({ Type = "Spell", ID = 235558     }),  
   -- Debuffs
@@ -279,13 +280,30 @@ local function APL()
    		local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
         
   	    -- MindFreeze
-  	    if useKick and S.MindFreeze:IsReady() and not ShouldStop and not ShouldStop and Target:IsInterruptible() then 
+  	    if useKick and S.MindFreeze:IsReady() and not ShouldStop and Target:IsInterruptible() then 
 		  	if Target:CastPercentage() >= randomInterrupt then
           	    if HR.Cast(S.MindFreeze, true) then return "MindFreeze 5"; end
          	else 
           	    return
          	end 
       	end 
+		
+     	-- Asphyxiate
+      	if useCC and S.Asphyxiate:IsReady() and Target:IsInterruptible() then 
+	  		if Target:CastPercentage() >= randomInterrupt then
+     	        if HR.Cast(S.Asphyxiate, true) then return "Asphyxiate 5"; end
+     	    else 
+     	        return
+     	    end 
+     	end 
+		-- Death Grip as kick if none available
+		if useKick and not S.MindFreeze:IsReady() and S.DeathGrip:IsReady() and Everyone.TargetIsValid() and Target:IsInterruptible() then
+		  	if Target:CastPercentage() >= randomInterrupt then
+          	    if HR.Cast(S.DeathGrip, true) then return "DeathGrip 5"; end
+         	else 
+          	    return
+         	end 
+      	end 		
 		
         --- Misc
         -- Units without Blood Plague

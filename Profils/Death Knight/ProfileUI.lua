@@ -609,23 +609,6 @@ A.Data.ProfileUI = {
                     }, 
                     M = {},
                 },
-                {
-                    E = "Slider",                                                     
-                    MIN = -1, 
-                    MAX = 5,                            
-                    DB = "UseDeathStrikeHP",
-                    DBV = 60, -- Set healthpercentage @60% life. 
-                    ONOFF = true,
-                    L = { 
-                        ANY = "Use Deathstrike on low HP",
-                    }, 
-                    TT = { 
-                        enUS = "Set the HP threshold to use DeathStrike.", 
-                        ruRU = "Set the HP threshold to use DeathStrike.", 
-                        frFR = "Set the HP threshold to use DeathStrike.", 
-                    },
-                    M = {},
-                },
             }, 
             { -- [7]
                 {
@@ -643,10 +626,10 @@ A.Data.ProfileUI = {
                         { text = "ON COOLDOWN", value = "ON COOLDOWN" },                    
                         { text = "OFF", value = "OFF" },
                     },
-                    DB = "ImprisonPvP",
+                    DB = "AsphyxiatePvP",
                     DBV = "ON MELEE BURST",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(217832),
+                        ANY = "PvP " .. A.GetSpellInfo(221562),
                     }, 
                     TT = { 
                         enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
@@ -663,7 +646,7 @@ A.Data.ProfileUI = {
                         { text = "primary", value = 4 },
                     },
                     MULT = true,
-                    DB = "ImprisonPvPUnits",
+                    DB = "AsphyxiatePvPUnits",
                     DBV = {
                         [1] = true, 
                         [2] = true,
@@ -671,7 +654,7 @@ A.Data.ProfileUI = {
                         [4] = true,
                     }, 
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(217832) .. " units",
+                        ANY = "PvP " .. A.GetSpellInfo(221562) .. " units",
                     }, 
                     TT = { 
                         enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 

@@ -38,6 +38,8 @@ Action[ACTION_CONST_HUNTER_SURVIVAL] = {
     FlankingStrike                        = Action.Create({ Type = "Spell", ID = 269751     }),
     KillCommand                           = Action.Create({ Type = "Spell", ID = 259489     }),
     --WildfireBomb                          = MultiSpell(259495, 270335, 270323, 271045     }),
+	WingClip                              = Action.Create({ Type = "Spell", ID = 195645     }),
+    WildfireBomb                          = Action.Create({ Type = "Spell", ID = 259495     }),
     ShrapnelBomb                          = Action.Create({ Type = "Spell", ID = 270335     }),
     PheromoneBomb                         = Action.Create({ Type = "Spell", ID = 270323     }),
     VolatileBomb                          = Action.Create({ Type = "Spell", ID = 271045     }),
@@ -126,6 +128,8 @@ Action[ACTION_CONST_HUNTER_SURVIVAL] = {
     ShockbitersFang                      = Action.Create({ Type = "Trinket", ID = 169318, QueueForbidden = true }),
     NeuralSynapseEnhancer                = Action.Create({ Type = "Trinket", ID = 168973, QueueForbidden = true }),
     BalefireBranch                       = Action.Create({ Type = "Trinket", ID = 159630, QueueForbidden = true }),
+	GalecallersBoon                      = Action.Create({ Type = "Trinket", ID = 159614, QueueForbidden = true }),
+    DribblingInkpod                      = Action.Create({ Type = "Trinket", ID = 169319, QueueForbidden = true }),
     -- Misc
     CyclotronicBlast                     = Action.Create({ Type = "Spell", ID = 293491, Hidden = true}),
     RecklessForceCounter1                = Action.Create({ Type = "Spell", ID = 298409, Hidden = true}),
@@ -196,10 +200,12 @@ local S, I = A:HeroCreate()
 Action.HeroSetHookAllTable(S, {
         [3] = "TellMeWhen_Group4_Icon3",
         [4] = "TellMeWhen_Group4_Icon4",
+		[6] = "TellMeWhen_Group4_Icon6", 
 })
 Action.HeroSetHookAllTable(I, {
         [3] = "TellMeWhen_Group4_Icon3",
         [4] = "TellMeWhen_Group4_Icon4",
+		[6] = "TellMeWhen_Group4_Icon6",
 })
 -- Adding manually missed staff
 --S.Brews                                 = Spell(115308)
@@ -212,41 +218,12 @@ Action.HeroSetHookAllTable(I, {
 local ShouldReturn; -- Used to get the return string
 local ForceOffGCD = {true, false};
 local Everyone = HR.Commons.Everyone;
-
--- Rotation Var
-local ShouldReturn; -- Used to get the return string
 local EnemiesCount, GCDMax;
 
 -- Stuns
 local StunInterrupts = {
   {S.Intimidation, "Cast Intimidation (Interrupt)", function () return true; end},
 };
-
-local EnemyRanges = {40}
-local function UpdateRanges()
-  for _, i in ipairs(EnemyRanges) do
-    HL.GetEnemies(i);
-  end
-end
-
-
--- AoE Detection Mode
-local function GetEnemiesCount(range)
-    -- Unit Update - Update differently depending on if splash data is being used
-    if HR.AoEON() then
-        if Action.GetToggle(2, "AoeDetectionMode") == "USE COMBAT LOGS" then
-	       return active_enemies()
-	    elseif Action.GetToggle(2, "AoeDetectionMode") == "USE SPLASH DATA" then
-	        HL.GetEnemies(range, nil, true, Target)
-            return Cache.EnemiesCount[range]
-	    else 
-            UpdateRanges()
-            return Cache.EnemiesCount[40]
-        end
-    else
-        return 1
-    end
-end
 
 S.ConcentratedFlame:RegisterInFlight()
 
@@ -401,13 +378,13 @@ S.WingClip.TextureSpellID = { 76151 }
 
 local function UpdateWFB()
     if S.ShrapnelBomb:IsReady() then
-        S.WildfireBomb = Spell(270335)
+        S.WildfireBomb = S.ShrapnelBomb
     elseif S.VolatileBomb:IsReady() then
-        S.WildfireBomb = Spell(271045)
+        S.WildfireBomb = S.VolatileBomb
     elseif S.PheromoneBomb:IsReady() then
-        S.WildfireBomb = Spell(270323)
+        S.WildfireBomb = S.PheromoneBomb
     else
-        S.WildfireBomb = Spell(259495)
+        S.WildfireBomb = S.WildfireBomb
     end
     S.ShrapnelBomb.TextureSpellID = { 269747 }
     S.PheromoneBomb.TextureSpellID = { 269747 }
@@ -422,7 +399,8 @@ local function Init ()
   HL.RegisterNucleusAbility({259495, 270335, 270323, 271045}, 8, 6) -- Bombs
   HL.RegisterNucleusAbility(259391, 40, 6)                          -- Chakrams
 end
-
+-- Init data for splash data (To Check)
+Init()
 
 
 --- ======= ACTION LISTS =======
@@ -434,15 +412,14 @@ local function APL()
 	
 	-- Local functions remap
     GCDMax = Player:GCD() + 0.150
-    EnemiesCount = GetEnemiesCount(40)
 	--print(EnemiesCount)
     HL.GetEnemies(40) -- To populate Cache.Enemies[40] for CastCycles
     DetermineEssenceRanks()
     UpdateWFB()
 	UpdateMangooseBiteID()
 	UpdateRaptorStrikeID()
-    -- Init data for splash data (To Check)
-    Init()
+	UpdateRanges()
+
 
     -- Handle all generics trinkets	
 	local function GeneralTrinkets()
@@ -465,7 +442,7 @@ local function APL()
         -- augmentation
         -- food
         -- summon_pet
-        if S.SummonPet:IsCastableP() then
+        if S.SummonPet:IsCastableP() and not Pet:Exists() then
             if HR.Cast(S.SummonPet, Action.GetToggle(2, "OffGCDasOffGCD")) then return "summon_pet 3"; end
         end
         -- snapshot_stats
@@ -487,11 +464,11 @@ local function APL()
                 if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth 9"; end
             end
             -- steel_trap
-            if S.SteelTrap:IsCastableP() and Player:DebuffDownP(S.SteelTrapDebuff) then
+            if S.SteelTrap:IsCastableP() and Action.GetToggle(2, "UseSteelTrap") and Player:DebuffDownP(S.SteelTrapDebuff) then
                 if HR.Cast(S.SteelTrap) then return "steel_trap 10"; end
             end
             -- harpoon
-            if S.Harpoon:IsCastableP() then
+            if S.Harpoon:IsCastableP() and Action.GetToggle(2, "UseHarpoonOOR") and Target:MinDistanceToPlayer(true) >= 8 and Target:MaxDistanceToPlayer(true) <= 30 then
                 if HR.Cast(S.Harpoon, Action.GetToggle(2, "OffGCDasOffGCD")) then return "harpoon 12"; end
             end
         --end
@@ -514,7 +491,7 @@ local function APL()
             if HR.Cast(S.KillCommand) then return "kill_command 42"; end
         end
         -- steel_trap,if=focus+cast_regen<focus.max
-        if S.SteelTrap:IsCastableP() and (Player:Focus() + Player:FocusCastRegen(S.SteelTrap:ExecuteTime()) < Player:FocusMax()) then
+        if S.SteelTrap:IsCastableP() and Action.GetToggle(2, "UseSteelTrap") and (Player:Focus() + Player:FocusCastRegen(S.SteelTrap:ExecuteTime()) < Player:FocusMax()) then
             if HR.Cast(S.SteelTrap) then return "steel_trap 54"; end
         end
         -- wildfire_bomb,if=focus+cast_regen<focus.max&!ticking&!buff.memory_of_lucid_dreams.up&(full_recharge_time<1.5*gcd|!dot.wildfire_bomb.ticking&!buff.coordinated_assault.up)
@@ -588,7 +565,7 @@ local function APL()
             if HR.Cast(S.KillCommand) then return "kill_command 210"; end
         end
         -- steel_trap,if=focus+cast_regen<focus.max
-        if S.SteelTrap:IsCastableP() and (Player:Focus() + Player:FocusCastRegen(S.SteelTrap:ExecuteTime()) < Player:FocusMax()) then
+        if S.SteelTrap:IsCastableP() and Action.GetToggle(2, "UseSteelTrap") and (Player:Focus() + Player:FocusCastRegen(S.SteelTrap:ExecuteTime()) < Player:FocusMax()) then
             if HR.Cast(S.SteelTrap) then return "steel_trap 222"; end
         end
         -- raptor_strike,if=buff.tip_of_the_spear.stack=3|dot.shrapnel_bomb.ticking
@@ -762,11 +739,11 @@ local function APL()
             if HR.Cast(S.Carve) then return "carve 482"; end
         end
         -- steel_trap
-        if S.SteelTrap:IsCastableP() then
+        if S.SteelTrap:IsCastableP() and Action.GetToggle(2, "UseSteelTrap") then
             if HR.Cast(S.SteelTrap) then return "steel_trap 488"; end
         end
         -- harpoon,if=talent.terms_of_engagement.enabled
-        if S.Harpoon:IsCastableP() and (S.TermsofEngagement:IsAvailable()) then
+        if S.Harpoon:IsCastableP() and Action.GetToggle(2, "UseHarpoonOOR") and Target:MinDistanceToPlayer(true) >= 8 and Target:MaxDistanceToPlayer(true) <= 30 and (S.TermsofEngagement:IsAvailable()) then
             if HR.Cast(S.Harpoon, Action.GetToggle(2, "OffGCDasOffGCD")) then return "harpoon 490"; end
         end
         -- serpent_sting,target_if=min:remains,if=refreshable&buff.tip_of_the_spear.stack<3
@@ -784,7 +761,7 @@ local function APL()
     end
     local function St()
         -- harpoon,if=talent.terms_of_engagement.enabled
-        if S.Harpoon:IsCastableP() and (S.TermsofEngagement:IsAvailable()) then
+        if S.Harpoon:IsCastableP() and Action.GetToggle(2, "UseHarpoonOOR") and Target:MinDistanceToPlayer(true) >= 8 and Target:MaxDistanceToPlayer(true) <= 30 and (S.TermsofEngagement:IsAvailable()) then
             if HR.Cast(S.Harpoon, Action.GetToggle(2, "OffGCDasOffGCD")) then return "harpoon 545"; end
         end
         -- flanking_strike,if=focus+cast_regen<focus.max
@@ -804,7 +781,7 @@ local function APL()
             if HR.Cast(S.KillCommand) then return "kill_command 568"; end
         end
         -- steel_trap,if=focus+cast_regen<focus.max
-        if S.SteelTrap:IsCastableP() and (Player:Focus() + Player:FocusCastRegen(S.SteelTrap:ExecuteTime()) < Player:FocusMax()) then
+        if S.SteelTrap:IsCastableP() and Action.GetToggle(2, "UseSteelTrap") and (Player:Focus() + Player:FocusCastRegen(S.SteelTrap:ExecuteTime()) < Player:FocusMax()) then
             if HR.Cast(S.SteelTrap) then return "steel_trap 577"; end
         end
         -- wildfire_bomb,if=focus+cast_regen<focus.max&!ticking&!buff.memory_of_lucid_dreams.up&(full_recharge_time<1.5*gcd|!dot.wildfire_bomb.ticking&!buff.coordinated_assault.up)
@@ -846,7 +823,7 @@ local function APL()
     end
     local function Wfi()
         -- harpoon,if=focus+cast_regen<focus.max&talent.terms_of_engagement.enabled
-        if S.Harpoon:IsCastableP() and (Player:Focus() + Player:FocusCastRegen(S.Harpoon:ExecuteTime()) < Player:FocusMax() and S.TermsofEngagement:IsAvailable()) then
+        if S.Harpoon:IsCastableP() and Action.GetToggle(2, "UseHarpoonOOR") and Target:MinDistanceToPlayer(true) >= 8 and Target:MaxDistanceToPlayer(true) <= 30 and (Player:Focus() + Player:FocusCastRegen(S.Harpoon:ExecuteTime()) < Player:FocusMax() and S.TermsofEngagement:IsAvailable()) then
             if HR.Cast(S.Harpoon, Action.GetToggle(2, "OffGCDasOffGCD")) then return "harpoon 667"; end
         end
         -- mongoose_bite,if=buff.blur_of_talons.up&buff.blur_of_talons.remains<gcd
@@ -874,7 +851,7 @@ local function APL()
             if HR.Cast(S.AMurderofCrows, Action.GetToggle(2, "OffGCDasOffGCD")) then return "a_murder_of_crows 741"; end
         end
         -- steel_trap,if=focus+cast_regen<focus.max
-        if S.SteelTrap:IsCastableP() and (Player:Focus() + Player:FocusCastRegen(S.SteelTrap:ExecuteTime()) < Player:FocusMax()) then
+        if S.SteelTrap:IsCastableP() and Action.GetToggle(2, "UseSteelTrap") and (Player:Focus() + Player:FocusCastRegen(S.SteelTrap:ExecuteTime()) < Player:FocusMax()) then
             if HR.Cast(S.SteelTrap) then return "steel_trap 743"; end
         end
         -- wildfire_bomb,if=full_recharge_time<1.5*gcd

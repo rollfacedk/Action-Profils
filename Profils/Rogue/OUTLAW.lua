@@ -217,14 +217,6 @@ end
 local function CPSpend()
     return mathmin(Player:ComboPoints(), CPMaxSpend());
 end
-  
--- Stealth
-function Stealth(Stealth, Setting)
-    if Action.GetToggle(2, "StealthOOC") and Stealth:IsCastable() and not Player:IsStealthed() then
-        if HR.Cast(Stealth, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Stealth (OOC)"; end
-    end
-    return false;
-end
 
 -- Crimson Vial
 function CrimsonVial(CrimsonVial)
@@ -358,7 +350,7 @@ end
 -- RtB rerolling strategy, return true if we should reroll
 local function RtB_Reroll()
 
-    --if not Cache.APLVar.RtB_Reroll then
+    if not Cache.APLVar.RtB_Reroll then
 	
         -- Defensive Override : Grand Melee if HP < 60
         if Action.GetToggle(2, "SoloMode") and Player:HealthPercentage() < Action.GetToggle(2, "RolltheBonesLeechHP") then
@@ -610,7 +602,6 @@ local function APL()
     ToggleBurstMode()
 	CheckGoodBuffs()
 	--print(Cache.EnemiesCount[BladeFlurryRange])
-	
     -- Handle all generics trinkets	
 	local function GeneralTrinkets()
         if trinketReady(1) then
@@ -886,8 +877,8 @@ end
             end
         end
         -- Stealth
-        if not Player:Buff(S.VanishBuff) and Action.GetToggle(2, "StealthOOC") and Stealth:IsCastable() and not Player:IsStealthed() then
-            if HR.Cast(Stealth, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Stealth (OOC)"; end
+        if not Player:Buff(S.VanishBuff) and Action.GetToggle(2, "StealthOOC") and S.Stealth:IsCastable() and not Player:IsStealthed() then
+            if HR.Cast(S.Stealth, Action.GetToggle(2, "GCDasOffGCD")) then return "Cast Stealth (OOC)"; end
         end
         -- Flask
         -- Food
@@ -975,7 +966,7 @@ end
         -- actions+=/lights_judgment
         --if S.LightsJudgment:IsCastableP(S.SinisterStrike) then
         --    if HR.Cast(S.LightsJudgment, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Lights Judgment"; end
-        end
+        --end
         -- OutofRange Pistol Shot
         if not Target:IsInRange(BladeFlurryRange) and S.PistolShot:IsCastable(20) and not Player:IsStealthedP(true, true)
             and Player:EnergyDeficitPredicted() < 25 and (Player:ComboPointsDeficit() >= 1 or EnergyTimeToMaxRounded() <= 1.2) then

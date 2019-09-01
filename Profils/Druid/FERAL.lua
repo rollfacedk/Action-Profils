@@ -184,7 +184,6 @@ Action.HeroSetHookAllTable(I, {
 --S.BlackoutCombo                         = Spell(196736)
 --S.BlackoutComboBuff                     = Spell(228563)
 
-
 -- Rotation Var
 local ShouldReturn; -- Used to get the return string
 local ForceOffGCD = {true, false};
@@ -367,7 +366,7 @@ local function APL()
             VarUseThrash = 2
         end
         -- regrowth,if=talent.bloodtalons.enabled
-        if S.Regrowth:IsCastableP() and (S.Bloodtalons:IsAvailable()) then
+        if S.Regrowth:IsCastableP() and (S.Bloodtalons:IsAvailable()) and Player:BuffDownP(S.BloodtalonsBuff) then
             if HR.Cast(S.Regrowth) then return "regrowth 3"; end
         end
         -- use_item,name=azsharas_font_of_power
