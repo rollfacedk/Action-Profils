@@ -501,6 +501,8 @@ end
 local function Init ()
   HL.RegisterNucleusAbility(27285, 10, 6)               -- Seed Explosion
 end
+-- Init data for splash data (To Check)
+Init()
 
 --- ======= ACTION LISTS =======
 local function APL() 
@@ -515,8 +517,7 @@ local function APL()
     contagion = Contagion()
     DetermineEssenceRanks()
     HandlePetChoice()
-	-- Init data for splash data (To Check)
-	Init()
+
 	
 	if Player:IsCasting() or Player:IsChanneling() then
 	    ShouldStop = true

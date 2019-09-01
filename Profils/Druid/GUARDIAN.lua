@@ -304,6 +304,7 @@ local function Init ()
   HL.RegisterNucleusAbility(77758, 8, 6)               -- Thrash (Bear)
   HL.RegisterNucleusAbility(213771, 8, 6)              -- Swipe (Bear)
 end
+Init()
 
 --- ======= ACTION LISTS =======
 local function APL() 
@@ -316,7 +317,6 @@ local function APL()
     UpdateRanges()
     HL.GetEnemies(40, true) -- To populate Cache.Enemies[40] for CastCycles
 	DetermineEssenceRanks()
-	Init()
     EnemiesCount = Cache.EnemiesCount[AoERadius]
     IsTanking = Player:IsTankingAoE(AoERadius) or Player:IsTanking(Target)
 	

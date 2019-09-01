@@ -273,7 +273,7 @@ local function Init ()
   HL.RegisterNucleusAbility(207230, 8, 6)               -- Frostscythe
   HL.RegisterNucleusAbility(49184, 10, 6)               -- Howling Blast
 end
-
+Init()
 --- ======= ACTION LISTS =======
 local function APL() 
     
@@ -282,7 +282,7 @@ local function APL()
 	local Pull = Action.BossMods_Pulling()
 	
 	-- Local functions remap
-	Init()
+
 	local no_heal = not DeathStrikeHeal()
     UpdateRanges() -- To populate Cache.Enemies[range] for CastCycles
     DetermineEssenceRanks()

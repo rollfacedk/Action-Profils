@@ -382,6 +382,8 @@ local function Init ()
   HL.RegisterNucleusAbility(1449, 10, 6)               -- Arcane Explosion
   HL.RegisterNucleusAbility(44425, 10, 6)              -- Arcane Barrage
 end
+-- Init data for splash data (To Check)
+Init()
 
 --- ======= ACTION LISTS =======
 local function APL() 
@@ -394,8 +396,6 @@ local function APL()
     EnemiesCount = GetEnemiesCount(10)
     HL.GetEnemies(40, 12) -- For interrupts
     DetermineEssenceRanks()
-	-- Init data for splash data (To Check)
-	Init()
 	-- Blink Handler
 	local BlinkAny = S.Shimmer:IsAvailable() and S.Shimmer or S.Blink
 	

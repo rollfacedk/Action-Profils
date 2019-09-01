@@ -306,7 +306,8 @@ local function Init()
   HL.RegisterNucleusAbility(6572, 8, 6)               -- Revenge
   HL.RegisterNucleusAbility(228920, 8, 6)             -- Ravager
 end
-
+-- Init data for splash data (To Check)
+Init()
 
 --- ======= ACTION LISTS =======
 local function APL() 
@@ -319,8 +320,7 @@ local function APL()
     local gcdTime = Player:GCD()
     UpdateRanges()
 	DetermineEssenceRanks()
-	-- Init data for splash data (To Check)
-	Init()
+	
 	
 	if Player:IsCasting() or Player:IsChanneling() then
 	    ShouldStop = true

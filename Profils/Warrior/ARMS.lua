@@ -278,6 +278,7 @@ local function Init ()
   HL.RegisterNucleusAbility(845, 8, 6)                  -- Cleave
   HL.RegisterNucleusAbility(1680, 8, 6)                 -- Whirlwind
 end
+Init()
 
 --- ======= ACTION LISTS =======
 local function APL() 
@@ -292,7 +293,7 @@ local function APL()
     UpdateExecuteID()
 	ExecuteRange()
 	DetermineEssenceRanks()
-	Init()
+	
 	
 	    -- Handle all generics trinkets	
 	local function GeneralTrinkets()

@@ -876,6 +876,11 @@ local Interrupts = {
   {S.CheapShot, "Cast Cheap Shot (Interrupt)", function () return Player:IsStealthedP(true, true); end}
 };
 
+local function Init()
+  S.RazorCoralDebuff:RegisterAuraTracking();
+  S.ConductiveInkDebuff:RegisterAuraTracking();
+end
+Init()
 
 --- ======= ACTION LISTS =======
 local function APL() 

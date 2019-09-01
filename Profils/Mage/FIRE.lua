@@ -342,6 +342,8 @@ local function Init()
   HL.RegisterNucleusAbility(2120, 8, 6)                 -- Flamestrike
   HL.RegisterNucleusAbility(257541, 8, 6)               -- Phoenix Flames
 end
+-- Init data for splash data (To Check)
+Init()
 
 --- ======= ACTION LISTS =======
 local function APL() 
@@ -354,8 +356,6 @@ local function APL()
     EnemiesCount = GetEnemiesCount(40)
     HL.GetEnemies(40, 12) -- For interrupts
     DetermineEssenceRanks()
-	-- Init data for splash data (To Check)
-	Init()
 	
 	if Player:IsCasting() or Player:IsChanneling() then
 	    ShouldStop = true

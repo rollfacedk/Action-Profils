@@ -375,8 +375,6 @@ local function APL()
         -- flask
         -- augmentation
         -- food
-        -- snapshot_stats
-	if Everyone.TargetIsValid() then
 		-- Immolation Aura
         if S.ImmolationAura:IsCastableP() and not ShouldStop and Pull > 1.5 and Pull <= 2  then
             if HR.Cast(S.ImmolationAura) then return "immolation_aura 5"; end
@@ -389,10 +387,6 @@ local function APL()
         if S.Metamorphosis:IsCastableP(40) and not ShouldStop and (Player:BuffDownP(S.MetamorphosisBuff) and not S.ChaoticTransformation:AzeriteEnabled()) and Pull > 0.1 and Pull <= 0.2 then
             if HR.Cast(S.Metamorphosis, Action.GetToggle(2, "OffGCDasOffGCD")) then return "metamorphosis 6"; end
         end
-        -- use_item,name=azsharas_font_of_power
-       -- if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and TrinketON() and not ShouldStop then
-      --      if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 7"; end
-    end
     end
     
     local function Precombat()

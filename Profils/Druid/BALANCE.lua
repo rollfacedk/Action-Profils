@@ -391,6 +391,8 @@ local function Init()
     HL.RegisterNucleusAbility(191037, 15, 6)              -- Starfall
     HL.RegisterNucleusAbility(194153, 8, 6)               -- Lunar Strike
 end
+-- Init data for splash data (To Check)
+Init()
 
 --- ======= ACTION LISTS =======
 local function APL() 
@@ -403,8 +405,6 @@ local function APL()
     EnemiesCount = GetEnemiesCount(40)
     HL.GetEnemies(40) -- To populate Cache.Enemies[40] for CastCycles
 	DetermineEssenceRanks()
-	-- Init data for splash data (To Check)
-	Init()
 	
 	if Player:IsCasting() or Player:IsChanneling() then
 	    ShouldStop = true

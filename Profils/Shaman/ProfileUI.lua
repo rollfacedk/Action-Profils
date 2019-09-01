@@ -272,6 +272,24 @@ A.Data.ProfileUI = {
                     E = "LayoutSpace",                                                                         
                 },
             },
+			{
+                {
+                    E = "Checkbox", 
+                    DB = "UseGhostWolf",
+                    DBV = true,
+                    L = { 
+                        enUS = "Use Ghost Wolf", 
+                        ruRU = "Use Ghost Wolf", 
+                        frFR = "Use Ghost Wolf",
+                    }, 
+                    TT = { 
+                        enUS = "Use Ghost Wolf if player is moving for more than 2 seconds.", 
+                        ruRU = "Use Ghost Wolf if player is moving for more than 2 seconds.", 
+                        frFR = "Use Ghost Wolf if player is moving for more than 2 seconds.", 
+                    }, 
+                    M = {},
+                },
+			},
             { -- [7] 
                 {
                     E = "Header",

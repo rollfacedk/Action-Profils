@@ -394,11 +394,12 @@ local StunInterrupts = {
   {S.CapacitorTotem, "Cast Capacitor Totem (Interrupt)", function () return true; end},
 }
 
-local function Init ()
+local function Init()
   HL.RegisterNucleusAbility(187874, 8, 6)               -- Bladestorm
   HL.RegisterNucleusAbility(197214, 11, 6)              -- Sundering
   HL.RegisterNucleusAbility(197211, 8, 6)               -- Fury of Air
 end
+Init()
 
 --- ======= ACTION LISTS =======
 local function APL() 
@@ -411,7 +412,7 @@ local function APL()
     UpdateRanges()
     Everyone.AoEToggleEnemiesUpdate()
 	DetermineEssenceRanks()
-	Init()
+	
 	
 	if Player:IsCasting() or Player:IsChanneling() then
 	    ShouldStop = true

@@ -282,6 +282,7 @@ local function Init ()
   HL.RegisterNucleusAbility(115989, 8, 6)               -- Unholy Blight
   HL.RegisterNucleusAbility(43265, 8, 6)                -- Death and Decay
 end
+Init()
 
 --- ======= ACTION LISTS =======
 local function APL() 
@@ -295,7 +296,7 @@ local function APL()
     UpdateRanges() -- To populate Cache.Enemies[range] for CastCycles
     DetermineEssenceRanks()
 	UpdateGargoyleID()
-	Init()
+	
 	-- Anti channeling protection ? To see if its usefull
 	--if Player:IsCasting() or Player:IsChanneling() then
 	--    ShouldStop = true

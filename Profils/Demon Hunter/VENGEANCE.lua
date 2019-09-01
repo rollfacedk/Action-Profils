@@ -312,6 +312,7 @@ local function Init ()
   HL.RegisterNucleusAbility(204157, 10, 6)              -- Throw Glaive
   HL.RegisterNucleusAbility(204513, 8, 6)               -- Sigil of Flame
 end
+Init()
 
 S.ConcentratedFlame:RegisterInFlight()
 
@@ -325,7 +326,7 @@ local function APL()
 	-- Local functions remap
     local ActiveMitigationNeeded = Player:ActiveMitigationNeeded()
     local IsTanking = Player:IsTankingAoE(8) or Player:IsTanking(Target);
-	Init()
+	
     UpdateRanges()
 	Everyone.AoEToggleEnemiesUpdate()
     UpdateSoulFragments();

@@ -248,6 +248,7 @@ local function Init ()
   HL.RegisterNucleusAbility(194844, 8, 6)               -- Bonestorm
   HL.RegisterNucleusAbility(43265, 8, 6)                -- Death and Decay
 end
+Init()
 
 --- ======= ACTION LISTS =======
 local function APL() 
@@ -257,7 +258,7 @@ local function APL()
 	local Pull = Action.BossMods_Pulling()
 	
 	-- Local functions remap
-	Init()
+
     UpdateRanges()
     DetermineEssenceRanks()
 	

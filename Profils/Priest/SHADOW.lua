@@ -330,6 +330,8 @@ local function Init ()
     HL.RegisterNucleusAbility(263346, 10, 6)               -- Dark Void
     HL.RegisterNucleusAbility(205385, 8, 6)                -- Shadow Crash
 end
+-- Init data for splash data (To Check)
+Init()
 
 --- ======= ACTION LISTS =======
 local function APL() 
@@ -342,8 +344,6 @@ local function APL()
     EnemiesCount = GetEnemiesCount(10)
     HL.GetEnemies(40, true) -- To populate Cache.Enemies[40] for CastCycles
     DetermineEssenceRanks()
-	-- Init data for splash data (To Check)
-	Init()
 	
 	if Player:IsCasting() or Player:IsChanneling() then
 	    ShouldStop = true

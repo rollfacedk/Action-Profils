@@ -304,6 +304,8 @@ local function Init ()
   HL.RegisterNucleusAbility(153595, 8, 6)              -- Comet Storm
   HL.RegisterNucleusAbility(120, 12, 6)                -- Cone of Cold
 end
+-- Init data for splash data (To Check)
+Init()
 
 --- ======= ACTION LISTS =======
 local function APL() 
@@ -317,8 +319,7 @@ local function APL()
     EnemiesCount = GetEnemiesCount(8)
     HL.GetEnemies(40, 12) -- For interrupts
     DetermineEssenceRanks()
-	-- Init data for splash data (To Check)
-	Init()
+	
 	
 	if Player:IsCasting() or Player:IsChanneling() then
 	    ShouldStop = true

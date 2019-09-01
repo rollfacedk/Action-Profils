@@ -695,6 +695,8 @@ local function Init ()
     HL.RegisterNucleusAbility(105174, 8, 6)               -- Hand of Gul'dan
     HL.RegisterNucleusAbility(196277, 8, 6)               -- Implosion
 end
+-- Init data for splash data (To Check)
+Init()
 
 --- ======= ACTION LISTS =======
 local function APL() 
@@ -709,8 +711,7 @@ local function APL()
     UpdatePetTable()
     UpdateSoulShards()
     DetermineEssenceRanks()
-	-- Init data for splash data (To Check)
-	Init()
+
 	
 	    -- Handle all generics trinkets	
 	local function GeneralTrinkets()
