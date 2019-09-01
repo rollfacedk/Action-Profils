@@ -114,8 +114,8 @@ Action[ACTION_CONST_PALADIN_PROTECTION] = {
 Action:CreateEssencesFor(ACTION_CONST_PALADIN_PROTECTION)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 
 -- This code making shorter access to both tables Action[PLAYERSPEC] and Action
--- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop, it doesn't make any conflict if you will skip shorter access
--- So with shorter access you can just do Action.Guard:IsReady() and not ShouldStop instead of Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop
+-- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop and not ShouldStop, it doesn't make any conflict if you will skip shorter access
+-- So with shorter access you can just do Action.Guard:IsReady() and not ShouldStop and not ShouldStop instead of Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop and not ShouldStop
 local A = setmetatable(Action[ACTION_CONST_PALADIN_PROTECTION], { __index = Action })
 
 -- Simcraft Imported
@@ -284,22 +284,22 @@ local function APL()
         -- snapshot_stats
         --if Everyone.TargetIsValid() then
             -- potion
-            if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
+            if I.PotionofUnbridledFury:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") then
                 if HR.CastSuggested(I.PotionofUnbridledFury) then return "potion_of_unbridled_fury 4"; end
             end
             -- consecration
-            if S.Consecration:IsCastableP() and Player:BuffDownP(S.ConsecrationBuff) then
+            if S.Consecration:IsCastableP() and not ShouldStop and Player:BuffDownP(S.ConsecrationBuff) then
                 if HR.Cast(S.Consecration) then return "consecration 6"; end
             end
             -- lights_judgment
-            if S.LightsJudgment:IsCastableP() and HR.CDsON() then
+            if S.LightsJudgment:IsCastableP() and not ShouldStop and HR.CDsON() then
                 if HR.Cast(S.LightsJudgment) then return "lights_judgment 10"; end
             end
         --end
     end
     local function Cooldowns()
         -- fireblood,if=buff.avenging_wrath.up
-        if S.Fireblood:IsCastableP() and HR.CDsON() and (Player:BuffP(S.AvengingWrathBuff)) then
+        if S.Fireblood:IsCastableP() and not ShouldStop and HR.CDsON() and (Player:BuffP(S.AvengingWrathBuff)) then
             if HR.Cast(S.Fireblood, Action.GetToggle(2, "OffGCDasOffGCD")) then return "fireblood 12"; end
         end
         -- use_item,name=azsharas_font_of_power,if=cooldown.seraphim.remains<=10|!talent.seraphim.enabled
@@ -311,23 +311,23 @@ local function APL()
             if HR.Cast(I.AshvanesRazorCoral) then return "ashvanes_razor_coral 18"; end
         end
         -- seraphim,if=cooldown.shield_of_the_righteous.charges_fractional>=2
-        if S.Seraphim:IsCastableP() and (S.ShieldoftheRighteous:ChargesFractionalP() >= 2) then
+        if S.Seraphim:IsCastableP() and not ShouldStop and (S.ShieldoftheRighteous:ChargesFractionalP() >= 2) then
             if HR.Cast(S.Seraphim) then return "seraphim 22"; end
         end
         -- avenging_wrath,if=buff.seraphim.up|cooldown.seraphim.remains<2|!talent.seraphim.enabled
-        if S.AvengingWrath:IsCastableP() and HR.CDsON() and (Player:BuffP(S.SeraphimBuff) or S.Seraphim:CooldownRemainsP() < 2 or not S.Seraphim:IsAvailable()) then
+        if S.AvengingWrath:IsCastableP() and not ShouldStop and HR.CDsON() and (Player:BuffP(S.SeraphimBuff) or S.Seraphim:CooldownRemainsP() < 2 or not S.Seraphim:IsAvailable()) then
             if HR.Cast(S.AvengingWrath, Action.GetToggle(2, "OffGCDasOffGCD")) then return "avenging_wrath 26"; end
         end
         -- memory_of_lucid_dreams,if=!talent.seraphim.enabled|cooldown.seraphim.remains<=gcd|buff.seraphim.up
-        if S.MemoryofLucidDreams:IsCastableP() and (not S.Seraphim:IsAvailable() or S.Seraphim:CooldownRemainsP() <= Player:GCD() or Player:BuffP(S.SeraphimBuff)) then
+        if S.MemoryofLucidDreams:IsCastableP() and not ShouldStop and (not S.Seraphim:IsAvailable() or S.Seraphim:CooldownRemainsP() <= Player:GCD() or Player:BuffP(S.SeraphimBuff)) then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams 28"; end
         end
         -- bastion_of_light,if=cooldown.shield_of_the_righteous.charges_fractional<=0.5
-        if S.BastionofLight:IsCastableP() and (S.ShieldoftheRighteous:ChargesFractionalP() <= 0.5) then
+        if S.BastionofLight:IsCastableP() and not ShouldStop and (S.ShieldoftheRighteous:ChargesFractionalP() <= 0.5) then
             if HR.Cast(S.BastionofLight) then return "bastion_of_light 34"; end
         end
         -- potion,if=buff.avenging_wrath.up
-        if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") and (Player:BuffP(S.AvengingWrathBuff)) then
+        if I.PotionofUnbridledFury:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") and (Player:BuffP(S.AvengingWrathBuff)) then
             if HR.CastSuggested(I.PotionofUnbridledFury) then return "potion_of_unbridled_fury 38"; end
         end
         -- use_items,if=buff.seraphim.up|!talent.seraphim.enabled
@@ -336,7 +336,7 @@ local function APL()
             if HR.Cast(I.GrongsPrimalRage) then return "grongs_primal_rage 43"; end
         end
         -- use_item,name=pocketsized_computation_device,if=cooldown.judgment.full_recharge_time>4*spell_haste&cooldown.avengers_shield.remains>4*spell_haste&(!equipped.grongs_primal_rage|!trinket.grongs_primal_rage.cooldown.up)&consecration.up
-        if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and TrinketON() and (S.Judgment:FullRechargeTimeP() > 4 * Player:SpellHaste() and S.AvengersShield:CooldownRemainsP() > 4 * Player:SpellHaste() and (not I.GrongsPrimalRage:IsEquipped() or not I.GrongsPrimalRage:IsReady()) and Player:BuffP(S.ConsecrationBuff)) then
+        if I.PocketsizedComputationDevice:IsEquipped() and I.PocketsizedComputationDevice:IsReady() and not ShouldStop and TrinketON() and (S.Judgment:FullRechargeTimeP() > 4 * Player:SpellHaste() and S.AvengersShield:CooldownRemainsP() > 4 * Player:SpellHaste() and (not I.GrongsPrimalRage:IsEquipped() or not I.GrongsPrimalRage:IsReady() and not ShouldStop) and Player:BuffP(S.ConsecrationBuff)) then
             if HR.Cast(I.PocketsizedComputationDevice) then return "pocketsized_computation_device"; end
         end
         -- use_item,name=merekthas_fang,if=!buff.avenging_wrath.up&(buff.seraphim.up|!talent.seraphim.enabled)
@@ -371,7 +371,7 @@ local function APL()
   		local unit = "target"
    		local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")          
   	    -- Rebuke
-  	    if useKick and S.Rebuke:IsReady() and Target:IsInterruptible() then 
+  	    if useKick and S.Rebuke:IsReady() and not ShouldStop and Target:IsInterruptible() then 
 		  	if Target:CastPercentage() >= randomInterrupt then
           	    if HR.Cast(S.Rebuke, true) then return "Rebuke 5"; end
          	else 
@@ -379,7 +379,7 @@ local function APL()
          	end 
       	end 	
      	-- HammerofJustice
-      	if useCC and S.HammerofJustice:IsReady() and Target:IsInterruptible() then 
+      	if useCC and S.HammerofJustice:IsReady() and not ShouldStop and Target:IsInterruptible() then 
 	  		if Target:CastPercentage() >= randomInterrupt then
      	        if HR.Cast(S.HammerofJustice, true) then return "HammerofJustice 5"; end
      	    else 
@@ -392,67 +392,67 @@ local function APL()
             local ShouldReturn = Cooldowns(); if ShouldReturn then return ShouldReturn; end
         end
         -- worldvein_resonance,if=buff.lifeblood.stack<3
-        if S.WorldveinResonance:IsCastableP() and (Player:BuffStackP(S.LifebloodBuff) < 3) then
+        if S.WorldveinResonance:IsCastableP() and not ShouldStop and (Player:BuffStackP(S.LifebloodBuff) < 3) then
             if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance"; end
         end
         -- shield_of_the_righteous,if=(buff.avengers_valor.up&cooldown.shield_of_the_righteous.charges_fractional>=2.5)&(cooldown.seraphim.remains>gcd|!talent.seraphim.enabled)
-        if S.ShieldoftheRighteous:IsCastableP() and ((Player:BuffP(S.AvengersValorBuff) and S.ShieldoftheRighteous:ChargesFractionalP() >= 2.5) and (S.Seraphim:CooldownRemainsP() > Player:GCD() or not S.Seraphim:IsAvailable())) then
+        if S.ShieldoftheRighteous:IsCastableP() and not ShouldStop and ((Player:BuffP(S.AvengersValorBuff) and S.ShieldoftheRighteous:ChargesFractionalP() >= 2.5) and (S.Seraphim:CooldownRemainsP() > Player:GCD() or not S.Seraphim:IsAvailable())) then
             if HR.Cast(S.ShieldoftheRighteous, Action.GetToggle(2, "OffGCDasOffGCD")) then return "shield_of_the_righteous 71"; end
         end
         -- shield_of_the_righteous,if=(buff.avenging_wrath.up&!talent.seraphim.enabled)|buff.seraphim.up&buff.avengers_valor.up
-        if S.ShieldoftheRighteous:IsCastableP() and ((Player:BuffP(S.AvengingWrathBuff) and not S.Seraphim:IsAvailable()) or Player:BuffP(S.SeraphimBuff) and Player:BuffP(S.AvengersValorBuff)) then
+        if S.ShieldoftheRighteous:IsCastableP() and not ShouldStop and ((Player:BuffP(S.AvengingWrathBuff) and not S.Seraphim:IsAvailable()) or Player:BuffP(S.SeraphimBuff) and Player:BuffP(S.AvengersValorBuff)) then
             if HR.Cast(S.ShieldoftheRighteous, Action.GetToggle(2, "OffGCDasOffGCD")) then return "shield_of_the_righteous 81"; end
         end
         -- shield_of_the_righteous,if=(buff.avenging_wrath.up&buff.avenging_wrath.remains<4&!talent.seraphim.enabled)|(buff.seraphim.remains<4&buff.seraphim.up)
-        if S.ShieldoftheRighteous:IsCastableP() and ((Player:BuffP(S.AvengingWrathBuff) and Player:BuffRemainsP(S.AvengingWrathBuff) < 4 and not S.Seraphim:IsAvailable()) or (Player:BuffRemainsP(S.SeraphimBuff) < 4 and Player:BuffP(S.SeraphimBuff))) then
+        if S.ShieldoftheRighteous:IsCastableP() and not ShouldStop and ((Player:BuffP(S.AvengingWrathBuff) and Player:BuffRemainsP(S.AvengingWrathBuff) < 4 and not S.Seraphim:IsAvailable()) or (Player:BuffRemainsP(S.SeraphimBuff) < 4 and Player:BuffP(S.SeraphimBuff))) then
             if HR.Cast(S.ShieldoftheRighteous, Action.GetToggle(2, "OffGCDasOffGCD")) then return "shield_of_the_righteous 91"; end
         end
         -- lights_judgment,if=buff.seraphim.up&buff.seraphim.remains<3
-        if S.LightsJudgment:IsCastableP() and HR.CDsON() and (Player:BuffP(S.SeraphimBuff) and Player:BuffRemainsP(S.SeraphimBuff) < 3) then
+        if S.LightsJudgment:IsCastableP() and not ShouldStop and HR.CDsON() and (Player:BuffP(S.SeraphimBuff) and Player:BuffRemainsP(S.SeraphimBuff) < 3) then
             if HR.Cast(S.LightsJudgment) then return "lights_judgment 103"; end
         end
         -- consecration,if=!consecration.up
-        if S.Consecration:IsCastableP() and (Player:BuffDownP(S.ConsecrationBuff)) then
+        if S.Consecration:IsCastableP() and not ShouldStop and (Player:BuffDownP(S.ConsecrationBuff)) then
             if HR.Cast(S.Consecration) then return "consecration 109"; end
         end
         -- judgment,if=(cooldown.judgment.remains<gcd&cooldown.judgment.charges_fractional>1&cooldown_react)|!talent.crusaders_judgment.enabled
-        if S.Judgment:IsCastableP() and ((S.Judgment:CooldownRemainsP() < Player:GCD() and S.Judgment:ChargesFractionalP() > 1 and S.Judgment:CooldownUpP()) or not S.CrusadersJudgment:IsAvailable()) then
+        if S.Judgment:IsCastableP() and not ShouldStop and ((S.Judgment:CooldownRemainsP() < Player:GCD() and S.Judgment:ChargesFractionalP() > 1 and S.Judgment:CooldownUpP()) or not S.CrusadersJudgment:IsAvailable()) then
             if HR.Cast(S.Judgment) then return "judgment 111"; end
         end
         -- avengers_shield,if=cooldown_react
-        if S.AvengersShield:IsCastableP() and (S.AvengersShield:CooldownUpP()) then
+        if S.AvengersShield:IsCastableP() and not ShouldStop and (S.AvengersShield:CooldownUpP()) then
             if HR.Cast(S.AvengersShield) then return "avengers_shield 123"; end
         end
         -- judgment,if=cooldown_react|!talent.crusaders_judgment.enabled
-        if S.Judgment:IsCastableP() and (S.Judgment:CooldownUpP() or not S.CrusadersJudgment:IsAvailable()) then
+        if S.Judgment:IsCastableP() and not ShouldStop and (S.Judgment:CooldownUpP() or not S.CrusadersJudgment:IsAvailable()) then
             if HR.Cast(S.Judgment) then return "judgment 129"; end
         end
         -- concentrated_flame,if=buff.seraphim.up&!dot.concentrated_flame_burn.remains>0|essence.the_crucible_of_flame.rank<3
-        if S.ConcentratedFlame:IsCastableP() and (Player:BuffP(S.SeraphimBuff) and Target:DebuffDownP(S.ConcentratedFlameBurn) or (S.ConcentratedFlame:ID() == 295373 or S.ConcentratedFlame:ID() == 299349)) then
+        if S.ConcentratedFlame:IsCastableP() and not ShouldStop and (Player:BuffP(S.SeraphimBuff) and Target:DebuffDownP(S.ConcentratedFlameBurn) or (S.ConcentratedFlame:ID() == 295373 or S.ConcentratedFlame:ID() == 299349)) then
             if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame"; end
         end
         -- lights_judgment,if=!talent.seraphim.enabled|buff.seraphim.up
-        if S.LightsJudgment:IsCastableP() and HR.CDsON() and (not S.Seraphim:IsAvailable() or Player:BuffP(S.SeraphimBuff)) then
+        if S.LightsJudgment:IsCastableP() and not ShouldStop and HR.CDsON() and (not S.Seraphim:IsAvailable() or Player:BuffP(S.SeraphimBuff)) then
             if HR.Cast(S.LightsJudgment) then return "lights_judgment 137"; end
         end
         -- anima_of_death
-        if S.AnimaofDeath:IsCastableP() then
+        if S.AnimaofDeath:IsCastableP() and not ShouldStop then
             if HR.Cast(S.AnimaofDeath) then return "anima_of_death"; end
         end
         -- blessed_hammer,strikes=3
-        if S.BlessedHammer:IsCastableP() then
+        if S.BlessedHammer:IsCastableP() and not ShouldStop then
             if HR.Cast(S.BlessedHammer) then return "blessed_hammer 143"; end
         end
         -- hammer_of_the_righteous
-        if S.HammeroftheRighteous:IsCastableP() then
+        if S.HammeroftheRighteous:IsCastableP() and not ShouldStop then
             if HR.Cast(S.HammeroftheRighteous) then return "hammer_of_the_righteous 145"; end
         end
         -- consecration
-        if S.Consecration:IsCastableP() then
+        if S.Consecration:IsCastableP() and not ShouldStop then
             if HR.Cast(S.Consecration) then return "consecration 147"; end
         end
         -- heart_essence,if=!essence.the_crucible_of_flame.major|!essence.worldvein_resonance.major|!essence.anima_of_life_and_death.major|!essence.memory_of_lucid_dreams.major
-        if S.HeartEssence:IsCastableP() and (not S.ConcentratedFlame:IsAvailable() or not S.WorldveinResonance:IsAvailable() or not S.AnimaofDeath:IsAvailable() or not S.MemoryofLucidDreams:IsAvailable()) then
+        if S.HeartEssence:IsCastableP() and not ShouldStop and (not S.ConcentratedFlame:IsAvailable() or not S.WorldveinResonance:IsAvailable() or not S.AnimaofDeath:IsAvailable() or not S.MemoryofLucidDreams:IsAvailable()) then
             if HR.Cast(S.HeartEssence) then return "heart_essence"; end
         end
     end

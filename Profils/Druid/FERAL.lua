@@ -149,8 +149,8 @@ Action[ACTION_CONST_DRUID_FERAL] = {
 Action:CreateEssencesFor(ACTION_CONST_DRUID_FERAL)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 
 -- This code making shorter access to both tables Action[PLAYERSPEC] and Action
--- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady(), it doesn't make any conflict if you will skip shorter access
--- So with shorter access you can just do Action.Guard:IsReady() instead of Action[PLAYERSPEC].Guard:IsReady()
+-- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop, it doesn't make any conflict if you will skip shorter access
+-- So with shorter access you can just do Action.Guard:IsReady() and not ShouldStop instead of Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop
 local A = setmetatable(Action[ACTION_CONST_DRUID_FERAL], { __index = Action })
 
 -- Simcraft Imported
@@ -366,27 +366,27 @@ local function APL()
             VarUseThrash = 2
         end
         -- regrowth,if=talent.bloodtalons.enabled
-        if S.Regrowth:IsCastableP() and (S.Bloodtalons:IsAvailable()) and Player:BuffDownP(S.BloodtalonsBuff) then
+        if S.Regrowth:IsCastableP() and not ShouldStop and (S.Bloodtalons:IsAvailable()) and Player:BuffDownP(S.BloodtalonsBuff) then
             if HR.Cast(S.Regrowth) then return "regrowth 3"; end
         end
         -- use_item,name=azsharas_font_of_power
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and TrinketON() then
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and not ShouldStop and TrinketON() then
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 10"; end
         end
         -- cat_form
-        if S.CatForm:IsCastableP() and Player:BuffDownP(S.CatFormBuff) then
+        if S.CatForm:IsCastableP() and not ShouldStop and Player:BuffDownP(S.CatFormBuff) then
             if HR.Cast(S.CatForm, Action.GetToggle(2, "OffGCDasOffGCD")) then return "cat_form 15"; end
         end
         -- prowl
-        if S.Prowl:IsCastableP() and Player:BuffDownP(S.ProwlBuff) then
+        if S.Prowl:IsCastableP() and not ShouldStop and Player:BuffDownP(S.ProwlBuff) then
             if HR.Cast(S.Prowl, Action.GetToggle(2, "OffGCDasOffGCD")) then return "prowl 19"; end
         end
         -- potion,dynamic_prepot=1
-        if I.PotionofFocusedResolve:IsReady() and Action.GetToggle(1, "Potion") then
+        if I.PotionofFocusedResolve:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") then
             if HR.Cast(I.PotionofFocusedResolve) then return "battle_potion_of_agility 24"; end
         end
         -- berserk
-        if S.Berserk:IsCastableP() and Player:BuffDownP(S.BerserkBuff) and HR.CDsON() then
+        if S.Berserk:IsCastableP() and not ShouldStop and Player:BuffDownP(S.BerserkBuff) and HR.CDsON() then
             if HR.Cast(S.Berserk, Action.GetToggle(2, "OffGCDasOffGCD")) then return "berserk 26"; end
         end
 		
@@ -395,67 +395,67 @@ local function APL()
 	
     local function Cooldowns()
         -- berserk,if=energy>=30&(cooldown.tigers_fury.remains>5|buff.tigers_fury.up)
-        if S.Berserk:IsCastableP() and HR.CDsON() and (Player:EnergyPredicted() >= 30 and (S.TigersFury:CooldownRemainsP() > 5 or Player:BuffP(S.TigersFuryBuff))) then
+        if S.Berserk:IsCastableP() and not ShouldStop and HR.CDsON() and (Player:EnergyPredicted() >= 30 and (S.TigersFury:CooldownRemainsP() > 5 or Player:BuffP(S.TigersFuryBuff))) then
             if HR.Cast(S.Berserk,  Action.GetToggle(2, "OffGCDasOffGCD")) then return "berserk 30"; end
         end
         -- tigers_fury,if=energy.deficit>=60
-        if S.TigersFury:IsCastableP() and (Player:EnergyDeficitPredicted() >= 60) then
+        if S.TigersFury:IsCastableP() and not ShouldStop and (Player:EnergyDeficitPredicted() >= 60) then
             if HR.Cast(S.TigersFury, Action.GetToggle(2, "OffGCDasOffGCD")) then return "tigers_fury 36"; end
         end
         -- berserking
-        if S.Berserking:IsCastableP() and HR.CDsON() then
+        if S.Berserking:IsCastableP() and not ShouldStop and HR.CDsON() then
             if HR.Cast(S.Berserking, Action.GetToggle(2, "OffGCDasOffGCD")) then return "berserking 38"; end
         end
         -- thorns,if=active_enemies>desired_targets|raid_event.adds.in>45
-        if S.Thorns:IsCastableP() and (Cache.EnemiesCount[8] > 1) then
+        if S.Thorns:IsCastableP() and not ShouldStop and (Cache.EnemiesCount[8] > 1) then
             if HR.Cast(S.Thorns) then return "thorns"; end
         end
         -- the_unbound_force,if=buff.reckless_force.up|buff.tigers_fury.up
-        if S.TheUnboundForce:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.RecklessForceBuff) or Player:BuffP(S.TigersFuryBuff)) then
+        if S.TheUnboundForce:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.RecklessForceBuff) or Player:BuffP(S.TigersFuryBuff)) then
             if HR.Cast(S.TheUnboundForce) then return "the_unbound_force"; end
         end
         -- memory_of_lucid_dreams,if=buff.tigers_fury.up&buff.berserk.down
-        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.TigersFuryBuff) and Player:BuffDownP(S.BerserkBuff)) then
+        if S.MemoryofLucidDreams:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.TigersFuryBuff) and Player:BuffDownP(S.BerserkBuff)) then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams"; end
         end
         -- blood_of_the_enemy,if=buff.tigers_fury.up
-        if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.TigersFuryBuff)) then
+        if S.BloodoftheEnemy:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.TigersFuryBuff)) then
             if HR.Cast(S.BloodoftheEnemy) then return "blood_of_the_enemy"; end
         end
         -- feral_frenzy,if=combo_points=0
-        if S.FeralFrenzy:IsCastableP() and (Player:ComboPoints() == 0) then
+        if S.FeralFrenzy:IsCastableP() and not ShouldStop and (Player:ComboPoints() == 0) then
             if HR.Cast(S.FeralFrenzy) then return "feral_frenzy 40"; end
         end
         -- focused_azerite_beam,if=active_enemies>desired_targets|(raid_event.adds.in>90&energy.deficit>=50)
-        if S.FocusedAzeriteBeam:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Cache.EnemiesCount[8] > 1) then
+        if S.FocusedAzeriteBeam:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Cache.EnemiesCount[8] > 1) then
             if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam"; end
         end
         -- purifying_blast,if=active_enemies>desired_targets|raid_event.adds.in>60
-        if S.PurifyingBlast:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Cache.EnemiesCount[8] > 1) then
+        if S.PurifyingBlast:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Cache.EnemiesCount[8] > 1) then
             if HR.Cast(S.PurifyingBlast) then return "purifying_blast"; end
         end
 	    -- Manually added concentrated_flame
-        if S.ConcentratedFlame:IsCastableP() and (Target:DebuffDownP(S.ConcentratedFlameBurn)) then
+        if S.ConcentratedFlame:IsCastableP() and not ShouldStop and (Target:DebuffDownP(S.ConcentratedFlameBurn)) then
             if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame"; end
         end
         -- heart_essence,if=buff.tigers_fury.up
-        if S.HeartEssence:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.TigersFuryBuff)) then
+        if S.HeartEssence:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.TigersFuryBuff)) then
             if HR.Cast(S.HeartEssence) then return "heart_essence"; end
         end
         -- incarnation,if=energy>=30&(cooldown.tigers_fury.remains>15|buff.tigers_fury.up)
-        if S.Incarnation:IsCastableP() and HR.CDsON() and (Player:EnergyPredicted() >= 30 and (S.TigersFury:CooldownRemainsP() > 15 or Player:BuffP(S.TigersFuryBuff))) then
+        if S.Incarnation:IsCastableP() and not ShouldStop and HR.CDsON() and (Player:EnergyPredicted() >= 30 and (S.TigersFury:CooldownRemainsP() > 15 or Player:BuffP(S.TigersFuryBuff))) then
             if HR.Cast(S.Incarnation, Action.GetToggle(2, "OffGCDasOffGCD")) then return "incarnation 42"; end
         end
         -- potion,if=target.time_to_die<65|(time_to_die<180&(buff.berserk.up|buff.incarnation.up))
-        if I.PotionofFocusedResolve:IsReady() and Action.GetToggle(1, "Potion") and (Target:TimeToDie() < 65 or (Target:TimeToDie() < 180 and (Player:BuffP(S.BerserkBuff) or Player:BuffP(S.IncarnationBuff)))) then
+        if I.PotionofFocusedResolve:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") and (Target:TimeToDie() < 65 or (Target:TimeToDie() < 180 and (Player:BuffP(S.BerserkBuff) or Player:BuffP(S.IncarnationBuff)))) then
             if HR.Cast(I.PotionofFocusedResolve) then return "battle_potion_of_agility 48"; end
         end
         -- shadowmeld,if=combo_points<5&energy>=action.rake.cost&dot.rake.pmultiplier<2.1&buff.tigers_fury.up&(buff.bloodtalons.up|!talent.bloodtalons.enabled)&(!talent.incarnation.enabled|cooldown.incarnation.remains>18)&!buff.incarnation.up
-        if S.Shadowmeld:IsCastableP() and HR.CDsON() and (Player:ComboPoints() < 5 and Player:EnergyPredicted() >= S.Rake:Cost() and Target:PMultiplier(S.Rake) < 2.1 and Player:BuffP(S.TigersFuryBuff) and (Player:BuffP(S.BloodtalonsBuff) or not S.Bloodtalons:IsAvailable()) and (not S.Incarnation:IsAvailable() or S.Incarnation:CooldownRemainsP() > 18) and not Player:BuffP(S.IncarnationBuff)) then
+        if S.Shadowmeld:IsCastableP() and not ShouldStop and HR.CDsON() and (Player:ComboPoints() < 5 and Player:EnergyPredicted() >= S.Rake:Cost() and Target:PMultiplier(S.Rake) < 2.1 and Player:BuffP(S.TigersFuryBuff) and (Player:BuffP(S.BloodtalonsBuff) or not S.Bloodtalons:IsAvailable()) and (not S.Incarnation:IsAvailable() or S.Incarnation:CooldownRemainsP() > 18) and not Player:BuffP(S.IncarnationBuff)) then
             if HR.Cast(S.Shadowmeld, Action.GetToggle(2, "OffGCDasOffGCD")) then return "shadowmeld 58"; end
         end
         -- use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down|debuff.conductive_ink_debuff.up&target.time_to_pct_30<1.5|!debuff.conductive_ink_debuff.up&(debuff.razor_coral_debuff.stack>=25-10*debuff.blood_of_the_enemy.up|target.time_to_die<40)&buff.tigers_fury.remains>10
-        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and TrinketON() and (Target:DebuffDownP(S.RazorCoralDebuff) or Target:DebuffP(S.ConductiveInkDebuff) and Target:TimeToX(30) < 1.5 or Target:DebuffDownP(S.ConductiveInkDebuff) and (Target:DebuffStackP(S.RazorCoralDebuff) >= 25 - 10 * num(Target:DebuffP(S.BloodoftheEnemy)) or Target:TimeToDie() < 40) and Player:BuffRemainsP(S.TigersFuryBuff) > 10) then
+        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and not ShouldStop and TrinketON() and (Target:DebuffDownP(S.RazorCoralDebuff) or Target:DebuffP(S.ConductiveInkDebuff) and Target:TimeToX(30) < 1.5 or Target:DebuffDownP(S.ConductiveInkDebuff) and (Target:DebuffStackP(S.RazorCoralDebuff) >= 25 - 10 * num(Target:DebuffP(S.BloodoftheEnemy)) or Target:TimeToDie() < 40) and Player:BuffRemainsP(S.TigersFuryBuff) > 10) then
             if HR.Cast(I.AshvanesRazorCoral) then return "ashvanes_razor_coral 59"; end
         end
         -- use_item,effect_name=cyclotronic_blast,if=(energy.deficit>=energy.regen*3)&buff.tigers_fury.down&!azerite.jungle_fury.enabled
@@ -467,7 +467,7 @@ local function APL()
             if HR.Cast(I.PocketsizedComputationDevice) then return "cyclotronic_blast 61"; end
         end
         -- use_item,effect_name=azsharas_font_of_power,if=energy.deficit>=50
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and TrinketON() and (Player:EnergyDeficitPredicted() >= 50) then
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and not ShouldStop and TrinketON() and (Player:EnergyDeficitPredicted() >= 50) then
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 62"; end
         end
         -- use_items,if=buff.tigers_fury.up|target.time_to_die<20
@@ -476,7 +476,7 @@ local function APL()
     local function Finishers()
         -- pool_resource,for_next=1
         -- savage_roar,if=buff.savage_roar.down
-        if S.SavageRoar:IsCastableP() and (Player:BuffDownP(S.SavageRoarBuff)) then
+        if S.SavageRoar:IsCastableP() and not ShouldStop and (Player:BuffDownP(S.SavageRoarBuff)) then
             if S.SavageRoar:IsUsablePPool() then
                 if HR.Cast(S.SavageRoar) then return "savage_roar 84"; end
             else
@@ -485,22 +485,22 @@ local function APL()
         end
         -- pool_resource,for_next=1
         -- primal_wrath,target_if=spell_targets.primal_wrath>1&dot.rip.remains<4
-        if S.PrimalWrath:IsCastableP() and EvaluateCyclePrimalWrath95(Target) then
+        if S.PrimalWrath:IsCastableP() and not ShouldStop and EvaluateCyclePrimalWrath95(Target) then
             if HR.Cast(S.PrimalWrath) then return "primal_wrath 99" end
         end
         -- pool_resource,for_next=1
         -- primal_wrath,target_if=spell_targets.primal_wrath>=2
-        if S.PrimalWrath:IsCastableP() and EvaluateCyclePrimalWrath106(Target) then
+        if S.PrimalWrath:IsCastableP() and not ShouldStop and EvaluateCyclePrimalWrath106(Target) then
             if HR.Cast(S.PrimalWrath) then return "primal_wrath 108" end
         end
         -- pool_resource,for_next=1
         -- rip,target_if=!ticking|(remains<=duration*0.3)&(!talent.sabertooth.enabled)|(remains<=duration*0.8&persistent_multiplier>dot.rip.pmultiplier)&target.time_to_die>8
-        if S.Rip:IsCastableP() and EvaluateCycleRip115(Target) then
+        if S.Rip:IsCastableP() and not ShouldStop and EvaluateCycleRip115(Target) then
             if HR.Cast(S.Rip) then return "rip 155" end
         end
         -- pool_resource,for_next=1
         -- savage_roar,if=buff.savage_roar.remains<12
-        if S.SavageRoar:IsCastableP() and (Player:BuffRemainsP(S.SavageRoarBuff) < 12) then
+        if S.SavageRoar:IsCastableP() and not ShouldStop and (Player:BuffRemainsP(S.SavageRoarBuff) < 12) then
             if S.SavageRoar:IsUsablePPool() then
                 if HR.Cast(S.SavageRoar) then return "savage_roar 157"; end
             else
@@ -509,7 +509,7 @@ local function APL()
         end
         -- pool_resource,for_next=1
         -- maim,if=buff.iron_jaws.up
-        if S.Maim:IsCastableP() and (Player:BuffP(S.IronJawsBuff)) then
+        if S.Maim:IsCastableP() and not ShouldStop and (Player:BuffP(S.IronJawsBuff)) then
             if S.Maim:IsUsablePPool() then
                 if HR.Cast(S.Maim) then return "maim 163"; end
             else
@@ -517,7 +517,7 @@ local function APL()
             end
         end
         -- ferocious_bite,max_energy=1
-        if S.FerociousBiteMaxEnergy:IsReadyP() and Player:ComboPoints() > 0 then
+        if S.FerociousBiteMaxEnergy:IsReadyP() and not ShouldStop and Player:ComboPoints() > 0 then
             if HR.Cast(S.FerociousBiteMaxEnergy) then return "ferocious_bite 168"; end
         end
         -- Pool if nothing else to do
@@ -528,20 +528,20 @@ local function APL()
 	
     local function Generators()
         -- regrowth,if=talent.bloodtalons.enabled&buff.predatory_swiftness.up&buff.bloodtalons.down&combo_points=4&dot.rake.remains<4
-        if S.Regrowth:IsCastableP() and (S.Bloodtalons:IsAvailable() and Player:BuffP(S.PredatorySwiftnessBuff) and Player:BuffDownP(S.BloodtalonsBuff) and Player:ComboPoints() == 4 and Target:DebuffRemainsP(S.RakeDebuff) < 4) then
+        if S.Regrowth:IsCastableP() and not ShouldStop and (S.Bloodtalons:IsAvailable() and Player:BuffP(S.PredatorySwiftnessBuff) and Player:BuffDownP(S.BloodtalonsBuff) and Player:ComboPoints() == 4 and Target:DebuffRemainsP(S.RakeDebuff) < 4) then
             if HR.Cast(S.Regrowth) then return "regrowth 174"; end
         end
         -- regrowth,if=talent.bloodtalons.enabled&buff.bloodtalons.down&buff.predatory_swiftness.up&talent.lunar_inspiration.enabled&dot.rake.remains<1
-        if S.Regrowth:IsCastableP() and (S.Bloodtalons:IsAvailable() and Player:BuffDownP(S.BloodtalonsBuff) and Player:BuffP(S.PredatorySwiftnessBuff) and S.LunarInspiration:IsAvailable() and Target:DebuffRemainsP(S.RakeDebuff) < 1) then
+        if S.Regrowth:IsCastableP() and not ShouldStop and (S.Bloodtalons:IsAvailable() and Player:BuffDownP(S.BloodtalonsBuff) and Player:BuffP(S.PredatorySwiftnessBuff) and S.LunarInspiration:IsAvailable() and Target:DebuffRemainsP(S.RakeDebuff) < 1) then
             if HR.Cast(S.Regrowth) then return "regrowth 184"; end
         end
         -- brutal_slash,if=spell_targets.brutal_slash>desired_targets
-        if S.BrutalSlash:IsCastableP() and (Cache.EnemiesCount[8] > 1) then
+        if S.BrutalSlash:IsCastableP() and not ShouldStop and (Cache.EnemiesCount[8] > 1) then
             if HR.Cast(S.BrutalSlash) then return "brutal_slash 196"; end
         end
         -- pool_resource,for_next=1
         -- thrash_cat,if=(refreshable)&(spell_targets.thrash_cat>2)
-        if S.ThrashCat:IsCastableP() and ((Target:DebuffRefreshableCP(S.ThrashCatDebuff)) and (Cache.EnemiesCount[8] > 2)) then
+        if S.ThrashCat:IsCastableP() and not ShouldStop and ((Target:DebuffRefreshableCP(S.ThrashCatDebuff)) and (Cache.EnemiesCount[8] > 2)) then
             if S.ThrashCat:IsUsablePPool() then
                 if HR.Cast(S.ThrashCat) then return "thrash_cat 199"; end
             else
@@ -550,7 +550,7 @@ local function APL()
         end
         -- pool_resource,for_next=1
         -- thrash_cat,if=(talent.scent_of_blood.enabled&buff.scent_of_blood.down)&spell_targets.thrash_cat>3
-        if S.ThrashCat:IsCastableP() and ((S.ScentofBlood:IsAvailable() and Player:BuffDownP(S.ScentofBloodBuff)) and Cache.EnemiesCount[8] > 3) then
+        if S.ThrashCat:IsCastableP() and not ShouldStop and ((S.ScentofBlood:IsAvailable() and Player:BuffDownP(S.ScentofBloodBuff)) and Cache.EnemiesCount[8] > 3) then
             if S.ThrashCat:IsUsablePPool() then
                 if HR.Cast(S.ThrashCat) then return "thrash_cat 209"; end
             else
@@ -560,7 +560,7 @@ local function APL()
         -- pool_resource,for_next=1
         -- swipe_cat,if=buff.scent_of_blood.up|(action.swipe_cat.damage*spell_targets.swipe_cat>(action.rake.damage+(action.rake_bleed.tick_damage*5)))
         -- TODO: Create RegisterDamage entries for this condition
-        if S.SwipeCat:IsCastableP() and (Player:BuffP(S.ScentofBloodBuff)) then
+        if S.SwipeCat:IsCastableP() and not ShouldStop and (Player:BuffP(S.ScentofBloodBuff)) then
             if S.SwipeCat:IsUsablePPool() then
                 if HR.Cast(S.SwipeCat) then return "swipe_cat 217"; end
             else
@@ -569,29 +569,29 @@ local function APL()
         end
         -- pool_resource,for_next=1
         -- rake,target_if=!ticking|(!talent.bloodtalons.enabled&remains<duration*0.3)&target.time_to_die>4
-        if S.Rake:IsCastableP() and EvaluateCycleRake228(Target) then
+        if S.Rake:IsCastableP() and not ShouldStop and EvaluateCycleRake228(Target) then
             if HR.Cast(S.Rake) then return "rake 250" end
         end
         -- pool_resource,for_next=1
         -- rake,target_if=talent.bloodtalons.enabled&buff.bloodtalons.up&((remains<=7)&persistent_multiplier>dot.rake.pmultiplier*0.85)&target.time_to_die>4
-        if S.Rake:IsCastableP() and EvaluateCycleRake257(Target) then
+        if S.Rake:IsCastableP() and not ShouldStop and EvaluateCycleRake257(Target) then
             if HR.Cast(S.Rake) then return "rake 275" end
         end
         -- moonfire_cat,if=buff.bloodtalons.up&buff.predatory_swiftness.down&combo_points<5
-        if S.MoonfireCat:IsCastableP() and (Player:BuffP(S.BloodtalonsBuff) and Player:BuffDownP(S.PredatorySwiftnessBuff) and Player:ComboPoints() < 5) then
+        if S.MoonfireCat:IsCastableP() and not ShouldStop and (Player:BuffP(S.BloodtalonsBuff) and Player:BuffDownP(S.PredatorySwiftnessBuff) and Player:ComboPoints() < 5) then
             if HR.Cast(S.MoonfireCat) then return "moonfire_cat 276"; end
         end
         -- brutal_slash,if=(buff.tigers_fury.up&(raid_event.adds.in>(1+max_charges-charges_fractional)*recharge_time))
-        if S.BrutalSlash:IsCastableP() and ((Player:BuffP(S.TigersFuryBuff) and (10000000000 > (1 + S.BrutalSlash:MaxCharges() - S.BrutalSlash:ChargesFractionalP()) * S.BrutalSlash:RechargeP()))) then
+        if S.BrutalSlash:IsCastableP() and not ShouldStop and ((Player:BuffP(S.TigersFuryBuff) and (10000000000 > (1 + S.BrutalSlash:MaxCharges() - S.BrutalSlash:ChargesFractionalP()) * S.BrutalSlash:RechargeP()))) then
             if HR.Cast(S.BrutalSlash) then return "brutal_slash 282"; end
         end
         -- moonfire_cat,target_if=refreshable
-        if S.MoonfireCat:IsCastableP() and EvaluateCycleMoonfireCat302(Target) then
+        if S.MoonfireCat:IsCastableP() and not ShouldStop and EvaluateCycleMoonfireCat302(Target) then
             if HR.Cast(S.MoonfireCat) then return "moonfire_cat 310" end
         end
         -- pool_resource,for_next=1
         -- thrash_cat,if=refreshable&((variable.use_thrash=2&(!buff.incarnation.up|azerite.wild_fleshrending.enabled))|spell_targets.thrash_cat>1)
-        if S.ThrashCat:IsCastableP() and (Target:DebuffRefreshableCP(S.ThrashCatDebuff) and ((VarUseThrash == 2 and (not Player:BuffP(S.IncarnationBuff) or S.WildFleshrending:AzeriteEnabled())) or Cache.EnemiesCount[8] > 1)) then
+        if S.ThrashCat:IsCastableP() and not ShouldStop and (Target:DebuffRefreshableCP(S.ThrashCatDebuff) and ((VarUseThrash == 2 and (not Player:BuffP(S.IncarnationBuff) or S.WildFleshrending:AzeriteEnabled())) or Cache.EnemiesCount[8] > 1)) then
             if S.ThrashCat:IsUsablePPool() then
                 if HR.Cast(S.ThrashCat) then return "thrash_cat 312"; end
             else
@@ -599,12 +599,12 @@ local function APL()
             end
         end
         -- thrash_cat,if=refreshable&variable.use_thrash=1&buff.clearcasting.react&(!buff.incarnation.up|azerite.wild_fleshrending.enabled)
-        if S.ThrashCat:IsCastableP() and (Target:DebuffRefreshableCP(S.ThrashCatDebuff) and VarUseThrash == 1 and bool(Player:BuffStackP(S.ClearcastingBuff)) and (not Player:BuffP(S.IncarnationBuff) or S.WildFleshrending:AzeriteEnabled())) then
+        if S.ThrashCat:IsCastableP() and not ShouldStop and (Target:DebuffRefreshableCP(S.ThrashCatDebuff) and VarUseThrash == 1 and bool(Player:BuffStackP(S.ClearcastingBuff)) and (not Player:BuffP(S.IncarnationBuff) or S.WildFleshrending:AzeriteEnabled())) then
             if HR.Cast(S.ThrashCat) then return "thrash_cat 327"; end
         end
         -- pool_resource,for_next=1
         -- swipe_cat,if=spell_targets.swipe_cat>1
-        if S.SwipeCat:IsCastableP() and (Cache.EnemiesCount[8] > 1) then
+        if S.SwipeCat:IsCastableP() and not ShouldStop and (Cache.EnemiesCount[8] > 1) then
             if S.SwipeCat:IsUsablePPool() then
                 if HR.Cast(S.SwipeCat) then return "swipe_cat 344"; end
             else
@@ -612,7 +612,7 @@ local function APL()
             end
         end
         -- shred,if=dot.rake.remains>(action.shred.cost+action.rake.cost-energy)%energy.regen|buff.clearcasting.react
-        if S.Shred:IsCastableP() and (Target:DebuffRemainsP(S.RakeDebuff) > (S.Shred:Cost() + S.Rake:Cost() - Player:EnergyPredicted()) / Player:EnergyRegen() or bool(Player:BuffStackP(S.ClearcastingBuff))) then
+        if S.Shred:IsCastableP() and not ShouldStop and (Target:DebuffRemainsP(S.RakeDebuff) > (S.Shred:Cost() + S.Rake:Cost() - Player:EnergyPredicted()) / Player:EnergyRegen() or bool(Player:BuffStackP(S.ClearcastingBuff))) then
             if HR.Cast(S.Shred) then return "shred 347"; end
         end
         -- Pool if nothing else to do
@@ -623,11 +623,11 @@ local function APL()
 	
     local function Opener()
         -- tigers_fury
-        if S.TigersFury:IsCastableP() then
+        if S.TigersFury:IsCastableP() and not ShouldStop then
             if HR.Cast(S.TigersFury, Action.GetToggle(2, "OffGCDasOffGCD")) then return "tigers_fury 363"; end
         end
         -- rake,if=!ticking|buff.prowl.up
-        if S.Rake:IsCastableP() and (not Target:DebuffP(S.RakeDebuff) or Player:BuffP(S.ProwlBuff)) then
+        if S.Rake:IsCastableP() and not ShouldStop and (not Target:DebuffP(S.RakeDebuff) or Player:BuffP(S.ProwlBuff)) then
             if HR.Cast(S.Rake) then return "rake 365"; end
         end
         -- variable,name=opener_done,value=dot.rip.ticking
@@ -636,15 +636,15 @@ local function APL()
         end
         -- wait,sec=0.001,if=dot.rip.ticking
         -- moonfire_cat,if=!ticking
-        if S.MoonfireCat:IsCastableP() and (not Target:DebuffP(S.MoonfireCatDebuff)) then
+        if S.MoonfireCat:IsCastableP() and not ShouldStop and (not Target:DebuffP(S.MoonfireCatDebuff)) then
             if HR.Cast(S.MoonfireCat) then return "moonfire_cat 380"; end
         end
         -- rip,if=!ticking
         -- Manual addition: Use Primal Wrath if >= 2 targets or Rip if only 1 target
-        if S.PrimalWrath:IsCastableP() and (S.PrimalWrath:IsAvailable() and not Target:DebuffP(S.RipDebuff) and Cache.EnemiesCount[8] >= 2) then
+        if S.PrimalWrath:IsCastableP() and not ShouldStop and (S.PrimalWrath:IsAvailable() and not Target:DebuffP(S.RipDebuff) and Cache.EnemiesCount[8] >= 2) then
             if HR.Cast(S.PrimalWrath) then return "primal_wrath opener"; end
         end
-        if S.Rip:IsCastableP() and (not Target:DebuffP(S.RipDebuff)) then
+        if S.Rip:IsCastableP() and not ShouldStop and (not Target:DebuffP(S.RipDebuff)) then
             if HR.Cast(S.Rip) then return "rip 388"; end
         end
     end
@@ -675,7 +675,7 @@ local function APL()
    		local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
         
   	    -- SkullBash
-  	    if useKick and S.SkullBash:IsReady() and Target:IsInterruptible() then 
+  	    if useKick and S.SkullBash:IsReady() and not ShouldStop and Target:IsInterruptible() then 
 		  	if Target:CastPercentage() >= randomInterrupt then
           	    if HR.Cast(S.SkullBash, true) then return "SkullBash 5"; end
          	else 
@@ -684,7 +684,7 @@ local function APL()
       	end 
 	
      	 -- MightyBash
-      	if useCC and S.MightyBash:IsAvailable() and S.MightyBash:IsReady() and Target:IsInterruptible() then 
+      	if useCC and S.MightyBash:IsAvailable() and S.MightyBash:IsReady() and not ShouldStop and Target:IsInterruptible() then 
 	  		if Target:CastPercentage() >= randomInterrupt then
      	        if HR.Cast(S.MightyBash, true) then return "MightyBash 5"; end
      	    else 
@@ -693,7 +693,7 @@ local function APL()
      	end 
 
      	 -- IncapacitatingRoar
-      	if useCC and (not S.MightyBash:IsAvailable() or not S.MightyBash:IsReady()) and S.IncapacitatingRoar:IsReady() and Target:IsInterruptible() then 
+      	if useCC and (not S.MightyBash:IsAvailable() or not S.MightyBash:IsReady() and not ShouldStop) and S.IncapacitatingRoar:IsReady() and not ShouldStop and Target:IsInterruptible() then 
 	  		if Target:CastPercentage() >= randomInterrupt then
      	        if HR.Cast(S.IncapacitatingRoar, true) then return "IncapacitatingRoar 5"; end
      	    else 
@@ -703,7 +703,7 @@ local function APL()
 		-- Soothe
 		-- Note: Toggles  ("UseDispel", "UsePurge", "UseExpelEnrage")
         -- Category ("Dispel", "MagicMovement", "PurgeFriendly", "PurgeHigh", "PurgeLow", "Enrage")
-        if S.Soothe:IsReady() and not ShouldStop and Action.AuraIsValid("player", "UseExpelEnrage", "Enrage") then
+        if S.Soothe:IsReady() and not ShouldStop and not ShouldStop and Action.AuraIsValid("player", "UseExpelEnrage", "Enrage") then
             if HR.Cast(S.Soothe) then return "" end
         end	
         -- auto_attack,if=!buff.prowl.up&!buff.shadowmeld.up
@@ -712,11 +712,11 @@ local function APL()
             return Opener();
         end
         -- cat_form,if=!buff.cat_form.up
-        if S.CatForm:IsCastableP() and (not Player:BuffP(S.CatFormBuff)) then
+        if S.CatForm:IsCastableP() and not ShouldStop and (not Player:BuffP(S.CatFormBuff)) then
             if HR.Cast(S.CatForm, Action.GetToggle(2, "OffGCDasOffGCD")) then return "cat_form 402"; end
         end
         -- rake,if=buff.prowl.up|buff.shadowmeld.up
-        if S.Rake:IsCastableP() and (Player:BuffP(S.ProwlBuff) or Player:BuffP(S.ShadowmeldBuff)) then
+        if S.Rake:IsCastableP() and not ShouldStop and (Player:BuffP(S.ProwlBuff) or Player:BuffP(S.ShadowmeldBuff)) then
             if HR.Cast(S.Rake) then return "rake 406"; end
         end
         -- call_action_list,name=cooldowns
@@ -724,11 +724,11 @@ local function APL()
             local ShouldReturn = Cooldowns(); if ShouldReturn then return ShouldReturn; end
         end
         -- ferocious_bite,target_if=dot.rip.ticking&dot.rip.remains<3&target.time_to_die>10&(talent.sabertooth.enabled)
-        if S.FerociousBite:IsReadyP() and Player:ComboPoints() > 0 and EvaluateCycleFerociousBite418(Target) then
+        if S.FerociousBite:IsReadyP() and not ShouldStop and Player:ComboPoints() > 0 and EvaluateCycleFerociousBite418(Target) then
             if HR.Cast(S.FerociousBite) then return "ferocious_bite 426" end
         end
         -- regrowth,if=combo_points=5&buff.predatory_swiftness.up&talent.bloodtalons.enabled&buff.bloodtalons.down&(!buff.incarnation.up|dot.rip.remains<8)
-        if S.Regrowth:IsCastableP() and (Player:ComboPoints() == 5 and Player:BuffP(S.PredatorySwiftnessBuff) and S.Bloodtalons:IsAvailable() and Player:BuffDownP(S.BloodtalonsBuff) and (not Player:BuffP(S.IncarnationBuff) or Target:DebuffRemainsP(S.RipDebuff) < 8)) then
+        if S.Regrowth:IsCastableP() and not ShouldStop and (Player:ComboPoints() == 5 and Player:BuffP(S.PredatorySwiftnessBuff) and S.Bloodtalons:IsAvailable() and Player:BuffDownP(S.BloodtalonsBuff) and (not Player:BuffP(S.IncarnationBuff) or Target:DebuffRemainsP(S.RipDebuff) < 8)) then
             if HR.Cast(S.Regrowth) then return "regrowth 427"; end
         end
         -- run_action_list,name=finishers,if=combo_points>4

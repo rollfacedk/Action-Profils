@@ -158,8 +158,8 @@ Action[ACTION_CONST_SHAMAN_ENCHANCEMENT] = {
 Action:CreateEssencesFor(ACTION_CONST_SHAMAN_ENCHANCEMENT)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 
 -- This code making shorter access to both tables Action[PLAYERSPEC] and Action
--- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady(), it doesn't make any conflict if you will skip shorter access
--- So with shorter access you can just do Action.Guard:IsReady() instead of Action[PLAYERSPEC].Guard:IsReady()
+-- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop, it doesn't make any conflict if you will skip shorter access
+-- So with shorter access you can just do Action.Guard:IsReady() and not ShouldStop instead of Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop
 local A = setmetatable(Action[ACTION_CONST_SHAMAN_ENCHANCEMENT], { __index = Action })
 
 -- Simcraft Imported
@@ -437,11 +437,11 @@ local function APL()
         -- snapshot_stats
         if Everyone.TargetIsValid() then
             -- potion
-            if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
+            if I.PotionofUnbridledFury:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") then
                 if HR.CastSuggested(I.PotionofUnbridledFury) then return "potion_of_unbridled_fury 4"; end
             end
             -- lightning_shield
-            if S.LightningShield:IsCastableP() and Player:BuffDownP(S.LightningShield) then
+            if S.LightningShield:IsCastableP() and not ShouldStop and Player:BuffDownP(S.LightningShield) then
                 if HR.Cast(S.LightningShield) then return "lightning_shield 6"; end
             end
             -- use_item,name=azsharas_font_of_power
@@ -449,29 +449,29 @@ local function APL()
                 if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 8"; end
             end
             -- rockbiter,if=maelstrom<15&time<gcd
-            if S.Rockbiter:IsCastableP() then
+            if S.Rockbiter:IsCastableP() and not ShouldStop then
                 if HR.Cast(S.Rockbiter) then return "rockbiter 9"; end
             end
         end
     end
     local function Asc()
         -- crash_lightning,if=!buff.crash_lightning.up&active_enemies>1&variable.furyCheck_CL
-        if S.CrashLightning:IsReadyP() and (Player:BuffDownP(S.CrashLightningBuff) and Cache.EnemiesCount[8] > 1 and bool(VarFurycheckCl)) then
+        if S.CrashLightning:IsReadyP() and not ShouldStop and (Player:BuffDownP(S.CrashLightningBuff) and Cache.EnemiesCount[8] > 1 and bool(VarFurycheckCl)) then
             if HR.Cast(S.CrashLightning) then return "crash_lightning 10"; end
         end
         -- rockbiter,if=talent.landslide.enabled&!buff.landslide.up&charges_fractional>1.7
-        if S.Rockbiter:IsCastableP() and (S.Landslide:IsAvailable() and Player:BuffDownP(S.LandslideBuff) and S.Rockbiter:ChargesFractionalP() > 1.7) then
+        if S.Rockbiter:IsCastableP() and not ShouldStop and (S.Landslide:IsAvailable() and Player:BuffDownP(S.LandslideBuff) and S.Rockbiter:ChargesFractionalP() > 1.7) then
             if HR.Cast(S.Rockbiter) then return "rockbiter 24"; end
         end
         -- windstrike
-        if S.Windstrike:IsReadyP() then
+        if S.Windstrike:IsReadyP() and not ShouldStop then
             if HR.Cast(S.Windstrike) then return "windstrike 34"; end
         end
     end
     local function Cds()
         -- bloodlust,if=azerite.ancestral_resonance.enabled
         -- berserking,if=variable.cooldown_sync
-        if S.Berserking:IsCastableP() and HR.CDsON() and (bool(VarCooldownSync)) then
+        if S.Berserking:IsCastableP() and not ShouldStop and HR.CDsON() and (bool(VarCooldownSync)) then
             if HR.Cast(S.Berserking, Action.GetToggle(2, "OffGCDasOffGCD")) then return "berserking 37"; end
         end
         -- use_item,name=azsharas_font_of_power
@@ -479,36 +479,36 @@ local function APL()
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 41"; end
         end
         -- blood_fury,if=variable.cooldown_sync
-        if S.BloodFury:IsCastableP() and HR.CDsON() and (bool(VarCooldownSync)) then
+        if S.BloodFury:IsCastableP() and not ShouldStop and HR.CDsON() and (bool(VarCooldownSync)) then
             if HR.Cast(S.BloodFury, Action.GetToggle(2, "OffGCDasOffGCD")) then return "blood_fury 43"; end
         end
         -- fireblood,if=variable.cooldown_sync
-        if S.Fireblood:IsCastableP() and HR.CDsON() and (bool(VarCooldownSync)) then
+        if S.Fireblood:IsCastableP() and not ShouldStop and HR.CDsON() and (bool(VarCooldownSync)) then
             if HR.Cast(S.Fireblood, Action.GetToggle(2, "OffGCDasOffGCD")) then return "fireblood 47"; end
         end
         -- ancestral_call,if=variable.cooldown_sync
-        if S.AncestralCall:IsCastableP() and HR.CDsON() and (bool(VarCooldownSync)) then
+        if S.AncestralCall:IsCastableP() and not ShouldStop and HR.CDsON() and (bool(VarCooldownSync)) then
             if HR.Cast(S.AncestralCall, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ancestral_call 51"; end
         end
         -- potion,if=buff.ascendance.up|!talent.ascendance.enabled&feral_spirit.remains>5|target.time_to_die<=60
-        if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") and (Player:BuffP(S.AscendanceBuff) or not S.Ascendance:IsAvailable() and FeralSpiritRemains() > 5 or Target:TimeToDie() <= 60) then
+        if I.PotionofUnbridledFury:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") and (Player:BuffP(S.AscendanceBuff) or not S.Ascendance:IsAvailable() and FeralSpiritRemains() > 5 or Target:TimeToDie() <= 60) then
             if HR.CastSuggested(I.PotionofUnbridledFury) then return "potion_of_unbridled_fury 55"; end
         end
         -- guardian_of_azeroth
-        if S.GuardianofAzeroth:IsCastableP() then
+        if S.GuardianofAzeroth:IsCastableP() and not ShouldStop then
             if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth 61"; end
         end
         -- feral_spirit
-        if S.FeralSpirit:IsCastableP() and Action.GetToggle(2, "EnableFS") then
+        if S.FeralSpirit:IsCastableP() and not ShouldStop and Action.GetToggle(2, "EnableFS") then
             if HR.Cast(S.FeralSpirit, Action.GetToggle(2, "OffGCDasOffGCD")) then return "feral_spirit 65"; end
         end
         -- blood_of_the_enemy,if=raid_event.adds.in>90|active_enemies>1
-        if S.BloodoftheEnemy:IsCastableP() then
+        if S.BloodoftheEnemy:IsCastableP() and not ShouldStop then
             if HR.Cast(S.BloodoftheEnemy) then return "blood_of_the_enemy 67"; end
         end
         -- ascendance,if=cooldown.strike.remains>0
         -- Storm Strike???
-        if S.Ascendance:IsCastableP() and (S.Stormstrike:CooldownRemainsP() > 0) then
+        if S.Ascendance:IsCastableP() and not ShouldStop and (S.Stormstrike:CooldownRemainsP() > 0) then
             if HR.Cast(S.Ascendance, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ascendance 69"; end
         end
         -- use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down|(target.time_to_die<20&debuff.razor_coral_debuff.stack>2)
@@ -528,211 +528,211 @@ local function APL()
     end
     local function DefaultCore()
         -- earthen_spike,if=variable.furyCheck_ES
-        if S.EarthenSpike:IsReadyP() and (bool(VarFurycheckEs)) then
+        if S.EarthenSpike:IsReadyP() and not ShouldStop and (bool(VarFurycheckEs)) then
             if HR.Cast(S.EarthenSpike) then return "earthen_spike 111"; end
         end
         -- stormstrike,cycle_targets=1,if=active_enemies>1&azerite.lightning_conduit.enabled&!debuff.lightning_conduit.up&variable.furyCheck_SS
-        if S.Stormstrike:IsReadyP() then
+        if S.Stormstrike:IsReadyP() and not ShouldStop then
             if HR.CastCycle(S.Stormstrike, 8, EvaluateCycleStormstrike119) then return "stormstrike 133" end
         end
         -- stormstrike,if=buff.stormbringer.up|(active_enemies>1&buff.gathering_storms.up&variable.furyCheck_SS)
-        if S.Stormstrike:IsReadyP() and (Player:BuffP(S.StormbringerBuff) or (Cache.EnemiesCount[8] > 1 and Player:BuffP(S.GatheringStormsBuff) and bool(VarFurycheckSs))) then
+        if S.Stormstrike:IsReadyP() and not ShouldStop and (Player:BuffP(S.StormbringerBuff) or (Cache.EnemiesCount[8] > 1 and Player:BuffP(S.GatheringStormsBuff) and bool(VarFurycheckSs))) then
             if HR.Cast(S.Stormstrike) then return "stormstrike 134"; end
         end
         -- crash_lightning,if=active_enemies>=3&variable.furyCheck_CL
-        if S.CrashLightning:IsReadyP() and (Cache.EnemiesCount[8] >= 3 and bool(VarFurycheckCl)) then
+        if S.CrashLightning:IsReadyP() and not ShouldStop and (Cache.EnemiesCount[8] >= 3 and bool(VarFurycheckCl)) then
             if HR.Cast(S.CrashLightning) then return "crash_lightning 148"; end
         end
         -- lightning_bolt,if=talent.overcharge.enabled&active_enemies=1&variable.furyCheck_LB&maelstrom>=40
-        if S.LightningBolt:IsCastableP() and (S.Overcharge:IsAvailable() and Cache.EnemiesCount[8] == 1 and bool(VarFurycheckLb) and Player:Maelstrom() >= 40) then
+        if S.LightningBolt:IsCastableP() and not ShouldStop and (S.Overcharge:IsAvailable() and Cache.EnemiesCount[8] == 1 and bool(VarFurycheckLb) and Player:Maelstrom() >= 40) then
             if HR.Cast(S.LightningBolt) then return "lightning_bolt 160"; end
         end
         -- stormstrike,if=variable.OCPool_SS&variable.furyCheck_SS
-        if S.Stormstrike:IsReadyP() and (bool(VarOcpoolSs) and bool(VarFurycheckSs)) then
+        if S.Stormstrike:IsReadyP() and not ShouldStop and (bool(VarOcpoolSs) and bool(VarFurycheckSs)) then
             if HR.Cast(S.Stormstrike) then return "stormstrike 172"; end
         end
     end
     local function Filler()
         -- sundering,if=raid_event.adds.in>40
-        if S.Sundering:IsReadyP() then
+        if S.Sundering:IsReadyP() and not ShouldStop then
             if HR.Cast(S.Sundering, Action.GetToggle(2, "OffGCDasOffGCD")) then return "sundering 178"; end
         end
         -- focused_azerite_beam,if=raid_event.adds.in>90&!buff.ascendance.up&!buff.molten_weapon.up&!buff.icy_edge.up&!buff.crackling_surge.up&!debuff.earthen_spike.up
-        if S.FocusedAzeriteBeam:IsCastableP() and (Player:BuffDownP(S.AscendanceBuff) and Player:BuffDownP(S.MoltenWeaponBuff) and Player:BuffDownP(S.IcyEdgeBuff) and Player:BuffDownP(S.CracklingSurgeBuff) and not Target:DebuffP(S.EarthenSpikeDebuff)) then
+        if S.FocusedAzeriteBeam:IsCastableP() and not ShouldStop and (Player:BuffDownP(S.AscendanceBuff) and Player:BuffDownP(S.MoltenWeaponBuff) and Player:BuffDownP(S.IcyEdgeBuff) and Player:BuffDownP(S.CracklingSurgeBuff) and not Target:DebuffP(S.EarthenSpikeDebuff)) then
             if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam 188"; end
         end
         -- purifying_blast,if=raid_event.adds.in>60
-        if S.PurifyingBlast:IsCastableP() then
+        if S.PurifyingBlast:IsCastableP() and not ShouldStop then
             if HR.Cast(S.PurifyingBlast) then return "purifying_blast 200"; end
         end
         -- ripple_in_space,if=raid_event.adds.in>60
-        if S.RippleInSpace:IsCastableP() then
+        if S.RippleInSpace:IsCastableP() and not ShouldStop then
             if HR.Cast(S.RippleInSpace) then return "ripple_in_space 202"; end
         end
         -- thundercharge
-        if S.Thundercharge:IsCastableP() then
+        if S.Thundercharge:IsCastableP() and not ShouldStop then
             if HR.Cast(S.Thundercharge) then return "thundercharge 204"; end
         end
         -- concentrated_flame
-        if S.ConcentratedFlame:IsCastableP() then
+        if S.ConcentratedFlame:IsCastableP() and not ShouldStop then
             if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame 206"; end
         end
         -- crash_lightning,if=talent.forceful_winds.enabled&active_enemies>1&variable.furyCheck_CL
-        if S.CrashLightning:IsReadyP() and (S.ForcefulWinds:IsAvailable() and Cache.EnemiesCount[8] > 1 and bool(VarFurycheckCl)) then
+        if S.CrashLightning:IsReadyP() and not ShouldStop and (S.ForcefulWinds:IsAvailable() and Cache.EnemiesCount[8] > 1 and bool(VarFurycheckCl)) then
             if HR.Cast(S.CrashLightning) then return "crash_lightning 212"; end
         end
         -- flametongue,if=talent.searing_assault.enabled
-        if S.Flametongue:IsCastableP() and (S.SearingAssault:IsAvailable()) then
+        if S.Flametongue:IsCastableP() and not ShouldStop and (S.SearingAssault:IsAvailable()) then
             if HR.Cast(S.Flametongue) then return "flametongue 226"; end
         end
         -- lava_lash,if=!azerite.primal_primer.enabled&talent.hot_hand.enabled&buff.hot_hand.react
-        if S.LavaLash:IsReadyP() and (not S.PrimalPrimer:AzeriteEnabled() and S.HotHand:IsAvailable() and bool(Player:BuffStackP(S.HotHandBuff))) then
+        if S.LavaLash:IsReadyP() and not ShouldStop and (not S.PrimalPrimer:AzeriteEnabled() and S.HotHand:IsAvailable() and bool(Player:BuffStackP(S.HotHandBuff))) then
             if HR.Cast(S.LavaLash) then return "lava_lash 230"; end
         end
         -- crash_lightning,if=active_enemies>1&variable.furyCheck_CL
-        if S.CrashLightning:IsReadyP() and (Cache.EnemiesCount[8] > 1 and bool(VarFurycheckCl)) then
+        if S.CrashLightning:IsReadyP() and not ShouldStop and (Cache.EnemiesCount[8] > 1 and bool(VarFurycheckCl)) then
             if HR.Cast(S.CrashLightning) then return "crash_lightning 238"; end
         end
         -- rockbiter,if=maelstrom<70&!buff.strength_of_earth.up
-        if S.Rockbiter:IsCastableP() and (Player:Maelstrom() < 70 and Player:BuffDownP(S.StrengthofEarthBuff)) then
+        if S.Rockbiter:IsCastableP() and not ShouldStop and (Player:Maelstrom() < 70 and Player:BuffDownP(S.StrengthofEarthBuff)) then
             if HR.Cast(S.Rockbiter) then return "rockbiter 250"; end
         end
         -- crash_lightning,if=talent.crashing_storm.enabled&variable.OCPool_CL
-        if S.CrashLightning:IsReadyP() and (S.CrashingStorm:IsAvailable() and bool(VarOcpoolCl)) then
+        if S.CrashLightning:IsReadyP() and not ShouldStop and (S.CrashingStorm:IsAvailable() and bool(VarOcpoolCl)) then
             if HR.Cast(S.CrashLightning) then return "crash_lightning 254"; end
         end
         -- lava_lash,if=variable.OCPool_LL&variable.furyCheck_LL
-        if S.LavaLash:IsReadyP() and (bool(VarOcpoolLl) and bool(VarFurycheckLl)) then
+        if S.LavaLash:IsReadyP() and not ShouldStop and (bool(VarOcpoolLl) and bool(VarFurycheckLl)) then
             if HR.Cast(S.LavaLash) then return "lava_lash 260"; end
         end
         -- memory_of_lucid_dreams
-        if S.MemoryofLucidDreams:IsCastableP() then
+        if S.MemoryofLucidDreams:IsCastableP() and not ShouldStop then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams 63"; end
         end
         -- rockbiter
-        if S.Rockbiter:IsCastableP() then
+        if S.Rockbiter:IsCastableP() and not ShouldStop then
             if HR.Cast(S.Rockbiter) then return "rockbiter 266"; end
         end
         -- frostbrand,if=talent.hailstorm.enabled&buff.frostbrand.remains<4.8+gcd&variable.furyCheck_FB
-        if S.Frostbrand:IsReadyP() and (S.Hailstorm:IsAvailable() and Player:BuffRemainsP(S.FrostbrandBuff) < 4.8 + Player:GCD() and bool(VarFurycheckFb)) then
+        if S.Frostbrand:IsReadyP() and not ShouldStop and (S.Hailstorm:IsAvailable() and Player:BuffRemainsP(S.FrostbrandBuff) < 4.8 + Player:GCD() and bool(VarFurycheckFb)) then
             if HR.Cast(S.Frostbrand) then return "frostbrand 268"; end
         end
         -- flametongue
-        if S.Flametongue:IsCastableP() then
+        if S.Flametongue:IsCastableP() and not ShouldStop then
             if HR.Cast(S.Flametongue) then return "flametongue 276"; end
         end
         -- worldvein_resonance,if=buff.lifeblood.stack<4
-        if S.WorldveinResonance:IsCastableP() and (Player:BuffStackP(S.LifebloodBuff) < 4) then
+        if S.WorldveinResonance:IsCastableP() and not ShouldStop and (Player:BuffStackP(S.LifebloodBuff) < 4) then
             if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance 208"; end
         end
     end
     local function FreezerburnCore()
         -- lava_lash,target_if=max:debuff.primal_primer.stack,if=azerite.primal_primer.rank>=2&debuff.primal_primer.stack=10&variable.furyCheck_LL&variable.CLPool_LL
-        if S.LavaLash:IsReadyP() then
+        if S.LavaLash:IsReadyP() and not ShouldStop then
             if HR.CastTargetIf(S.LavaLash, 8, "max", EvaluateTargetIfFilterLavaLash281, EvaluateTargetIfLavaLash296) then return "lava_lash 298" end
         end
         -- earthen_spike,if=variable.furyCheck_ES
-        if S.EarthenSpike:IsReadyP() and (bool(VarFurycheckEs)) then
+        if S.EarthenSpike:IsReadyP() and not ShouldStop and (bool(VarFurycheckEs)) then
             if HR.Cast(S.EarthenSpike) then return "earthen_spike 299"; end
         end
         -- stormstrike,cycle_targets=1,if=active_enemies>1&azerite.lightning_conduit.enabled&!debuff.lightning_conduit.up&variable.furyCheck_SS
-        if S.Stormstrike:IsReadyP() then
+        if S.Stormstrike:IsReadyP() and not ShouldStop then
             if HR.CastCycle(S.Stormstrike, 8, EvaluateCycleStormstrike307) then return "stormstrike 321" end
         end
         -- stormstrike,if=buff.stormbringer.up|(active_enemies>1&buff.gathering_storms.up&variable.furyCheck_SS)
-        if S.Stormstrike:IsReadyP() and (Player:BuffP(S.StormbringerBuff) or (Cache.EnemiesCount[8] > 1 and Player:BuffP(S.GatheringStormsBuff) and bool(VarFurycheckSs))) then
+        if S.Stormstrike:IsReadyP() and not ShouldStop and (Player:BuffP(S.StormbringerBuff) or (Cache.EnemiesCount[8] > 1 and Player:BuffP(S.GatheringStormsBuff) and bool(VarFurycheckSs))) then
             if HR.Cast(S.Stormstrike) then return "stormstrike 322"; end
         end
         -- crash_lightning,if=active_enemies>=3&variable.furyCheck_CL
-        if S.CrashLightning:IsReadyP() and (Cache.EnemiesCount[8] >= 3 and bool(VarFurycheckCl)) then
+        if S.CrashLightning:IsReadyP() and not ShouldStop and (Cache.EnemiesCount[8] >= 3 and bool(VarFurycheckCl)) then
             if HR.Cast(S.CrashLightning) then return "crash_lightning 336"; end
         end
         -- lightning_bolt,if=talent.overcharge.enabled&active_enemies=1&variable.furyCheck_LB&maelstrom>=40
-        if S.LightningBolt:IsCastableP() and (S.Overcharge:IsAvailable() and Cache.EnemiesCount[8] == 1 and bool(VarFurycheckLb) and Player:Maelstrom() >= 40) then
+        if S.LightningBolt:IsCastableP() and not ShouldStop and (S.Overcharge:IsAvailable() and Cache.EnemiesCount[8] == 1 and bool(VarFurycheckLb) and Player:Maelstrom() >= 40) then
             if HR.Cast(S.LightningBolt) then return "lightning_bolt 348"; end
         end
         -- lava_lash,if=azerite.primal_primer.rank>=2&debuff.primal_primer.stack>7&variable.furyCheck_LL&variable.CLPool_LL
-        if S.LavaLash:IsReadyP() and (S.PrimalPrimer:AzeriteRank() >= 2 and Target:DebuffStackP(S.PrimalPrimerDebuff) > 7 and bool(VarFurycheckLl) and bool(VarClpoolLl)) then
+        if S.LavaLash:IsReadyP() and not ShouldStop and (S.PrimalPrimer:AzeriteRank() >= 2 and Target:DebuffStackP(S.PrimalPrimerDebuff) > 7 and bool(VarFurycheckLl) and bool(VarClpoolLl)) then
             if HR.Cast(S.LavaLash) then return "lava_lash 360"; end
         end
         -- stormstrike,if=variable.OCPool_SS&variable.furyCheck_SS&variable.CLPool_SS
-        if S.Stormstrike:IsReadyP() and (bool(VarOcpoolSs) and bool(VarFurycheckSs) and bool(VarClpoolSs)) then
+        if S.Stormstrike:IsReadyP() and not ShouldStop and (bool(VarOcpoolSs) and bool(VarFurycheckSs) and bool(VarClpoolSs)) then
             if HR.Cast(S.Stormstrike) then return "stormstrike 370"; end
         end
         -- lava_lash,if=debuff.primal_primer.stack=10&variable.furyCheck_LL
-        if S.LavaLash:IsReadyP() and (Target:DebuffStackP(S.PrimalPrimerDebuff) == 10 and bool(VarFurycheckLl)) then
+        if S.LavaLash:IsReadyP() and not ShouldStop and (Target:DebuffStackP(S.PrimalPrimerDebuff) == 10 and bool(VarFurycheckLl)) then
             if HR.Cast(S.LavaLash) then return "lava_lash 378"; end
         end
     end
     local function Maintenance()
         -- flametongue,if=!buff.flametongue.up
-        if S.Flametongue:IsCastableP() and (Player:BuffDownP(S.FlametongueBuff)) then
+        if S.Flametongue:IsCastableP() and not ShouldStop and (Player:BuffDownP(S.FlametongueBuff)) then
             if HR.Cast(S.Flametongue) then return "flametongue 384"; end
         end
         -- frostbrand,if=talent.hailstorm.enabled&!buff.frostbrand.up&variable.furyCheck_FB
-        if S.Frostbrand:IsReadyP() and (S.Hailstorm:IsAvailable() and Player:BuffDownP(S.FrostbrandBuff) and bool(VarFurycheckFb)) then
+        if S.Frostbrand:IsReadyP() and not ShouldStop and (S.Hailstorm:IsAvailable() and Player:BuffDownP(S.FrostbrandBuff) and bool(VarFurycheckFb)) then
             if HR.Cast(S.Frostbrand) then return "frostbrand 388"; end
         end
     end
     local function Priority()
         -- crash_lightning,if=active_enemies>=(8-(talent.forceful_winds.enabled*3))&variable.freezerburn_enabled&variable.furyCheck_CL
-        if S.CrashLightning:IsReadyP() and (Cache.EnemiesCount[8] >= (8 - (num(S.ForcefulWinds:IsAvailable()) * 3)) and bool(VarFreezerburnEnabled) and bool(VarFurycheckCl)) then
+        if S.CrashLightning:IsReadyP() and not ShouldStop and (Cache.EnemiesCount[8] >= (8 - (num(S.ForcefulWinds:IsAvailable()) * 3)) and bool(VarFreezerburnEnabled) and bool(VarFurycheckCl)) then
             if HR.Cast(S.CrashLightning) then return "crash_lightning 398"; end
         end
         -- the_unbound_force,if=buff.reckless_force.up|time<5
-        if S.TheUnboundForce:IsCastableP() and (Player:BuffP(S.RecklessForceBuff) or HL.CombatTime() < 5) then
+        if S.TheUnboundForce:IsCastableP() and not ShouldStop and (Player:BuffP(S.RecklessForceBuff) or HL.CombatTime() < 5) then
             if HR.Cast(S.TheUnboundForce) then return "the_unbound_force 414"; end
         end
         -- lava_lash,if=azerite.primal_primer.rank>=2&debuff.primal_primer.stack=10&active_enemies=1&variable.freezerburn_enabled&variable.furyCheck_LL
-        if S.LavaLash:IsReadyP() and (S.PrimalPrimer:AzeriteRank() >= 2 and Target:DebuffStackP(S.PrimalPrimerDebuff) == 10 and Cache.EnemiesCount[8] == 1 and bool(VarFreezerburnEnabled) and bool(VarFurycheckLl)) then
+        if S.LavaLash:IsReadyP() and not ShouldStop and (S.PrimalPrimer:AzeriteRank() >= 2 and Target:DebuffStackP(S.PrimalPrimerDebuff) == 10 and Cache.EnemiesCount[8] == 1 and bool(VarFreezerburnEnabled) and bool(VarFurycheckLl)) then
             if HR.Cast(S.LavaLash) then return "lava_lash 418"; end
         end
         -- crash_lightning,if=!buff.crash_lightning.up&active_enemies>1&variable.furyCheck_CL
-        if S.CrashLightning:IsReadyP() and (Player:BuffDownP(S.CrashLightningBuff) and Cache.EnemiesCount[8] > 1 and bool(VarFurycheckCl)) then
+        if S.CrashLightning:IsReadyP() and not ShouldStop and (Player:BuffDownP(S.CrashLightningBuff) and Cache.EnemiesCount[8] > 1 and bool(VarFurycheckCl)) then
             if HR.Cast(S.CrashLightning) then return "crash_lightning 434"; end
         end
         -- fury_of_air,if=!buff.fury_of_air.up&maelstrom>=20&spell_targets.fury_of_air_damage>=(1+variable.freezerburn_enabled)
-        if S.FuryofAir:IsCastableP() and (Player:BuffDownP(S.FuryofAirBuff) and Player:Maelstrom() >= 20 and Cache.EnemiesCount[5] >= (1 + VarFreezerburnEnabled)) then
+        if S.FuryofAir:IsCastableP() and not ShouldStop and (Player:BuffDownP(S.FuryofAirBuff) and Player:Maelstrom() >= 20 and Cache.EnemiesCount[5] >= (1 + VarFreezerburnEnabled)) then
             if HR.Cast(S.FuryofAir) then return "fury_of_air 448"; end
         end
         -- fury_of_air,if=buff.fury_of_air.up&&spell_targets.fury_of_air_damage<(1+variable.freezerburn_enabled)
-        if S.FuryofAir:IsCastableP() and (Player:BuffP(S.FuryofAirBuff) and true and Cache.EnemiesCount[5] < (1 + VarFreezerburnEnabled)) then
+        if S.FuryofAir:IsCastableP() and not ShouldStop and (Player:BuffP(S.FuryofAirBuff) and true and Cache.EnemiesCount[5] < (1 + VarFreezerburnEnabled)) then
             if HR.Cast(S.FuryofAir) then return "fury_of_air 454"; end
         end
         -- totem_mastery,if=buff.resonance_totem.remains<=2*gcd
-        if S.TotemMastery:IsCastableP() and (ResonanceTotemTime() <= 2 * Player:GCD()) then
+        if S.TotemMastery:IsCastableP() and not ShouldStop and (ResonanceTotemTime() <= 2 * Player:GCD()) then
             if HR.Cast(S.TotemMastery) then return "totem_mastery 460"; end
         end
         -- sundering,if=active_enemies>=3&(!essence.blood_of_the_enemy.major|(essence.blood_of_the_enemy.major&(buff.seething_rage.up|cooldown.blood_of_the_enemy.remains>40)))
-        if S.Sundering:IsReadyP() and (Cache.EnemiesCount[8] >= 3 and (not S.BloodoftheEnemy:IsAvailable() or (S.BloodoftheEnemy:IsAvailable() and (Player:BuffP(S.SeethingRageBuff) or S.BloodoftheEnemy:CooldownRemainsP() > 40)))) then
+        if S.Sundering:IsReadyP() and not ShouldStop and (Cache.EnemiesCount[8] >= 3 and (not S.BloodoftheEnemy:IsAvailable() or (S.BloodoftheEnemy:IsAvailable() and (Player:BuffP(S.SeethingRageBuff) or S.BloodoftheEnemy:CooldownRemainsP() > 40)))) then
             if HR.Cast(S.Sundering, Action.GetToggle(2, "OffGCDasOffGCD")) then return "sundering 464"; end
         end
         -- focused_azerite_beam,if=active_enemies>1
-        if S.FocusedAzeriteBeam:IsCastableP() and (Cache.EnemiesCount[8] > 1) then
+        if S.FocusedAzeriteBeam:IsCastableP() and not ShouldStop and (Cache.EnemiesCount[8] > 1) then
             if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam 478"; end
         end
         -- purifying_blast,if=active_enemies>1
-        if S.PurifyingBlast:IsCastableP() and (Cache.EnemiesCount[8] > 1) then
+        if S.PurifyingBlast:IsCastableP() and not ShouldStop and (Cache.EnemiesCount[8] > 1) then
             if HR.Cast(S.PurifyingBlast) then return "purifying_blast 486"; end
         end
         -- ripple_in_space,if=active_enemies>1
-        if S.RippleInSpace:IsCastableP() and (Cache.EnemiesCount[8] > 1) then
+        if S.RippleInSpace:IsCastableP() and not ShouldStop and (Cache.EnemiesCount[8] > 1) then
             if HR.Cast(S.RippleInSpace) then return "ripple_in_space 494"; end
         end
         -- rockbiter,if=talent.landslide.enabled&!buff.landslide.up&charges_fractional>1.7
-        if S.Rockbiter:IsCastableP() and (S.Landslide:IsAvailable() and Player:BuffDownP(S.LandslideBuff) and S.Rockbiter:ChargesFractionalP() > 1.7) then
+        if S.Rockbiter:IsCastableP() and not ShouldStop and (S.Landslide:IsAvailable() and Player:BuffDownP(S.LandslideBuff) and S.Rockbiter:ChargesFractionalP() > 1.7) then
             if HR.Cast(S.Rockbiter) then return "rockbiter 502"; end
         end
         -- frostbrand,if=(azerite.natural_harmony.enabled&buff.natural_harmony_frost.remains<=2*gcd)&talent.hailstorm.enabled&variable.furyCheck_FB
-        if S.Frostbrand:IsReadyP() and ((S.NaturalHarmony:AzeriteEnabled() and Player:BuffRemainsP(S.NaturalHarmonyFrostBuff) <= 2 * Player:GCD()) and S.Hailstorm:IsAvailable() and bool(VarFurycheckFb)) then
+        if S.Frostbrand:IsReadyP() and not ShouldStop and ((S.NaturalHarmony:AzeriteEnabled() and Player:BuffRemainsP(S.NaturalHarmonyFrostBuff) <= 2 * Player:GCD()) and S.Hailstorm:IsAvailable() and bool(VarFurycheckFb)) then
             if HR.Cast(S.Frostbrand) then return "frostbrand 512"; end
         end
         -- flametongue,if=(azerite.natural_harmony.enabled&buff.natural_harmony_fire.remains<=2*gcd)
-        if S.Flametongue:IsCastableP() and ((S.NaturalHarmony:AzeriteEnabled() and Player:BuffRemainsP(S.NaturalHarmonyFireBuff) <= 2 * Player:GCD())) then
+        if S.Flametongue:IsCastableP() and not ShouldStop and ((S.NaturalHarmony:AzeriteEnabled() and Player:BuffRemainsP(S.NaturalHarmonyFireBuff) <= 2 * Player:GCD())) then
             if HR.Cast(S.Flametongue) then return "flametongue 522"; end
         end
         -- rockbiter,if=(azerite.natural_harmony.enabled&buff.natural_harmony_nature.remains<=2*gcd)&maelstrom<70
-        if S.Rockbiter:IsCastableP() and ((S.NaturalHarmony:AzeriteEnabled() and Player:BuffRemainsP(S.NaturalHarmonyNatureBuff) <= 2 * Player:GCD()) and Player:Maelstrom() < 70) then
+        if S.Rockbiter:IsCastableP() and not ShouldStop and ((S.NaturalHarmony:AzeriteEnabled() and Player:BuffRemainsP(S.NaturalHarmonyNatureBuff) <= 2 * Player:GCD()) and Player:Maelstrom() < 70) then
             if HR.Cast(S.Rockbiter) then return "rockbiter 528"; end
         end
     end
@@ -763,7 +763,7 @@ local function APL()
    		local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
 	
      	 -- WindShear
-      	if useCC and S.WindShear:IsReady() and Target:IsInterruptible() then 
+      	if useCC and S.WindShear:IsReady() and not ShouldStop and Target:IsInterruptible() then 
 	  		if Target:CastPercentage() >= randomInterrupt then
      	        if HR.Cast(S.WindShear, true) then return "WindShear 5"; end
      	    else 
@@ -772,7 +772,7 @@ local function APL()
      	end 
 
      	-- CapacitorTotem
-      	if useCC and not S.WindShear:IsReady() and S.CapacitorTotem:IsReady() and Target:IsInterruptible() then 
+      	if useCC and not S.WindShear:IsReady() and not ShouldStop and S.CapacitorTotem:IsReady() and not ShouldStop and Target:IsInterruptible() then 
 	  		if Target:CastPercentage() >= randomInterrupt then
      	        if HR.Cast(S.CapacitorTotem, true) then return "CapacitorTotem 5"; end
      	    else 
@@ -782,7 +782,7 @@ local function APL()
 		-- Purge
 		-- Note: Toggles  ("UseDispel", "UsePurge", "UseExpelEnrage")
         -- Category ("Dispel", "MagicMovement", "PurgeFriendly", "PurgeHigh", "PurgeLow", "Enrage")
-        if S.Purge:IsReady() and not ShouldStop and Action.AuraIsValid("target", "UsePurge", "PurgeHigh") then
+        if S.Purge:IsReady() and not ShouldStop and not ShouldStop and Action.AuraIsValid("target", "UsePurge", "PurgeHigh") then
             if HR.Cast(S.Purge) then return "" end
         end	
         -- Set Variables; Moved to function for cleanliness

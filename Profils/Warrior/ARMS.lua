@@ -136,8 +136,8 @@ Action[ACTION_CONST_WARRIOR_ARMS] = {
 Action:CreateEssencesFor(ACTION_CONST_WARRIOR_ARMS)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 
 -- This code making shorter access to both tables Action[PLAYERSPEC] and Action
--- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady(), it doesn't make any conflict if you will skip shorter access
--- So with shorter access you can just do A.Guard:IsReady() instead of Action[PLAYERSPEC].Guard:IsReady()
+-- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop, it doesn't make any conflict if you will skip shorter access
+-- So with shorter access you can just do A.Guard:IsReady() and not ShouldStop instead of Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop
 local A = setmetatable(Action[ACTION_CONST_WARRIOR_ARMS], { __index = Action })
 
 -- Simcraft Imported
@@ -322,250 +322,250 @@ local function APL()
                 if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power"; end
             end
             -- memory_of_lucid_dreams
-            if S.MemoryofLucidDreams:IsCastableP() then
+            if S.MemoryofLucidDreams:IsCastableP() and not ShouldStop then
                 if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams"; end
             end
             -- guardian_of_azeroth
-            if S.GuardianofAzeroth:IsCastableP() then
+            if S.GuardianofAzeroth:IsCastableP() and not ShouldStop then
                 if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth"; end
             end
             -- potion
-            if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
+            if I.PotionofUnbridledFury:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") then
                 if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_strength 4"; end
             end
         end
     end
     local function Movement()
         -- heroic_leap
-        if S.HeroicLeap:IsCastableP() then
+        if S.HeroicLeap:IsCastableP() and not ShouldStop then
             if HR.Cast(S.HeroicLeap, Action.GetToggle(2, "OffGCDasOffGCD")) then return "heroic_leap 16"; end
         end
     end
     local function Execute()
         -- skullsplitter,if=rage<60&buff.deadly_calm.down&buff.memory_of_lucid_dreams.down
-        if S.Skullsplitter:IsCastableP("Melee") and (Player:Rage() < 60 and Player:BuffDownP(S.DeadlyCalmBuff) and Player:BuffDownP(S.MemoryofLucidDreams)) then
+        if S.Skullsplitter:IsCastableP("Melee") and not ShouldStop and (Player:Rage() < 60 and Player:BuffDownP(S.DeadlyCalmBuff) and Player:BuffDownP(S.MemoryofLucidDreams)) then
             if HR.Cast(S.Skullsplitter) then return "skullsplitter 6"; end
         end
         -- ravager,if=!buff.deadly_calm.up&(cooldown.colossus_smash.remains<2|(talent.warbreaker.enabled&cooldown.warbreaker.remains<2))
-        if S.Ravager:IsCastableP(40) and HR.CDsON() and (not Player:BuffP(S.DeadlyCalmBuff) and (S.ColossusSmash:CooldownRemainsP() < 2 or (S.Warbreaker:IsAvailable() and S.Warbreaker:CooldownRemainsP() < 2))) then
+        if S.Ravager:IsCastableP(40) and not ShouldStop and HR.CDsON() and (not Player:BuffP(S.DeadlyCalmBuff) and (S.ColossusSmash:CooldownRemainsP() < 2 or (S.Warbreaker:IsAvailable() and S.Warbreaker:CooldownRemainsP() < 2))) then
             if HR.Cast(S.Ravager, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ravager 12"; end
         end
         -- colossus_smash,if=!essence.memory_of_lucid_dreams.major|(buff.memory_of_lucid_dreams.up|cooldown.memory_of_lucid_dreams.remains>10)
-        if S.ColossusSmash:IsCastableP("Melee") and (not S.MemoryofLucidDreams:IsAvailable() or (Player:BuffP(S.MemoryofLucidDreams) or S.MemoryofLucidDreams:CooldownRemainsP() > 10)) then
+        if S.ColossusSmash:IsCastableP("Melee") and not ShouldStop and (not S.MemoryofLucidDreams:IsAvailable() or (Player:BuffP(S.MemoryofLucidDreams) or S.MemoryofLucidDreams:CooldownRemainsP() > 10)) then
             if HR.Cast(S.ColossusSmash) then return "colossus_smash 22"; end
         end
         -- warbreaker,if=!essence.memory_of_lucid_dreams.major|(buff.memory_of_lucid_dreams.up|cooldown.memory_of_lucid_dreams.remains>10)
-        if S.Warbreaker:IsCastableP("Melee") and HR.CDsON() and (not S.MemoryofLucidDreams:IsAvailable() or (Player:BuffP(S.MemoryofLucidDreams) or S.MemoryofLucidDreams:CooldownRemainsP() > 10)) then
+        if S.Warbreaker:IsCastableP("Melee") and not ShouldStop and HR.CDsON() and (not S.MemoryofLucidDreams:IsAvailable() or (Player:BuffP(S.MemoryofLucidDreams) or S.MemoryofLucidDreams:CooldownRemainsP() > 10)) then
             if HR.Cast(S.Warbreaker, Action.GetToggle(2, "OffGCDasOffGCD")) then return "warbreaker 26"; end
         end
         -- deadly_calm
-        if S.DeadlyCalm:IsCastableP() then
+        if S.DeadlyCalm:IsCastableP() and not ShouldStop then
             if HR.Cast(S.DeadlyCalm, Action.GetToggle(2, "OffGCDasOffGCD")) then return "deadly_calm 30"; end
         end
         -- bladestorm,if=!buff.memory_of_lucid_dreams.up&buff.test_of_might.up&rage<30&!buff.deadly_calm.up
-        if S.Bladestorm:IsCastableP() and HR.CDsON() and (Player:BuffDownP(S.MemoryofLucidDreams) and Player:BuffP(S.TestofMightBuff) and Player:Rage() < 30 and Player:BuffDownP(S.DeadlyCalmBuff)) then
+        if S.Bladestorm:IsCastableP() and not ShouldStop and HR.CDsON() and (Player:BuffDownP(S.MemoryofLucidDreams) and Player:BuffP(S.TestofMightBuff) and Player:Rage() < 30 and Player:BuffDownP(S.DeadlyCalmBuff)) then
             if HR.Cast(S.Bladestorm, Action.GetToggle(2, "OffGCDasOffGCD")) then return "bladestorm 32"; end
         end
         -- cleave,if=spell_targets.whirlwind>2
-        if S.Cleave:IsReadyP("Melee") and (Cache.EnemiesCount[8] > 2) then
+        if S.Cleave:IsReadyP("Melee") and not ShouldStop and (Cache.EnemiesCount[8] > 2) then
             if HR.Cast(S.Cleave) then return "cleave 36"; end
         end
         -- slam,if=buff.crushing_assault.up&buff.memory_of_lucid_dreams.down
-        if S.Slam:IsReadyP("Melee") and (Player:BuffP(S.CrushingAssaultBuff) and Player:BuffDownP(S.MemoryofLucidDreams)) then
+        if S.Slam:IsReadyP("Melee") and not ShouldStop and (Player:BuffP(S.CrushingAssaultBuff) and Player:BuffDownP(S.MemoryofLucidDreams)) then
             if HR.Cast(S.Slam) then return "slam 38"; end
         end
         -- mortal_strike,if=buff.overpower.stack=2&talent.dreadnaught.enabled|buff.executioners_precision.stack=2
-        if S.MortalStrike:IsReadyP("Melee") and (Player:BuffStackP(S.OverpowerBuff) == 2 and S.Dreadnaught:IsAvailable() or Player:BuffStackP(S.ExecutionersPrecisionBuff) == 2) then
+        if S.MortalStrike:IsReadyP("Melee") and not ShouldStop and (Player:BuffStackP(S.OverpowerBuff) == 2 and S.Dreadnaught:IsAvailable() or Player:BuffStackP(S.ExecutionersPrecisionBuff) == 2) then
             if HR.Cast(S.MortalStrike) then return "mortal_strike 42"; end
         end
         -- execute,if=buff.memory_of_lucid_dreams.up|buff.deadly_calm.up
-        if S.Execute:IsReady("Melee") and (Player:BuffP(S.MemoryofLucidDreams) or Player:BuffP(S.DeadlyCalmBuff)) then
+        if S.Execute:IsReady("Melee") and not ShouldStop and (Player:BuffP(S.MemoryofLucidDreams) or Player:BuffP(S.DeadlyCalmBuff)) then
             if HR.Cast(S.Execute) then return "execute 50"; end
         end
         -- overpower
-        if S.Overpower:IsCastableP("Melee") then
+        if S.Overpower:IsCastableP("Melee") and not ShouldStop then
             if HR.Cast(S.Overpower) then return "overpower 54"; end
         end
         -- execute
-        if S.Execute:IsReady("Melee") then
+        if S.Execute:IsReady("Melee") and not ShouldStop then
             if HR.Cast(S.Execute) then return "execute 56"; end
         end
     end
     local function FiveTarget()
         -- skullsplitter,if=rage<60&(!talent.deadly_calm.enabled|buff.deadly_calm.down)
-        if S.Skullsplitter:IsCastableP("Melee") and (Player:Rage() < 60 and (not S.DeadlyCalm:IsAvailable() or Player:BuffDownP(S.DeadlyCalmBuff))) then
+        if S.Skullsplitter:IsCastableP("Melee") and not ShouldStop and (Player:Rage() < 60 and (not S.DeadlyCalm:IsAvailable() or Player:BuffDownP(S.DeadlyCalmBuff))) then
             if HR.Cast(S.Skullsplitter) then return "skullsplitter 58"; end
         end
         -- ravager,if=(!talent.warbreaker.enabled|cooldown.warbreaker.remains<2)
-        if S.Ravager:IsCastableP(40) and HR.CDsON() and ((not S.Warbreaker:IsAvailable() or S.Warbreaker:CooldownRemainsP() < 2)) then
+        if S.Ravager:IsCastableP(40) and not ShouldStop and HR.CDsON() and ((not S.Warbreaker:IsAvailable() or S.Warbreaker:CooldownRemainsP() < 2)) then
             if HR.Cast(S.Ravager, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ravager 64"; end
         end
         -- colossus_smash,if=debuff.colossus_smash.down
-        if S.ColossusSmash:IsCastableP("Melee") and (Target:DebuffDownP(S.ColossusSmashDebuff)) then
+        if S.ColossusSmash:IsCastableP("Melee") and not ShouldStop and (Target:DebuffDownP(S.ColossusSmashDebuff)) then
             if HR.Cast(S.ColossusSmash) then return "colossus_smash 70"; end
         end
         -- warbreaker,if=debuff.colossus_smash.down
-        if S.Warbreaker:IsCastableP("Melee") and HR.CDsON() and (Target:DebuffDownP(S.ColossusSmashDebuff)) then
+        if S.Warbreaker:IsCastableP("Melee") and not ShouldStop and HR.CDsON() and (Target:DebuffDownP(S.ColossusSmashDebuff)) then
             if HR.Cast(S.Warbreaker, Action.GetToggle(2, "OffGCDasOffGCD")) then return "warbreaker 74"; end
         end
         -- bladestorm,if=buff.sweeping_strikes.down&(!talent.deadly_calm.enabled|buff.deadly_calm.down)&((debuff.colossus_smash.remains>4.5&!azerite.test_of_might.enabled)|buff.test_of_might.up)
-        if S.Bladestorm:IsCastableP() and HR.CDsON() and (Player:BuffDownP(S.SweepingStrikesBuff) and (not S.DeadlyCalm:IsAvailable() or Player:BuffDownP(S.DeadlyCalmBuff)) and ((Target:DebuffRemainsP(S.ColossusSmashDebuff) > 4.5 and not S.TestofMight:AzeriteEnabled()) or Player:BuffP(S.TestofMightBuff))) then
+        if S.Bladestorm:IsCastableP() and not ShouldStop and HR.CDsON() and (Player:BuffDownP(S.SweepingStrikesBuff) and (not S.DeadlyCalm:IsAvailable() or Player:BuffDownP(S.DeadlyCalmBuff)) and ((Target:DebuffRemainsP(S.ColossusSmashDebuff) > 4.5 and not S.TestofMight:AzeriteEnabled()) or Player:BuffP(S.TestofMightBuff))) then
             if HR.Cast(S.Bladestorm, Action.GetToggle(2, "OffGCDasOffGCD")) then return "bladestorm 78"; end
         end
         -- deadly_calm
-        if S.DeadlyCalm:IsCastableP() then
+        if S.DeadlyCalm:IsCastableP() and not ShouldStop then
             if HR.Cast(S.DeadlyCalm, Action.GetToggle(2, "OffGCDasOffGCD")) then return "deadly_calm 92"; end
         end
         -- cleave
-        if S.Cleave:IsReadyP("Melee") then
+        if S.Cleave:IsReadyP("Melee") and not ShouldStop then
             if HR.Cast(S.Cleave) then return "cleave 94"; end
         end
         -- execute,if=(!talent.cleave.enabled&dot.deep_wounds.remains<2)|(buff.sudden_death.react|buff.stone_heart.react)&(buff.sweeping_strikes.up|cooldown.sweeping_strikes.remains>8)
-        if S.Execute:IsReady("Melee") and ((not S.Cleave:IsAvailable() and Target:DebuffRemainsP(S.DeepWoundsDebuff) < 2) or (Player:BuffP(S.SuddenDeathBuff) or Player:BuffP(S.StoneHeartBuff)) and (Player:BuffP(S.SweepingStrikesBuff) or S.SweepingStrikes:CooldownRemainsP() > 8)) then
+        if S.Execute:IsReady("Melee") and not ShouldStop and ((not S.Cleave:IsAvailable() and Target:DebuffRemainsP(S.DeepWoundsDebuff) < 2) or (Player:BuffP(S.SuddenDeathBuff) or Player:BuffP(S.StoneHeartBuff)) and (Player:BuffP(S.SweepingStrikesBuff) or S.SweepingStrikes:CooldownRemainsP() > 8)) then
             if HR.Cast(S.Execute) then return "execute 96"; end
         end
         -- mortal_strike,if=(!talent.cleave.enabled&dot.deep_wounds.remains<2)|buff.sweeping_strikes.up&buff.overpower.stack=2&(talent.dreadnaught.enabled|buff.executioners_precision.stack=2)
-        if S.MortalStrike:IsReadyP("Melee") and ((not S.Cleave:IsAvailable() and Target:DebuffRemainsP(S.DeepWoundsDebuff) < 2) or Player:BuffP(S.SweepingStrikesBuff) and Player:BuffStackP(S.OverpowerBuff) == 2 and (S.Dreadnaught:IsAvailable() or Player:BuffStackP(S.ExecutionersPrecisionBuff) == 2)) then
+        if S.MortalStrike:IsReadyP("Melee") and not ShouldStop and ((not S.Cleave:IsAvailable() and Target:DebuffRemainsP(S.DeepWoundsDebuff) < 2) or Player:BuffP(S.SweepingStrikesBuff) and Player:BuffStackP(S.OverpowerBuff) == 2 and (S.Dreadnaught:IsAvailable() or Player:BuffStackP(S.ExecutionersPrecisionBuff) == 2)) then
             if HR.Cast(S.MortalStrike) then return "mortal_strike 110"; end
         end
         -- whirlwind,if=debuff.colossus_smash.up|(buff.crushing_assault.up&talent.fervor_of_battle.enabled)
-        if S.Whirlwind:IsReadyP("Melee") and (Target:DebuffP(S.ColossusSmashDebuff) or (Player:BuffP(S.CrushingAssaultBuff) and S.FervorofBattle:IsAvailable())) then
+        if S.Whirlwind:IsReadyP("Melee") and not ShouldStop and (Target:DebuffP(S.ColossusSmashDebuff) or (Player:BuffP(S.CrushingAssaultBuff) and S.FervorofBattle:IsAvailable())) then
             if HR.Cast(S.Whirlwind) then return "whirlwind 124"; end
         end
         -- whirlwind,if=buff.deadly_calm.up|rage>60
-        if S.Whirlwind:IsReadyP("Melee") and (Player:BuffP(S.DeadlyCalmBuff) or Player:Rage() > 60) then
+        if S.Whirlwind:IsReadyP("Melee") and not ShouldStop and (Player:BuffP(S.DeadlyCalmBuff) or Player:Rage() > 60) then
             if HR.Cast(S.Whirlwind) then return "whirlwind 132"; end
         end
         -- overpower
-        if S.Overpower:IsCastableP("Melee") then
+        if S.Overpower:IsCastableP("Melee") and not ShouldStop then
             if HR.Cast(S.Overpower) then return "overpower 136"; end
         end
         -- whirlwind
-        if S.Whirlwind:IsReadyP("Melee") then
+        if S.Whirlwind:IsReadyP("Melee") and not ShouldStop then
             if HR.Cast(S.Whirlwind) then return "whirlwind 138"; end
         end
     end
     local function Hac()
         -- rend,if=remains<=duration*0.3&(!raid_event.adds.up|buff.sweeping_strikes.up)
-        if S.Rend:IsReadyP("Melee") and (Target:DebuffRemainsP(S.RendDebuff) <= S.RendDebuff:BaseDuration() * 0.3 and (not (Cache.EnemiesCount[8] > 1) or Player:BuffP(S.SweepingStrikesBuff))) then
+        if S.Rend:IsReadyP("Melee") and not ShouldStop and (Target:DebuffRemainsP(S.RendDebuff) <= S.RendDebuff:BaseDuration() * 0.3 and (not (Cache.EnemiesCount[8] > 1) or Player:BuffP(S.SweepingStrikesBuff))) then
             if HR.Cast(S.Rend) then return "rend 140"; end
         end
         -- skullsplitter,if=rage<60&(cooldown.deadly_calm.remains>3|!talent.deadly_calm.enabled)
-        if S.Skullsplitter:IsCastableP("Melee") and (Player:Rage() < 60 and (S.DeadlyCalm:CooldownRemainsP() > 3 or not S.DeadlyCalm:IsAvailable())) then
+        if S.Skullsplitter:IsCastableP("Melee") and not ShouldStop and (Player:Rage() < 60 and (S.DeadlyCalm:CooldownRemainsP() > 3 or not S.DeadlyCalm:IsAvailable())) then
             if HR.Cast(S.Skullsplitter) then return "skullsplitter 158"; end
         end
         -- deadly_calm,if=(cooldown.bladestorm.remains>6|talent.ravager.enabled&cooldown.ravager.remains>6)&(cooldown.colossus_smash.remains<2|(talent.warbreaker.enabled&cooldown.warbreaker.remains<2))
-        if S.DeadlyCalm:IsCastableP() and ((S.Bladestorm:CooldownRemainsP() > 6 or S.Ravager:IsAvailable() and S.Ravager:CooldownRemainsP() > 6) and (S.ColossusSmash:CooldownRemainsP() < 2 or (S.Warbreaker:IsAvailable() and S.Warbreaker:CooldownRemainsP() < 2))) then
+        if S.DeadlyCalm:IsCastableP() and not ShouldStop and ((S.Bladestorm:CooldownRemainsP() > 6 or S.Ravager:IsAvailable() and S.Ravager:CooldownRemainsP() > 6) and (S.ColossusSmash:CooldownRemainsP() < 2 or (S.Warbreaker:IsAvailable() and S.Warbreaker:CooldownRemainsP() < 2))) then
             if HR.Cast(S.DeadlyCalm, Action.GetToggle(2, "OffGCDasOffGCD")) then return "deadly_calm 164"; end
         end
         -- ravager,if=(raid_event.adds.up|raid_event.adds.in>target.time_to_die)&(cooldown.colossus_smash.remains<2|(talent.warbreaker.enabled&cooldown.warbreaker.remains<2))
-        if S.Ravager:IsCastableP(40) and HR.CDsON() and (((Cache.EnemiesCount[8] > 1) or 10000000000 > Target:TimeToDie()) and (S.ColossusSmash:CooldownRemainsP() < 2 or (S.Warbreaker:IsAvailable() and S.Warbreaker:CooldownRemainsP() < 2))) then
+        if S.Ravager:IsCastableP(40) and not ShouldStop and HR.CDsON() and (((Cache.EnemiesCount[8] > 1) or 10000000000 > Target:TimeToDie()) and (S.ColossusSmash:CooldownRemainsP() < 2 or (S.Warbreaker:IsAvailable() and S.Warbreaker:CooldownRemainsP() < 2))) then
             if HR.Cast(S.Ravager, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ravager 178"; end
         end
         -- colossus_smash,if=raid_event.adds.up|raid_event.adds.in>40|(raid_event.adds.in>20&talent.anger_management.enabled)
-        if S.ColossusSmash:IsCastableP("Melee") and ((Cache.EnemiesCount[8] > 1) or 10000000000 > 40 or (10000000000 > 20 and S.AngerManagement:IsAvailable())) then
+        if S.ColossusSmash:IsCastableP("Melee") and not ShouldStop and ((Cache.EnemiesCount[8] > 1) or 10000000000 > 40 or (10000000000 > 20 and S.AngerManagement:IsAvailable())) then
             if HR.Cast(S.ColossusSmash) then return "colossus_smash 188"; end
         end
         -- warbreaker,if=raid_event.adds.up|raid_event.adds.in>40|(raid_event.adds.in>20&talent.anger_management.enabled)
-        if S.Warbreaker:IsCastableP("Melee") and HR.CDsON() and ((Cache.EnemiesCount[8] > 1) or 10000000000 > 40 or (10000000000 > 20 and S.AngerManagement:IsAvailable())) then
+        if S.Warbreaker:IsCastableP("Melee") and not ShouldStop and HR.CDsON() and ((Cache.EnemiesCount[8] > 1) or 10000000000 > 40 or (10000000000 > 20 and S.AngerManagement:IsAvailable())) then
             if HR.Cast(S.Warbreaker, Action.GetToggle(2, "OffGCDasOffGCD")) then return "warbreaker 194"; end
         end
         -- bladestorm,if=(debuff.colossus_smash.up&raid_event.adds.in>target.time_to_die)|raid_event.adds.up&((debuff.colossus_smash.remains>4.5&!azerite.test_of_might.enabled)|buff.test_of_might.up)
-        if S.Bladestorm:IsCastableP() and HR.CDsON() and ((Target:DebuffP(S.ColossusSmashDebuff) and 10000000000 > Target:TimeToDie()) or (Cache.EnemiesCount[8] > 1) and ((Target:DebuffRemainsP(S.ColossusSmashDebuff) > 4.5 and not S.TestofMight:AzeriteEnabled()) or Player:BuffP(S.TestofMightBuff))) then
+        if S.Bladestorm:IsCastableP() and not ShouldStop and HR.CDsON() and ((Target:DebuffP(S.ColossusSmashDebuff) and 10000000000 > Target:TimeToDie()) or (Cache.EnemiesCount[8] > 1) and ((Target:DebuffRemainsP(S.ColossusSmashDebuff) > 4.5 and not S.TestofMight:AzeriteEnabled()) or Player:BuffP(S.TestofMightBuff))) then
             if HR.Cast(S.Bladestorm, Action.GetToggle(2, "OffGCDasOffGCD")) then return "bladestorm 200"; end
         end
         -- overpower,if=!raid_event.adds.up|(raid_event.adds.up&azerite.seismic_wave.enabled)
-        if S.Overpower:IsCastableP("Melee") and (not (Cache.EnemiesCount[8] > 1) or ((Cache.EnemiesCount[8] > 1) and S.SeismicWave:AzeriteEnabled())) then
+        if S.Overpower:IsCastableP("Melee") and not ShouldStop and (not (Cache.EnemiesCount[8] > 1) or ((Cache.EnemiesCount[8] > 1) and S.SeismicWave:AzeriteEnabled())) then
             if HR.Cast(S.Overpower) then return "overpower 212"; end
         end
         -- cleave,if=spell_targets.whirlwind>2
-        if S.Cleave:IsReadyP("Melee") and (Cache.EnemiesCount[8] > 2) then
+        if S.Cleave:IsReadyP("Melee") and not ShouldStop and (Cache.EnemiesCount[8] > 2) then
             if HR.Cast(S.Cleave) then return "cleave 220"; end
         end
         -- execute,if=!raid_event.adds.up|(!talent.cleave.enabled&dot.deep_wounds.remains<2)|buff.sudden_death.react
-        if S.Execute:IsReady("Melee") and ((not S.Cleave:IsAvailable() and Target:DebuffRemainsP(S.DeepWoundsDebuff) < 2) or Player:BuffStackP(S.SuddenDeathBuff)) then
+        if S.Execute:IsReady("Melee") and not ShouldStop and ((not S.Cleave:IsAvailable() and Target:DebuffRemainsP(S.DeepWoundsDebuff) < 2) or Player:BuffStackP(S.SuddenDeathBuff)) then
             if HR.Cast(S.Execute) then return "execute 222"; end
         end
         -- mortal_strike,if=!raid_event.adds.up|(!talent.cleave.enabled&dot.deep_wounds.remains<2)
-        if S.MortalStrike:IsReadyP("Melee") and (not S.Cleave:IsAvailable() and Target:DebuffRemainsP(S.DeepWoundsDebuff) < 2) then
+        if S.MortalStrike:IsReadyP("Melee") and not ShouldStop and (not S.Cleave:IsAvailable() and Target:DebuffRemainsP(S.DeepWoundsDebuff) < 2) then
             if HR.Cast(S.MortalStrike) then return "mortal_strike 232"; end
         end
         -- whirlwind,if=raid_event.adds.up
-        if S.Whirlwind:IsReadyP("Melee") then
+        if S.Whirlwind:IsReadyP("Melee") and not ShouldStop then
             if HR.Cast(S.Whirlwind) then return "whirlwind 240"; end
         end
         -- overpower
-        if S.Overpower:IsCastableP("Melee") then
+        if S.Overpower:IsCastableP("Melee") and not ShouldStop then
             if HR.Cast(S.Overpower) then return "overpower 244"; end
         end
         -- whirlwind,if=talent.fervor_of_battle.enabled
-        if S.Whirlwind:IsReadyP("Melee") and (S.FervorofBattle:IsAvailable()) then
+        if S.Whirlwind:IsReadyP("Melee") and not ShouldStop and (S.FervorofBattle:IsAvailable()) then
             if HR.Cast(S.Whirlwind) then return "whirlwind 246"; end
         end
         -- slam,if=!talent.fervor_of_battle.enabled&!raid_event.adds.up
-        if S.Slam:IsReadyP("Melee") and (not S.FervorofBattle:IsAvailable()) then
+        if S.Slam:IsReadyP("Melee") and not ShouldStop and (not S.FervorofBattle:IsAvailable()) then
             if HR.Cast(S.Slam) then return "slam 250"; end
         end
     end
     local function SingleTarget()
         -- rend,if=remains<=duration*0.3&debuff.colossus_smash.down
-        if S.Rend:IsReadyP("Melee") and (Target:DebuffRemainsP(S.RendDebuff) <= S.RendDebuff:BaseDuration() * 0.3 and Target:DebuffDownP(S.ColossusSmashDebuff)) then
+        if S.Rend:IsReadyP("Melee") and not ShouldStop and (Target:DebuffRemainsP(S.RendDebuff) <= S.RendDebuff:BaseDuration() * 0.3 and Target:DebuffDownP(S.ColossusSmashDebuff)) then
             if HR.Cast(S.Rend) then return "rend 256"; end
         end
         -- skullsplitter,if=rage<60&buff.deadly_calm.down&buff.memory_of_lucid_dreams.down
-        if S.Skullsplitter:IsCastableP("Melee") and (Player:Rage() < 60 and Player:BuffDownP(S.DeadlyCalmBuff) and Player:BuffDownP(S.MemoryofLucidDreams)) then
+        if S.Skullsplitter:IsCastableP("Melee") and not ShouldStop and (Player:Rage() < 60 and Player:BuffDownP(S.DeadlyCalmBuff) and Player:BuffDownP(S.MemoryofLucidDreams)) then
             if HR.Cast(S.Skullsplitter) then return "skullsplitter 272"; end
         end
         -- ravager,if=!buff.deadly_calm.up&(cooldown.colossus_smash.remains<2|(talent.warbreaker.enabled&cooldown.warbreaker.remains<2))
-        if S.Ravager:IsCastableP(40) and HR.CDsON() and (not Player:BuffP(S.DeadlyCalmBuff) and (S.ColossusSmash:CooldownRemainsP() < 2 or (S.Warbreaker:IsAvailable() and S.Warbreaker:CooldownRemainsP() < 2))) then
+        if S.Ravager:IsCastableP(40) and not ShouldStop and HR.CDsON() and (not Player:BuffP(S.DeadlyCalmBuff) and (S.ColossusSmash:CooldownRemainsP() < 2 or (S.Warbreaker:IsAvailable() and S.Warbreaker:CooldownRemainsP() < 2))) then
             if HR.Cast(S.Ravager, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ravager 278"; end
         end
         -- colossus_smash,if=!essence.memory_of_lucid_dreams.major|(buff.memory_of_lucid_dreams.up|cooldown.memory_of_lucid_dreams.remains>10)
-        if S.ColossusSmash:IsCastableP("Melee") and (not S.MemoryofLucidDreams:IsAvailable() or (Player:BuffP(S.MemoryofLucidDreams) or S.MemoryofLucidDreams:CooldownRemainsP() > 10)) then
+        if S.ColossusSmash:IsCastableP("Melee") and not ShouldStop and (not S.MemoryofLucidDreams:IsAvailable() or (Player:BuffP(S.MemoryofLucidDreams) or S.MemoryofLucidDreams:CooldownRemainsP() > 10)) then
             if HR.Cast(S.ColossusSmash) then return "colossus_smash 288"; end
         end
         -- warbreaker,if=!essence.memory_of_lucid_dreams.major|(buff.memory_of_lucid_dreams.up|cooldown.memory_of_lucid_dreams.remains>10)
-        if S.Warbreaker:IsCastableP("Melee") and HR.CDsON() and (not S.MemoryofLucidDreams:IsAvailable() or (Player:BuffP(S.MemoryofLucidDreams) or S.MemoryofLucidDreams:CooldownRemainsP() > 10)) then
+        if S.Warbreaker:IsCastableP("Melee") and not ShouldStop and HR.CDsON() and (not S.MemoryofLucidDreams:IsAvailable() or (Player:BuffP(S.MemoryofLucidDreams) or S.MemoryofLucidDreams:CooldownRemainsP() > 10)) then
             if HR.Cast(S.Warbreaker, Action.GetToggle(2, "OffGCDasOffGCD")) then return "warbreaker 292"; end
         end
         -- deadly_calm
-        if S.DeadlyCalm:IsCastableP() then
+        if S.DeadlyCalm:IsCastableP() and not ShouldStop then
             if HR.Cast(S.DeadlyCalm, Action.GetToggle(2, "OffGCDasOffGCD")) then return "deadly_calm 296"; end
         end
         -- execute,if=buff.sudden_death.react
-        if S.Execute:IsReady("Melee") and (Player:BuffP(S.SuddenDeathBuff)) then
+        if S.Execute:IsReady("Melee") and not ShouldStop and (Player:BuffP(S.SuddenDeathBuff)) then
             if HR.Cast(S.Execute) then return "execute 298"; end
         end
         -- bladestorm,if=cooldown.mortal_strike.remains&(!talent.deadly_calm.enabled|buff.deadly_calm.down)&((debuff.colossus_smash.up&!azerite.test_of_might.enabled)|buff.test_of_might.up)&buff.memory_of_lucid_dreams.down
-        if S.Bladestorm:IsCastableP() and HR.CDsON() and (bool(S.MortalStrike:CooldownRemainsP()) and (not S.DeadlyCalm:IsAvailable() or Player:BuffDownP(S.DeadlyCalmBuff)) and ((Target:DebuffP(S.ColossusSmashDebuff) and not S.TestofMight:AzeriteEnabled()) or Player:BuffP(S.TestofMightBuff)) and Player:BuffDownP(S.MemoryofLucidDreams)) then
+        if S.Bladestorm:IsCastableP() and not ShouldStop and HR.CDsON() and (bool(S.MortalStrike:CooldownRemainsP()) and (not S.DeadlyCalm:IsAvailable() or Player:BuffDownP(S.DeadlyCalmBuff)) and ((Target:DebuffP(S.ColossusSmashDebuff) and not S.TestofMight:AzeriteEnabled()) or Player:BuffP(S.TestofMightBuff)) and Player:BuffDownP(S.MemoryofLucidDreams)) then
             if HR.Cast(S.Bladestorm, Action.GetToggle(2, "OffGCDasOffGCD")) then return "bladestorm 302"; end
         end
         -- cleave,if=spell_targets.whirlwind>2
-        if S.Cleave:IsReadyP("Melee") and (Cache.EnemiesCount[8] > 2) then
+        if S.Cleave:IsReadyP("Melee") and not ShouldStop and (Cache.EnemiesCount[8] > 2) then
             if HR.Cast(S.Cleave) then return "cleave 316"; end
         end
         -- overpower,if=rage<30&buff.memory_of_lucid_dreams.up&debuff.colossus_smash.up
-        if S.Overpower:IsCastableP("Melee") and (Player:Rage() < 30 and Player:BuffP(S.MemoryofLucidDreams) and Target:DebuffP(S.ColossusSmashDebuff)) then
+        if S.Overpower:IsCastableP("Melee") and not ShouldStop and (Player:Rage() < 30 and Player:BuffP(S.MemoryofLucidDreams) and Target:DebuffP(S.ColossusSmashDebuff)) then
             if HR.Cast(S.Overpower) then return "overpower 318"; end
         end
         -- mortal_strike
-        if S.MortalStrike:IsReadyP("Melee") then
+        if S.MortalStrike:IsReadyP("Melee") and not ShouldStop then
             if HR.Cast(S.MortalStrike) then return "mortal_strike 322"; end
         end
         -- whirlwind,if=talent.fervor_of_battle.enabled&(buff.memory_of_lucid_dreams.up|buff.deadly_calm.up)
-        if S.Whirlwind:IsReadyP("Melee") and (S.FervorofBattle:IsAvailable() and (Player:BuffP(S.MemoryofLucidDreams) or Player:BuffP(S.DeadlyCalmBuff))) then
+        if S.Whirlwind:IsReadyP("Melee") and not ShouldStop and (S.FervorofBattle:IsAvailable() and (Player:BuffP(S.MemoryofLucidDreams) or Player:BuffP(S.DeadlyCalmBuff))) then
             if HR.Cast(S.Whirlwind) then return "whirlwind 324"; end
         end
         -- overpower
-        if S.Overpower:IsCastableP("Melee") then
+        if S.Overpower:IsCastableP("Melee") and not ShouldStop then
             if HR.Cast(S.Overpower) then return "overpower 330"; end
         end
         -- whirlwind,if=talent.fervor_of_battle.enabled
-        if S.Whirlwind:IsReadyP("Melee") and (S.FervorofBattle:IsAvailable()) then
+        if S.Whirlwind:IsReadyP("Melee") and not ShouldStop and (S.FervorofBattle:IsAvailable()) then
             if HR.Cast(S.Whirlwind) then return "whirlwind 332"; end
         end
         -- slam,if=!talent.fervor_of_battle.enabled
-        if S.Slam:IsReadyP("Melee") and (not S.FervorofBattle:IsAvailable()) then
+        if S.Slam:IsReadyP("Melee") and not ShouldStop and (not S.FervorofBattle:IsAvailable()) then
             if HR.Cast(S.Slam) then return "slam 340"; end
         end
     end
@@ -597,7 +597,7 @@ local function APL()
    		local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
         
   	    -- Pummel
-  	    if useKick and S.Pummel:IsReady() and Target:IsInterruptible() then 
+  	    if useKick and S.Pummel:IsReady() and not ShouldStop and Target:IsInterruptible() then 
 		  	if Target:CastPercentage() >= randomInterrupt then
           	    if HR.Cast(S.Pummel, true) then return "Pummel 5"; end
          	else 
@@ -605,7 +605,7 @@ local function APL()
          	end 
       	end 
         -- charge
-        if S.Charge:IsReadyP() and S.Charge:ChargesP() >= 1 and Target:MaxDistanceToPlayer(true) >= 8 then
+        if S.Charge:IsReadyP() and not ShouldStop and S.Charge:ChargesP() >= 1 and Target:MaxDistanceToPlayer(true) >= 8 then
             if HR.Cast(S.Charge, Action.GetToggle(2, "OffGCDasOffGCD")) then return "charge 351"; end
         end
         -- auto_attack
@@ -613,31 +613,31 @@ local function APL()
             return Movement();
         end
         -- potion
-        if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
+        if I.PotionofUnbridledFury:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") then
             if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_strength 354"; end
         end
         -- blood_fury,if=debuff.colossus_smash.up
-        if S.BloodFury:IsCastableP() and HR.CDsON() and (Target:DebuffP(S.ColossusSmashDebuff)) then
+        if S.BloodFury:IsCastableP() and not ShouldStop and HR.CDsON() and (Target:DebuffP(S.ColossusSmashDebuff)) then
             if HR.Cast(S.BloodFury, Action.GetToggle(2, "OffGCDasOffGCD")) then return "blood_fury 356"; end
         end
         -- berserking,if=debuff.colossus_smash.up
-        if S.Berserking:IsCastableP() and HR.CDsON() and (Target:DebuffP(S.ColossusSmashDebuff)) then
+        if S.Berserking:IsCastableP() and not ShouldStop and HR.CDsON() and (Target:DebuffP(S.ColossusSmashDebuff)) then
             if HR.Cast(S.Berserking, Action.GetToggle(2, "OffGCDasOffGCD")) then return "berserking 360"; end
         end
         -- arcane_torrent,if=debuff.colossus_smash.down&cooldown.mortal_strike.remains>1.5&rage<50
-        if S.ArcaneTorrent:IsCastableP() and HR.CDsON() and (Target:DebuffDownP(S.ColossusSmashDebuff) and S.MortalStrike:CooldownRemainsP() > 1.5 and Player:Rage() < 50) then
+        if S.ArcaneTorrent:IsCastableP() and not ShouldStop and HR.CDsON() and (Target:DebuffDownP(S.ColossusSmashDebuff) and S.MortalStrike:CooldownRemainsP() > 1.5 and Player:Rage() < 50) then
             if HR.Cast(S.ArcaneTorrent, Action.GetToggle(2, "OffGCDasOffGCD")) then return "arcane_torrent 364"; end
         end
         -- lights_judgment,if=debuff.colossus_smash.down
-        if S.LightsJudgment:IsCastableP() and HR.CDsON() and (Target:DebuffDownP(S.ColossusSmashDebuff)) then
+        if S.LightsJudgment:IsCastableP() and not ShouldStop and HR.CDsON() and (Target:DebuffDownP(S.ColossusSmashDebuff)) then
             if HR.Cast(S.LightsJudgment) then return "lights_judgment 370"; end
         end
         -- fireblood,if=debuff.colossus_smash.up
-        if S.Fireblood:IsCastableP() and HR.CDsON() and (Target:DebuffP(S.ColossusSmashDebuff)) then
+        if S.Fireblood:IsCastableP() and not ShouldStop and HR.CDsON() and (Target:DebuffP(S.ColossusSmashDebuff)) then
             if HR.Cast(S.Fireblood, Action.GetToggle(2, "OffGCDasOffGCD")) then return "fireblood 374"; end
         end
         -- ancestral_call,if=debuff.colossus_smash.up
-        if S.AncestralCall:IsCastableP() and HR.CDsON() and (Target:DebuffP(S.ColossusSmashDebuff)) then
+        if S.AncestralCall:IsCastableP() and not ShouldStop and HR.CDsON() and (Target:DebuffP(S.ColossusSmashDebuff)) then
             if HR.Cast(S.AncestralCall, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ancestral_call 378"; end
         end
         -- use_item,name=ashvanes_razor_coral,if=!debuff.razor_coral_debuff.up|(target.health.pct<30.1&debuff.conductive_ink_debuff.up)|(!debuff.conductive_ink_debuff.up&(buff.memory_of_lucid_dreams.up|(debuff.colossus_smash.up&!essence.memory_of_lucid_dreams.major))
@@ -645,47 +645,47 @@ local function APL()
             if HR.Cast(I.AshvanesRazorCoral) then return "ashvanes_razor_coral 381"; end
         end
         -- avatar,if=cooldown.colossus_smash.remains<8|(talent.warbreaker.enabled&cooldown.warbreaker.remains<8)
-        if S.Avatar:IsCastableP() and HR.CDsON() and (S.ColossusSmash:CooldownRemainsP() < 8 or (S.Warbreaker:IsAvailable() and S.Warbreaker:CooldownRemainsP() < 8)) then
+        if S.Avatar:IsCastableP() and not ShouldStop and HR.CDsON() and (S.ColossusSmash:CooldownRemainsP() < 8 or (S.Warbreaker:IsAvailable() and S.Warbreaker:CooldownRemainsP() < 8)) then
             if HR.Cast(S.Avatar, Action.GetToggle(2, "OffGCDasOffGCD")) then return "avatar 382"; end
         end
         -- sweeping_strikes,if=spell_targets.whirlwind>1&(cooldown.bladestorm.remains>10|cooldown.colossus_smash.remains>8|azerite.test_of_might.enabled)
-        if S.SweepingStrikes:IsCastableP() and (Cache.EnemiesCount[8] > 1 and (S.Bladestorm:CooldownRemainsP() > 10 or S.ColossusSmash:CooldownRemainsP() > 8 or S.TestofMight:AzeriteEnabled())) then
+        if S.SweepingStrikes:IsCastableP() and not ShouldStop and (Cache.EnemiesCount[8] > 1 and (S.Bladestorm:CooldownRemainsP() > 10 or S.ColossusSmash:CooldownRemainsP() > 8 or S.TestofMight:AzeriteEnabled())) then
             if HR.Cast(S.SweepingStrikes) then return "sweeping_strikes 390"; end
         end
         -- blood_of_the_enemy,if=buff.test_of_might.up|(debuff.colossus_smash.up&!azerite.test_of_might.enabled)
-        if S.BloodoftheEnemy:IsCastableP() and (Player:BuffP(S.TestofMightBuff) or (Target:DebuffP(S.ColossusSmashDebuff) and not S.TestofMight:IsAvailable())) then
+        if S.BloodoftheEnemy:IsCastableP() and not ShouldStop and (Player:BuffP(S.TestofMightBuff) or (Target:DebuffP(S.ColossusSmashDebuff) and not S.TestofMight:IsAvailable())) then
             if HR.Cast(S.BloodoftheEnemy) then return "blood_of_the_enemy"; end
         end
         -- purifying_blast,if=!debuff.colossus_smash.up&!buff.test_of_might.up
-        if S.PurifyingBlast:IsCastableP() and (not Target:DebuffP(S.ColossusSmashDebuff) and not Player:BuffP(S.TestofMightBuff)) then
+        if S.PurifyingBlast:IsCastableP() and not ShouldStop and (not Target:DebuffP(S.ColossusSmashDebuff) and not Player:BuffP(S.TestofMightBuff)) then
             if HR.Cast(S.PurifyingBlast) then return "purifying_blast"; end
         end
         -- ripple_in_space,if=!debuff.colossus_smash.up&!buff.test_of_might.up
-        if S.RippleInSpace:IsCastableP() and (not Target:DebuffP(S.ColossusSmashDebuff) and not Player:BuffP(S.TestofMightBuff)) then
+        if S.RippleInSpace:IsCastableP() and not ShouldStop and (not Target:DebuffP(S.ColossusSmashDebuff) and not Player:BuffP(S.TestofMightBuff)) then
             if HR.Cast(S.RippleInSpace) then return "ripple_in_space"; end
         end
         -- worldvein_resonance,if=!debuff.colossus_smash.up&!buff.test_of_might.up
-        if S.WorldveinResonance:IsCastableP() and (not Target:DebuffP(S.ColossusSmashDebuff) and not Player:BuffP(S.TestofMightBuff)) then
+        if S.WorldveinResonance:IsCastableP() and not ShouldStop and (not Target:DebuffP(S.ColossusSmashDebuff) and not Player:BuffP(S.TestofMightBuff)) then
             if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance"; end
         end
         -- focused_azerite_beam,if=!debuff.colossus_smash.up&!buff.test_of_might.up
-        if S.FocusedAzeriteBeam:IsCastableP() and (not Target:DebuffP(S.ColossusSmashDebuff) and not Player:BuffP(S.TestofMightBuff)) then
+        if S.FocusedAzeriteBeam:IsCastableP() and not ShouldStop and (not Target:DebuffP(S.ColossusSmashDebuff) and not Player:BuffP(S.TestofMightBuff)) then
             if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam"; end
         end
         -- concentrated_flame,if=!debuff.colossus_smash.up&!buff.test_of_might.up&dot.concentrated_flame_burn.remains=0
-        if S.ConcentratedFlame:IsCastableP() and (Target:DebuffDownP(S.ColossusSmashDebuff) and Player:BuffDownP(S.TestofMightBuff) and Target:DebuffDownP(S.ConcentratedFlameBurn)) then
+        if S.ConcentratedFlame:IsCastableP() and not ShouldStop and (Target:DebuffDownP(S.ColossusSmashDebuff) and Player:BuffDownP(S.TestofMightBuff) and Target:DebuffDownP(S.ConcentratedFlameBurn)) then
             if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame"; end
         end
         -- the_unbound_force,if=buff.reckless_force.up
-        if S.TheUnboundForce:IsCastableP() and (Player:BuffP(S.RecklessForceBuff)) then
+        if S.TheUnboundForce:IsCastableP() and not ShouldStop and (Player:BuffP(S.RecklessForceBuff)) then
             if HR.Cast(S.TheUnboundForce) then return "the_unbound_force"; end
         end
         -- guardian_of_azeroth,if=cooldown.colossus_smash.remains<10
-        if S.GuardianofAzeroth:IsCastableP() and (S.ColossusSmash:CooldownRemainsP() < 10) then
+        if S.GuardianofAzeroth:IsCastableP() and not ShouldStop and (S.ColossusSmash:CooldownRemainsP() < 10) then
             if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth"; end
         end
         -- memory_of_lucid_dreams,if=!talent.warbreaker.enabled&cooldown.colossus_smash.remains<3|cooldown.warbreaker.remains<3
-        if S.MemoryofLucidDreams:IsCastableP() and (not S.Warbreaker:IsAvailable() and S.ColossusSmash:CooldownRemainsP() < 3 or S.Warbreaker:CooldownRemainsP() < 3) then
+        if S.MemoryofLucidDreams:IsCastableP() and not ShouldStop and (not S.Warbreaker:IsAvailable() and S.ColossusSmash:CooldownRemainsP() < 3 or S.Warbreaker:CooldownRemainsP() < 3) then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams"; end
         end
         -- run_action_list,name=hac,if=raid_event.adds.exists

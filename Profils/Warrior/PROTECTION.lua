@@ -128,8 +128,8 @@ Action[ACTION_CONST_WARRIOR_PROTECTION] = {
 Action:CreateEssencesFor(ACTION_CONST_WARRIOR_PROTECTION)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 
 -- This code making shorter access to both tables Action[PLAYERSPEC] and Action
--- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady(), it doesn't make any conflict if you will skip shorter access
--- So with shorter access you can just do A.Guard:IsReady() instead of Action[PLAYERSPEC].Guard:IsReady()
+-- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop, it doesn't make any conflict if you will skip shorter access
+-- So with shorter access you can just do A.Guard:IsReady() and not ShouldStop instead of Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop
 local A = setmetatable(Action[ACTION_CONST_WARRIOR_PROTECTION], { __index = Action })
 
 -- Simcraft Imported
@@ -345,19 +345,19 @@ local function APL()
 		if Everyone.TargetIsValid() then
         -- snapshot_stats
         -- use_item,name=azsharas_font_of_power
-        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and TrinketON() then
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and not ShouldStop and TrinketON() then
             if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power precombat"; end
         end
         -- memory_of_lucid_dreams
-        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
+        if S.MemoryofLucidDreams:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams precombat"; end
         end
         -- guardian_of_azeroth
-        if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
+        if S.GuardianofAzeroth:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth precombat"; end
         end
         -- potion
-        if I.SuperiorBattlePotionofStrength:IsReady() and Action.GetToggle(1, "Potion") then
+        if I.SuperiorBattlePotionofStrength:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") then
             if HR.CastSuggested(I.SuperiorBattlePotionofStrength) then return "battle_potion_of_strength precombat"; end
         end
 		
@@ -365,11 +365,11 @@ local function APL()
     end
 	
     local function Defensive()
-        if S.ShieldBlock:IsReadyP() and (((not Player:Buff(S.ShieldBlockBuff)) or Player:BuffRemains(S.ShieldBlockBuff) <= gcdTime + (gcdTime * 0.5)) and 
+        if S.ShieldBlock:IsReadyP() and not ShouldStop and (((not Player:Buff(S.ShieldBlockBuff)) or Player:BuffRemains(S.ShieldBlockBuff) <= gcdTime + (gcdTime * 0.5)) and 
             (not Player:Buff(S.LastStandBuff)) and Player:Rage() >= 30) then
                 if HR.Cast(S.ShieldBlock, Action.GetToggle(2, "GCDasOffGCD")) then return "shield_block defensive" end
         end
-        if S.LastStand:IsCastableP() and ((not Player:Buff(S.ShieldBlockBuff)) and Action.GetToggle(2, "UseLastStandToFillShieldBlockDownTime")
+        if S.LastStand:IsCastableP() and not ShouldStop and ((not Player:Buff(S.ShieldBlockBuff)) and Action.GetToggle(2, "UseLastStandToFillShieldBlockDownTime")
             and S.ShieldBlock:RechargeP() > (gcdTime * 2)) then
                 if HR.Cast(S.LastStand, Action.GetToggle(2, "GCDasOffGCD")) then return "last_stand defensive" end
         end
@@ -377,102 +377,102 @@ local function APL()
 	
     local function Aoe()
         -- thunder_clap
-        if S.ThunderClap:IsCastableP(8) then
+        if S.ThunderClap:IsCastableP(8) and not ShouldStop then
             if HR.Cast(S.ThunderClap) then return "thunder_clap 6"; end
         end
         -- memory_of_lucid_dreams,if=buff.avatar.down
-        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.AvatarBuff)) then
+        if S.MemoryofLucidDreams:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.AvatarBuff)) then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams 7"; end
         end
         -- demoralizing_shout,if=talent.booming_voice.enabled
-        if S.DemoralizingShout:IsCastableP(10) and (S.BoomingVoice:IsAvailable() and Player:RageDeficit() >= 40) then
+        if S.DemoralizingShout:IsCastableP(10) and not ShouldStop and (S.BoomingVoice:IsAvailable() and Player:RageDeficit() >= 40) then
             if HR.Cast(S.DemoralizingShout, Action.GetToggle(2, "GCDasOffGCD")) then return "demoralizing_shout 8"; end
         end
         -- anima_of_death,if=buff.last_stand.up
-        if S.AnimaofDeath:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.LastStandBuff)) then
+        if S.AnimaofDeath:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.LastStandBuff)) then
             if HR.Cast(S.AnimaofDeath) then return "anima_of_death 9"; end
         end
         -- dragon_roar
-        if S.DragonRoar:IsCastableP(12) and HR.CDsON() then
+        if S.DragonRoar:IsCastableP(12) and not ShouldStop and HR.CDsON() then
             if HR.Cast(S.DragonRoar, Action.GetToggle(2, "GCDasOffGCD")) then return "dragon_roar 12"; end
         end
         -- revenge
-        if S.Revenge:IsReadyP("Melee") and (Player:Buff(S.FreeRevenge) or offensiveRage() or Player:Rage() >= 75 or ((not isCurrentlyTanking()) and Player:Rage() >= 50)) then
+        if S.Revenge:IsReadyP("Melee") and not ShouldStop and (Player:Buff(S.FreeRevenge) or offensiveRage() or Player:Rage() >= 75 or ((not isCurrentlyTanking()) and Player:Rage() >= 50)) then
             if HR.Cast(S.Revenge) then return "revenge 14"; end
         end
         -- ravager
-        if S.Ravager:IsCastableP(40) then
+        if S.Ravager:IsCastableP(40) and not ShouldStop then
             if HR.Cast(S.Ravager) then return "ravager 16"; end
         end
         -- shield_block,if=cooldown.shield_slam.ready&buff.shield_block.down
-        if S.ShieldBlock:IsReadyP() and (S.ShieldSlam:CooldownUpP() and Player:BuffDownP(S.ShieldBlockBuff) and offensiveShieldBlock()) then
+        if S.ShieldBlock:IsReadyP() and not ShouldStop and (S.ShieldSlam:CooldownUpP() and Player:BuffDownP(S.ShieldBlockBuff) and offensiveShieldBlock()) then
             if HR.Cast(S.ShieldBlock, Action.GetToggle(2, "GCDasOffGCD")) then return "shield_block 18"; end
         end
         -- shield_slam
-        if S.ShieldSlam:IsCastableP("Melee") then
+        if S.ShieldSlam:IsCastableP("Melee") and not ShouldStop then
             if HR.Cast(S.ShieldSlam) then return "shield_slam 24"; end
         end
 	    -- devastate
-        if S.Devastate:IsCastableP("Melee") then
+        if S.Devastate:IsCastableP("Melee") and not ShouldStop then
             if HR.Cast(S.Devastate) then return "devastate 80"; end
         end
     end
 	
     local function St()
         -- thunder_clap,if=spell_targets.thunder_clap=2&talent.unstoppable_force.enabled&buff.avatar.up
-        if S.ThunderClap:IsCastableP(8) and (Cache.EnemiesCount[8] == 2 and S.UnstoppableForce:IsAvailable() and Player:BuffP(S.AvatarBuff)) then
+        if S.ThunderClap:IsCastableP(8) and not ShouldStop and (Cache.EnemiesCount[8] == 2 and S.UnstoppableForce:IsAvailable() and Player:BuffP(S.AvatarBuff)) then
             if HR.Cast(S.ThunderClap) then return "thunder_clap 26"; end
         end
         -- shield_block,if=cooldown.shield_slam.ready&buff.shield_block.down
-        if S.ShieldBlock:IsReadyP() and (S.ShieldSlam:CooldownUpP() and Player:BuffDownP(S.ShieldBlockBuff)) then
+        if S.ShieldBlock:IsReadyP() and not ShouldStop and (S.ShieldSlam:CooldownUpP() and Player:BuffDownP(S.ShieldBlockBuff)) then
             if HR.Cast(S.ShieldBlock, Action.GetToggle(2, "GCDasOffGCD")) then return "shield_block 32"; end
         end
         -- shield_slam,if=buff.shield_block.up
-        if S.ShieldSlam:IsCastableP("Melee") and (Player:BuffP(S.ShieldBlockBuff)) then
+        if S.ShieldSlam:IsCastableP("Melee") and not ShouldStop and (Player:BuffP(S.ShieldBlockBuff)) then
             if HR.Cast(S.ShieldSlam) then return "shield_slam 44"; end
         end
         -- thunder_clap,if=(talent.unstoppable_force.enabled&buff.avatar.up)
-        if S.ThunderClap:IsCastableP(8) and ((S.UnstoppableForce:IsAvailable() and Player:BuffP(S.AvatarBuff))) then
+        if S.ThunderClap:IsCastableP(8) and not ShouldStop and ((S.UnstoppableForce:IsAvailable() and Player:BuffP(S.AvatarBuff))) then
             if HR.Cast(S.ThunderClap) then return "thunder_clap 54"; end
         end
         -- demoralizing_shout,if=talent.booming_voice.enabled
-        if S.DemoralizingShout:IsCastableP(10) and (S.BoomingVoice:IsAvailable() and Player:RageDeficit() >= 40) then
+        if S.DemoralizingShout:IsCastableP(10) and not ShouldStop and (S.BoomingVoice:IsAvailable() and Player:RageDeficit() >= 40) then
             if HR.Cast(S.DemoralizingShout, Action.GetToggle(2, "GCDasOffGCD")) then return "demoralizing_shout 60"; end
         end
         -- anima_of_death,if=buff.last_stand.up
-        if S.AnimaofDeath:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.LastStandBuff)) then
+        if S.AnimaofDeath:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.LastStandBuff)) then
             if HR.Cast(S.AnimaofDeath) then return "anima_of_death 61"; end
         end
         -- shield_slam
-        if S.ShieldSlam:IsCastableP("Melee") then
+        if S.ShieldSlam:IsCastableP("Melee") and not ShouldStop then
             if HR.Cast(S.ShieldSlam) then return "shield_slam 70"; end
         end
         -- use_item,name=ashvanes_razor_coral,target_if=debuff.razor_coral_debuff.stack=0
-        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and TrinketON() and (Target:DebuffStackP(S.RazorCoralDebuff) == 0) then
+        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and not ShouldStop and TrinketON() and (Target:DebuffStackP(S.RazorCoralDebuff) == 0) then
             if HR.Cast(I.AshvanesRazorCoral) then return "ashvanes_razor_coral 71"; end
         end
         -- use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.stack>7&(cooldown.avatar.remains<5|buff.avatar.up)
-        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and TrinketON() and (Target:DebuffStackP(S.RazorCoralDebuff) > 7 and (S.Avatar:CooldownRemainsP() < 5 or Player:BuffP(S.AvatarBuff))) then
+        if I.AshvanesRazorCoral:IsEquipped() and I.AshvanesRazorCoral:IsReady() and not ShouldStop and TrinketON() and (Target:DebuffStackP(S.RazorCoralDebuff) > 7 and (S.Avatar:CooldownRemainsP() < 5 or Player:BuffP(S.AvatarBuff))) then
             if HR.Cast(I.AshvanesRazorCoral) then return "ashvanes_razor_coral 72"; end
         end
         -- dragon_roar
-        if S.DragonRoar:IsCastableP(12) and HR.CDsON() then
+        if S.DragonRoar:IsCastableP(12) and not ShouldStop and HR.CDsON() then
             if HR.Cast(S.DragonRoar, Action.GetToggle(2, "GCDasOffGCD")) then return "dragon_roar 73"; end
         end
         -- thunder_clap
-        if S.ThunderClap:IsCastableP(8) then
+        if S.ThunderClap:IsCastableP(8) and not ShouldStop then
             if HR.Cast(S.ThunderClap) then return "thunder_clap 74"; end
         end
         -- revenge
-        if S.Revenge:IsReadyP("Melee") and (Player:Buff(S.FreeRevenge) or offensiveRage() or Player:Rage() >= 75 or ((not isCurrentlyTanking()) and Player:Rage() >= 50)) then
+        if S.Revenge:IsReadyP("Melee") and not ShouldStop and (Player:Buff(S.FreeRevenge) or offensiveRage() or Player:Rage() >= 75 or ((not isCurrentlyTanking()) and Player:Rage() >= 50)) then
             if HR.Cast(S.Revenge) then return "revenge 76"; end
         end
         -- ravager
-        if S.Ravager:IsCastableP(40) then
+        if S.Ravager:IsCastableP(40) and not ShouldStop then
             if HR.Cast(S.Ravager) then return "ravager 78"; end
         end
         -- devastate
-        if S.Devastate:IsCastableP("Melee") then
+        if S.Devastate:IsCastableP("Melee") and not ShouldStop then
             if HR.Cast(S.Devastate) then return "devastate 80"; end
         end
     end
@@ -508,7 +508,7 @@ local function APL()
    		local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
         
   	    -- Pummel
-  	    if useKick and S.Pummel:IsReady() and Target:IsInterruptible() then 
+  	    if useKick and S.Pummel:IsReady() and not ShouldStop and Target:IsInterruptible() then 
 		  	if Target:CastPercentage() >= randomInterrupt then
           	    if HR.Cast(S.Pummel, true) then return "Pummel 5"; end
          	else 
@@ -517,11 +517,11 @@ local function APL()
       	end 
         -- auto_attack
 		-- Avatar on CD option
-        if S.Avatar:IsCastableP() and HR.CDsON() and Action.GetToggle(2, "AvatarOnCD") then
+        if S.Avatar:IsCastableP() and not ShouldStop and HR.CDsON() and Action.GetToggle(2, "AvatarOnCD") then
             if HR.Cast(S.Avatar) then return "avatar 114"; end
         end
 		-- DemoralizingShout on CD option
-        if S.DemoralizingShout:IsCastableP() and HR.CDsON() and Action.GetToggle(2, "DSOnCD") then
+        if S.DemoralizingShout:IsCastableP() and not ShouldStop and HR.CDsON() and Action.GetToggle(2, "DSOnCD") then
             if HR.Cast(S.DemoralizingShout) then return "DemoralizingShout 114"; end
         end
         -- intercept,if=time=0
@@ -530,70 +530,70 @@ local function APL()
         end
         -- use_items,if=cooldown.avatar.remains>20
         -- use_item,name=grongs_primal_rage,if=buff.avatar.down
-        if I.GrongsPrimalRage:IsEquipped() and I.GrongsPrimalRage:IsReady() and TrinketON() and (Player:BuffDownP(S.AvatarBuff)) then
+        if I.GrongsPrimalRage:IsEquipped() and I.GrongsPrimalRage:IsReady() and not ShouldStop and TrinketON() and (Player:BuffDownP(S.AvatarBuff)) then
             if HR.Cast(I.GrongsPrimalRage) then return "grongs_primal_rage 87"; end
         end
         -- blood_fury
-        if S.BloodFury:IsCastableP() and HR.CDsON() then
+        if S.BloodFury:IsCastableP() and not ShouldStop and HR.CDsON() then
             if HR.Cast(S.BloodFury, Action.GetToggle(2, "GCDasOffGCD")) then return "blood_fury 91"; end
         end
         -- berserking
-        if S.Berserking:IsCastableP() and HR.CDsON() then
+        if S.Berserking:IsCastableP() and not ShouldStop and HR.CDsON() then
             if HR.Cast(S.Berserking, Action.GetToggle(2, "GCDasOffGCD")) then return "berserking 93"; end
         end
         -- arcane_torrent
-        if S.ArcaneTorrent:IsCastableP() and HR.CDsON() then
+        if S.ArcaneTorrent:IsCastableP() and not ShouldStop and HR.CDsON() then
             if HR.Cast(S.ArcaneTorrent, Action.GetToggle(2, "GCDasOffGCD")) then return "arcane_torrent 95"; end
         end
         -- lights_judgment
-        if S.LightsJudgment:IsCastableP() and HR.CDsON() then
+        if S.LightsJudgment:IsCastableP() and not ShouldStop and HR.CDsON() then
             if HR.Cast(S.LightsJudgment) then return "lights_judgment 97"; end
         end
         -- fireblood
-        if S.Fireblood:IsCastableP() and HR.CDsON() then
+        if S.Fireblood:IsCastableP() and not ShouldStop and HR.CDsON() then
             if HR.Cast(S.Fireblood, Action.GetToggle(2, "GCDasOffGCD")) then return "fireblood 99"; end
         end
         -- ancestral_call
-        if S.AncestralCall:IsCastableP() and HR.CDsON() then
+        if S.AncestralCall:IsCastableP() and not ShouldStop and HR.CDsON() then
             if HR.Cast(S.AncestralCall, Action.GetToggle(2, "GCDasOffGCD")) then return "ancestral_call 101"; end
         end
         -- potion,if=buff.avatar.up|target.time_to_die<25
-        if I.SuperiorBattlePotionofStrength:IsReady() and  Action.GetToggle(1, "Potion") and (Player:BuffP(S.AvatarBuff) or Target:TimeToDie() < 25) then
+        if I.SuperiorBattlePotionofStrength:IsReady() and not ShouldStop and  Action.GetToggle(1, "Potion") and (Player:BuffP(S.AvatarBuff) or Target:TimeToDie() < 25) then
             if HR.CastSuggested(I.SuperiorBattlePotionofStrength) then return "battle_potion_of_strength 103"; end
         end
-        if Player:HealthPercentage() < 80 and S.VictoryRush:IsReady("Melee") then
+        if Player:HealthPercentage() < 80 and S.VictoryRush:IsReady("Melee") and not ShouldStop then
             if HR.Cast(S.VictoryRush) then return "victory_rush defensive" end
         end
-        if Player:HealthPercentage() < 80 and S.ImpendingVictory:IsReadyP("Melee") then
+        if Player:HealthPercentage() < 80 and S.ImpendingVictory:IsReadyP("Melee") and not ShouldStop then
             if HR.Cast(S.ImpendingVictory) then return "impending_victory defensive" end
         end
         -- ignore_pain,if=rage.deficit<25+20*talent.booming_voice.enabled*cooldown.demoralizing_shout.ready
-        if S.IgnorePain:IsReadyP() and (Player:RageDeficit() < 25 + 20 * num(S.BoomingVoice:IsAvailable()) * num(S.DemoralizingShout:CooldownUpP()) and shouldCastIp() and isCurrentlyTanking()) then
+        if S.IgnorePain:IsReadyP() and not ShouldStop and (Player:RageDeficit() < 25 + 20 * num(S.BoomingVoice:IsAvailable()) * num(S.DemoralizingShout:CooldownUpP()) and shouldCastIp() and isCurrentlyTanking()) then
             if HR.Cast(S.IgnorePain, Action.GetToggle(2, "GCDasOffGCD")) then return "ignore_pain 107"; end
         end
         -- worldvein_resonance,if=cooldown.avatar.remains<=2
-        if S.WorldveinResonance:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (S.Avatar:CooldownRemainsP() <= 2) then
+        if S.WorldveinResonance:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (S.Avatar:CooldownRemainsP() <= 2) then
             if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance 108"; end
         end
         -- ripple_in_space
-        if S.RippleInSpace:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
+        if S.RippleInSpace:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.RippleInSpace) then return "ripple_in_space 109"; end
         end
         -- memory_of_lucid_dreams
-        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
+        if S.MemoryofLucidDreams:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams 110"; end
         end
         -- concentrated_flame,if=buff.avatar.down
-        if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.AvatarBuff)) then
+        if S.ConcentratedFlame:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffDownP(S.AvatarBuff)) then
             if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame 111"; end
         end
         -- last_stand,if=cooldown.anima_of_death.remains<=2
         -- mrdmnd comment - this is breaking shield block, probably need to check it against the anima equipped?
-        -- if S.LastStand:IsCastableP() and (S.AnimaofDeath:CooldownRemainsP() <= 2) then
+        -- if S.LastStand:IsCastableP() and not ShouldStop and (S.AnimaofDeath:CooldownRemainsP() <= 2) then
         --     if HR.Cast(S.LastStand, Action.GetToggle(2, "GCDasOffGCD")) then return "last_stand 112"; end
         --end
         -- avatar
-        if S.Avatar:IsCastableP() and HR.CDsON() and (Player:BuffDownP(S.AvatarBuff)) then
+        if S.Avatar:IsCastableP() and not ShouldStop and HR.CDsON() and (Player:BuffDownP(S.AvatarBuff)) then
             if HR.Cast(S.Avatar,  Action.GetToggle(2, "GCDasOffGCD")) then return "avatar 113"; end
         end
         -- run_action_list,name=aoe,if=spell_targets.thunder_clap>=3

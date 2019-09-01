@@ -148,8 +148,8 @@ Action[ACTION_CONST_ROGUE_OUTLAW] = {
 Action:CreateEssencesFor(ACTION_CONST_ROGUE_OUTLAW)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 
 -- This code making shorter access to both tables Action[PLAYERSPEC] and Action
--- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady(), it doesn't make any conflict if you will skip shorter access
--- So with shorter access you can just do A.Guard:IsReady() instead of Action[PLAYERSPEC].Guard:IsReady()
+-- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop, it doesn't make any conflict if you will skip shorter access
+-- So with shorter access you can just do A.Guard:IsReady() and not ShouldStop instead of Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop
 local A = setmetatable(Action[ACTION_CONST_ROGUE_OUTLAW], { __index = Action })
 
 -- Simcraft Imported
@@ -636,39 +636,39 @@ local function APL()
 -- # Essences
 local function Essences()
     -- blood_of_the_enemy,if=variable.blade_flurry_sync&cooldown.between_the_eyes.up&variable.bte_condition
-    if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and Blade_Flurry_Sync() and S.BetweentheEyes:CooldownUpP() and BtECondition() then
+    if S.BloodoftheEnemy:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and Blade_Flurry_Sync() and S.BetweentheEyes:CooldownUpP() and BtECondition() then
         if HR.Cast(S.BloodoftheEnemy) then return "Cast BloodoftheEnemy"; end
     end
     -- concentrated_flame,if=energy.time_to_max>1&!buff.blade_flurry.up&(!dot.concentrated_flame_burn.ticking&!action.concentrated_flame.in_flight|full_recharge_time<gcd.max)
-    if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and Player:EnergyTimeToMaxPredicted() > 1 and not Player:BuffP(S.BladeFlurry) and (not Target:DebuffP(S.ConcentratedFlameBurn) and not Player:PrevGCD(1, S.ConcentratedFlame) or S.ConcentratedFlame:FullRechargeTime() < Player:GCD() + Player:GCDRemains()) then
+    if S.ConcentratedFlame:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and Player:EnergyTimeToMaxPredicted() > 1 and not Player:BuffP(S.BladeFlurry) and (not Target:DebuffP(S.ConcentratedFlameBurn) and not Player:PrevGCD(1, S.ConcentratedFlame) or S.ConcentratedFlame:FullRechargeTime() < Player:GCD() + Player:GCDRemains()) then
         if HR.Cast(S.ConcentratedFlame) then return "Cast ConcentratedFlame"; end
     end
     -- guardian_of_azeroth
-    if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
+    if S.GuardianofAzeroth:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") then
         if HR.Cast(S.GuardianofAzeroth) then return "Cast GuardianofAzeroth"; end
     end
     -- focused_azerite_beam
-    if S.FocusedAzeriteBeam:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
+    if S.FocusedAzeriteBeam:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") then
         if HR.Cast(S.FocusedAzeriteBeam) then return "Cast FocusedAzeriteBeam"; end
     end
     -- purifying_blast
-    if S.PurifyingBlast:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
+    if S.PurifyingBlast:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") then
         if HR.Cast(S.PurifyingBlast) then return "Cast PurifyingBlast"; end
     end
     -- actions.essences+=/the_unbound_force,if=buff.reckless_force.up|buff.reckless_force_counter.stack<10
-    if S.TheUnboundForce:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.RecklessForceBuff) or Player:BuffStackP(S.RecklessForceCounter) < 10) then
+    if S.TheUnboundForce:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and (Player:BuffP(S.RecklessForceBuff) or Player:BuffStackP(S.RecklessForceCounter) < 10) then
         if HR.Cast(S.TheUnboundForce) then return "Cast TheUnboundForce"; end
     end
     -- ripple_in_space
-    if S.RippleInSpace:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") then
+    if S.RippleInSpace:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") then
         if HR.Cast(S.RippleInSpace) then return "Cast RippleInSpace"; end
     end
     -- worldvein_resonance,if=buff.lifeblood.stack<3
-    if S.WorldveinResonance:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and Player:BuffStackP(S.LifebloodBuff) < 3 then
+    if S.WorldveinResonance:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and Player:BuffStackP(S.LifebloodBuff) < 3 then
         if HR.Cast(S.WorldveinResonance) then return "Cast WorldveinResonance"; end
     end
     -- memory_of_lucid_dreams,if=energy<45
-    if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and Player:EnergyPredicted() < 45 then
+    if S.MemoryofLucidDreams:IsCastableP() and not ShouldStop and Action.GetToggle(1, "HeartOfAzeroth") and Player:EnergyPredicted() < 45 then
         if HR.Cast(S.MemoryofLucidDreams) then return "Cast MemoryofLucidDreams"; end
     end
     return false;
@@ -683,7 +683,7 @@ local function CDs()
         end
 
         -- actions.cds+=/adrenaline_rush,if=!buff.adrenaline_rush.up&energy.time_to_max>1&(!equipped.azsharas_font_of_power|cooldown.latent_arcana.remains>20)
-        if S.AdrenalineRush:IsCastableP() and HR.CDsON() and not Player:BuffP(S.AdrenalineRush) and EnergyTimeToMaxRounded() > 1 and (not I.FontOfPower:IsEquipped() or I.FontOfPower:CooldownRemains() > 20) then
+        if S.AdrenalineRush:IsCastableP() and not ShouldStop and HR.CDsON() and not Player:BuffP(S.AdrenalineRush) and EnergyTimeToMaxRounded() > 1 and (not I.FontOfPower:IsEquipped() or I.FontOfPower:CooldownRemains() > 20) then
             if HR.Cast(S.AdrenalineRush, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Adrenaline Rush"; end
         end
 
@@ -713,7 +713,7 @@ local function CDs()
                     if HR.Cast(S.GhostlyStrike, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Ghostly Strike"; end
                 end
                 -- actions.cds+=/killing_spree,if=variable.blade_flurry_sync&(energy.time_to_max>5|energy<15)
-                if S.KillingSpree:IsCastableP(10) and (EnergyTimeToMaxRounded() > 5 or Player:EnergyPredicted() < 15) then
+                if S.KillingSpree:IsCastableP(10) and not ShouldStop and (EnergyTimeToMaxRounded() > 5 or Player:EnergyPredicted() < 15) then
                     if HR.Cast(S.KillingSpree) then return "Cast Killing Spree"; end
                 end
                 -- actions.cds+=/blade_rush,if=variable.blade_flurry_sync&energy.time_to_max>1
@@ -739,26 +739,26 @@ local function CDs()
         -- Trinkets
         -- actions.cds+=/use_item,if=buff.bloodlust.react|target.time_to_die<=20|combo_points.deficit<=2
         if (true) then
-            if I.GalecallersBoon:IsEquipped() and I.GalecallersBoon:IsReady() and TrinketON() then
+            if I.GalecallersBoon:IsEquipped() and I.GalecallersBoon:IsReady() and not ShouldStop and TrinketON() then
                if HR.Cast(I.GalecallersBoon) then return "Cast GalecallersBoon"; end
             end
-            if I.LustrousGoldenPlumage:IsEquipped() and I.LustrousGoldenPlumage:IsReady() and TrinketON() then
+            if I.LustrousGoldenPlumage:IsEquipped() and I.LustrousGoldenPlumage:IsReady() and not ShouldStop and TrinketON() then
                 if HR.Cast(I.LustrousGoldenPlumage) then return "Cast LustrousGoldenPlumage"; end
             end
-            if I.InvocationOfYulon:IsEquipped() and I.InvocationOfYulon:IsReady() and TrinketON() then
+            if I.InvocationOfYulon:IsEquipped() and I.InvocationOfYulon:IsReady() and not ShouldStop and TrinketON() then
                 if HR.Cast(I.InvocationOfYulon) then return "Cast InvocationOfYulon"; end
             end
             -- actions.cds+=/use_item,name=azsharas_font_of_power,if=!buff.adrenaline_rush.up&!buff.blade_flurry.up&cooldown.adrenaline_rush.remains<15
-            if I.FontOfPower:IsEquipped() and I.FontOfPower:IsReady() and TrinketON() and not Player:BuffP(S.AdrenalineRush) and not Player:BuffP(S.BladeFlurry) and S.AdrenalineRush:CooldownRemainsP() < 15 then
+            if I.FontOfPower:IsEquipped() and I.FontOfPower:IsReady() and not ShouldStop and TrinketON() and not Player:BuffP(S.AdrenalineRush) and not Player:BuffP(S.BladeFlurry) and S.AdrenalineRush:CooldownRemainsP() < 15 then
                 if HR.Cast(I.FontOfPower) then return "Cast FontOfPower"; end
             end
             -- if=!stealthed.all&buff.adrenaline_rush.down&buff.memory_of_lucid_dreams.down&energy.time_to_max>4&rtb_buffs<5
-            if I.ComputationDevice:IsEquipped() and I.ComputationDevice:IsReady() and TrinketON() and not Player:IsStealthedP(true, true)
+            if I.ComputationDevice:IsEquipped() and I.ComputationDevice:IsReady() and not ShouldStop and TrinketON() and not Player:IsStealthedP(true, true)
             and not Player:BuffP(S.AdrenalineRush) and not Player:BuffP(S.LucidDreamsBuff) and EnergyTimeToMaxRounded() > 4 and RtB_Buffs() < 5 then
                 if HR.Cast(I.ComputationDevice) then return "Cast ComputationDevice"; end
             end
             -- actions.cds+=/use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down|debuff.conductive_ink_debuff.up&target.health.pct<32&target.health.pct>=30|!debuff.conductive_ink_debuff.up&(debuff.razor_coral_debuff.stack>=20-10*debuff.blood_of_the_enemy.up|target.time_to_die<60)&buff.adrenaline_rush.remains>18
-            if I.RazorCoral:IsEquipped() and I.RazorCoral:IsReady() and TrinketON() then
+            if I.RazorCoral:IsEquipped() and I.RazorCoral:IsReady() and not ShouldStop and TrinketON() then
             local CastRazorCoral;
                 if S.RazorCoralDebuff:ActiveCount() == 0 then
                     CastRazorCoral = true;
@@ -778,7 +778,7 @@ local function CDs()
                 end
             end
             -- Emulate SimC default behavior to use at max stacks
-            if I.VigorTrinket:IsEquipped() and I.VigorTrinket:IsReady() and TrinketON() and Player:BuffStack(S.VigorTrinketBuff) == 6 then
+            if I.VigorTrinket:IsEquipped() and I.VigorTrinket:IsReady() and not ShouldStop and TrinketON() and Player:BuffStack(S.VigorTrinketBuff) == 6 then
                 if HR.Cast(I.VigorTrinket) then return "Cast VigorTrinket"; end
             end
         end
@@ -822,7 +822,7 @@ local function Finish()
     end
     -- actions.finish=slice_and_dice,if=buff.slice_and_dice.remains<target.time_to_die&buff.slice_and_dice.remains<(1+combo_points)*1.8
     -- Note: Added Player:BuffRemainsP(S.SliceandDice) == 0 to maintain the buff while TTD is invalid (it's mainly for Solo, not an issue in raids)
-    if S.SliceandDice:IsAvailable() and S.SliceandDice:IsCastableP()
+    if S.SliceandDice:IsAvailable() and S.SliceandDice:IsCastableP() and not ShouldStop
     and (Target:FilteredTimeToDie(">", Player:BuffRemainsP(S.SliceandDice)) or Target:TimeToDieIsNotValid() or Player:BuffRemainsP(S.SliceandDice) == 0)
     and Player:BuffRemainsP(S.SliceandDice) < (1 + Player:ComboPoints()) * 1.8 then
         if HR.Cast(S.SliceandDice) then return "Cast Slice and Dice"; end
@@ -862,22 +862,22 @@ end
         -- Precombat CDs
         if HR.CDsON() then
             if Everyone.TargetIsValid() then
-                if S.MarkedforDeath:IsCastableP() and Player:ComboPointsDeficit() >= CPMaxSpend() then
+                if S.MarkedforDeath:IsCastableP() and not ShouldStop and Player:ComboPointsDeficit() >= CPMaxSpend() then
                     if HR.Cast(S.MarkedforDeath, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Marked for Death (OOC)"; end
                 end
                 local usingTrinket = false;
                 -- actions.precombat+=/use_item,name=azsharas_font_of_power
-                if I.FontOfPower:IsEquipped() and I.FontOfPower:IsReady() then
+                if I.FontOfPower:IsEquipped() and I.FontOfPower:IsReady() and not ShouldStop then
                 usingTrinket = true;
                     if HR.Cast(I.FontOfPower) then return "Cast Font of Power"; end
                 end
                 -- actions.precombat+=/use_item,effect_name=cyclotronic_blast,if=!raid_event.invulnerable.exists
-                if I.ComputationDevice:IsEquipped() and I.ComputationDevice:IsReady() then
+                if I.ComputationDevice:IsEquipped() and I.ComputationDevice:IsReady() and not ShouldStop then
                     usingTrinket = true;
                     if HR.Cast(I.ComputationDevice) then return "Cast Computation Device"; end
                 end
                 -- AR
-                if Action.GetToggle(2, "PrecombatAR") and HR.CDsON() and not usingTrinket and S.AdrenalineRush:IsCastableP() and not Player:BuffP(S.AdrenalineRush) then
+                if Action.GetToggle(2, "PrecombatAR") and HR.CDsON() and not usingTrinket and S.AdrenalineRush:IsCastableP() and not ShouldStop and not Player:BuffP(S.AdrenalineRush) then
                     if HR.Cast(S.AdrenalineRush, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Adrenaline Rush (OOC)"; end
                 end
             end
@@ -926,7 +926,7 @@ end
    		local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
         
   	    -- Kick
-  	    if useKick and S.Kick:IsReady() and Target:IsInterruptible() then 
+  	    if useKick and S.Kick:IsReady() and not ShouldStop and Target:IsInterruptible() then 
 		  	if Target:CastPercentage() >= randomInterrupt then
           	    if HR.Cast(S.Kick, true) then return "Kick 5"; end
          	else 
@@ -935,7 +935,7 @@ end
       	end 
 	
      	 -- CheapShot
-      	if useCC and S.CheapShot:IsReady() and Target:IsInterruptible() and Player:EnergyPredicted() >= 40 then 
+      	if useCC and S.CheapShot:IsReady() and not ShouldStop and Target:IsInterruptible() and Player:EnergyPredicted() >= 40 then 
 	  		if Target:CastPercentage() >= randomInterrupt then
      	        if HR.Cast(S.CheapShot, true) then return "CheapShot 5"; end
      	    else 

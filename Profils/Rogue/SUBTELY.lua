@@ -155,8 +155,8 @@ Action[ACTION_CONST_ROGUE_SUBTLETY] = {
 Action:CreateEssencesFor(ACTION_CONST_ROGUE_SUBTLETY)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 
 -- This code making shorter access to both tables Action[PLAYERSPEC] and Action
--- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady(), it doesn't make any conflict if you will skip shorter access
--- So with shorter access you can just do A.Guard:IsReady() instead of Action[PLAYERSPEC].Guard:IsReady()
+-- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop, it doesn't make any conflict if you will skip shorter access
+-- So with shorter access you can just do A.Guard:IsReady() and not ShouldStop instead of Action[PLAYERSPEC].Guard:IsReady() and not ShouldStop
 local A = setmetatable(Action[ACTION_CONST_ROGUE_SUBTLETY], { __index = Action })
 
 -- Simcraft Imported
@@ -523,7 +523,7 @@ local function Stealthed (ReturnSpellOnly, StealthSpell)
     return Finish(ReturnSpellOnly, StealthSpell);
   end
   -- actions.stealthed+=/gloomblade,if=azerite.perforate.rank>=2&spell_targets.shuriken_storm<=2
-  if S.Gloomblade:IsCastableP() and S.Perforate:AzeriteRank() >= 2 and Cache.EnemiesCount[10] <= 2 then
+  if S.Gloomblade:IsCastableP() and not ShouldStop and S.Perforate:AzeriteRank() >= 2 and Cache.EnemiesCount[10] <= 2 then
     if ReturnSpellOnly then
       return S.Gloomblade
     else
@@ -533,7 +533,7 @@ local function Stealthed (ReturnSpellOnly, StealthSpell)
   -- actions.stealthed+=/shadowstrike,cycle_targets=1,if=talent.secret_technique.enabled&talent.find_weakness.enabled&debuff.find_weakness.remains<1&spell_targets.shuriken_storm=2&target.time_to_die-remains>6
   -- !!!NYI!!! (Is this worth it? How do we want to display it in an understandable way?)
   -- actions.stealthed+=/shadowstrike,if=!talent.deeper_stratagem.enabled&azerite.blade_in_the_shadows.rank=3&spell_targets.shuriken_storm=3
-  if S.Shadowstrike:IsCastableP() and not S.DeeperStratagem:IsAvailable() and S.BladeInTheShadows:AzeriteRank() == 3 and Cache.EnemiesCount[10] == 3 then
+  if S.Shadowstrike:IsCastableP() and not ShouldStop and not S.DeeperStratagem:IsAvailable() and S.BladeInTheShadows:AzeriteRank() == 3 and Cache.EnemiesCount[10] == 3 then
     if ReturnSpellOnly then
       return S.Shadowstrike
     else
@@ -541,7 +541,7 @@ local function Stealthed (ReturnSpellOnly, StealthSpell)
     end
   end
   -- actions.stealthed+=/shadowstrike,if=variable.use_priority_rotation&(talent.find_weakness.enabled&debuff.find_weakness.remains<1|talent.weaponmaster.enabled&spell_targets.shuriken_storm<=4|azerite.inevitability.enabled&buff.symbols_of_death.up&spell_targets.shuriken_storm<=3+azerite.blade_in_the_shadows.enabled)
-  if S.Shadowstrike:IsCastableP() and UsePriorityRotation() and (S.FindWeakness:IsAvailable() and Target:DebuffRemainsP(S.FindWeaknessDebuff) < 1 or S.Weaponmaster:IsAvailable() and Cache.EnemiesCount[10] <= 4 or S.Inevitability:AzeriteEnabled() and Player:BuffP(S.SymbolsofDeath) and Cache.EnemiesCount[10] <= 3 + num(S.BladeInTheShadows:AzeriteEnabled())) then
+  if S.Shadowstrike:IsCastableP() and not ShouldStop and UsePriorityRotation() and (S.FindWeakness:IsAvailable() and Target:DebuffRemainsP(S.FindWeaknessDebuff) < 1 or S.Weaponmaster:IsAvailable() and Cache.EnemiesCount[10] <= 4 or S.Inevitability:AzeriteEnabled() and Player:BuffP(S.SymbolsofDeath) and Cache.EnemiesCount[10] <= 3 + num(S.BladeInTheShadows:AzeriteEnabled())) then
     if ReturnSpellOnly then
       return S.Shadowstrike
     else
@@ -598,39 +598,39 @@ end
 -- # Essences
 local function Essences ()
   -- blood_of_the_enemy,if=cooldown.symbols_of_death.up|target.time_to_die<=10
-  if S.BloodoftheEnemy:IsCastableP() and (S.SymbolsofDeath:CooldownUpP() or Target:FilteredTimeToDie("<=", 10)) then
+  if S.BloodoftheEnemy:IsCastableP() and not ShouldStop and (S.SymbolsofDeath:CooldownUpP() or Target:FilteredTimeToDie("<=", 10)) then
     if HR.Cast(S.BloodoftheEnemy) then return "Cast BloodoftheEnemy"; end
   end
   -- concentrated_flame,if=energy.time_to_max>1&!buff.symbols_of_death.up&(!dot.concentrated_flame_burn.ticking&!action.concentrated_flame.in_flight|full_recharge_time<gcd.max)
-  if S.ConcentratedFlame:IsCastableP() and Player:EnergyTimeToMaxPredicted() > 1 and not Player:BuffP(S.SymbolsofDeath) and (not Target:DebuffP(S.ConcentratedFlameBurn) and not Player:PrevGCD(1, S.ConcentratedFlame) or S.ConcentratedFlame:FullRechargeTime() < Player:GCD() + Player:GCDRemains()) then
+  if S.ConcentratedFlame:IsCastableP() and not ShouldStop and Player:EnergyTimeToMaxPredicted() > 1 and not Player:BuffP(S.SymbolsofDeath) and (not Target:DebuffP(S.ConcentratedFlameBurn) and not Player:PrevGCD(1, S.ConcentratedFlame) or S.ConcentratedFlame:FullRechargeTime() < Player:GCD() + Player:GCDRemains()) then
     if HR.Cast(S.ConcentratedFlame) then return "Cast ConcentratedFlame"; end
   end
   -- guardian_of_azeroth
-  if S.GuardianofAzeroth:IsCastableP() then
+  if S.GuardianofAzeroth:IsCastableP() and not ShouldStop then
     if HR.Cast(S.GuardianofAzeroth) then return "Cast GuardianofAzeroth"; end
   end
   -- actions.essences+=/focused_azerite_beam,if=(spell_targets.shuriken_storm>=2|raid_event.adds.in>60)&!cooldown.symbols_of_death.up&!buff.symbols_of_death.up&energy.deficit>=30
-  if S.FocusedAzeriteBeam:IsCastableP() and not S.SymbolsofDeath:CooldownUpP() and not Player:BuffP(S.SymbolsofDeath) and Player:EnergyDeficitPredicted() >= 30 then
+  if S.FocusedAzeriteBeam:IsCastableP() and not ShouldStop and not S.SymbolsofDeath:CooldownUpP() and not Player:BuffP(S.SymbolsofDeath) and Player:EnergyDeficitPredicted() >= 30 then
     if HR.Cast(S.FocusedAzeriteBeam) then return "Cast FocusedAzeriteBeam"; end
   end
   -- purifying_blast
-  if S.PurifyingBlast:IsCastableP() then
+  if S.PurifyingBlast:IsCastableP() and not ShouldStop then
     if HR.Cast(S.PurifyingBlast) then return "Cast PurifyingBlast"; end
   end
   -- actions.essences+=/the_unbound_force,if=buff.reckless_force.up|buff.reckless_force_counter.stack<10
-  if S.TheUnboundForce:IsCastableP() and (Player:BuffP(S.RecklessForceBuff) or Player:BuffStackP(S.RecklessForceCounter) < 10) then
+  if S.TheUnboundForce:IsCastableP() and not ShouldStop and (Player:BuffP(S.RecklessForceBuff) or Player:BuffStackP(S.RecklessForceCounter) < 10) then
     if HR.Cast(S.TheUnboundForce) then return "Cast TheUnboundForce"; end
   end
   -- ripple_in_space
-  if S.RippleInSpace:IsCastableP() then
+  if S.RippleInSpace:IsCastableP() and not ShouldStop then
     if HR.Cast(S.RippleInSpace) then return "Cast RippleInSpace"; end
   end
   -- worldvein_resonance,if=buff.lifeblood.stack<3
-  if S.WorldveinResonance:IsCastableP() and Player:BuffStackP(S.LifebloodBuff) < 3 then
+  if S.WorldveinResonance:IsCastableP() and not ShouldStop and Player:BuffStackP(S.LifebloodBuff) < 3 then
     if HR.Cast(S.WorldveinResonance) then return "Cast WorldveinResonance"; end
   end
   -- memory_of_lucid_dreams,if=energy<40&buff.symbols_of_death.up
-  if S.MemoryofLucidDreams:IsCastableP() and Player:EnergyPredicted() < 40 and Player:BuffP(S.SymbolsofDeath) then
+  if S.MemoryofLucidDreams:IsCastableP() and not ShouldStop and Player:EnergyPredicted() < 40 and Player:BuffP(S.SymbolsofDeath) then
     if HR.Cast(S.MemoryofLucidDreams) then return "Cast MemoryofLucidDreams"; end
   end
   return false;
@@ -655,7 +655,7 @@ local function CDs ()
       if ShouldReturn then return ShouldReturn; end
     end
     -- actions.cds+=/shuriken_tornado,if=energy>=60&dot.nightblade.ticking&cooldown.symbols_of_death.up&cooldown.shadow_dance.charges>=1
-    if S.ShurikenTornado:IsCastableP() and Target:DebuffP(S.Nightblade) and S.SymbolsofDeath:CooldownUpP() and S.ShadowDance:Charges() >= 1 then
+    if S.ShurikenTornado:IsCastableP() and not ShouldStop and Target:DebuffP(S.Nightblade) and S.SymbolsofDeath:CooldownUpP() and S.ShadowDance:Charges() >= 1 then
       -- actions.cds+=/pool_resource,for_next=1,if=!talent.shadow_focus.enabled
       if Player:Energy() >= 60 then
         if HR.Cast(S.ShurikenTornado) then return "Cast Shuriken Tornado"; end
@@ -691,7 +691,7 @@ local function CDs ()
         if HR.Cast(S.ShadowBlades, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Shadow Blades"; end
       end
       -- actions.cds+=/shuriken_tornado,if=talent.shadow_focus.enabled&dot.nightblade.ticking&buff.symbols_of_death.up
-      if S.ShurikenTornado:IsCastableP() and S.ShadowFocus:IsAvailable() and Target:DebuffP(S.Nightblade) and Player:BuffP(S.SymbolsofDeath) then
+      if S.ShurikenTornado:IsCastableP() and not ShouldStop and S.ShadowFocus:IsAvailable() and Target:DebuffP(S.Nightblade) and Player:BuffP(S.SymbolsofDeath) then
         if HR.Cast(S.ShurikenTornado) then return "Cast Shuriken Tornado (SF)"; end
       end
       -- actions.cds+=/shadow_dance,if=!buff.shadow_dance.up&target.time_to_die<=5+talent.subterfuge.enabled
@@ -726,26 +726,26 @@ local function CDs ()
       -- actions.cds+=/use_items,if=buff.symbols_of_death.up|target.time_to_die<20
       if TrinketON() then
         local DefaultTrinketCondition = Player:BuffP(S.SymbolsofDeath) or Target:FilteredTimeToDie("<", 20);
-        if I.GalecallersBoon:IsEquipped() and I.GalecallersBoon:IsReady() and DefaultTrinketCondition then
+        if I.GalecallersBoon:IsEquipped() and I.GalecallersBoon:IsReady() and not ShouldStop and DefaultTrinketCondition then
           if HR.Cast(I.GalecallersBoon) then return "Cast GalecallersBoon"; end
         end
-        if I.LustrousGoldenPlumage:IsEquipped() and I.LustrousGoldenPlumage:IsReady() and DefaultTrinketCondition then
+        if I.LustrousGoldenPlumage:IsEquipped() and I.LustrousGoldenPlumage:IsReady() and not ShouldStop and DefaultTrinketCondition then
           if HR.Cast(I.LustrousGoldenPlumage) then return "Cast LustrousGoldenPlumage"; end
         end
-        if I.InvocationOfYulon:IsEquipped() and I.InvocationOfYulon:IsReady() and DefaultTrinketCondition then
+        if I.InvocationOfYulon:IsEquipped() and I.InvocationOfYulon:IsReady() and not ShouldStop and DefaultTrinketCondition then
           if HR.Cast(I.InvocationOfYulon) then return "Cast InvocationOfYulon"; end
         end
         -- actions.cds+=/use_item,name=azsharas_font_of_power,if=!buff.shadow_dance.up&cooldown.symbols_of_death.remains<10
-        if I.FontOfPower:IsEquipped() and I.FontOfPower:IsReady() and not Player:BuffP(S.SymbolsofDeath) and S.SymbolsofDeath:CooldownRemainsP() < 10 then
+        if I.FontOfPower:IsEquipped() and I.FontOfPower:IsReady() and not ShouldStop and not Player:BuffP(S.SymbolsofDeath) and S.SymbolsofDeath:CooldownRemainsP() < 10 then
           if HR.Cast(I.FontOfPower) then return "Cast FontOfPower"; end
         end
         -- if=!stealthed.all&dot.nightblade.ticking&!buff.symbols_of_death.up&energy.deficit>=30
-        if I.ComputationDevice:IsEquipped() and I.ComputationDevice:IsReady() and not Player:IsStealthedP(true, true)
+        if I.ComputationDevice:IsEquipped() and I.ComputationDevice:IsReady() and not ShouldStop and not Player:IsStealthedP(true, true)
           and Target:DebuffP(S.Nightblade) and not Player:BuffP(S.SymbolsofDeath) and Player:EnergyDeficitPredicted() >= 30 then
           if HR.Cast(I.ComputationDevice) then return "Cast ComputationDevice"; end
         end
         -- actions.cds+=/use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down|debuff.conductive_ink_debuff.up&target.health.pct<32&target.health.pct>=30|!debuff.conductive_ink_debuff.up&(debuff.razor_coral_debuff.stack>=25-10*debuff.blood_of_the_enemy.up|target.time_to_die<40)&buff.symbols_of_death.remains>8
-        if I.RazorCoral:IsEquipped() and I.RazorCoral:IsReady() then
+        if I.RazorCoral:IsEquipped() and I.RazorCoral:IsReady() and not ShouldStop then
           local CastRazorCoral;
           if S.RazorCoralDebuff:ActiveCount() == 0 then
             CastRazorCoral = true;
@@ -765,7 +765,7 @@ local function CDs ()
           end
         end
         -- Emulate SimC default behavior to use at max stacks
-        if I.VigorTrinket:IsEquipped() and I.VigorTrinket:IsReady() and Player:BuffStack(S.VigorTrinketBuff) == 6 then
+        if I.VigorTrinket:IsEquipped() and I.VigorTrinket:IsReady() and not ShouldStop and Player:BuffStack(S.VigorTrinketBuff) == 6 then
           if HR.Cast(I.VigorTrinket) then return "Cast VigorTrinket"; end
         end
       end
@@ -822,7 +822,7 @@ end
 -- # Builders
 local function Build ()
   -- actions.build=shuriken_storm,if=spell_targets>=2+(talent.gloomblade.enabled&azerite.perforate.rank>=2)|buff.the_dreadlords_deceit.stack>=29
-  if HR.AoEON() and S.ShurikenStorm:IsCastableP() and (Cache.EnemiesCount[10] >= 2 + num(S.Gloomblade:IsAvailable() and S.Perforate:AzeriteRank() >= 2) or Player:BuffStackP(S.TheDreadlordsDeceit) >= 29) then
+  if HR.AoEON() and S.ShurikenStorm:IsCastableP() and not ShouldStop and (Cache.EnemiesCount[10] >= 2 + num(S.Gloomblade:IsAvailable() and S.Perforate:AzeriteRank() >= 2) or Player:BuffStackP(S.TheDreadlordsDeceit) >= 29) then
     if HR.Cast(S.ShurikenStorm) then return "Cast Shuriken Storm"; end
   end
   if IsInMeleeRange() then
@@ -941,11 +941,11 @@ local function APL()
             if Everyone.TargetIsValid() and (Target:IsInRange(S.Shadowstrike) or IsInMeleeRange()) then
                 -- Precombat CDs
                 if HR.CDsON() then
-                    if S.MarkedforDeath:IsCastableP() and Player:ComboPointsDeficit() >= CPMaxSpend() then
+                    if S.MarkedforDeath:IsCastableP() and not ShouldStop and Player:ComboPointsDeficit() >= CPMaxSpend() then
                         if HR.Cast(S.MarkedforDeath, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Marked for Death (OOC)"; end
                     end
                     -- actions.precombat+=/use_item,name=azsharas_font_of_power
-                    if TrinketON() and I.FontOfPower:IsEquipped() and I.FontOfPower:IsReady() then
+                    if TrinketON() and I.FontOfPower:IsEquipped() and I.FontOfPower:IsReady() and not ShouldStop then
                         if HR.Cast(I.FontOfPower) then return "Cast Font of Power"; end
                     end
                     if S.ShadowBlades:IsCastable() and not Player:Buff(S.ShadowBlades) then
@@ -982,7 +982,7 @@ local function APL()
    			local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
         
   	    	-- Kick
-  	    	if useKick and S.Kick:IsReady() and Target:IsInterruptible() then 
+  	    	if useKick and S.Kick:IsReady() and not ShouldStop and Target:IsInterruptible() then 
 			  	if Target:CastPercentage() >= randomInterrupt then
       	    	    if HR.Cast(S.Kick, true) then return "Kick 5"; end
       		   	else 
@@ -991,7 +991,7 @@ local function APL()
       		end 
 	
      		 -- CheapShot
-      		if useCC and S.CheapShot:IsReady() and Target:IsInterruptible() and Player:EnergyPredicted() >= 40 then 
+      		if useCC and S.CheapShot:IsReady() and not ShouldStop and Target:IsInterruptible() and Player:EnergyPredicted() >= 40 then 
 	  			if Target:CastPercentage() >= randomInterrupt then
      	       		if HR.Cast(S.CheapShot, true) then return "CheapShot 5"; end
      	   		else 
@@ -1034,7 +1034,7 @@ local function APL()
 
             -- # Apply Nightblade at 2+ CP during the first 10 seconds, after that 4+ CP if it expires within the next GCD or is not up
             -- actions+=/nightblade,if=target.time_to_die>6&remains<gcd.max&combo_points>=4-(time<10)*2
-            if S.Nightblade:IsCastableP() and IsInMeleeRange()
+            if S.Nightblade:IsCastableP() and not ShouldStop and IsInMeleeRange()
                 and (Target:FilteredTimeToDie(">", 6) or Target:TimeToDieIsNotValid())
                 and Everyone.CanDoTUnit(Target, S.Eviscerate:Damage() * Action.GetToggle(2, "EviscerateDMGOffset"))
                 and Target:DebuffRemainsP(S.Nightblade) < Player:GCD() and Player:ComboPoints() >= 4 - (HL.CombatTime() < 10 and 2 or 0) then
@@ -1055,7 +1055,7 @@ local function APL()
             end
 
             -- if=azerite.nights_vengeance.enabled&!buff.nights_vengeance.up&combo_points.deficit>1&(spell_targets.shuriken_storm<2|variable.use_priority_rotation)&(cooldown.symbols_of_death.remains<=3|(azerite.nights_vengeance.rank>=2&buff.symbols_of_death.remains>3&!stealthed.all&cooldown.shadow_dance.charges_fractional>=0.9))
-            if S.Nightblade:IsCastableP() and IsInMeleeRange()
+            if S.Nightblade:IsCastableP() and not ShouldStop and IsInMeleeRange()
                 and S.NightsVengeancePower:AzeriteEnabled() and not Player:BuffP(S.NightsVengeanceBuff) and Player:ComboPoints() >= 1 and Player:ComboPointsDeficit() > 1
                 and (Cache.EnemiesCount[10] < 2 or UsePriorityRotation())
                 and (S.SymbolsofDeath:CooldownRemainsP() <= 3 or (S.NightsVengeancePower:AzeriteRank() >= 2 and Player:BuffRemainsP(S.SymbolsofDeath) > 3 and not Player:IsStealthedP(true, true) and S.ShadowDance:ChargesFractional() >= 0.9))
@@ -1085,15 +1085,15 @@ local function APL()
 
             -- # Lowest priority in all of the APL because it causes a GCD
             -- actions+=/arcane_torrent,if=energy.deficit>=15+energy.regen
-            if S.ArcaneTorrent:IsCastableP("Melee") and Player:EnergyDeficitPredicted() > 15 + Player:EnergyRegen() then
+            if S.ArcaneTorrent:IsCastableP("Melee") and not ShouldStop and Player:EnergyDeficitPredicted() > 15 + Player:EnergyRegen() then
                 if HR.Cast(S.ArcaneTorrent, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Arcane Torrent"; end
             end
             -- actions+=/arcane_pulse
-            if S.ArcanePulse:IsCastableP("Melee") then
+            if S.ArcanePulse:IsCastableP("Melee") and not ShouldStop then
                 if HR.Cast(S.ArcanePulse, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Arcane Pulse"; end
             end
             -- actions+=/lights_judgment
-            if S.LightsJudgment:IsCastableP("Melee") then
+            if S.LightsJudgment:IsCastableP("Melee") and not ShouldStop then
                 if HR.Cast(S.LightsJudgment, Action.GetToggle(2, "OffGCDasOffGCD")) then return "Cast Lights Judgment"; end
             end
 
