@@ -61,19 +61,19 @@ Action[ACTION_CONST_SHAMAN_ELEMENTAL] = {
     -- Defensive
 	AstralShift                           = Action.Create({ Type = "Spell", ID = 108271     }),	
     -- Buffs
-    RecklessForceBuff                     = Action.Create({ Type = "Spell", ID = 302932     }),
-    ResonanceTotemBuff                    = Action.Create({ Type = "Spell", ID = 202192     }),
-    TectonicThunderBuff                   = Action.Create({ Type = "Spell", ID = 286949     }),
-    LavaShockBuff                         = Action.Create({ Type = "Spell", ID = 273453     }),
-    SurgeofPowerBuff                      = Action.Create({ Type = "Spell", ID = 285514     }),
-    MasteroftheElementsBuff               = Action.Create({ Type = "Spell", ID = 260734     }),
-    LavaSurgeBuff                         = Action.Create({ Type = "Spell", ID = 77762      }),
-    AscendanceBuff                        = Action.Create({ Type = "Spell", ID = 114050     }),
-    IcefuryBuff                           = Action.Create({ Type = "Spell", ID = 210714     }),
-    StormkeeperBuff                       = Action.Create({ Type = "Spell", ID = 191634     }),
-    WindGustBuff                          = Action.Create({ Type = "Spell", ID = 263806     }),
+    RecklessForceBuff                     = Action.Create({ Type = "Spell", ID = 302932  , Hidden = true     }),	
+    ResonanceTotemBuff                    = Action.Create({ Type = "Spell", ID = 202192  , Hidden = true     }),	
+    TectonicThunderBuff                   = Action.Create({ Type = "Spell", ID = 286949  , Hidden = true     }),	
+    LavaShockBuff                         = Action.Create({ Type = "Spell", ID = 273453 , Hidden = true     }),	
+    SurgeofPowerBuff                      = Action.Create({ Type = "Spell", ID = 285514 , Hidden = true     }),	
+    MasteroftheElementsBuff               = Action.Create({ Type = "Spell", ID = 260734 , Hidden = true     }),	
+    LavaSurgeBuff                         = Action.Create({ Type = "Spell", ID = 77762  , Hidden = true     }),	
+    AscendanceBuff                        = Action.Create({ Type = "Spell", ID = 114050, Hidden = true     }),	
+    IcefuryBuff                           = Action.Create({ Type = "Spell", ID = 210714, Hidden = true     }),	
+    StormkeeperBuff                       = Action.Create({ Type = "Spell", ID = 191634, Hidden = true     }),	
+    WindGustBuff                          = Action.Create({ Type = "Spell", ID = 263806, Hidden = true     }),	
 	-- Debuffs 
-    FlameShockDebuff                      = Action.Create({ Type = "Spell", ID = 188389     }),	
+    FlameShockDebuff                      = Action.Create({ Type = "Spell", ID = 188389, Hidden = true     }),		
     -- Misc
     Channeling                            = Action.Create({ Type = "Spell", ID = 209274, Hidden = true     }),	
     -- Trinkets
@@ -296,7 +296,7 @@ local function EvaluateCycleFlameShock148(Target)
 end
 
 local function EvaluateCycleFlameShock163(Target)
-  return (not Target:DebuffP(S.FlameShockDebuff) or S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 2 * Player:GCD() or Target:DebuffRemainsP(S.FlameShockDebuff) <= Player:GCD() or S.Ascendance:IsAvailable() and Target:DebuffRemainsP(S.FlameShockDebuff) < (S.Ascendance:CooldownRemainsP() + S.AscendanceBuff:BaseDuration()) and S.Ascendance:CooldownRemainsP() < 4 and (not S.StormElemental:IsAvailable() or S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 120)) and (Player:BuffStackP(S.WindGustBuff) < 14 or S.IgneousPotential:AzeriteRank() >= 2 or Player:BuffP(S.LavaSurgeBuff) or not Player:HasHeroism()) and not Player:BuffP(S.SurgeofPowerBuff)
+  return (not bool(Target:DebuffRemainsP(S.FlameShockDebuff)) or S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 2 * Player:GCD() or Target:DebuffRemainsP(S.FlameShockDebuff) <= Player:GCD() or S.Ascendance:IsAvailable() and Target:DebuffRemainsP(S.FlameShockDebuff) < (S.Ascendance:CooldownRemainsP() + S.AscendanceBuff:BaseDuration()) and S.Ascendance:CooldownRemainsP() < 4 and (not S.StormElemental:IsAvailable() or S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 120)) and (Player:BuffStackP(S.WindGustBuff) < 14 or S.IgneousPotential:AzeriteRank() >= 2 or Player:BuffP(S.LavaSurgeBuff) or not Player:HasHeroism()) and not Player:BuffP(S.SurgeofPowerBuff)
 end
 
 local function EvaluateCycleFlameShock390(Target)
@@ -312,7 +312,7 @@ local function EvaluateCycleFlameShock562(Target)
 end
 
 local function EvaluateCycleFlameShock702(Target)
-  return ((not Target:DebuffP(S.FlameShockDebuff) or S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 2 * Player:GCD() or Target:DebuffRemainsP(S.FlameShockDebuff) <= Player:GCD() or S.Ascendance:IsAvailable() and Target:DebuffRemainsP(S.FlameShockDebuff) < (S.Ascendance:CooldownRemainsP() + S.AscendanceBuff:BaseDuration()) and S.Ascendance:CooldownRemainsP() < 4 and (not S.StormElemental:IsAvailable() or S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 120)) and (Player:BuffStackP(S.WindGustBuff) < 14 or S.IgneousPotential:AzeriteRank() >= 2 or Player:BuffP(S.LavaSurgeBuff) or not Player:HasHeroism()) and Player:BuffDownP(S.SurgeofPowerBuff))
+  return ((not bool(Target:DebuffRemainsP(S.FlameShockDebuff)) or S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 2 * Player:GCD() or Target:DebuffRemainsP(S.FlameShockDebuff) <= Player:GCD() or S.Ascendance:IsAvailable() and Target:DebuffRemainsP(S.FlameShockDebuff) < (S.Ascendance:CooldownRemainsP() + S.AscendanceBuff:BaseDuration()) and S.Ascendance:CooldownRemainsP() < 4 and (not S.StormElemental:IsAvailable() or S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 120)) and (Player:BuffStackP(S.WindGustBuff) < 14 or S.IgneousPotential:AzeriteRank() >= 2 or Player:BuffP(S.LavaSurgeBuff) or not Player:HasHeroism()) and Player:BuffDownP(S.SurgeofPowerBuff))
 end
 
 -- Initiate Nucleus Ability registration
@@ -330,7 +330,7 @@ local function APL()
 	local Pull = Action.BossMods_Pulling()
 	
 	-- Local functions remap
-    EnemiesCount = GetEnemiesCount(8)
+    EnemiesCount = GetEnemiesCount(40)
     HL.GetEnemies(40) -- For CastCycle calls
 	DetermineEssenceRanks()
 	-- Init data for splash data (To Check)
@@ -830,7 +830,7 @@ local function APL()
             local ShouldReturn = Aoe(); if ShouldReturn then return ShouldReturn; end
         end
         -- run_action_list,name=funnel,if=active_enemies>=2&(spell_targets.chain_lightning<2|spell_targets.lava_beam<2)
-        if (Cache.EnemiesCount[40] >= 2 and EnemiesCount < 2) then
+        if (EnemiesCount < 2) then
             local ShouldReturn = Funnel(); if ShouldReturn then return ShouldReturn; end
         end
         -- run_action_list,name=single_target

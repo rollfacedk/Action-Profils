@@ -1082,7 +1082,7 @@ end
 --                 ROTATION  
 -----------------------------------------
 
--- [3] Single Rotation
+-- [3] is Single rotation (supports all actions)
 A[3] = function(icon)
     if APL() then 
         return true 
@@ -1090,3 +1090,28 @@ A[3] = function(icon)
 
 end
 
+--[[
+-- [6] is Passive rotation (limited actions, usually @player, @raid1, @arena1)
+A[6] = function(icon)    
+    return ArenaRotation(icon, "arena1")
+end
+
+-- [7] is Passive rotation (limited actions, usually @party1, @raid2, @arena2)
+A[7] = function(icon)
+    local Party = PartyRotation("party1") 
+    if Party then 
+        return Party:Show(icon)
+    end 
+    
+    return ArenaRotation(icon, "arena2")
+end
+
+-- [8] is Passive rotation (limited actions, usually @party2, @raid3, @arena3)
+A[8] = function(icon)
+    local Party = PartyRotation("party2") 
+    if Party then 
+        return Party:Show(icon)
+    end     
+    
+    return ArenaRotation(icon, "arena3")
+end]]--
