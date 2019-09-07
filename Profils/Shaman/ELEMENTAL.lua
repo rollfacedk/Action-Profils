@@ -340,7 +340,7 @@ local function APL()
     HL.GetEnemies(40) -- For CastCycle calls
 	DetermineEssenceRanks()
     AppliedFlameShock = MultiUnits:GetByRangeAppliedDoTs(40, 10, 188389) --MultiDots(40, S.FlameShockDebuff, 15, 4) --MultiUnits:GetByRangeMissedDoTs(40, 10, 188389)  MultiUnits:GetByRangeMissedDoTs(range, stop, dots, ttd)
-	print(AppliedFlameShock)
+	--print(AppliedFlameShock)
 	
     -- Handle all generics trinkets	
 	local function GeneralTrinkets()
