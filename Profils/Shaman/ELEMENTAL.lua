@@ -60,6 +60,10 @@ Action[ACTION_CONST_SHAMAN_ELEMENTAL] = {
     CapacitorTotem                        = Action.Create({ Type = "Spell", ID = 192058     }),
     Purge                                 = Action.Create({ Type = "Spell", ID = 370     }),
     GhostWolf                             = Action.Create({ Type = "Spell", ID = 2645     }),
+	PrimalElementalist                    = Action.Create({ Type = "Spell", ID = 117013 , Hidden = true     }),
+    -- Storm Elemental   
+    EyeOfTheStorm                         = Action.Create({ Type = "Spell", ID = 157375 , Hidden = true     }), 
+    CallLightning                         = Action.Create({ Type = "Spell", ID = 157348 , Hidden = true     }),
     -- Defensive
 	AstralShift                           = Action.Create({ Type = "Spell", ID = 108271     }),	
     -- Buffs
@@ -270,6 +274,65 @@ local function GetEnemiesCount(range)
         end
     else
         return 1
+    end
+end
+
+-- Pet functions
+local PetType = {
+  [77942] = {"Primal Storm Elemental", 30},
+};
+
+HL.ElementalGuardiansTable = {
+    --{PetType,petID,dateEvent,UnitPetGUID,CastsLeft}
+    Pets = {
+    },
+    PetList={
+    [77942]="Primal Storm Elemental",
+}
+};
+    
+HL:RegisterForSelfCombatEvent(
+function (...)
+    local dateEvent,_,_,_,_,_,_,UnitPetGUID=select(1,...)
+    local t={} ; i=1
+  
+    for str in string.gmatch(UnitPetGUID, "([^-]+)") do
+        t[i] = str
+        i = i + 1
+    end
+    
+	local PetType=HL.ElementalGuardiansTable.PetList[tonumber(t[6])]
+    if PetType then
+        table.insert(HL.ElementalGuardiansTable.Pets,{PetType,tonumber(t[6]),GetTime(),UnitPetGUID,5})
+    end
+end
+    , "SPELL_SUMMON"
+);
+        
+-- Summoned pet duration
+local function PetDuration(PetType)
+    if not PetType then 
+        return 0 
+    end
+    local PetsInfo = {
+        [77942] = {"Primal Storm Elemental", 30},
+    }
+    local maxduration = 0
+    for key, Value in pairs(HL.ElementalGuardiansTable.Pets) do
+        if HL.ElementalGuardiansTable.Pets[key][1] == PetType then
+            if (PetsInfo[HL.ElementalGuardiansTable.Pets[key][2]][2] - (GetTime() - HL.ElementalGuardiansTable.Pets[key][3])) > maxduration then
+                maxduration = HL.OffsetRemains((PetsInfo[HL.ElementalGuardiansTable.Pets[key][2]][2] - (GetTime() - HL.ElementalGuardiansTable.Pets[key][3])), "Auto" );
+            end
+        end
+    end
+    return maxduration
+end
+
+local function StormElementalIsActive()
+    if PetDuration("Primal Storm Elemental") > 1 then
+        return true
+   else
+        return false
     end
 end
 
@@ -768,6 +831,10 @@ local function APL()
         -- storm_elemental,if=talent.storm_elemental.enabled&(!talent.icefury.enabled|!buff.icefury.up&!cooldown.icefury.up)&(!talent.ascendance.enabled|!cooldown.ascendance.up)
         if S.StormElemental:IsCastableP() and not ShouldStop and HR.CDsON() and (S.StormElemental:IsAvailable() and (not S.Icefury:IsAvailable() or not Player:BuffP(S.IcefuryBuff) and not S.Icefury:CooldownUpP()) and (not S.Ascendance:IsAvailable() or not S.Ascendance:CooldownUpP())) then
             if HR.Cast(S.StormElemental, Action.GetToggle(2, "OffGCDasOffGCD")) then return "storm_elemental 595"; end
+        end
+    	-- Eye of the Storm if Storm Elemental is up and we got Primal Elementalists
+    	if S.EyeOfTheStorm:CooldownRemainsP() < 0.1 and S.PrimalElementalist:IsAvailable() and HR.CDsON() and StormElementalIsActive() and S.CallLightning:CooldownRemainsP() > 1 then
+            return S.EyeOfTheStorm:Cast()
         end
         -- earth_elemental,if=!talent.primal_elementalist.enabled|talent.primal_elementalist.enabled&(cooldown.fire_elemental.remains<120&!talent.storm_elemental.enabled|cooldown.storm_elemental.remains<120&talent.storm_elemental.enabled)
         -- concentrated_flame
