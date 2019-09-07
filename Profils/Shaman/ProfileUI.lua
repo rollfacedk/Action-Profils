@@ -289,6 +289,22 @@ A.Data.ProfileUI = {
                     }, 
                     M = {},
                 },
+                {
+                    E = "Checkbox", 
+                    DB = "AutoDot",
+                    DBV = true,
+                    L = { 
+                        enUS = "Auto detect multiple units and auto dot them", 
+                        ruRU = "Auto detect multiple units and auto dot them",
+                        frFR = "Auto detect multiple units and auto dot them",
+                    }, 
+                    TT = { 
+                        enUS = "Auto detect multiple units and auto dot them",
+                        ruRU = "Auto detect multiple units and auto dot them",
+                        frFR = "Auto detect multiple units and auto dot them",
+                    }, 
+                    M = {},
+                },
 			},
             { -- [7] 
                 {

@@ -6,6 +6,7 @@ local TMW = TMW
 local CNDT = TMW.CNDT 
 local Env = CNDT.Env
 local Action = Action
+local MultiUnits = Action.MultiUnits
 
 Action[ACTION_CONST_SHAMAN_ELEMENTAL] = {
     -- Racial
@@ -77,7 +78,8 @@ Action[ACTION_CONST_SHAMAN_ELEMENTAL] = {
 	-- Debuffs 
     FlameShockDebuff                      = Action.Create({ Type = "Spell", ID = 188389, Hidden = true     }),		
     -- Misc
-    Channeling                            = Action.Create({ Type = "Spell", ID = 209274, Hidden = true     }),	
+    Channeling                            = Action.Create({ Type = "Spell", ID = 209274, Hidden = true     }),	-- Show an icon during channeling
+	TargetEnemy                           = Action.Create({ Type = "Spell", ID = 44603, Hidden = true     }),	-- Change Target (Tab button)
     -- Trinkets
     GenericTrinket1                       = Action.Create({ Type = "Trinket", ID = 114616, QueueForbidden = true }),
     GenericTrinket2                       = Action.Create({ Type = "Trinket", ID = 114081, QueueForbidden = true }),
@@ -337,13 +339,8 @@ local function APL()
     EnemiesCount = GetEnemiesCount(40)
     HL.GetEnemies(40) -- For CastCycle calls
 	DetermineEssenceRanks()
-
-	
-	if Player:IsCasting() or Player:IsChanneling() then
-	    ShouldStop = true
-	else
-	    ShouldStop = false
-	end
+    AppliedFlameShock = MultiUnits:GetByRangeAppliedDoTs(40, 10, 188389) --MultiDots(40, S.FlameShockDebuff, 15, 4) --MultiUnits:GetByRangeMissedDoTs(40, 10, 188389)  MultiUnits:GetByRangeMissedDoTs(range, stop, dots, ttd)
+	print(AppliedFlameShock)
 	
     -- Handle all generics trinkets	
 	local function GeneralTrinkets()
@@ -408,7 +405,7 @@ local function APL()
         -- flame_shock,target_if=refreshable&(spell_targets.chain_lightning<(5-!talent.totem_mastery.enabled)|!talent.storm_elemental.enabled&(cooldown.fire_elemental.remains>(120+14*spell_haste)|cooldown.fire_elemental.remains<(24-14*spell_haste)))&(!talent.storm_elemental.enabled|cooldown.storm_elemental.remains<120|spell_targets.chain_lightning=3&buff.wind_gust.stack<14)
         if S.FlameShock:IsCastableP() and not ShouldStop and EvaluateCycleFlameShock47(Target) then
             if HR.Cast(S.FlameShock) then return "flame_shock 69" end
-        end
+        end 	  		
         -- ascendance,if=talent.ascendance.enabled&(talent.storm_elemental.enabled&cooldown.storm_elemental.remains<120&cooldown.storm_elemental.remains>15|!talent.storm_elemental.enabled)&(!talent.icefury.enabled|!buff.icefury.up&!cooldown.icefury.up)
         if S.Ascendance:IsCastableP() and not ShouldStop and HR.CDsON() and (S.Ascendance:IsAvailable() and (S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 120 and S.StormElemental:CooldownRemainsP() > 15 or not S.StormElemental:IsAvailable()) and (not S.Icefury:IsAvailable() or not Player:BuffP(S.IcefuryBuff) and not S.Icefury:CooldownUpP())) then
             if HR.Cast(S.Ascendance, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ascendance 70"; end
@@ -705,10 +702,6 @@ local function APL()
         end
     end
     
-    -- Protect against interrupt of channeled spells
-    if Player:IsCasting() and Player:CastRemains() >= ((select(4, GetNetStats()) / 1000 * 2) + 0.05) or Player:IsChanneling() or ShouldStop then
-        if HR.Cast(S.Channeling) then return "" end
-    end  
 	-- call DBM precombat
    --if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
     --    local ShouldReturn = Precombat_DBM(); 
@@ -764,7 +757,7 @@ local function APL()
             if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 577"; end
         end
         -- totem_mastery,if=talent.totem_mastery.enabled&buff.resonance_totem.remains<2
-        if S.TotemMastery:IsReadyP() and not ShouldStop and (S.TotemMastery:IsAvailable() and not Player:BuffP(S.ResonanceTotemBuff)) then
+        if S.TotemMastery:IsReadyP() and not ShouldStop and ResonanceTotemTime() < 6 and (S.TotemMastery:IsAvailable() and not Player:BuffP(S.ResonanceTotemBuff)) then
             if HR.Cast(S.TotemMastery) then return "totem_mastery 585"; end
         end
         -- use_items
@@ -829,6 +822,11 @@ local function APL()
         if S.AncestralCall:IsCastableP() and not ShouldStop and HR.CDsON() and (not S.Ascendance:IsAvailable() or Player:BuffP(S.AscendanceBuff) or S.Ascendance:CooldownRemainsP() > 50) then
             if HR.Cast(S.AncestralCall, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ancestral_call 633"; end
         end
+			  
+	    if not Player:PrevGCDP(1, S.TargetEnemy) and Action.GetToggle(2, "AutoDot") and AppliedFlameShock < EnemiesCount and EnemiesCount > 1 and EnemiesCount <= 7 and Target:DebuffRemainsP(S.FlameShockDebuff) >+ 15 then
+            if HR.Cast(S.TargetEnemy) then return "TargetEnemy 69" end
+        end		
+		
         -- run_action_list,name=aoe,if=active_enemies>2&(spell_targets.chain_lightning>2|spell_targets.lava_beam>2)
         if (EnemiesCount > 2) then
             local ShouldReturn = Aoe(); if ShouldReturn then return ShouldReturn; end
