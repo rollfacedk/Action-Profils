@@ -114,15 +114,31 @@ A.Data.ProfileUI = {
                 },
             },			
             { -- [3] 3rd Row 
+	            {
+                    E = "Checkbox", 
+                    DB = "UseDispersion",
+                    DBV = true,
+                    L = { 
+                        enUS = "Auto use Dispersion",
+                        ruRU = "Auto use Слияние с Тьмой",
+                        frFR = "Utiliser automatiquement Dispersion",
+                    }, 
+                    TT = { 
+                        enUS = "Recommand Dispersion usage depending of current player HP.", 
+                        ruRU = "Recommand Dispersion usage depending of current player HP.", 
+                        frFR = "Recommand Dispersion usage depending of current player HP.", 
+                    }, 
+                    M = {},
+                }, 
                 {
                     E = "Slider",                                                     
                     MIN = -1, 
                     MAX = 100,                            
-                    DB = "UnendingResolve",
+                    DB = "DispersionHP",
                     DBV = 30, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(193316) .. " Leech HP (%)",
+                        ANY = A.GetSpellInfo(47585) .. " HP (%)",
                     }, 
                     M = {},
                 },
@@ -141,33 +157,6 @@ A.Data.ProfileUI = {
                     },
                 },
             },
-            { -- [4] 4th Row
-                {
-                    E = "Dropdown",                                                         
-                    OT = {
-                        { text = A.GetSpellInfo(688), value = "IMP" },
-                        { text = A.GetSpellInfo(697), value = "VOIDWALKER" },                    
-                        { text = A.GetSpellInfo(691), value = "FELHUNTER" },
-                        { text = A.GetSpellInfo(712), value = "SUCCUBUS" },
-                    },
-                    DB = "PetChoice",
-                    DBV = "IMP",
-                    L = { 
-                        enUS = "Pet selection", 
-                        ruRU = "Выбор питомца", 
-                        frFR = "Sélection du familier",
-                    }, 
-                    TT = { 
-                        enUS = "Choose the pet to summon", 
-                        ruRU = "Выберите питомца для призыва", 
-                        frFR = "Choisir le familier à invoquer",
-					},
-                    M = {},
-                },
-                {
-                    E = "LayoutSpace",                                                                         
-                },
-            }, 
             { -- [7]
                 {
                     E = "Header",
@@ -184,10 +173,10 @@ A.Data.ProfileUI = {
                         { text = "ON COOLDOWN", value = "ON COOLDOWN" },                    
                         { text = "OFF", value = "OFF" },
                     },
-                    DB = "FearPvP",
+                    DB = "SilencePvP",
                     DBV = "ON MELEE BURST",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(5782),
+                        ANY = "PvP " .. A.GetSpellInfo(15487),
                     }, 
                     TT = { 
                         enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
@@ -204,7 +193,7 @@ A.Data.ProfileUI = {
                         { text = "primary", value = 4 },
                     },
                     MULT = true,
-                    DB = "FearPvPUnits",
+                    DB = "SilencePvPUnits",
                     DBV = {
                         [1] = true, 
                         [2] = true,
@@ -212,7 +201,7 @@ A.Data.ProfileUI = {
                         [4] = true,
                     }, 
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(5782) .. " units",
+                        ANY = "PvP " .. A.GetSpellInfo(15487) .. " units",
                     }, 
                     TT = { 
                         enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 

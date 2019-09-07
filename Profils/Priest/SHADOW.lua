@@ -56,6 +56,7 @@ Action[ACTION_CONST_PRIEST_SHADOW] = {
     Silence                               = Action.Create({ Type = "Spell", ID = 15487     }),
     ChorusofInsanity                      = Action.Create({ Type = "Spell", ID = 278661     }),
     -- Defensive
+    Dispersion                            = Action.Create({ Type = "Spell", ID = 47585     }),	
     -- Misc
     Channeling                           = Action.Create({ Type = "Spell", ID = 209274, Hidden = true     }),
     RecklessForceBuff                    = Action.Create({ Type = "Spell", ID = 302932, Hidden = true     }),
@@ -315,7 +316,7 @@ local function EvaluateCycleVampiricTouch150(Target)
 end
 
 local function EvaluateCycleMindSear169(Target)
-  return EnemiesCount > 1
+  return EnemiesCount > 3
 end
 
 local function InsanityDrain()
@@ -626,7 +627,7 @@ local function APL()
     -- Protect against interrupt of channeled spells
     --if Player:IsCasting() and Player:CastRemains() >= ((select(4, GetNetStats()) / 1000 * 2) + 0.05) or Player:IsChanneling() or ShouldStop then
     --    if HR.Cast(S.Channeling) then return "" end
-    end  
+    --end  
 	-- call DBM precombat
     --if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
     --    local ShouldReturn = Precombat_DBM(); 
@@ -656,7 +657,11 @@ local function APL()
                 return
             end 
         end    
-
+		
+		-- Dispersion if activated
+		if S.Dispersion:IsCastableP() and Player:HealthPercentage() <= Action.GetToggle(2, "DispersionHP") and Action.GetToggle(2, "UseDispersion") then
+		    if HR.Cast(S.Dispersion, true) then return "Dispersion 5"; end
+		end
         -- potion,if=buff.bloodlust.react|target.time_to_die<=80|target.health.pct<35
         if I.PotionofUnbridledFury:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") and (Player:HasHeroism() or Target:TimeToDie() <= 80 or Target:HealthPercentage() < 35) then
             if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 283"; end
