@@ -368,10 +368,7 @@ local function APL()
         -- augmentation
         -- snapshot_stats
 		if Everyone.TargetIsValid() then
-            -- potion
-            if I.PotionofUnbridledFury:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") then
-                if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 4"; end
-            end
+
             -- variable,name=mind_blast_targets,op=set,value=floor((4.5+azerite.whispers_of_the_damned.rank)%(1+0.27*azerite.searing_dialogue.rank))
             VarMindBlastTargets = math.floor ((4.5 + S.WhispersoftheDamned:AzeriteRank()) / (1 + 0.27 * S.SearingDialogue:AzeriteRank()))
             -- variable,name=swp_trait_ranks_check,op=set,value=(1-0.07*azerite.death_throes.rank+0.2*azerite.thought_harvester.rank)*(1-0.09*azerite.thought_harvester.rank*azerite.searing_dialogue.rank)
@@ -388,9 +385,14 @@ local function APL()
             if S.Shadowform:IsCastableP() and not ShouldStop and Player:BuffDownP(S.ShadowformBuff) and (not Player:BuffP(S.ShadowformBuff)) then
                 if HR.Cast(S.Shadowform, Action.GetToggle(2, "GCDasOffGCD")) then return "shadowform 44"; end
             end
+
             -- use_item,name=azsharas_font_of_power
-            if I.AzsharasFontofPower:IsEquipReady() and TrinketON() and Pull > 0.1 and Pull <= S.MindBlast:CastTime() + 5 then
+            if I.AzsharasFontofPower:IsEquipReady() and TrinketON() and Pull > 0.1 and ((not S.ShadowWordVoid:IsAvailable() and Pull <= S.MindBlast:CastTime() + 5) or (S.ShadowWordVoid:IsAvailable() and Pull <= S.ShadowWordVoid:CastTime() + 5)) then
                 if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 50"; end
+            end
+			-- potion
+            if I.PotionofUnbridledFury:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") and Pull > 0.1 and ((not S.ShadowWordVoid:IsAvailable() and Pull <= S.MindBlast:CastTime() + 1) or (S.ShadowWordVoid:IsAvailable() and Pull <= S.ShadowWordVoid:CastTime() + 1)) then
+                if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 4"; end
             end
             -- mind_blast,if=spell_targets.mind_sear<2|azerite.thought_harvester.rank=0
             if S.MindBlast:IsReadyP() and not S.ShadowWordVoid:IsAvailable() and not ShouldStop and (EnemiesCount < 2 or S.ThoughtHarvester:AzeriteRank() == 0) and not Player:IsCasting(S.MindBlast) and Pull > 0.1 and Pull <= S.MindBlast:CastTime() then
