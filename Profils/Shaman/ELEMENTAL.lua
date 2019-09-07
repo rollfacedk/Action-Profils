@@ -470,7 +470,7 @@ local function APL()
             if HR.Cast(S.FlameShock) then return "flame_shock 69" end
         end 	  		
         -- ascendance,if=talent.ascendance.enabled&(talent.storm_elemental.enabled&cooldown.storm_elemental.remains<120&cooldown.storm_elemental.remains>15|!talent.storm_elemental.enabled)&(!talent.icefury.enabled|!buff.icefury.up&!cooldown.icefury.up)
-        if S.Ascendance:IsCastableP() and not ShouldStop and HR.CDsON() and (S.Ascendance:IsAvailable() and (S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 120 and S.StormElemental:CooldownRemainsP() > 15 or not S.StormElemental:IsAvailable()) and (not S.Icefury:IsAvailable() or not Player:BuffP(S.IcefuryBuff) and not S.Icefury:CooldownUpP())) then
+        if S.Ascendance:IsCastableP() and not ShouldStop and HR.CDsON() and S.Ascendance:IsAvailable() and (S.StormElemental:IsAvailable() and S.StormElemental:CooldownRemainsP() < 120 and S.StormElemental:CooldownRemainsP() > 15 or not S.StormElemental:IsAvailable()) and (not S.Icefury:IsAvailable() or not Player:BuffP(S.IcefuryBuff) and not S.Icefury:CooldownUpP()) then
             if HR.Cast(S.Ascendance, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ascendance 70"; end
         end
         -- liquid_magma_totem,if=talent.liquid_magma_totem.enabled
@@ -889,11 +889,10 @@ local function APL()
         if S.AncestralCall:IsCastableP() and not ShouldStop and HR.CDsON() and (not S.Ascendance:IsAvailable() or Player:BuffP(S.AscendanceBuff) or S.Ascendance:CooldownRemainsP() > 50) then
             if HR.Cast(S.AncestralCall, Action.GetToggle(2, "OffGCDasOffGCD")) then return "ancestral_call 633"; end
         end
-			  
-	    if not Player:PrevGCDP(1, S.TargetEnemy) and Action.GetToggle(2, "AutoDot") and AppliedFlameShock < EnemiesCount and EnemiesCount > 1 and EnemiesCount <= 7 and Target:DebuffRemainsP(S.FlameShockDebuff) >+ 15 then
+		-- Auto Multi Dot	  
+	    if not Player:PrevGCDP(1, S.TargetEnemy) and Action.GetToggle(2, "AutoDot") and AppliedFlameShock < EnemiesCount and EnemiesCount > 1 and EnemiesCount <= 7 and Target:DebuffRemainsP(S.FlameShockDebuff) > 15 then
             if HR.Cast(S.TargetEnemy) then return "TargetEnemy 69" end
-        end		
-		
+        end			
         -- run_action_list,name=aoe,if=active_enemies>2&(spell_targets.chain_lightning>2|spell_targets.lava_beam>2)
         if (EnemiesCount > 2) then
             local ShouldReturn = Aoe(); if ShouldReturn then return ShouldReturn; end
