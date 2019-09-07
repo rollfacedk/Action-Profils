@@ -495,7 +495,7 @@ local function APL()
             if HR.CastSuggested(I.PotionofUnbridledFury) then return "potion_of_unbridled_fury 55"; end
         end
         -- guardian_of_azeroth
-        if S.GuardianofAzeroth:IsCastableP() and not ShouldStop then
+        if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth 61"; end
         end
         -- feral_spirit
@@ -558,15 +558,15 @@ local function APL()
             if HR.Cast(S.Sundering, Action.GetToggle(2, "OffGCDasOffGCD")) then return "sundering 178"; end
         end
         -- focused_azerite_beam,if=raid_event.adds.in>90&!buff.ascendance.up&!buff.molten_weapon.up&!buff.icy_edge.up&!buff.crackling_surge.up&!debuff.earthen_spike.up
-        if S.FocusedAzeriteBeam:IsCastableP() and not ShouldStop and (Player:BuffDownP(S.AscendanceBuff) and Player:BuffDownP(S.MoltenWeaponBuff) and Player:BuffDownP(S.IcyEdgeBuff) and Player:BuffDownP(S.CracklingSurgeBuff) and not Target:DebuffP(S.EarthenSpikeDebuff)) then
+        if S.FocusedAzeriteBeam:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and (Player:BuffDownP(S.AscendanceBuff) and Player:BuffDownP(S.MoltenWeaponBuff) and Player:BuffDownP(S.IcyEdgeBuff) and Player:BuffDownP(S.CracklingSurgeBuff) and not Target:DebuffP(S.EarthenSpikeDebuff)) then
             if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam 188"; end
         end
         -- purifying_blast,if=raid_event.adds.in>60
-        if S.PurifyingBlast:IsCastableP() and not ShouldStop then
+        if S.PurifyingBlast:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.PurifyingBlast) then return "purifying_blast 200"; end
         end
         -- ripple_in_space,if=raid_event.adds.in>60
-        if S.RippleInSpace:IsCastableP() and not ShouldStop then
+        if S.RippleInSpace:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.RippleInSpace) then return "ripple_in_space 202"; end
         end
         -- thundercharge
@@ -574,7 +574,7 @@ local function APL()
             if HR.Cast(S.Thundercharge) then return "thundercharge 204"; end
         end
         -- concentrated_flame
-        if S.ConcentratedFlame:IsCastableP() and not ShouldStop then
+        if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame 206"; end
         end
         -- crash_lightning,if=talent.forceful_winds.enabled&active_enemies>1&variable.furyCheck_CL
@@ -606,7 +606,7 @@ local function APL()
             if HR.Cast(S.LavaLash) then return "lava_lash 260"; end
         end
         -- memory_of_lucid_dreams
-        if S.MemoryofLucidDreams:IsCastableP() and not ShouldStop then
+        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams 63"; end
         end
         -- rockbiter
@@ -622,7 +622,7 @@ local function APL()
             if HR.Cast(S.Flametongue) then return "flametongue 276"; end
         end
         -- worldvein_resonance,if=buff.lifeblood.stack<4
-        if S.WorldveinResonance:IsCastableP() and not ShouldStop and (Player:BuffStackP(S.LifebloodBuff) < 4) then
+        if S.WorldveinResonance:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and (Player:BuffStackP(S.LifebloodBuff) < 4) then
             if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance 208"; end
         end
     end
@@ -708,15 +708,15 @@ local function APL()
             if HR.Cast(S.Sundering, Action.GetToggle(2, "OffGCDasOffGCD")) then return "sundering 464"; end
         end
         -- focused_azerite_beam,if=active_enemies>1
-        if S.FocusedAzeriteBeam:IsCastableP() and not ShouldStop and (Cache.EnemiesCount[8] > 1) then
+        if S.FocusedAzeriteBeam:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and (Cache.EnemiesCount[8] > 1) then
             if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam 478"; end
         end
         -- purifying_blast,if=active_enemies>1
-        if S.PurifyingBlast:IsCastableP() and not ShouldStop and (Cache.EnemiesCount[8] > 1) then
+        if S.PurifyingBlast:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and (Cache.EnemiesCount[8] > 1) then
             if HR.Cast(S.PurifyingBlast) then return "purifying_blast 486"; end
         end
         -- ripple_in_space,if=active_enemies>1
-        if S.RippleInSpace:IsCastableP() and not ShouldStop and (Cache.EnemiesCount[8] > 1) then
+        if S.RippleInSpace:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop and (Cache.EnemiesCount[8] > 1) then
             if HR.Cast(S.RippleInSpace) then return "ripple_in_space 494"; end
         end
         -- rockbiter,if=talent.landslide.enabled&!buff.landslide.up&charges_fractional>1.7

@@ -940,39 +940,39 @@ local function APL()
         end
         -- earth_elemental,if=!talent.primal_elementalist.enabled|talent.primal_elementalist.enabled&(cooldown.fire_elemental.remains<120&!talent.storm_elemental.enabled|cooldown.storm_elemental.remains<120&talent.storm_elemental.enabled)
         -- concentrated_flame
-        if S.ConcentratedFlame:IsCastableP() and not ShouldStop then
+        if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.ConcentratedFlame) then return "concentrated_flame"; end
         end
         -- blood_of_the_enemy
-        if S.BloodoftheEnemy:IsCastableP() and not ShouldStop then
+        if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.CasT(S.BloodoftheEnemy) then return "blood_of_the_enemy"; end
         end
         -- guardian_of_azeroth
-        if S.GuardianofAzeroth:IsCastableP() and not ShouldStop then
+        if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth"; end
         end
         -- focused_azerite_beam
-        if S.FocusedAzeriteBeam:IsCastableP() and not ShouldStop then
+        if S.FocusedAzeriteBeam:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam"; end
         end
         -- purifying_blast
-        if S.PurifyingBlast:IsCastableP() and not ShouldStop then
+        if S.PurifyingBlast:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.PurifyingBlast) then return "purifying_blast"; end
         end
         -- the_unbound_force
-        if S.TheUnboundForce:IsCastableP() and not ShouldStop then
+        if S.TheUnboundForce:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.TheUnboundForce) then return "the_unbound_force"; end
         end
         -- memory_of_lucid_dreams
-        if S.MemoryofLucidDreams:IsCastableP() and not ShouldStop then
+        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams"; end
         end
         -- ripple_in_space
-        if S.RippleInSpace:IsCastableP() and not ShouldStop then
+        if S.RippleInSpace:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.RippleInSpace) then return "ripple_in_space"; end
         end
         -- worldvein_resonance
-        if S.WorldveinResonance:IsCastableP() and not ShouldStop then
+        if S.WorldveinResonance:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and not ShouldStop then
             if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance"; end
         end
         -- blood_fury,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
