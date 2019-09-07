@@ -360,7 +360,48 @@ local function APL()
 		if trinketReady(2) then
             if HR.Cast(I.GenericTrinket2) then return "GenericTrinket2"; end
         end
-    end    
+    end  
+
+    local function Precombat_DBM()
+        -- flask
+        -- food
+        -- augmentation
+        -- snapshot_stats
+		if Everyone.TargetIsValid() then
+            -- potion
+            if I.PotionofUnbridledFury:IsReady() and not ShouldStop and Action.GetToggle(1, "Potion") then
+                if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 4"; end
+            end
+            -- variable,name=mind_blast_targets,op=set,value=floor((4.5+azerite.whispers_of_the_damned.rank)%(1+0.27*azerite.searing_dialogue.rank))
+            VarMindBlastTargets = math.floor ((4.5 + S.WhispersoftheDamned:AzeriteRank()) / (1 + 0.27 * S.SearingDialogue:AzeriteRank()))
+            -- variable,name=swp_trait_ranks_check,op=set,value=(1-0.07*azerite.death_throes.rank+0.2*azerite.thought_harvester.rank)*(1-0.09*azerite.thought_harvester.rank*azerite.searing_dialogue.rank)
+            VarSwpTraitRanksCheck = (1 - 0.07 * S.DeathThroes:AzeriteRank() + 0.2 * S.ThoughtHarvester:AzeriteRank()) * (1 - 0.09 * S.ThoughtHarvester:AzeriteRank() * S.SearingDialogue:AzeriteRank())
+            -- variable,name=vt_trait_ranks_check,op=set,value=(1-0.04*azerite.thought_harvester.rank-0.05*azerite.spiteful_apparitions.rank)
+            VarVtTraitRanksCheck = (1 - 0.04 * S.ThoughtHarvester:AzeriteRank() - 0.05 * S.SpitefulApparitions:AzeriteRank())
+            -- variable,name=vt_mis_trait_ranks_check,op=set,value=(1-0.07*azerite.death_throes.rank-0.03*azerite.thought_harvester.rank-0.055*azerite.spiteful_apparitions.rank)*(1-0.027*azerite.thought_harvester.rank*azerite.searing_dialogue.rank)
+            VarVtMisTraitRanksCheck = (1 - 0.07 * S.DeathThroes:AzeriteRank() - 0.03 * S.ThoughtHarvester:AzeriteRank() - 0.055 * S.SpitefulApparitions:AzeriteRank()) * (1 - 0.027 * S.ThoughtHarvester:AzeriteRank() * S.SearingDialogue:AzeriteRank())
+            -- variable,name=vt_mis_sd_check,op=set,value=1-0.014*azerite.searing_dialogue.rank
+            VarVtMisSdCheck = 1 - 0.014 * S.SearingDialogue:AzeriteRank()
+            -- Mindbender management
+            S.Mindbender = S.MindbenderTalent:IsAvailable() and S.MindbenderTalent or S.Shadowfiend
+            -- shadowform,if=!buff.shadowform.up
+            if S.Shadowform:IsCastableP() and not ShouldStop and Player:BuffDownP(S.ShadowformBuff) and (not Player:BuffP(S.ShadowformBuff)) then
+                if HR.Cast(S.Shadowform, Action.GetToggle(2, "GCDasOffGCD")) then return "shadowform 44"; end
+            end
+            -- use_item,name=azsharas_font_of_power
+            if I.AzsharasFontofPower:IsEquipReady() and TrinketON() and Pull > 0.1 and Pull <= S.MindBlast:CastTime() + 5 then
+                if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 50"; end
+            end
+            -- mind_blast,if=spell_targets.mind_sear<2|azerite.thought_harvester.rank=0
+            if S.MindBlast:IsReadyP() and not S.ShadowWordVoid:IsAvailable() and not ShouldStop and (EnemiesCount < 2 or S.ThoughtHarvester:AzeriteRank() == 0) and not Player:IsCasting(S.MindBlast) and Pull > 0.1 and Pull <= S.MindBlast:CastTime() then
+                if HR.Cast(S.MindBlast) then return "mind_blast 54"; end
+            end
+            -- shadow_word_void (added)
+            if S.ShadowWordVoid:IsReadyP() and S.ShadowWordVoid:IsAvailable() and not ShouldStop and (EnemiesCount < 2 or S.ThoughtHarvester:AzeriteRank() == 0) and not Player:IsCasting(S.ShadowWordVoid) and Pull > 0.1 and Pull <= S.ShadowWordVoid:CastTime() then
+                if HR.Cast(S.ShadowWordVoid) then return "shadow_word_void added 54"; end
+            end
+		end
+    end	
 
     local function Precombat()
         -- flask
@@ -624,16 +665,12 @@ local function APL()
         end
     end
     
-    -- Protect against interrupt of channeled spells
-    --if Player:IsCasting() and Player:CastRemains() >= ((select(4, GetNetStats()) / 1000 * 2) + 0.05) or Player:IsChanneling() or ShouldStop then
-    --    if HR.Cast(S.Channeling) then return "" end
-    --end  
 	-- call DBM precombat
-    --if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
-    --    local ShouldReturn = Precombat_DBM(); 
-    --        if ShouldReturn then return ShouldReturn; 
-    --    end    
-    --end
+    if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
+        local ShouldReturn = Precombat_DBM(); 
+            if ShouldReturn then return ShouldReturn; 
+        end    
+    end
     -- call non DBM precombat
     if not Player:AffectingCombat() and not Action.GetToggle(1, "DBM") and not Player:IsCasting() then        
         local ShouldReturn = Precombat(); 
