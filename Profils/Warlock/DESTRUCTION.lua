@@ -7,7 +7,7 @@ local CNDT = TMW.CNDT
 local Env = CNDT.Env
 local Action = Action
 
-Action[ACTION_CONST_WARLOCK_AFFLICTION] = {
+Action[ACTION_CONST_WARLOCK_DESTRUCTION] = {
     -- Racial
     ArcaneTorrent                        = Action.Create({ Type = "Spell", ID = 50613     }),
     BloodFury                            = Action.Create({ Type = "Spell", ID = 20572      }),
@@ -49,6 +49,20 @@ Action[ACTION_CONST_WARLOCK_AFFLICTION] = {
     CrashingChaos                         = Action.Create({ Type = "Spell", ID = 277644     }),
     Eradication                           = Action.Create({ Type = "Spell", ID = 196412     }),  
     ConcentratedFlameBurn                 = Action.Create({ Type = "Spell", ID = 295368     }),
+	-- Colorized Spell
+    IncinerateAuto			              = Action.Create({ Type = "Spell", ID = 29722 , Hidden = true     }),
+    IncinerateOrange 		              = Action.Create({ Type = "Spell", ID = 40239 , Hidden = true     }),
+    IncinerateGreen 	                  = Action.Create({ Type = "Spell", ID = 124472 , Hidden = true     }),
+    ImmolateAuto 		                 = Action.Create({ Type = "Spell", ID = 348  , Hidden = true     }),
+    ImmolateOrange 		                 = Action.Create({ Type = "Spell", ID = 118297 , Hidden = true     }),
+    ImmolateGreen 			             = Action.Create({ Type = "Spell", ID = 124470 , Hidden = true     }),
+    ImmolateDebuff 			             = Action.Create({ Type = "Spell", ID = 157736, Hidden = true     }),
+    ConflagrateAuto			             = Action.Create({ Type = "Spell", ID = 17962 , Hidden = true     }),
+    ConflagrateOrange 		             = Action.Create({ Type = "Spell", ID = 156960 , Hidden = true     }),
+    ConflagrateGreen 		             = Action.Create({ Type = "Spell", ID = 124480 , Hidden = true     }),
+    RainOfFireAuto 		              	 = Action.Create({ Type = "Spell", ID = 5740 , Hidden = true     }),
+    RainOfFireOrange 	              	 = Action.Create({ Type = "Spell", ID = 42023 , Hidden = true     }),
+    RainOfFireGreen 	              	 = Action.Create({ Type = "Spell", ID = 173561, Hidden = true     }),
     -- Defensive
     UnendingResolve                      = Action.Create({ Type = "Spell", ID = 104773     }),
     -- Misc
@@ -120,12 +134,12 @@ Action[ACTION_CONST_WARLOCK_AFFLICTION] = {
 }
 
 -- To create essences use next code:
-Action:CreateEssencesFor(ACTION_CONST_WARLOCK_AFFLICTION)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
+Action:CreateEssencesFor(ACTION_CONST_WARLOCK_DESTRUCTION)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 
 -- This code making shorter access to both tables Action[PLAYERSPEC] and Action
 -- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady(), it doesn't make any conflict if you will skip shorter access
 -- So with shorter access you can just do Action.Guard:IsReady() instead of Action[PLAYERSPEC].Guard:IsReady()
-local A = setmetatable(Action[ACTION_CONST_WARLOCK_AFFLICTION], { __index = Action })
+local A = setmetatable(Action[ACTION_CONST_WARLOCK_DESTRUCTION], { __index = Action })
 
 local GetSpellCount = 
 GetSpellCount
@@ -201,6 +215,25 @@ local function HandlePetChoice()
         print("No Pet Data")
     end
     return choice
+end
+
+local function HandleSettings()
+    if Action.GetToggle(2, "SpellType") == "Auto" then --auto
+        CastIncinerate = S.IncinerateAuto
+        CastImmolate = S.ImmolateAuto
+        CastConflagrate = S.ConflagrateAuto
+        CastRainOfFire = S.RainOfFireAuto
+    elseif Action.GetToggle(2, "SpellType") == "Green" then --green
+        CastIncinerate = S.IncinerateGreen
+        CastImmolate = S.ImmolateGreen
+        CastConflagrate = S.ConflagrateGreen
+        CastRainOfFire = S.RainOfFireGreen
+    else --orange
+        CastIncinerate = S.IncinerateOrange
+        CastImmolate = S.ImmolateOrange
+        CastConflagrate = S.ConflagrateOrange
+        CastRainOfFire = S.RainOfFireOrange
+    end
 end
 
 -- AoE Detection Mode
@@ -466,7 +499,7 @@ local function APL()
     InfernalRemains = InfernalActive and (30 - (180 - S.SummonInfernal:CooldownRemainsP())) or 0
     DetermineEssenceRanks()
     HandlePetChoice()
-
+    HandleSettings()
 	
 	if Player:IsCasting() or Player:IsChanneling() then
 	    ShouldStop = true
@@ -507,8 +540,8 @@ local function APL()
         -- food
         -- augmentation
         -- summon_pet
-        if S.SummonPet:IsCastableP() and not Pet:Exists() then
-            if HR.Cast(S.SummonPet) then return "summon_pet 3"; end
+        if SummonPet:IsCastableP() and not Pet:Exists() then
+            if HR.Cast(SummonPet) then return "summon_pet 3"; end
         end
         -- grimoire_of_sacrifice,if=talent.grimoire_of_sacrifice.enabled
         if S.GrimoireofSacrifice:IsReadyP() then
@@ -518,7 +551,7 @@ local function APL()
         if Everyone.TargetIsValid() then
             -- potion
             if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
-                if HR.CastSuggested(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 10"; end
+                if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 10"; end
             end
             -- soul_fire
             if S.SoulFire:IsCastableP() then
@@ -526,14 +559,14 @@ local function APL()
             end
             -- incinerate,if=!talent.soul_fire.enabled
             if S.Incinerate:IsCastableP() and (not S.SoulFire:IsAvailable()) then
-                if HR.Cast(S.Incinerate) then return "incinerate 14"; end
+                if HR.Cast(CastIncinerate) then return "incinerate 14"; end
             end
         end
     end
     local function Aoe()
         -- rain_of_fire,if=pet.infernal.active&(buff.crashing_chaos.down|!talent.grimoire_of_supremacy.enabled)&(!cooldown.havoc.ready|active_enemies>3)
         if S.RainofFire:IsReadyP() and (InfernalActive and (Player:BuffDownP(S.CrashingChaosBuff) or not S.GrimoireofSupremacy:IsAvailable()) and (not S.Havoc:CooldownUpP() or EnemiesCount > 3)) then
-            if HR.Cast(S.RainofFire) then return "rain_of_fire 18"; end
+            if HR.Cast(CastRainOfFire) then return "rain_of_fire 18"; end
         end
         -- channel_demonfire,if=dot.immolate.remains>cast_time
         if S.ChannelDemonfire:IsCastableP() and (Target:DebuffRemainsP(S.ImmolateDebuff) > S.ChannelDemonfire:CastTime()) then
@@ -541,7 +574,7 @@ local function APL()
         end
         -- immolate,cycle_targets=1,if=remains<5&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>remains)
         if S.Immolate:IsCastableP() and EvaluateCycleImmolate46(Target) then
-            if HR.Cast(S.Immolate) then return "immolate 64" end
+            if HR.Cast(CastImmolate) then return "immolate 64" end
         end
         -- call_action_list,name=cds
         if HR.CDsON() then
@@ -557,7 +590,7 @@ local function APL()
         end
         -- rain_of_fire
         if S.RainofFire:IsReadyP() then
-            if HR.Cast(S.RainofFire) then return "rain_of_fire 96"; end
+            if HR.Cast(CastRainOfFire) then return "rain_of_fire 96"; end
         end
         -- focused_azerite_beam
         if S.FocusedAzeriteBeam:IsCastableP() then
@@ -573,7 +606,7 @@ local function APL()
         end
         -- incinerate,if=talent.fire_and_brimstone.enabled&buff.backdraft.up&soul_shard<5-0.2*active_enemies
         if S.Incinerate:IsCastableP() and (S.FireandBrimstone:IsAvailable() and Player:BuffP(S.BackdraftBuff) and Player:SoulShardsP() < 5 - 0.2 * EnemiesCount) then
-            if HR.Cast(S.Incinerate) then return "incinerate 121"; end
+            if HR.Cast(CastIncinerate) then return "incinerate 121"; end
         end
         -- soul_fire
         if S.SoulFire:IsCastableP() then
@@ -581,7 +614,7 @@ local function APL()
         end
         -- conflagrate,if=buff.backdraft.down
         if S.Conflagrate:IsCastableP() and (Player:BuffDownP(S.BackdraftBuff)) then
-            if HR.Cast(S.Conflagrate) then return "conflagrate 135"; end
+            if HR.Cast(CastConflagrate) then return "conflagrate 135"; end
         end
         -- shadowburn,if=!talent.fire_and_brimstone.enabled
         if S.Shadowburn:IsCastableP() and (not S.FireandBrimstone:IsAvailable()) then
@@ -593,17 +626,17 @@ local function APL()
         end
         -- incinerate
         if S.Incinerate:IsCastableP() then
-            if HR.Cast(S.Incinerate) then return "incinerate 157"; end
+            if HR.Cast(CastIncinerate) then return "incinerate 157"; end
         end
     end
     local function Cds()
         -- immolate,if=talent.grimoire_of_supremacy.enabled&remains<8&cooldown.summon_infernal.remains<4.5
         if S.Immolate:IsCastableP() and (S.GrimoireofSupremacy:IsAvailable() and Target:DebuffRemainsP(S.ImmolateDebuff) < 8 and S.SummonInfernal:CooldownRemainsP() < 4.5) then
-            if HR.Cast(S.Immolate) then return "immolate 161"; end
+            if HR.Cast(CastImmolate) then return "immolate 161"; end
         end
         -- conflagrate,if=talent.grimoire_of_supremacy.enabled&cooldown.summon_infernal.remains<4.5&!buff.backdraft.up&soul_shard<4.3
         if S.Conflagrate:IsCastableP() and (S.GrimoireofSupremacy:IsAvailable() and S.SummonInfernal:CooldownRemainsP() < 4.5 and Player:BuffDownP(S.BackdraftBuff) and Player:SoulShardsP() < 4.3) then
-            if HR.Cast(S.Conflagrate) then return "conflagrate 163"; end
+            if HR.Cast(CastConflagrate) then return "conflagrate 163"; end
         end
         -- use_item,name=azsharas_font_of_power,if=cooldown.summon_infernal.up|cooldown.summon_infernal.remains<=4
         if I.AzsharasFontofPower:IsEquipReady() and (S.SummonInfernal:CooldownUpP() or S.SummonInfernal:CooldownRemainsP() <= 4) then
@@ -722,7 +755,7 @@ local function APL()
     local function GoSupInfernal()
         -- rain_of_fire,if=soul_shard=5&!buff.backdraft.up&buff.memory_of_lucid_dreams.up&buff.grimoire_of_supremacy.stack<=10
         if S.RainofFire:IsReadyP() and (Player:SoulShardsP() == 5 and Player:BuffDownP(S.BackdraftBuff) and Player:BuffP(S.MemoryofLucidDreams) and Player:BuffStackP(S.GrimoireofSupremacy) <= 10) then
-            if HR.Cast(S.RainofFire) then return "rain_of_fire 600"; end
+            if HR.Cast(CastRainOfFire) then return "rain_of_fire 600"; end
         end
         -- chaos_bolt,if=buff.backdraft.up
         if S.ChaosBolt:IsReadyP() and (Player:BuffP(S.BackdraftBuff)) then
@@ -742,19 +775,19 @@ local function APL()
         end
         -- conflagrate,if=buff.backdraft.down&buff.memory_of_lucid_dreams.up&soul_shard>=1.3
         if S.Conflagrate:IsCastableP() and (Player:BuffDownP(S.BackdraftBuff) and Player:BuffP(S.MemoryofLucidDreams) and Player:SoulShardsP() >= 1.3) then
-            if HR.Cast(S.Conflagrate) then return "conflagrate 610"; end
+            if HR.Cast(CastConflagrate) then return "conflagrate 610"; end
         end
         -- conflagrate,if=buff.backdraft.down&!buff.memory_of_lucid_dreams.up&(soul_shard>=2.8|charges_fractional>1.9&soul_shard>=1.3)
         if S.Conflagrate:IsCastableP() and (Player:BuffDownP(S.BackdraftBuff) and Player:BuffDownP(S.MemoryofLucidDreams) and (Player:SoulShardsP() >= 2.8 or S.Conflagrate:ChargesFractionalP() > 1.9 and Player:SoulShardsP() >= 1.3)) then
-            if HR.Cast(S.Conflagrate) then return "conflagrate 612"; end
+            if HR.Cast(CastConflagrate) then return "conflagrate 612"; end
         end
         -- conflagrate,if=pet.infernal.remains<5
         if S.Conflagrate:IsCastableP() and (InfernalRemains < 5) then
-            if HR.Cast(S.Conflagrate) then return "conflagrate 614"; end
+            if HR.Cast(CastConflagrate) then return "conflagrate 614"; end
         end
         -- conflagrate,if=charges>1
         if S.Conflagrate:IsCastableP() and (S.Conflagrate:ChargesP() > 1) then
-            if HR.Cast(S.Conflagrate) then return "conflagrate 616"; end
+            if HR.Cast(CastConflagrate) then return "conflagrate 616"; end
         end
         -- soul_fire
         if S.SoulFire:IsCastableP() then
@@ -766,17 +799,17 @@ local function APL()
         end
         -- incinerate
         if S.Incinerate:IsCastableP() then
-            if HR.Cast(S.Incinerate) then return "incinerate 622"; end
+            if HR.Cast(CastIncinerate) then return "incinerate 622"; end
         end
     end
     local function Havoc()
         -- conflagrate,if=buff.backdraft.down&soul_shard>=1&soul_shard<=4
         if S.Conflagrate:IsCastableP() and (Player:BuffDownP(S.BackdraftBuff) and Player:SoulShardsP() >= 1 and Player:SoulShardsP() <= 4) then
-            if HR.Cast(S.Conflagrate) then return "conflagrate 254"; end
+            if HR.Cast(CastConflagrate) then return "conflagrate 254"; end
         end
         -- immolate,if=talent.internal_combustion.enabled&remains<duration*0.5|!talent.internal_combustion.enabled&refreshable
         if S.Immolate:IsCastableP() and (S.InternalCombustion:IsAvailable() and Target:DebuffRemainsP(S.ImmolateDebuff) < S.ImmolateDebuff:BaseDuration() * 0.5 or not S.InternalCombustion:IsAvailable() and Target:DebuffRefreshableCP(S.ImmolateDebuff)) then
-            if HR.Cast(S.Immolate) then return "immolate 258"; end
+            if HR.Cast(CastImmolate) then return "immolate 258"; end
         end
         -- chaos_bolt,if=cast_time<havoc_remains
         if S.ChaosBolt:IsReadyP() and (S.ChaosBolt:CastTime() < EnemyHasHavoc()) then
@@ -792,7 +825,7 @@ local function APL()
         end
         -- incinerate,if=cast_time<havoc_remains
         if S.Incinerate:IsCastableP() and (S.Incinerate:CastTime() < EnemyHasHavoc()) then
-            if HR.Cast(S.Incinerate) then return "incinerate 302"; end
+            if HR.Cast(CastIncinerate) then return "incinerate 302"; end
         end
     end
     
@@ -841,11 +874,11 @@ local function APL()
         end
         -- immolate,cycle_targets=1,if=refreshable&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>remains)
         if S.Immolate:IsCastableP() and EvaluateCycleImmolate337(Target) then
-            if HR.Cast(S.Immolate) then return "immolate 355" end
+            if HR.Cast(CastImmolate) then return "immolate 355" end
         end
         -- immolate,if=talent.internal_combustion.enabled&action.chaos_bolt.in_flight&remains<duration*0.5
         if S.Immolate:IsCastableP() and (S.InternalCombustion:IsAvailable() and S.ChaosBolt:InFlight() and Target:DebuffRemainsP(S.ImmolateDebuff) < S.ImmolateDebuff:BaseDuration() * 0.5) then
-            if HR.Cast(S.Immolate) then return "immolate 356"; end
+            if HR.Cast(CastImmolate) then return "immolate 356"; end
         end
         -- call_action_list,name=cds
         if (HR.CDsON()) then
@@ -889,7 +922,7 @@ local function APL()
         end
         -- conflagrate,if=buff.backdraft.down&soul_shard>=1.5-0.3*talent.flashover.enabled&!variable.pool_soul_shards
         if S.Conflagrate:IsCastableP() and (Player:BuffDownP(S.BackdraftBuff) and Player:SoulShardsP() >= 1.5 - 0.3 * num(S.Flashover:IsAvailable()) and not bool(VarPoolSoulShards)) then
-            if HR.Cast(S.Conflagrate) then return "conflagrate 425"; end
+            if HR.Cast(CastConflagrate) then return "conflagrate 425"; end
         end
         -- shadowburn,if=soul_shard<2&(!variable.pool_soul_shards|charges>1)
         if S.Shadowburn:IsCastableP() and (Player:SoulShardsP() < 2 and (not bool(VarPoolSoulShards) or S.Shadowburn:ChargesP() > 1)) then
@@ -913,11 +946,11 @@ local function APL()
         end
         -- conflagrate,if=charges>1
         if S.Conflagrate:IsCastableP() and (S.Conflagrate:ChargesP() > 1) then
-            if HR.Cast(S.Conflagrate) then return "conflagrate 515"; end
+            if HR.Cast(CastConflagrate) then return "conflagrate 515"; end
         end
         -- incinerate
         if S.Incinerate:IsCastableP() then
-            if HR.Cast(S.Incinerate) then return "incinerate 521"; end
+            if HR.Cast(CastIncinerate) then return "incinerate 521"; end
         end
         -- run_action_list,name=trinkets
         if (true) and not ShouldStop then

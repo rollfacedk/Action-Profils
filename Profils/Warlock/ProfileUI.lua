@@ -376,9 +376,24 @@ A.Data.ProfileUI = {
 					},
                     M = {},
                 },
+				-- Splash Data
                 {
-                    E = "LayoutSpace",                                                                         
-                },
+                    E = "Dropdown",                                                         
+                    OT = {
+                        { text = "Auto", value = "Auto" }, 
+                        { text = "Orange", value = "Orange" },                   
+                        { text = "Green", value = "Green" },
+                    },
+                    DB = "SpellType",
+                    DBV = "Auto",
+                    L = { 
+                        ANY = "Spell Color",
+                    }, 
+                    TT = { 
+                        ANY = "Choose your spells color style.",
+                    }, 
+                    M = {},
+                },	
             }, 
             { -- [7]
                 {

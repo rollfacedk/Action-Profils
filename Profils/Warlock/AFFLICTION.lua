@@ -587,12 +587,12 @@ local function APL()
     local function Precombat()
         -- flask
         -- food
-		if Everyone.TargetIsValid() then
-        -- augmentation
         -- summon_pet
         if SummonPet:IsCastableP() and not ShouldStop and not Pet:Exists() then
             if HR.Cast(SummonPet, true) then return "summon_pet 3"; end
         end
+	  if Everyone.TargetIsValid() then
+        -- augmentation
         -- grimoire_of_sacrifice,if=talent.grimoire_of_sacrifice.enabled
         if S.GrimoireofSacrifice:IsCastableP() and not ShouldStop and Player:BuffDownP(S.GrimoireofSacrificeBuff) and (S.GrimoireofSacrifice:IsAvailable()) then
             if HR.Cast(S.GrimoireofSacrifice, true) then return "grimoire_of_sacrifice 5"; end
@@ -616,7 +616,7 @@ local function APL()
         if S.ShadowBolt:IsCastableP() and not ShouldStop and (not S.Haunt:IsAvailable() and EnemiesCount < 3 and not I.AzsharasFontofPower:IsEquipped()) then
             if HR.Cast(S.ShadowBolt) then return "shadow_bolt 24"; end
         end
-        end
+      end
     end
     
     local function Cooldowns()
