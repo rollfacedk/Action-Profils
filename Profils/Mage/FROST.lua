@@ -615,7 +615,7 @@ local function APL()
         end
 
         if S.IceBarrier:IsReady() and not ShouldStop and not Player:Buff(S.IceBarrier) and  Player:HealthPercentage() <= Action.GetToggle(2, "IceBarrier") then
-            if HR.Cast(S.Gla) then return "IceBarrier 786"; end
+            if HR.Cast(S.IceBarrier) then return "IceBarrier 786"; end
         end
 	end
     
