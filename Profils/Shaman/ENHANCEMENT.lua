@@ -532,8 +532,8 @@ local function APL()
             if HR.Cast(S.EarthenSpike) then return "earthen_spike 111"; end
         end
         -- stormstrike,cycle_targets=1,if=active_enemies>1&azerite.lightning_conduit.enabled&!debuff.lightning_conduit.up&variable.furyCheck_SS
-        if S.Stormstrike:IsReadyP() and not ShouldStop then
-            if HR.CastCycle(S.Stormstrike, 8, EvaluateCycleStormstrike119) then return "stormstrike 133" end
+        if S.Stormstrike:IsReadyP() and EvaluateCycleStormstrike119(Target) and not ShouldStop then
+            if HR.Cast(S.Stormstrike) then return "stormstrike 133" end
         end
         -- stormstrike,if=buff.stormbringer.up|(active_enemies>1&buff.gathering_storms.up&variable.furyCheck_SS)
         if S.Stormstrike:IsReadyP() and not ShouldStop and (Player:BuffP(S.StormbringerBuff) or (Cache.EnemiesCount[8] > 1 and Player:BuffP(S.GatheringStormsBuff) and bool(VarFurycheckSs))) then
@@ -628,16 +628,16 @@ local function APL()
     end
     local function FreezerburnCore()
         -- lava_lash,target_if=max:debuff.primal_primer.stack,if=azerite.primal_primer.rank>=2&debuff.primal_primer.stack=10&variable.furyCheck_LL&variable.CLPool_LL
-        if S.LavaLash:IsReadyP() and not ShouldStop then
-            if HR.CastTargetIf(S.LavaLash, 8, "max", EvaluateTargetIfFilterLavaLash281, EvaluateTargetIfLavaLash296) then return "lava_lash 298" end
+        if S.LavaLash:IsReadyP() and EvaluateTargetIfFilterLavaLash281(Target) and EvaluateTargetIfLavaLash296(Target) and not ShouldStop then
+            if HR.Cast(S.LavaLash) then return "lava_lash 298" end
         end
         -- earthen_spike,if=variable.furyCheck_ES
         if S.EarthenSpike:IsReadyP() and not ShouldStop and (bool(VarFurycheckEs)) then
             if HR.Cast(S.EarthenSpike) then return "earthen_spike 299"; end
         end
         -- stormstrike,cycle_targets=1,if=active_enemies>1&azerite.lightning_conduit.enabled&!debuff.lightning_conduit.up&variable.furyCheck_SS
-        if S.Stormstrike:IsReadyP() and not ShouldStop then
-            if HR.CastCycle(S.Stormstrike, 8, EvaluateCycleStormstrike307) then return "stormstrike 321" end
+        if S.Stormstrike:IsReadyP() and EvaluateCycleStormstrike307(Target) and not ShouldStop then
+            if HR.Cast(S.Stormstrike) then return "stormstrike 321" end
         end
         -- stormstrike,if=buff.stormbringer.up|(active_enemies>1&buff.gathering_storms.up&variable.furyCheck_SS)
         if S.Stormstrike:IsReadyP() and not ShouldStop and (Player:BuffP(S.StormbringerBuff) or (Cache.EnemiesCount[8] > 1 and Player:BuffP(S.GatheringStormsBuff) and bool(VarFurycheckSs))) then
