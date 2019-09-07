@@ -496,11 +496,11 @@ A.Data.ProfileUI = {
                     E = "Slider",                                                     
                     MIN = -1, 
                     MAX = 100,                            
-                    DB = "BlazingBarrier",
+                    DB = "IceBarrier",
                     DBV = 99, -- Set healthpercentage @99% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(235313) .. " (%)",
+                        ANY = A.GetSpellInfo(11426) .. " (%)",
                     }, 
                     M = {},
                 },
