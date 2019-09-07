@@ -351,27 +351,6 @@ A.Data.ProfileUI = {
             },
             { -- [4] 4th Row
                 {
-                    E = "Dropdown",                                                         
-                    OT = {
-                        { text = "Main Icon", value = "MAINICON" },
-                        { text = "Suggested", value = "SUGGESTED" },                    
-                        { text = "Cooldown", value = "COOLDOWN" },
-                    },
-                    DB = "FelRushDisplay",
-                    DBV = "SUGGESTED",
-                    L = { 
-                        enUS = "Fel Rush Display Style", 
-                        ruRU = "Стиль отображения Скверны", 
-                        frFR = "Style d'affichage de Ruée Fulgurante",
-                    }, 
-                    TT = { 
-                        enUS = "Define which icon display style to use for Fel Rush.", 
-                        ruRU = "Определите, какой стиль отображения значков использовать для Рывок Скверны", 
-                        frFR = "Définit le style d'affichage des icônes à utiliser pour Ruée Fulgurante.",
-					},
-                    M = {},
-                },
-                {
                     E = "LayoutSpace",                                                                         
                 },
             }, 
