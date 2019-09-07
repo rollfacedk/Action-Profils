@@ -3,6 +3,19 @@ local CNDT = TMW.CNDT
 local Env = CNDT.Env
 local Action = Action
 
+local HL = HeroLib;
+local Cache = HeroCache;
+local Unit = HL.Unit;
+local Player = Unit.Player;
+local Pet = Unit.Pet;
+local Target = Unit.Target;
+local Arena = Unit.Arena;
+local Spell = HL.Spell;
+local Item = HL.Item;
+local next, pairs, type, print  = next, pairs, type, print
+local IsActionInRange, GetActionInfo, PetHasActionBar, GetPetActionsUsable, GetSpellInfo = IsActionInRange, GetActionInfo, PetHasActionBar, GetPetActionsUsable, GetSpellInfo
+local UnitIsPlayer, UnitExists, UnitGUID = UnitIsPlayer, UnitExists, UnitGUID
+
 -- AoE Status on Main Icon
 function Action.AoEToggleMode()
     Action.UseAoE = Action.GetToggle(2, "AoE")    
@@ -21,55 +34,64 @@ local currentClass = select(2, UnitClass("player"))
 
 if currentClass == "WARRIOR" then
     Action.Data.DefaultProfile[currentClass] = "[Taste]Action - Warrior"
-	Action.Print("Automatically loaded profile : [Taste]Action - Warrior")
+    Action.Print("Automatically loaded profile : [Taste]Action - Warrior")
 end
-	
+
 if currentClass == "WARLOCK" then
     Action.Data.DefaultProfile[currentClass] = "[Taste]Action - Warlock"
-	Action.Print("Automatically loaded profile : [Taste]Action - Warlock")
+    Action.Print("Automatically loaded profile : [Taste]Action - Warlock")
 end
 
 if currentClass == "ROGUE" then
     Action.Data.DefaultProfile[currentClass] = "[Taste]Action - Rogue"
-	Action.Print("Automatically loaded profile : [Taste]Action - Rogue")
+    Action.Print("Automatically loaded profile : [Taste]Action - Rogue")
 end
 
 if currentClass == "SHAMAN" then
     Action.Data.DefaultProfile[currentClass] = "[Taste]Action - Shaman"
-	Action.Print("Automatically loaded profile : [Taste]Action - Shaman")
+    Action.Print("Automatically loaded profile : [Taste]Action - Shaman")
 end
 
 if currentClass == "DEATHKNIGHT" then
     Action.Data.DefaultProfile[currentClass] = "[Taste]Action - Death Knight"
-	Action.Print("Automatically loaded profile : [Taste]Action - Death Knight")
+    Action.Print("Automatically loaded profile : [Taste]Action - Death Knight")
 end
 
 if currentClass == "PRIEST" then
     Action.Data.DefaultProfile[currentClass] = "[Taste]Action - Priest"
-	Action.Print("Automatically loaded profile : [Taste]Action - Priest")
+    Action.Print("Automatically loaded profile : [Taste]Action - Priest")
 end
 
 if currentClass == "PALADIN" then
     Action.Data.DefaultProfile[currentClass] = "[Taste]Action - Paladin"
-	Action.Print("Automatically loaded profile : [Taste]Action - Paladin")
+    Action.Print("Automatically loaded profile : [Taste]Action - Paladin")
 end
 
 if currentClass == "MAGE" then
     Action.Data.DefaultProfile[currentClass] = "[Taste]Action - Mage"
-	Action.Print("Automatically loaded profile : [Taste]Action - Mage")
+    Action.Print("Automatically loaded profile : [Taste]Action - Mage")
 end
 
 if currentClass == "HUNTER" then
     Action.Data.DefaultProfile[currentClass] = "[Taste]Action - Hunter"
-	Action.Print("Automatically loaded profile : [Taste]Action - Hunter")
+    Action.Print("Automatically loaded profile : [Taste]Action - Hunter")
 end
 
 if currentClass == "DRUID" then
     Action.Data.DefaultProfile[currentClass] = "[Taste]Action - Druid"
-	Action.Print("Automatically loaded profile : [Taste]Action - Druid")
+    Action.Print("Automatically loaded profile : [Taste]Action - Druid")
 end
 
 if currentClass == "DEMONHUNTER" then
     Action.Data.DefaultProfile[currentClass] = "[Taste]Action - Demon Hunter"
-	Action.Print("Automatically loaded profile : [Taste]Action - Demon Hunter")
+    Action.Print("Automatically loaded profile : [Taste]Action - Demon Hunter")
 end
+
+local movedTimer = 0
+function Unit:MovingFor()
+    if not self:IsMoving() then
+        movedTimer = GetTime()
+    end
+    return GetTime() - movedTimer
+end
+
