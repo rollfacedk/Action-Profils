@@ -1,0 +1,756 @@
+-----------------------------
+-- Taste TMW Action Rotation
+-----------------------------
+
+local TMW = TMW 
+local CNDT = TMW.CNDT 
+local Env = CNDT.Env
+local Action = Action
+local TeamCache = Action.TeamCache
+local EnemyTeam = Action.EnemyTeam
+local FriendlyTeam = Action.FriendlyTeam
+--local HealingEngine = Action.HealingEngine
+local LoC = Action.LossOfControl
+local ActionPlayer = Action.Player 
+local MultiUnits = Action.MultiUnits
+local UnitCooldown = Action.UnitCooldown
+local ActionUnit = Action.Unit 
+--local Pet = LibStub("PetLibrary")
+--local Azerite = LibStub("AzeriteTraits")
+local TR                                     = Action.TasteRotation
+
+Action[ACTION_CONST_DRUID_BALANCE] = {
+    -- Racial
+    ArcaneTorrent                         = Action.Create({ Type = "Spell", ID = 50613     }),
+    BloodFury                             = Action.Create({ Type = "Spell", ID = 20572      }),
+    Fireblood                             = Action.Create({ Type = "Spell", ID = 265221     }),
+    AncestralCall                         = Action.Create({ Type = "Spell", ID = 274738     }),
+    Berserking                            = Action.Create({ Type = "Spell", ID = 26297    }),
+    ArcanePulse                           = Action.Create({ Type = "Spell", ID = 260364    }),
+    QuakingPalm                           = Action.Create({ Type = "Spell", ID = 107079     }),
+    Haymaker                              = Action.Create({ Type = "Spell", ID = 287712     }), 
+    BullRush                              = Action.Create({ Type = "Spell", ID = 255654     }),    
+    WarStomp                              = Action.Create({ Type = "Spell", ID = 20549     }),
+    GiftofNaaru                           = Action.Create({ Type = "Spell", ID = 59544    }),
+    Shadowmeld                            = Action.Create({ Type = "Spell", ID = 58984    }), -- usable in Action Core 
+    Stoneform                             = Action.Create({ Type = "Spell", ID = 20594    }), 
+    WilloftheForsaken                     = Action.Create({ Type = "Spell", ID = 7744        }), -- not usable in APL but user can Queue it    
+    EscapeArtist                          = Action.Create({ Type = "Spell", ID = 20589    }), -- not usable in APL but user can Queue it
+    EveryManforHimself                    = Action.Create({ Type = "Spell", ID = 59752    }), -- not usable in APL but user can Queue it
+    PetKick                               = Action.Create({ Type = "Spell", ID = 47482, Color = "RED", Desc = "RED" }),  
+    -- Generics Spells 
+    StreakingStars                        = Action.Create({ Type = "Spell", ID = 272871     }),
+    ArcanicPulsar                         = Action.Create({ Type = "Spell", ID = 287773     }),
+    Starlord                              = Action.Create({ Type = "Spell", ID = 202345     }),
+    TwinMoons                             = Action.Create({ Type = "Spell", ID = 279620     }),
+    MoonkinForm                           = Action.Create({ Type = "Spell", ID = 24858     }),
+    SolarWrath                            = Action.Create({ Type = "Spell", ID = 190984     }),
+    LightsJudgment                        = Action.Create({ Type = "Spell", ID = 255647     }),
+    WarriorofElune                        = Action.Create({ Type = "Spell", ID = 202425     }),
+    Innervate                             = Action.Create({ Type = "Spell", ID = 29166     }),
+    LivelySpirit                          = Action.Create({ Type = "Spell", ID = 279642     }),
+    Incarnation                           = Action.Create({ Type = "Spell", ID = 102560     }),
+    CelestialAlignment                    = Action.Create({ Type = "Spell", ID = 194223     }),
+    StellarFlare                          = Action.Create({ Type = "Spell", ID = 202347     }),
+    FuryofElune                           = Action.Create({ Type = "Spell", ID = 202770     }),
+    ForceofNature                         = Action.Create({ Type = "Spell", ID = 205636     }),
+    Starfall                              = Action.Create({ Type = "Spell", ID = 191034     }),
+    Starsurge                             = Action.Create({ Type = "Spell", ID = 78674     }),
+    Sunfire                               = Action.Create({ Type = "Spell", ID = 93402     }),
+    Moonfire                              = Action.Create({ Type = "Spell", ID = 8921     }),
+    NewMoon                               = Action.Create({ Type = "Spell", ID = 274281     }),
+    HalfMoon                              = Action.Create({ Type = "Spell", ID = 274282     }),
+    FullMoon                              = Action.Create({ Type = "Spell", ID = 274283     }),
+    LunarStrike                           = Action.Create({ Type = "Spell", ID = 194153     }),
+    ShootingStars                         = Action.Create({ Type = "Spell", ID = 202342     }),
+    NaturesBalance                        = Action.Create({ Type = "Spell", ID = 202430     }),
+    Renewal                               = Action.Create({ Type = "Spell", ID = 108238     }),
+    SolarBeam                             = Action.Create({ Type = "Spell", ID = 78675     }),
+    CyclotronicBlast                      = Action.Create({ Type = "Spell", ID = 167672     }),
+    ConcentratedFlameBurn                 = Action.Create({ Type = "Spell", ID = 295368     }),
+    Thorns                                = Action.Create({ Type = "Spell", ID = 236696     }),
+	-- Utilities
+	Typhoon                               = Action.Create({ Type = "Spell", ID = 132469   }),
+	MightyBash                            = Action.Create({ Type = "Spell", ID = 5211   }),
+	Soothe                                = Action.Create({ Type = "Spell", ID = 2908   }),
+    -- Defensive
+	Barkskin                              = Action.Create({ Type = "Spell", ID = 22812   }),	
+    -- Buffs
+    ArcanicPulsarBuff                     = Action.Create({ Type = "Spell", ID = 287790     }),
+    StarlordBuff                          = Action.Create({ Type = "Spell", ID = 279709     }),
+    LivelySpiritBuff                      = Action.Create({ Type = "Spell", ID = 279646     }),	
+    LunarEmpowermentBuff                  = Action.Create({ Type = "Spell", ID = 164547     }),
+    SolarEmpowermentBuff                  = Action.Create({ Type = "Spell", ID = 164545     }),
+    WarriorofEluneBuff                    = Action.Create({ Type = "Spell", ID = 202425     }),	
+    AzsharasFontofPowerBuff               = Action.Create({ Type = "Spell", ID = 296962     }),
+    RecklessForceBuff                     = Action.Create({ Type = "Spell", ID = 302932     }),	
+    OwlkinFrenzyBuff                      = Action.Create({ Type = "Spell", ID = 157228     }),	
+	-- Debuffs 
+    SunfireDebuff                         = Action.Create({ Type = "Spell", ID = 164815     }),
+    MoonfireDebuff                        = Action.Create({ Type = "Spell", ID = 164812     }),
+    StellarFlareDebuff                    = Action.Create({ Type = "Spell", ID = 202347     }),
+    ShiverVenomDebuff                     = Action.Create({ Type = "Spell", ID = 301624     }),		
+    -- Misc
+    Revive				            		= Action.Create({ Type = "Spell", ID = 50769    }),
+    Rebirth				           		= Action.Create({ Type = "Spell", ID = 20484}),
+    RemoveCorruption						= Action.Create({ Type = "Spell", ID = 2782}),
+    BearForm                              = Action.Create({ Type = "Spell", ID = 5487   , Hidden = true}),
+    TravelForm                            = Action.Create({ Type = "Spell", ID = 783   , Hidden = true}),
+    CatFormBuff                           = Action.Create({ Type = "Spell", ID = 768    , Hidden = true}),
+    Channeling                            = Action.Create({ Type = "Spell", ID = 209274, Hidden = true     }),	
+    -- Trinkets    
+    MalformedHeraldsLegwraps             = Action.Create({ Type = "Trinket", ID = 167835}),
+    HyperthreadWristwraps                = Action.Create({ Type = "Trinket", ID = 168989}),
+    NotoriousAspirantsBadge              = Action.Create({ Type = "Trinket", ID = 167528}),
+    NotoriousGladiatorsBadge             = Action.Create({ Type = "Trinket", ID = 167380}),
+    SinisterGladiatorsBadge              = Action.Create({ Type = "Trinket", ID = 165058}),
+    SinisterAspirantsBadge               = Action.Create({ Type = "Trinket", ID = 165223}),
+    DreadGladiatorsBadge                 = Action.Create({ Type = "Trinket", ID = 161902}),
+    DreadAspirantsBadge                  = Action.Create({ Type = "Trinket", ID = 162966}),
+    DreadCombatantsInsignia              = Action.Create({ Type = "Trinket", ID = 161676}),
+    NotoriousAspirantsMedallion          = Action.Create({ Type = "Trinket", ID = 167525}),
+    NotoriousGladiatorsMedallion         = Action.Create({ Type = "Trinket", ID = 167377}),
+    SinisterGladiatorsMedallion          = Action.Create({ Type = "Trinket", ID = 165055}),
+    SinisterAspirantsMedallion           = Action.Create({ Type = "Trinket", ID = 165220}),
+    DreadGladiatorsMedallion             = Action.Create({ Type = "Trinket", ID = 161674}),
+    DreadAspirantsMedallion              = Action.Create({ Type = "Trinket", ID = 162897}),
+    DreadCombatantsMedallion             = Action.Create({ Type = "Trinket", ID = 161811}),
+    IgnitionMagesFuse                    = Action.Create({ Type = "Trinket", ID = 159615}),
+    TzanesBarkspines                     = Action.Create({ Type = "Trinket", ID = 161411}),
+    AzurethoseSingedPlumage              = Action.Create({ Type = "Trinket", ID = 161377}),
+    AncientKnotofWisdomAlliance          = Action.Create({ Type = "Trinket", ID = 161417}),
+    AncientKnotofWisdomHorde             = Action.Create({ Type = "Trinket", ID = 166793}),
+    ShockbitersFang                      = Action.Create({ Type = "Trinket", ID = 169318}),
+    NeuralSynapseEnhancer                = Action.Create({ Type = "Trinket", ID = 168973}),
+    BalefireBranch                       = Action.Create({ Type = "Trinket", ID = 159630}),    
+    
+    TrinketTest                           = Action.Create({ Type = "Trinket", ID = 122530, QueueForbidden = true }),
+    TrinketTest2                          = Action.Create({ Type = "Trinket", ID = 159611, QueueForbidden = true }), 
+    AzsharasFontofPower                   = Action.Create({ Type = "Trinket", ID = 169314, QueueForbidden = true }),
+    PocketsizedComputationDevice          = Action.Create({ Type = "Trinket", ID = 167555 }),
+    RotcrustedVoodooDoll                  = Action.Create({ Type = "Trinket", ID = 159624, QueueForbidden = true }),
+    ShiverVenomRelic                      = Action.Create({ Type = "Trinket", ID = 168905, QueueForbidden = true }),
+    AquipotentNautilus                    = Action.Create({ Type = "Trinket", ID = 169305, QueueForbidden = true }),
+    TidestormCodex                        = Action.Create({ Type = "Trinket", ID = 165576, QueueForbidden = true }),
+    VialofStorms                          = Action.Create({ Type = "Trinket", ID = 158224, QueueForbidden = true }),
+	AshvanesRazorCoral                    = Action.Create({ Type = "Trinket", ID = 169311, QueueForbidden = true }),
+    -- Potions
+    PotionofUnbridledFury                 = Action.Create({ Type = "Potion", ID = 169299, QueueForbidden = true }),
+    PotionofFocusedResolve                = Action.Create({ Type = "Potion", ID = 168506, QueueForbidden = true }),
+    PotionTest                            = Action.Create({ Type = "Potion", ID = 142117, QueueForbidden = true }),
+    -- Hidden Heart of Azeroth
+    VisionofPerfectionMinor               = Action.Create({ Type = "Spell", ID = 296320, Hidden = true}),
+    VisionofPerfectionMinor2              = Action.Create({ Type = "Spell", ID = 299367, Hidden = true}),
+    VisionofPerfectionMinor3              = Action.Create({ Type = "Spell", ID = 299369, Hidden = true}),
+    UnleashHeartOfAzeroth                 = Action.Create({ Type = "Spell", ID = 280431, Hidden = true}),
+    BloodoftheEnemy                       = Action.Create({ Type = "HeartOfAzeroth", ID = 297108, Hidden = true}),
+    BloodoftheEnemy2                      = Action.Create({ Type = "HeartOfAzeroth", ID = 298273, Hidden = true}),
+    BloodoftheEnemy3                      = Action.Create({ Type = "HeartOfAzeroth", ID = 298277, Hidden = true}),
+    ConcentratedFlame                     = Action.Create({ Type = "HeartOfAzeroth", ID = 295373, Hidden = true}),
+    ConcentratedFlame2                    = Action.Create({ Type = "HeartOfAzeroth", ID = 299349, Hidden = true}),
+    ConcentratedFlame3                    = Action.Create({ Type = "HeartOfAzeroth", ID = 299353, Hidden = true}),
+    GuardianofAzeroth                     = Action.Create({ Type = "HeartOfAzeroth", ID = 295840, Hidden = true}),
+    GuardianofAzeroth2                    = Action.Create({ Type = "HeartOfAzeroth", ID = 299355, Hidden = true}),
+    GuardianofAzeroth3                    = Action.Create({ Type = "HeartOfAzeroth", ID = 299358, Hidden = true}),
+    FocusedAzeriteBeam                    = Action.Create({ Type = "HeartOfAzeroth", ID = 295258, Hidden = true}),
+    FocusedAzeriteBeam2                   = Action.Create({ Type = "HeartOfAzeroth", ID = 299336, Hidden = true}),
+    FocusedAzeriteBeam3                   = Action.Create({ Type = "HeartOfAzeroth", ID = 299338, Hidden = true}),
+    PurifyingBlast                        = Action.Create({ Type = "HeartOfAzeroth", ID = 295337, Hidden = true}),
+    PurifyingBlast2                       = Action.Create({ Type = "HeartOfAzeroth", ID = 299345, Hidden = true}),
+    PurifyingBlast3                       = Action.Create({ Type = "HeartOfAzeroth", ID = 299347, Hidden = true}),
+    TheUnboundForce                       = Action.Create({ Type = "HeartOfAzeroth", ID = 298452, Hidden = true}),
+    TheUnboundForce2                      = Action.Create({ Type = "HeartOfAzeroth", ID = 299376, Hidden = true}),
+    TheUnboundForce3                      = Action.Create({ Type = "HeartOfAzeroth", ID = 299378, Hidden = true}),
+    RippleInSpace                         = Action.Create({ Type = "HeartOfAzeroth", ID = 302731, Hidden = true}),
+    RippleInSpace2                        = Action.Create({ Type = "HeartOfAzeroth", ID = 302982, Hidden = true}),
+    RippleInSpace3                        = Action.Create({ Type = "HeartOfAzeroth", ID = 302983, Hidden = true}),
+    WorldveinResonance                    = Action.Create({ Type = "HeartOfAzeroth", ID = 295186, Hidden = true}),
+    WorldveinResonance2                   = Action.Create({ Type = "HeartOfAzeroth", ID = 298628, Hidden = true}),
+    WorldveinResonance3                   = Action.Create({ Type = "HeartOfAzeroth", ID = 299334, Hidden = true}),
+    MemoryofLucidDreams                   = Action.Create({ Type = "HeartOfAzeroth", ID = 298357, Hidden = true}),
+    MemoryofLucidDreams2                  = Action.Create({ Type = "HeartOfAzeroth", ID = 299372, Hidden = true}),
+    MemoryofLucidDreams3                  = Action.Create({ Type = "HeartOfAzeroth", ID = 299374, Hidden = true}),
+	CondensedLifeforce                    = Action.Create({ Type = "HeartOfAzeroth", ID = 295834, Hidden = true}),
+	CondensedLifeforce2                   = Action.Create({ Type = "HeartOfAzeroth", ID = 299354, Hidden = true}),
+	CondensedLifeforce3                   = Action.Create({ Type = "HeartOfAzeroth", ID = 299357, Hidden = true}),
+    -- Here come all the stuff needed by simcraft but not classic spells or items. 
+}
+
+-- To create essences use next code:
+Action:CreateEssencesFor(ACTION_CONST_DRUID_BALANCE)        -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
+
+-- This code making shorter access to both tables Action[PLAYERSPEC] and Action
+-- However if you prefer long access it still can be used like Action[PLAYERSPEC].Guard:IsReady(), it doesn't make any conflict if you will skip shorter access
+-- So with shorter access you can just do Action.Guard:IsReady() instead of Action[PLAYERSPEC].Guard:IsReady()
+local A = setmetatable(Action[ACTION_CONST_DRUID_BALANCE], { __index = Action })
+
+-- Simcraft Imported
+-- HeroLib
+local HL         = HeroLib
+local Cache      = HeroCache
+local Unit       = HL.Unit
+local Player     = Unit.Player
+local MouseOver  = Unit.MouseOver
+local Target     = Unit.Target
+local Pet        = Unit.Pet
+local Spell      = HL.Spell
+local Item       = HL.Item
+-- HeroRotation
+local HR         = HeroRotation
+
+-- Azerite Essence Setup
+local AE         = HL.Enum.AzeriteEssences
+local AESpellIDs = HL.Enum.AzeriteEssenceSpellIDs
+
+
+---------------------------
+-- PORT TO ACTION 
+local S, I = A:HeroCreate()
+Action.HeroSetHookAllTable(S, {
+        [3] = "TellMeWhen_Group4_Icon3",
+        [4] = "TellMeWhen_Group4_Icon4",
+		[6] = "TellMeWhen_Group4_Icon6", 
+})
+Action.HeroSetHookAllTable(I, {
+        [3] = "TellMeWhen_Group4_Icon3",
+        [4] = "TellMeWhen_Group4_Icon4",
+		[6] = "TellMeWhen_Group4_Icon6",
+})
+-- Adding manually missed staff
+--S.Brews                                 = Spell(115308)
+--S.BlackoutCombo                         = Spell(196736)
+--S.BlackoutComboBuff                     = Spell(228563)
+
+
+-- Rotation Var
+local ShouldReturn; -- Used to get the return string
+local ForceOffGCD = {true, false};
+local Everyone = HR.Commons.Everyone;
+local EnemiesCount;
+
+local function DetermineEssenceRanks()
+    S.BloodoftheEnemy = S.BloodoftheEnemy2:IsAvailable() and S.BloodoftheEnemy2 or S.BloodoftheEnemy
+    S.BloodoftheEnemy = S.BloodoftheEnemy3:IsAvailable() and S.BloodoftheEnemy3 or S.BloodoftheEnemy
+    S.MemoryofLucidDreams = S.MemoryofLucidDreams2:IsAvailable() and S.MemoryofLucidDreams2 or S.MemoryofLucidDreams
+    S.MemoryofLucidDreams = S.MemoryofLucidDreams3:IsAvailable() and S.MemoryofLucidDreams3 or S.MemoryofLucidDreams
+    S.PurifyingBlast = S.PurifyingBlast2:IsAvailable() and S.PurifyingBlast2 or S.PurifyingBlast
+    S.PurifyingBlast = S.PurifyingBlast3:IsAvailable() and S.PurifyingBlast3 or S.PurifyingBlast
+    S.RippleInSpace = S.RippleInSpace2:IsAvailable() and S.RippleInSpace2 or S.RippleInSpace
+    S.RippleInSpace = S.RippleInSpace3:IsAvailable() and S.RippleInSpace3 or S.RippleInSpace
+    S.ConcentratedFlame = S.ConcentratedFlame2:IsAvailable() and S.ConcentratedFlame2 or S.ConcentratedFlame
+    S.ConcentratedFlame = S.ConcentratedFlame3:IsAvailable() and S.ConcentratedFlame3 or S.ConcentratedFlame
+    S.TheUnboundForce = S.TheUnboundForce2:IsAvailable() and S.TheUnboundForce2 or S.TheUnboundForce
+    S.TheUnboundForce = S.TheUnboundForce3:IsAvailable() and S.TheUnboundForce3 or S.TheUnboundForce
+    S.WorldveinResonance = S.WorldveinResonance2:IsAvailable() and S.WorldveinResonance2 or S.WorldveinResonance
+    S.WorldveinResonance = S.WorldveinResonance3:IsAvailable() and S.WorldveinResonance3 or S.WorldveinResonance
+    S.FocusedAzeriteBeam = S.FocusedAzeriteBeam2:IsAvailable() and S.FocusedAzeriteBeam2 or S.FocusedAzeriteBeam
+    S.FocusedAzeriteBeam = S.FocusedAzeriteBeam3:IsAvailable() and S.FocusedAzeriteBeam3 or S.FocusedAzeriteBeam
+    S.VisionofPerfectionMinor = S.VisionofPerfectionMinor2:IsAvailable() and S.VisionofPerfectionMinor2 or S.VisionofPerfectionMinor
+    S.VisionofPerfectionMinor = S.VisionofPerfectionMinor3:IsAvailable() and S.VisionofPerfectionMinor3 or S.VisionofPerfectionMinor
+    S.GuardianofAzeroth = S.GuardianofAzeroth2:IsAvailable() and S.GuardianofAzeroth2 or S.GuardianofAzeroth
+    S.GuardianofAzeroth = S.GuardianofAzeroth3:IsAvailable() and S.GuardianofAzeroth3 or S.GuardianofAzeroth
+    S.CondensedLifeforce = S.CondensedLifeforce2:IsAvailable() and S.CondensedLifeforce2 or S.CondensedLifeforce
+    S.CondensedLifeforce = S.CondensedLifeforce3:IsAvailable() and S.CondensedLifeforce3 or S.CondensedLifeforce
+end
+
+-- Variables
+local VarAzSs = 0;
+local VarAzAp = 0;
+local VarSfTargets = 0;
+
+HL:RegisterForEvent(function()
+    VarAzSs = S.StreakingStars:AzeriteRank()
+    VarAzAp = S.ArcanicPulsar:AzeriteRank()
+    VarSfTargets = 4
+    if (S.ArcanicPulsar:AzeriteEnabled()) then
+      VarSfTargets = VarSfTargets + 1
+    end
+    if (S.Starlord:IsAvailable()) then
+      VarSfTargets = VarSfTargets + 1
+    end
+    if (S.StreakingStars:AzeriteRank() > 2 and S.ArcanicPulsar:AzeriteEnabled()) then
+      VarSfTargets = VarSfTargets + 1
+    end
+    if (not S.TwinMoons:IsAvailable()) then
+      VarSfTargets = VarSfTargets - 1
+    end
+end, "PLAYER_REGEN_ENABLED")
+
+local EnemyRanges = {40, 15, 8}
+local function UpdateRanges()
+    for _, i in ipairs(EnemyRanges) do
+        HL.GetEnemies(i);
+    end
+end
+
+local function num(val)
+    if val then return 1 else return 0 end
+end
+
+local function bool(val)
+    return val ~= 0
+end
+
+HL:RegisterForEvent(function()
+    S.ConcentratedFlame:RegisterInFlight();
+end, "LEARNED_SPELL_IN_TAB")
+S.ConcentratedFlame:RegisterInFlight()
+  
+local function FutureAstralPower()
+    local AstralPower=Player:AstralPower()
+    if not Player:IsCasting() then
+      return AstralPower
+    else
+      if Player:IsCasting(S.NewMoon) then
+        return AstralPower + 10
+      elseif Player:IsCasting(S.HalfMoon) then
+        return AstralPower + 20
+      elseif Player:IsCasting(S.FullMoon) then
+        return AstralPower + 40
+      elseif Player:IsCasting(S.StellarFlare) then
+        return AstralPower + 8
+      elseif Player:IsCasting(S.SolarWrath) then
+        return AstralPower + 8
+      elseif Player:IsCasting(S.LunarStrike) then
+        return AstralPower + 12
+      else
+        return AstralPower
+      end
+    end
+end
+
+
+local function CaInc()
+    return S.Incarnation:IsAvailable() and S.Incarnation or S.CelestialAlignment
+end
+
+local function AP_Check(spell)
+  local APGen = 0
+  local CurAP = Player:AstralPower()
+  if spell == S.Sunfire or spell == S.Moonfire then 
+    APGen = 3
+  elseif spell == S.StellarFlare or spell == S.SolarWrath then
+    APGen = 8
+  elseif spell == S.Incarnation or spell == S.CelestialAlignment then
+    APGen = 40
+  elseif spell == S.ForceofNature then
+    APGen = 20
+  elseif spell == S.LunarStrike then
+    APGen = 12
+  end
+  
+  if S.ShootingStars:IsAvailable() then 
+    APGen = APGen + 4
+  end
+  if S.NaturesBalance:IsAvailable() then
+    APGen = APGen + 2
+  end
+  
+  if CurAP + APGen < Player:AstralPowerMax() then
+    return true
+  else
+    return false
+  end
+end
+
+-- AoE Detection Mode
+local function GetEnemiesCount(range)
+    -- Unit Update - Update differently depending on if splash data is being used
+    if Action.GetToggle(2, "AoE") then
+        if Action.GetToggle(2, "AoeDetectionMode") == "USE COMBAT LOGS" then
+	       return active_enemies()
+	    elseif Action.GetToggle(2, "AoeDetectionMode") == "USE SPLASH DATA" then
+	        HL.GetEnemies(range, nil, true, Target)
+            return Cache.EnemiesCount[range]
+	    else 
+            UpdateRanges()
+            return Cache.EnemiesCount[8]
+        end
+    else
+        return 1
+    end
+end
+
+local function DoTsUp()
+    return (Target:DebuffP(S.MoonfireDebuff) and Target:DebuffP(S.Sunfire) and (not S.StellarFlare:IsAvailable() or Target:DebuffP(S.StellarFlareDebuff)))
+end
+  
+-- Initiate Nucleus Ability registration
+local function Init()
+    HL.RegisterNucleusAbility(164815, 8, 6)               -- Sunfire DoT
+    HL.RegisterNucleusAbility(191037, 15, 6)              -- Starfall
+    HL.RegisterNucleusAbility(194153, 8, 6)              -- Lunar Strike
+end
+-- Init data for splash data (To Check)
+Init()
+
+--- ======= ACTION LISTS =======
+local function APL(icon) 
+    
+	-- Action specifics remap
+	local ShouldStop = Action.ShouldStop()
+	local Pull = Action.BossMods_Pulling()
+	
+	-- Local functions remap
+    EnemiesCount = GetEnemiesCount(40)
+    HL.GetEnemies(40) -- To populate Cache.Enemies[40] for CastCycles
+	DetermineEssenceRanks()
+    CaInc()
+    -- Travel
+    if Player:BuffP(S.TravelForm) or Player:BuffP(S.CatFormBuff) or Player:BuffP(S.BearForm) then
+        return Action.ShouldStop()
+    end
+    -- Revive
+    if S.Revive:IsReady() and ActionUnit("mouseover"):IsPlayer() and FriendlyTeam("mouseover") and ActionUnit("mouseover"):IsDead() and not Player:AffectingCombat() then
+        if HR.Cast(S.Revive) then return ""; end
+    end
+	
+  	local function Precombat_DBM()	    
+        -- flask
+        -- food
+        -- augmentation
+        -- variable,name=az_ss,value=azerite.streaking_stars.rank
+        if (true) then
+            VarAzSs = S.StreakingStars:AzeriteRank()
+        end
+        -- variable,name=az_ap,value=azerite.arcanic_pulsar.rank
+        if (true) then
+            VarAzAp = S.ArcanicPulsar:AzeriteRank()
+        end
+        -- variable,name=sf_targets,value=4
+        if (true) then
+            VarSfTargets = 4
+        end
+        -- variable,name=sf_targets,op=add,value=1,if=azerite.arcanic_pulsar.enabled
+        if (S.ArcanicPulsar:AzeriteEnabled()) then
+            VarSfTargets = VarSfTargets + 1
+        end
+        -- variable,name=sf_targets,op=add,value=1,if=talent.starlord.enabled
+        if (S.Starlord:IsAvailable()) then
+            VarSfTargets = VarSfTargets + 1
+        end
+        -- variable,name=sf_targets,op=add,value=1,if=azerite.streaking_stars.rank>2&azerite.arcanic_pulsar.enabled
+        if (S.StreakingStars:AzeriteRank() > 2 and S.ArcanicPulsar:AzeriteEnabled()) then
+            VarSfTargets = VarSfTargets + 1
+        end
+        -- variable,name=sf_targets,op=sub,value=1,if=!talent.twin_moons.enabled
+        if (not S.TwinMoons:IsAvailable()) then
+            VarSfTargets = VarSfTargets - 1
+        end
+        -- moonkin_form
+        if S.MoonkinForm:IsCastableP() and not ShouldStop and Player:BuffDownP(S.MoonkinForm) then
+            if HR.Cast(S.MoonkinForm, Action.GetToggle(2, "GCDasOffGCD")) then return "moonkin_form 39"; end
+        end
+        -- snapshot_stats
+        -- potion,dynamic_prepot=1
+        if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") and Pull > 1 and Pull <= (S.SolarWrath:CastTime() + S.SolarWrath:TravelTime() + 1) then
+            if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 42"; end
+        end
+        -- solar_wrath
+        if S.SolarWrath:IsReady() and not Player:IsMoving() and (S.StreakingStars:AzeriteEnabled() and not Player:PrevGCDP(1, S.StellarFlare) or not S.StreakingStars:AzeriteEnabled()) and not Player:IsCasting(S.SolarWrath) and Pull > 0.1 and Pull <= S.SolarWrath:CastTime() + S.SolarWrath:TravelTime() then
+            if HR.Cast(S.SolarWrath) then return "solar_wrath 44"; end
+        end
+    end	
+ 
+    local function Precombat()
+        -- flask
+        -- food
+        -- augmentation
+        -- snapshot_stats
+		if Everyone.TargetIsValid() then
+        -- variable,name=az_ss,value=azerite.streaking_stars.rank
+        if (true) then
+            VarAzSs = S.StreakingStars:AzeriteRank()
+        end
+        -- variable,name=az_ap,value=azerite.arcanic_pulsar.rank
+        if (true) then
+            VarAzAp = S.ArcanicPulsar:AzeriteRank()
+        end
+        -- variable,name=sf_targets,value=4
+        if (true) then
+            VarSfTargets = 4
+        end
+        -- variable,name=sf_targets,op=add,value=1,if=azerite.arcanic_pulsar.enabled
+        if (S.ArcanicPulsar:AzeriteEnabled()) then
+            VarSfTargets = VarSfTargets + 1
+        end
+        -- variable,name=sf_targets,op=add,value=1,if=talent.starlord.enabled
+        if (S.Starlord:IsAvailable()) then
+            VarSfTargets = VarSfTargets + 1
+        end
+        -- variable,name=sf_targets,op=add,value=1,if=azerite.streaking_stars.rank>2&azerite.arcanic_pulsar.enabled
+        if (S.StreakingStars:AzeriteRank() > 2 and S.ArcanicPulsar:AzeriteEnabled()) then
+            VarSfTargets = VarSfTargets + 1
+        end
+        -- variable,name=sf_targets,op=sub,value=1,if=!talent.twin_moons.enabled
+        if (not S.TwinMoons:IsAvailable()) then
+            VarSfTargets = VarSfTargets - 1
+        end
+        -- moonkin_form
+        if S.MoonkinForm:IsCastableP() and not ShouldStop and Player:BuffDownP(S.MoonkinForm) then
+            if HR.Cast(S.MoonkinForm, Action.GetToggle(2, "GCDasOffGCD")) then return "moonkin_form 39"; end
+        end
+        -- use_item,name=azsharas_font_of_power
+        if I.AzsharasFontofPower:IsEquipped() and I.AzsharasFontofPower:IsReady() and TR.TrinketON() then
+            if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power precombat"; end
+        end
+        -- potion,dynamic_prepot=1
+        if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") then
+            if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 42"; end
+        end
+        -- solar_wrath
+        if S.SolarWrath:IsCastableP() and (S.StreakingStars:AzeriteEnabled() and not Player:PrevGCDP(1, S.SolarWrath) or not S.StreakingStars:AzeriteEnabled()) and not ShouldStop and (not Player:PrevGCDP(1, S.SolarWrath) and not Player:PrevGCDP(2, S.SolarWrath)) then
+            if HR.Cast(S.SolarWrath) then return "solar_wrath 43"; end
+        end
+        -- solar_wrath
+        if S.SolarWrath:IsCastableP() and (S.StreakingStars:AzeriteEnabled() and not Player:PrevGCDP(1, S.SolarWrath) or not S.StreakingStars:AzeriteEnabled()) and not ShouldStop and (Player:PrevGCDP(1, S.SolarWrath) and not Player:PrevGCDP(2, S.SolarWrath)) then
+            if HR.Cast(S.SolarWrath) then return "solar_wrath 44"; end
+        end
+        -- starsurge
+        if S.Starsurge:IsReadyP() then
+            if HR.Cast(S.Starsurge) then return "starsurge 45"; end
+        end
+		end
+    end
+    -- Moonkin Form OOC, if setting is true
+    if S.MoonkinForm:IsCastableP() and not ShouldStop and Player:BuffDownP(S.MoonkinForm) and Action.GetToggle(2, "ShowMoonkinFormOOC") then
+        if HR.Cast(S.MoonkinForm) then return "moonkin_form ooc"; end
+    end
+ 
+	-- call DBM precombat
+    if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
+        local ShouldReturn = Precombat_DBM(); 
+            if ShouldReturn then return ShouldReturn; 
+        end    
+    end
+	
+    -- call non DBM precombat
+    if not Player:AffectingCombat() and not Action.GetToggle(1, "DBM") and not Player:IsCasting() then        
+        local ShouldReturn = Precombat(); 
+            if ShouldReturn then return ShouldReturn; 
+        end    
+    end
+
+	    
+    --- In Combat
+    if Player:AffectingCombat() then	
+		
+		-- Interrupt Handler
+  		local unit = "target"
+   		local useKick, useCC, useRacial = Action.InterruptIsValid(unit, "TargetMouseover")    
+        local Trinket1IsAllowed, Trinket2IsAllowed = TR.TrinketIsAllowed()
+		
+  	    -- SolarBeam
+  	    if useKick and S.SolarBeam:IsReady() and S.SolarBeam:IsAvailable() and Target:IsInterruptible() then 
+		  	if ActionUnit(unit):CanInterrupt(true, nil, 25, 70) then
+          	    if HR.Cast(S.SolarBeam, true) then return "SolarBeam 5"; end
+         	end 
+        end
+        -- Rebirth
+        if S.Rebirth:IsReady() and ActionUnit("mouseover"):IsPlayer() and FriendlyTeam("mouseover") and ActionUnit("mouseover"):IsDead() then
+            if HR.Cast(S.Rebirth) then return ""; end
+        end 
+        -- Soothe
+        if S.Soothe:IsReady() and Action.AuraIsValid("target", "UseExpelEnrage", "Enrage") then
+            if HR.Cast(S.Soothe) then return "" end
+        end
+        -- Supportive
+        if A.RemoveCorruption:IsReady("player") and A.AuraIsValid("player", "UseDispel", "Dispel") then 
+            if HR.Cast(S.RemoveCorruption) then return ""; end
+        end
+     	-- MightyBash
+      	if useCC and S.MightyBash:IsAvailable() and S.MightyBash:IsReady() and Target:IsInterruptible() then 
+	  		if ActionUnit(unit):CanInterrupt(true, nil, 25, 70) then
+     	        if HR.Cast(S.MightyBash, true) then return "MightyBash 5"; end
+     	    end 
+     	end 
+        -- Defensives
+        if S.Renewal:IsCastableP() and not ShouldStop and Player:HealthPercentage() <= Action.GetToggle(2, "RenewalHP") then
+            if HR.Cast(S.Renewal, Action.GetToggle(2, "GCDasOffGCD")) then return "renewal defensive"; end
+        end
+        if S.Barkskin:IsCastableP() and not ShouldStop and Player:HealthPercentage() <= Action.GetToggle(2, "BarkskinHP") then
+            if HR.Cast(S.Barkskin, Action.GetToggle(2, "GCDasOffGCD")) then return "barkskin defensive"; end
+        end	
+        -- potion,if=buff.celestial_alignment.remains>13|buff.incarnation.remains>16.5
+        if I.PotionofUnbridledFury:IsReady() and Action.GetToggle(1, "Potion") and (Player:BuffRemainsP(S.CelestialAlignment) > 13 or Player:BuffRemainsP(S.Incarnation) > 16.5) then
+            if HR.Cast(I.PotionofUnbridledFury) then return "battle_potion_of_intellect 57"; end
+        end
+        -- berserking,if=buff.ca_inc.up
+        if S.Berserking:IsCastableP() and HR.CDsON() and (Player:BuffP(CaInc())) then
+            if HR.Cast(S.Berserking) then return "berserking 65"; end
+        end
+        -- use_item,name=azsharas_font_of_power,if=!buff.ca_inc.up,target_if=dot.moonfire.ticking&dot.sunfire.ticking&(!talent.stellar_flare.enabled|dot.stellar_flare.ticking)
+        if I.AzsharasFontofPower:IsEquipReady() and HR.CDsON() and (Player:BuffDownP(CaInc()) and DoTsUp())then
+            if HR.Cast(I.AzsharasFontofPower) then return "azsharas_font_of_power 73" end
+        end
+        -- guardian_of_azeroth,if=(!talent.starlord.enabled|buff.starlord.up)&!buff.ca_inc.up,target_if=dot.moonfire.ticking&dot.sunfire.ticking&(!talent.stellar_flare.enabled|dot.stellar_flare.ticking)
+        if S.GuardianofAzeroth:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and HR.CDsON() and ((not S.Starlord:IsAvailable() or Player:BuffP(S.StarlordBuff)) and Player:BuffDownP(CaInc()) and DoTsUp()) then
+            if HR.Cast(S.GuardianofAzeroth) then return "guardian_of_azeroth 94" end
+        end
+        -- use_item,effect_name=cyclotronic_blast,if=!buff.ca_inc.up,target_if=dot.moonfire.ticking&dot.sunfire.ticking&(!talent.stellar_flare.enabled|dot.stellar_flare.ticking)
+        if I.PocketsizedComputationDevice:IsEquipReady() and HR.CDsON() and DoTsUp() then
+            if HR.Cast(I.PocketsizedComputationDevice, 40) then return "cyclotronic_blast 117" end
+        end
+        -- use_item,name=shiver_venom_relic,if=!buff.ca_inc.up&!buff.bloodlust.up,target_if=dot.shiver_venom.stack>=5
+        if I.ShiverVenomRelic:IsEquipReady() and HR.CDsON() and (Player:BuffDownP(CaInc()) and not Player:HasHeroism() and Target:DebuffStackP(S.ShiverVenomDebuff) >= 5) then
+            if HR.Cast(I.ShiverVenomRelic, 50) then return "shiver_venom_relic 105"; end
+        end
+        -- blood_of_the_enemy,if=cooldown.ca_inc.remains>30
+        if S.BloodoftheEnemy:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and HR.CDsON() and (CaInc():CooldownRemainsP() > 30) then
+            if HR.Cast(S.BloodoftheEnemy, 12) then return "blood_of_the_enemy"; end
+        end
+        -- memory_of_lucid_dreams,if=!buff.ca_inc.up&(astral_power<25|cooldown.ca_inc.remains>30),target_if=dot.sunfire.remains>10&dot.moonfire.remains>10&(!talent.stellar_flare.enabled|dot.stellar_flare.remains>10)
+        if S.MemoryofLucidDreams:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and HR.CDsON() and (Player:BuffDownP(CaInc()) and (Player:AstralPower() < 25 or CaInc():CooldownRemainsP() > 30) and DoTsUp()) then
+            if HR.Cast(S.MemoryofLucidDreams) then return "memory_of_lucid_dreams 149" end
+        end
+        -- purifying_blast
+        if S.PurifyingBlast:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and HR.CDsON() then
+            if HR.Cast(S.PurifyingBlast, 40) then return "purifying_blast"; end
+        end
+        -- ripple_in_space
+        if S.RippleInSpace:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and HR.CDsON() then
+            if HR.Cast(S.RippleInSpace) then return "ripple_in_space"; end
+        end
+        -- concentrated_flame,if=(!buff.ca_inc.up|stack=2)&!action.concentrated_flame_missile.in_flight,target_if=!dot.concentrated_flame_burn.ticking
+        if S.ConcentratedFlame:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and ((Player:BuffDownP(CaInc()) or S.ConcentratedFlame:ChargesP() == 2) and not S.ConcentratedFlame:InFlight() and Target:DebuffDownP(S.ConcentratedFlameBurn)) then
+            if HR.Cast(S.ConcentratedFlame, 40) then return "concentrated_flame"; end
+        end
+        -- the_unbound_force,if=buff.reckless_force.up|buff.reckless_force_counter.stack<5,target_if=dot.moonfire.ticking&dot.sunfire.ticking&(!talent.stellar_flare.enabled|dot.stellar_flare.ticking)
+        if S.TheUnboundForce:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and HR.CDsON() and ((Player:BuffP(S.RecklessForceBuff) or Player:BuffStackP(S.RecklessForceBuff) < 5)and DoTsUp()) then
+            if HR.Cast(S.TheUnboundForce) then return "the_unbound_force 172" end
+        end
+        -- worldvein_resonance,if=!buff.ca_inc.up,target_if=dot.moonfire.ticking&dot.sunfire.ticking&(!talent.stellar_flare.enabled|dot.stellar_flare.ticking)
+        if S.WorldveinResonance:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and HR.CDsON() and (Player:BuffDownP(CaInc()) and DoTsUp()) then
+            if HR.Cast(S.WorldveinResonance) then return "worldvein_resonance"; end
+        end
+        -- reaping_flames,if=!buff.ca_inc.up
+        if S.ReapingFlames:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and HR.CDsON() and (Player:BuffDownP(CaInc())) then
+            if HR.Cast(S.ReapingFlames) then return ""; end
+        end
+        -- focused_azerite_beam,if=(!variable.az_ss|!buff.ca_inc.up),target_if=dot.moonfire.ticking&dot.sunfire.ticking&(!talent.stellar_flare.enabled|dot.stellar_flare.ticking)
+        if S.FocusedAzeriteBeam:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and HR.CDsON() and ((not bool(VarAzSs) or Player:BuffDownP(CaInc())) and DoTsUp()) then
+            if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam 193" end
+        end
+        -- thorns
+        if S.Thorns:IsCastableP() then
+            if HR.Cast(S.Thorns, nil, Settings.Commons.EssenceDisplayStyle) then return "thorns"; end
+        end
+        -- use_items,slots=trinket1,if=!trinket.1.has_proc.any|buff.ca_inc.up|target.1.time_to_die<20
+        -- use_items,slots=trinket2,if=!trinket.2.has_proc.any|buff.ca_inc.up|target.1.time_to_die<20
+        -- use_items
+         -- focused_azerite_beam,if=(!variable.az_ss|!buff.ca_inc.up),target_if=dot.moonfire.ticking&dot.sunfire.ticking&(!talent.stellar_flare.enabled|dot.stellar_flare.ticking)
+         if S.FocusedAzeriteBeam:IsCastableP() and Action.GetToggle(1, "HeartOfAzeroth") and HR.CDsON() and ((not bool(VarAzSs) or Player:BuffDownP(CaInc())) and DoTsUp()) then
+            if HR.Cast(S.FocusedAzeriteBeam) then return "focused_azerite_beam 193" end
+        end
+		
+		-- Non SIMC Custom Trinket1
+	    if Action.GetToggle(1, "Trinkets")[1] and A.Trinket1:IsReady("target") and Trinket1IsAllowed then	    
+       	    if A.Trinket1:AbsentImun(unit, "DamageMagicImun")  then 
+      	   	    return A.Trinket1:Show(icon)
+   	        end 		
+        end
+		-- Non SIMC Custom Trinket2
+	    if Action.GetToggle(1, "Trinkets")[2] and A.Trinket2:IsReady("target") and Trinket2IsAllowed then	    
+       	    if A.Trinket2:AbsentImun(unit, "DamageMagicImun")  then 
+      	   	    return A.Trinket2:Show(icon)
+   	        end 	
+        end	
+        -- warrior_of_elune
+        if S.WarriorofElune:IsCastableP() then
+            if HR.Cast(S.WarriorofElune) then return "warrior_of_elune 108"; end
+        end	
+        -- innervate,if=azerite.lively_spirit.enabled&(cooldown.incarnation.remains<2|cooldown.celestial_alignment.remains<12)
+        if S.Innervate:IsCastableP() and (S.LivelySpirit:AzeriteEnabled() and (S.Incarnation:CooldownRemainsP() < 2 or S.CelestialAlignment:CooldownRemainsP() < 12)) then
+            if HR.Cast(S.Innervate) then return "innervate 110"; end
+        end
+        -- force_of_nature,if=(variable.az_ss&!buff.ca_inc.up|!variable.az_ss&(buff.ca_inc.up|cooldown.ca_inc.remains>30))&ap_check
+        if S.ForceofNature:IsCastableP() and HR.CDsON() and ((bool(VarAzSs) and Player:BuffDownP(CaInc()) or not bool(VarAzSs) and (Player:BuffP(CaInc()) or CaInc():CooldownRemainsP() > 30)) and AP_Check(S.ForceofNature)) then
+            if HR.Cast(S.ForceofNature, 40) then return "force_of_nature 1111"; end
+        end
+        -- incarnation,if=!buff.ca_inc.up&(buff.memory_of_lucid_dreams.up|((cooldown.memory_of_lucid_dreams.remains>20|!essence.memory_of_lucid_dreams.major)&ap_check))&(buff.memory_of_lucid_dreams.up|ap_check),target_if=dot.sunfire.remains>8&dot.moonfire.remains>12&(dot.stellar_flare.remains>6|!talent.stellar_flare.enabled)
+        if S.Incarnation:IsCastableP() and HR.CDsON() and (Player:BuffDownP(CaInc()) and (Player:BuffP(S.MemoryofLucidDreams) or ((S.MemoryofLucidDreams:CooldownRemainsP() > 20 or not Spell:MajorEssenceEnabled(AE.MemoryofLucidDreams)) and AP_Check(S.Incarnation))) and (Player:BuffP(S.MemoryofLucidDreams) or AP_Check(S.Incarnation)) and (Target:DebuffRemainsP(S.SunfireDebuff) > 8 and Target:DebuffRemainsP(S.MoonfireDebuff) > 12 and (Target:DebuffRemainsP(S.StellarFlareDebuff) > 6 or not S.StellarFlare:IsAvailable()))) then
+            if HR.Cast(S.Incarnation, Settings.Balance.GCDasOffGCD.CelestialAlignment) then return "incarnation 228" end
+        end
+        -- celestial_alignment,if=!buff.ca_inc.up&(!talent.starlord.enabled|buff.starlord.up)&(buff.memory_of_lucid_dreams.up|((cooldown.memory_of_lucid_dreams.remains>20|!essence.memory_of_lucid_dreams.major)&ap_check))&(!azerite.lively_spirit.enabled|buff.lively_spirit.up),target_if=(dot.sunfire.remains>2&dot.moonfire.ticking&(dot.stellar_flare.ticking|!talent.stellar_flare.enabled))
+        if S.CelestialAlignment:IsCastableP() and HR.CDsON() and (Player:BuffDownP(CaInc()) and (not S.Starlord:IsAvailable() or Player:BuffP(S.StarlordBuff)) and (Player:BuffP(S.MemoryofLucidDreams) or ((S.MemoryofLucidDreams:CooldownRemainsP() > 20 or not Spell:MajorEssenceEnabled(AE.MemoryofLucidDreams)) and AP_Check(S.CelestialAlignment))) and (not S.LivelySpirit:AzeriteEnabled() or Player:BuffP(S.LivelySpiritBuff)) and (Target:DebuffRemainsP(S.SunfireDebuff) > 2 and Target:DebuffP(S.MoonfireDebuff) and (Target:DebuffP(S.StellarFlareDebuff) or not S.StellarFlare:IsAvailable()))) then
+            if HR.Cast(S.CelestialAlignment) then return "celestial_alignment 253" end
+        end
+        -- fury_of_elune,if=(buff.ca_inc.up|cooldown.ca_inc.remains>30)&solar_wrath.ap_check
+        if S.FuryofElune:IsCastableP() and HR.CDsON() and ((Player:BuffP(CaInc()) or CaInc():CooldownRemainsP() > 30) and AP_Check(S.SolarWrath)) then
+            if HR.Cast(S.FuryofElune, 40) then return "fury_of_elune 146"; end
+        end
+        -- cancel_buff,name=starlord,if=buff.starlord.remains<3&!solar_wrath.ap_check
+        -- if (Player:BuffRemainsP(S.StarlordBuff) < 3 and not bool(solar_wrath.ap_check)) then
+        -- if HR.Cancel(S.StarlordBuff) then return ""; end
+        -- end
+
+        -- starfall,if=(!solar_wrath.ap_check|(buff.starlord.stack<3|buff.starlord.remains>=8)&(target.1.time_to_die+1)*spell_targets>cost%2.5)&spell_targets>=variable.sf_targets
+        if S.Starfall:IsReadyP() and ((not AP_Check(S.SolarWrath) or (Player:BuffStackP(S.StarlordBuff) < 3 or Player:BuffRemainsP(S.StarlordBuff) >= 8) and (Target:TimeToDie() + 1) * EnemiesCount > S.Starfall:Cost() % 2.5) and EnemiesCount >= VarSfTargets) then
+            if HR.Cast(S.Starfall) then return "starfall 164"; end
+        end
+        -- starsurge,if=((talent.starlord.enabled&(buff.starlord.stack<3|buff.starlord.remains>=5&buff.arcanic_pulsar.stack<8)|!talent.starlord.enabled&(buff.arcanic_pulsar.stack<8|buff.ca_inc.up))&buff.solar_empowerment.stack<3&buff.lunar_empowerment.stack<3&buff.reckless_force_counter.stack<19|buff.reckless_force.up)&spell_targets.starfall<variable.sf_targets&(!variable.az_ss|!buff.ca_inc.up|!prev.starsurge)|target.1.time_to_die<=execute_time*astral_power%40|!solar_wrath.ap_check
+        if S.Starsurge:IsReadyP() and (((S.Starlord:IsAvailable() and (Player:BuffStackP(S.StarlordBuff) < 3 or Player:BuffRemainsP(S.StarlordBuff) >= 5 and Player:BuffStackP(S.ArcanicPulsarBuff) < 8) or not S.Starlord:IsAvailable() and (Player:BuffStackP(S.ArcanicPulsarBuff) < 8 or Player:BuffP(CaInc()))) and Player:BuffStackP(S.SolarEmpowermentBuff) < 3 and Player:BuffStackP(S.LunarEmpowermentBuff) < 3 and Player:BuffStackP(S.RecklessForceBuff) < 19 or Player:BuffDownP(S.RecklessForceBuff)) and EnemiesCount < VarSfTargets and (not VarAzSs or Player:BuffDownP(CaInc()) or not Player:PrevGCDP(1, S.Starsurge)) or Target:TimeToDie() <= S.Starsurge:ExecuteTime() * Player:AstralPower() % 40 or not AP_Check(S.SolarWrath)) then
+            if HR.Cast(S.Starsurge, 40) then return "starsurge 188"; end
+        end
+            -- sunfire,if=buff.ca_inc.up&buff.ca_inc.remains<gcd.max&variable.az_ss&dot.moonfire.remains>remains
+        if S.Sunfire:IsCastableP() and (Player:BuffP(CaInc()) and Player:BuffRemainsP(CaInc()) < Player:GCD() and bool(VarAzSs) and Target:DebuffRemainsP(S.MoonfireDebuff) > Target:DebuffRemainsP(S.SunfireDebuff)) then
+            if HR.Cast(S.Sunfire, nil, nil, 40) then return "sunfire 222"; end
+        end
+        -- moonfire,if=buff.ca_inc.up&buff.ca_inc.remains<gcd.max&variable.az_ss
+        if S.Moonfire:IsCastableP() and (Player:BuffP(CaInc()) and Player:BuffRemainsP(CaInc()) < Player:GCD() and bool(VarAzSs)) then
+            if HR.Cast(S.Moonfire, 40) then return "moonfire 238"; end
+        end
+        -- sunfire,target_if=refreshable,if=ap_check&floor(target.time_to_die%(2*spell_haste))*spell_targets>=ceil(floor(2%spell_targets)*1.5)+2*spell_targets&(spell_targets>1+talent.twin_moons.enabled|dot.moonfire.ticking)&(!variable.az_ss|!buff.ca_inc.up|!prev.sunfire)&(buff.ca_inc.remains>remains|!buff.ca_inc.up)
+        if S.Sunfire:IsCastableP() and (Target:DebuffRefreshableCP(S.SunfireDebuff)) and (AP_Check(S.Sunfire) and math.floor (Target:TimeToDie() / (2 * Player:SpellHaste())) * EnemiesCount >= math.ceil (math.floor (2 / EnemiesCount) * 1.5) + 2 * EnemiesCount and (EnemiesCount > 1 + num(S.TwinMoons:IsAvailable()) or Target:DebuffP(S.MoonfireDebuff)) and (not bool(VarAzSs) or Player:BuffDownP(CaInc()) or not Player:PrevGCDP(1, S.Sunfire)) and (Player:BuffRemainsP(CaInc()) > Target:DebuffRemainsP(S.SunfireDebuff) or Player:BuffDownP(CaInc()))) then
+            if HR.Cast(S.Sunfire, 40) then return "sunfire 308" end
+        end
+        -- moonfire,target_if=refreshable,if=ap_check&floor(target.time_to_die%(2*spell_haste))*spell_targets>=6&(!variable.az_ss|!buff.ca_inc.up|!prev.moonfire)&(buff.ca_inc.remains>remains|!buff.ca_inc.up)
+        if S.Moonfire:IsCastableP() and (Target:DebuffRefreshableCP(S.MoonfireDebuff)) and (AP_Check(S.Moonfire) and math.floor (Target:TimeToDie() / (2 * Player:SpellHaste())) * EnemiesCount >= 6 and (not bool(VarAzSs) or Player:BuffDownP(CaInc()) or not Player:PrevGCDP(1, S.Moonfire)) and (Player:BuffRemainsP(CaInc()) > Target:DebuffRemainsP(S.MoonfireDebuff) or Player:BuffDownP(CaInc()))) then
+            if HR.Cast(S.Moonfire, 40) then return "moonfire 343" end
+        end
+        -- stellar_flare,target_if=refreshable,if=ap_check&floor(target.time_to_die%(2*spell_haste))>=5&(!variable.az_ss|!buff.ca_inc.up|!prev.stellar_flare)
+        if S.StellarFlare:IsCastableP() and not Player:IsMoving() and (Target:DebuffRefreshableCP(S.StellarFlareDebuff)) and (AP_Check(S.StellarFlare) and math.floor (Target:TimeToDie() / (2 * Player:SpellHaste())) >= 5 and (not bool(VarAzSs) or Player:BuffDownP(CaInc()) or not Player:PrevGCDP(1, S.StellarFlare)) and not Player:IsCasting(S.StellarFlare)) then
+            if HR.Cast(S.StellarFlare, 40) then return "stellar_flare 360" end
+        end
+        -- new_moon,if=ap_check
+        if S.NewMoon:IsCastableP() and not Player:IsMoving() and (AP_Check(S.NewMoon)) then
+            if HR.Cast(S.NewMoon, 40) then return "new_moon 361"; end
+        end
+        -- half_moon,if=ap_check
+        if S.HalfMoon:IsCastableP() and not Player:IsMoving() and not Player:IsMoving() and (AP_Check(S.HalfMoon)) then
+            if HR.Cast(S.HalfMoon, 40) then return "half_moon 363"; end
+        end
+        -- full_moon,if=ap_check
+        if S.FullMoon:IsCastableP() and not Player:IsMoving() and (AP_Check(S.FullMoon)) then
+            if HR.Cast(S.FullMoon, 40) then return "full_moon 365"; end
+        end
+        -- lunar_strike,if=buff.solar_empowerment.stack<3&(ap_check|buff.lunar_empowerment.stack=3)&((buff.warrior_of_elune.up|buff.lunar_empowerment.up|spell_targets>=2&!buff.solar_empowerment.up)&(!variable.az_ss|!buff.ca_inc.up)|variable.az_ss&buff.ca_inc.up&prev.solar_wrath)
+        if S.LunarStrike:IsCastableP() and not Player:IsMoving() and (Player:BuffStackP(S.SolarEmpowermentBuff) < 3 and (AP_Check(S.LunarStrike) or Player:BuffStackP(S.LunarEmpowermentBuff) == 3) and ((Player:BuffP(S.WarriorofEluneBuff) or Player:BuffP(S.LunarEmpowermentBuff) or EnemiesCount >= 2 and Player:BuffDownP(S.SolarEmpowermentBuff)) and (not bool(VarAzSs) or Player:BuffDownP(CaInc())) or bool(VarAzSs) and Player:BuffP(CaInc()) and Player:PrevGCDP(1, S.SolarWrath))) then
+            if HR.Cast(S.LunarStrike, 40) then return "lunar_strike 367"; end
+        end
+        -- solar_wrath,if=variable.az_ss<3|!buff.ca_inc.up|!prev.solar_wrath
+        if S.SolarWrath:IsCastableP() and not Player:IsMoving() and (VarAzSs < 3 or Player:BuffDownP(CaInc()) or not Player:PrevGCDP(1, S.SolarWrath)) then
+            if HR.Cast(S.SolarWrath, 40) then return "solar_wrath 393"; end
+        end
+        -- sunfire
+        if S.Sunfire:IsCastableP() then
+            if HR.Cast(S.Sunfire, 40) then return "sunfire 399"; end
+        end
+
+    end
+end
+-- Finished
+
+
+
+
+-----------------------------------------
+--                 ROTATION  
+-----------------------------------------
+
+-- [3] is Single rotation (supports all actions)
+A[3] = function(icon)
+    if APL(icon) then 
+        return true 
+    end
+end
