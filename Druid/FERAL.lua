@@ -851,10 +851,7 @@ local function APL(icon)
 
     --- In Combat
     if Player:AffectingCombat() then
-        --Beyond
-        if I.Cloak:IsReady() and ((Player:DebuffP(S.Eyeofcorruption) and Player:HealthPercentage() < 30 ) or (Player:DebuffP(S.GrandDelusionsDebuff) and Player:HealthPercentage() < 50)) then
-            if HR.Cast(S.WarStomp) then return "" end
-        end
+        
         -- Rebirth
         if S.Rebirth:IsReady() and ActionUnit("mouseover"):IsPlayer() and FriendlyTeam("mouseover") and ActionUnit("mouseover"):IsDead() then
             if HR.Cast(S.Rebirth) then return ""; end
