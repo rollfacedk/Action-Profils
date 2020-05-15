@@ -424,7 +424,6 @@ local function APL(icon)
     if A.Swiftmend:IsReady("player") and  Unit("player"):HealthPercentage() < 35 then
 		if HR.Cast(S.Swiftmend) then return "" end
     end 
-
     -- explosives
     if S.Rake:IsReadyP(EightRange) and ActionUnit("target"):IsExplosives() then
         if HR.Cast(S.Rake) then return ""; end
@@ -433,7 +432,9 @@ local function APL(icon)
     if S.Shred:IsReadyP(EightRange) and (Target:NPCID() == 135764 or Target:NPCID() == 135761 or Target:NPCID() == 135765 or Target:NPCID() == 135759) and Player:ComboPoints() < 5 then
         if HR.Cast(S.Shred) then return ""; end
     end
-    
+    if S.Rake:IsReadyP() and Target:DebuffDownP(S.ThrashCatDebuff) and Target:DebuffDownP(S.Rake) and Player:PrevGCDP(1, S.ThrashCat) then
+        if HR.Cast(S.Rake) then return ""; end
+    end
     if (Player:PrevGCD(1, S.Rake)) then
         LastRakeAP = Player:AttackPowerDamageMod()
     end
@@ -770,7 +771,7 @@ local function APL(icon)
         end
         -- pool_resource,for_next=1
         -- thrash_cat,if=refreshable&((variable.use_thrash=2&(!buff.incarnation.up|azerite.wild_fleshrending.enabled))|spell_targets.thrash_cat>1)
-        if S.ThrashCat:IsCastableP(EightRange) and (Target:DebuffRefreshableCP(S.ThrashCatDebuff) and ((VarUseThrash == 2 and (not Player:BuffP(S.IncarnationBuff) or S.WildFleshrending:AzeriteEnabled())) or (Action.GetToggle(2, "AoE") and MultiUnits:GetByRange(EightRange) > 1))) then
+        if S.ThrashCat:IsCastableP(EightRange) and (Target:DebuffRefreshableCP(S.ThrashCatDebuff) and ((VarUseThrash == 2 and (not Player:BuffP(S.IncarnationBuff) or (Target:DebuffDownP(S.RakeDebuff) and S.WildFleshrending:AzeriteEnabled()))) or (Action.GetToggle(2, "AoE") and MultiUnits:GetByRange(EightRange) > 1))) then
             if S.ThrashCat:IsUsablePPool() then
                 if HR.Cast(S.ThrashCat) then return "thrash_cat 312"; end
             else
@@ -778,7 +779,7 @@ local function APL(icon)
             end
         end
         -- thrash_cat,if=refreshable&variable.use_thrash=1&buff.clearcasting.react&(!buff.incarnation.up|azerite.wild_fleshrending.enabled)
-        if S.ThrashCat:IsCastableP(EightRange) and (Target:DebuffRefreshableCP(S.ThrashCatDebuff) and VarUseThrash == 1 and bool(Player:BuffStackP(S.ClearcastingBuff)) and (not Player:BuffP(S.IncarnationBuff) or S.WildFleshrending:AzeriteEnabled())) then
+        if S.ThrashCat:IsCastableP(EightRange) and (Target:DebuffRefreshableCP(S.ThrashCatDebuff) and VarUseThrash == 1 and bool(Player:BuffStackP(S.ClearcastingBuff)) and (not Player:BuffP(S.IncarnationBuff) or (Target:DebuffDownP(S.RakeDebuff) and S.WildFleshrending:AzeriteEnabled()))) then
             if HR.Cast(S.ThrashCat) then return "thrash_cat 327"; end
         end
         -- pool_resource,for_next=1
@@ -834,7 +835,7 @@ local function APL(icon)
     
     -- Protect against interrupt of channeled spells
     if Player:IsCasting() and Player:CastRemains() >= ((select(4, GetNetStats()) / 1000 * 2) + 0.05) or Player:IsChanneling() or ShouldStop then
-        if HR.Cast(S.Channeling) then return "" end
+        if HR.Cast(S.Channeling) then return "" end 
     end  
 	-- call DBM precombat
    --if not Player:AffectingCombat() and Action.GetToggle(1, "DBM") and not Player:IsCasting() then
@@ -909,10 +910,6 @@ local function APL(icon)
         end
         -- rake,if=buff.prowl.up|buff.shadowmeld.up
         if S.Rake:IsCastableP(MeleeRange)  and (Player:BuffP(S.ProwlBuff) or Player:BuffP(S.ShadowmeldBuff)) then
-            if HR.Cast(S.Rake) then return "rake 406"; end
-        end
-        -- Maintain bleed in pvp
-        if S.Rake:IsCastableP(MeleeRange) and ActionUnit("target"):IsPlayer() and (Target:DebuffRemainsP(S.RakeDebuff) < 5 and Player:ComboPoints() <= 5) then
             if HR.Cast(S.Rake) then return "rake 406"; end
         end
         -- variable,name=reaping_delay,value=target.time_to_die,if=variable.reaping_delay=0 
