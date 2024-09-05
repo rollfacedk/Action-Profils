@@ -334,11 +334,7 @@ local function MyRoutine()
 		if Player:AffectingCombat() then
 
 			if S.DivineProtection:IsCastable() and Player:HealthPercentage() <= 45 then
-				if Cast(S.DivineProtection:IsCastable()) then return end
-			end
-
-			if S.DivineShield:IsCastable() and Player:HealthPercentage() <= 30 then
-				if Cast(S.DivineShield) then return end
+				if Cast(S.DivineProtection) then return end
 			end
 
 			if S.DivineShield:IsCastable() and Player:HealthPercentage() <= 30 then
