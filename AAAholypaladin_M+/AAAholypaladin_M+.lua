@@ -263,7 +263,7 @@ local function MyRoutine()
 	end;
 
 	local function HolyShockFunc(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 85 or (MainAddon.Toggle:GetToggle("ForceHeal") and UnitTarget:HealthPercentage() <= 95))
+		return (UnitTarget:HealthPercentage() <= 80 or (MainAddon.Toggle:GetToggle("ForceHeal") and UnitTarget:HealthPercentage() <= 95))
 	end;
 
 	local function WordOfGloryMembersFunc(UnitTarget)
