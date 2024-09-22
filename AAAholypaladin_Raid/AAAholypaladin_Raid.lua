@@ -269,11 +269,11 @@ local function MyRoutine()
 	end;
 
 	local function HolyShockFunc(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 75 or (MainAddon.Toggle:GetToggle("ForceHeal") and UnitTarget:HealthPercentage() <= 95) or UnitTarget:DebuffUp(S.EnvelopingShadowflame, 30) or UnitTarget:DebuffUp(S.CurseOfEntropy, 30))
+		return (UnitTarget:HealthPercentage() <= 85 or (MainAddon.Toggle:GetToggle("ForceHeal") and UnitTarget:HealthPercentage() <= 95) or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy))
 	end;
 
 	local function WordOfGloryMembersFunc(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 65 or (MainAddon.Toggle:GetToggle("ForceHeal") and UnitTarget:HealthPercentage() <= 80) or UnitTarget:DebuffUp(S.EnvelopingShadowflame, 30) or UnitTarget:DebuffUp(S.CurseOfEntropy, 30))
+		return (UnitTarget:HealthPercentage() <= 75 or (MainAddon.Toggle:GetToggle("ForceHeal") and UnitTarget:HealthPercentage() <= 80) or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy))
 	end;
 
 	local function BlessingOfSacrificeFunc(UnitTarget)
