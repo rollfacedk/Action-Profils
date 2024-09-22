@@ -207,6 +207,8 @@ local function MyRoutine()
 		HolyBulwarkBuff = Spell(432496),
 		SacredWeapon = Spell(432472),
 		SacredWeaponBuff = Spell(432502),
+		EnvelopingShadowflame = Spell(451224),
+		CurseOfEntropy = Spell(450095),
 		
 	}
 	
@@ -246,6 +248,10 @@ local function MyRoutine()
 		MainAddon:Print('This is my own addon =), Hurray.')
 	end
 
+	local function HealingAbsorbList()
+		return (Player:DebuffUp(S.EnvelopingShadowflame) or Player:DebuffUp(S.CurseOfEntropy))
+	end
+
 	local function TrueFunc(UnitTarget)
 		return UnitTarget:HealthPercentage() <= 100
 	end;
@@ -259,15 +265,15 @@ local function MyRoutine()
 	end;
 
 	local function LayOnHandsFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 25 and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:BuffDown(S.WardOfFacelessIereBuff) and UnitTarget:BuffDown(S.BlessingOfSacrifice)
+		return UnitTarget:HealthPercentage() <= 25
 	end;
 
 	local function HolyShockFunc(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 80 or (MainAddon.Toggle:GetToggle("ForceHeal") and UnitTarget:HealthPercentage() <= 95))
+		return (UnitTarget:HealthPercentage() <= 85 or (MainAddon.Toggle:GetToggle("ForceHeal") and UnitTarget:HealthPercentage() <= 95) or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy))
 	end;
 
 	local function WordOfGloryMembersFunc(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 75 or (MainAddon.Toggle:GetToggle("ForceHeal") and UnitTarget:HealthPercentage() <= 80))
+		return (UnitTarget:HealthPercentage() <= 75 or (MainAddon.Toggle:GetToggle("ForceHeal") and UnitTarget:HealthPercentage() <= 80) or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy))
 	end;
 
 	local function BlessingOfSacrificeFunc(UnitTarget)
@@ -279,7 +285,7 @@ local function MyRoutine()
 	end;
 
 	local function FlashOfLightFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 90
+		return UnitTarget:HealthPercentage() <= 90 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy)
 	end;
 
 	local function BeaconOfFaithFunc(UnitTarget)
@@ -366,6 +372,17 @@ local function MyRoutine()
 			if S.BlessingOfWinter:IsCastable() then
 				if Cast(S.BlessingOfWinter, Player) then return end
 			end
+			if S.BlessingOfSummer:IsCastable() then
+				if Cast(S.BlessingOfSummer, Player) then return end
+			end
+
+			if S.BlessingOfAutumn:IsCastable() then
+				if Cast(S.BlessingOfAutumn, Player) then return end
+			end
+
+			if S.BlessingOfSpring:IsCastable() then
+				if Cast(S.BlessingOfSpring, Player) then return end
+			end
 		end
 
 		if HealingEngine.IsHealingNPC(MouseOver) and not HealingEngine.IsHealingNPC(Focus) then
@@ -396,19 +413,8 @@ local function MyRoutine()
 			if Cast(S.WordOfGlory, Player) then return end
 		end
 
-		if S.BeaconOfVirtue:IsCastable() and HealingEngine:MembersUnderPercentage(75) >= 3 then		
-			if S.BlessingOfSummer:IsCastable() then
-				if Cast(S.BlessingOfSummer, Player) then return end
-			end
-
-			if S.BlessingOfAutumn:IsCastable() then
-				if Cast(S.BlessingOfAutumn, Player) then return end
-			end
-
-			if S.BlessingOfSpring:IsCastable() then
-				if Cast(S.BlessingOfSpring, Player) then return end
-			end
-			if MainAddon.CastCycleAlly(S.BeaconOfVirtue, MEMBERS, TrueFunc) then return end
+		if S.BeaconOfVirtue:IsCastable() and (HealingEngine:MembersUnderPercentage(80) >= 3 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy) >= 3) then		
+			if Cast(S.BeaconOfVirtue, Player) then return end
 		end
 
 		if S.BeaconOfFaith:IsCastable() then
@@ -419,15 +425,15 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.BeaconOfLight, HEALERS, BeaconOfLightFunc) then return end
 		end
 
-		if S.HolyPrism:IsReady() and TargetIsValid() and HealingEngine:MembersUnderPercentage(75) >= 3 and Player:HolyPower() <= 4 then
+		if S.HolyPrism:IsReady() and TargetIsValid() and (HealingEngine:MembersUnderPercentage(80) >= 3 and Player:HolyPower() <= 4 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy) >= 3) then
 			if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
 		end
 
-		if S.DivineToll:IsCastable() and HealingEngine:MembersUnderPercentage(75) >= 3 and Player:HolyPower() <= 2 then
+		if S.DivineToll:IsCastable() and (HealingEngine:MembersUnderPercentage(80) >= 3 and Player:HolyPower() <= 2 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy) >= 3) then
 			if Cast(S.DivineToll, Player) then return end
 		end
 		
-		if S.HolyShock:IsCastable() and (Player:HolyPower() <= 4 and Player:BuffDown(S.RisingSunlightBuff) or Player:HolyPower() <= 2) then
+		if S.HolyShock:IsCastable() and ((Player:HolyPower() <= 4 and Player:BuffDown(S.RisingSunlightBuff) or Player:HolyPower() <= 2) or HealingAbsorbList()) then
 			if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, HolyShockFunc) then return end
 		end
 
