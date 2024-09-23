@@ -413,7 +413,7 @@ local function MyRoutine()
 			if Cast(S.WordOfGlory, Player) then return end
 		end
 
-		if S.BeaconOfVirtue:IsCastable() and (HealingEngine:MembersUnderPercentage(80) >= 3 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3) then		
+		if S.BeaconOfVirtue:IsCastable() and (HealingEngine:MembersUnderPercentage(80, nil, 30) >= 3 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3) then		
 			if Cast(S.BeaconOfVirtue, Player) then return end
 		end
 
@@ -425,11 +425,11 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.BeaconOfLight, HEALERS, BeaconOfLightFunc) then return end
 		end
 
-		if S.HolyPrism:IsReady() and TargetIsValid() and (HealingEngine:MembersUnderPercentage(80) >= 3 and Player:HolyPower() <= 4 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3) then
+		if S.HolyPrism:IsReady() and TargetIsValid() and (HealingEngine:MembersUnderPercentage(80, nil, 30) >= 3 and Player:HolyPower() <= 4 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3) then
 			if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
 		end
 
-		if S.DivineToll:IsCastable() and (HealingEngine:MembersUnderPercentage(80) >= 3 and Player:HolyPower() <= 2 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3) then
+		if S.DivineToll:IsCastable() and (HealingEngine:MembersUnderPercentage(80, nil, 30) >= 3 and Player:HolyPower() <= 2 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3) then
 			if Cast(S.DivineToll, Player) then return end
 		end
 		
