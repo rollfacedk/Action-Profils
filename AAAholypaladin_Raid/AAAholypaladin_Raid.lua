@@ -1,5 +1,5 @@
 local function MyRoutine()
-	local Author = 'AAAholypaladin_Raid'
+	local Author = 'Holy Paladin Raiding'
 	local SpecID = 65 --Unholy  --https://wowpedia.fandom.com/wiki/API_GetSpecializationInfo
 
 	--HR HEADER
@@ -269,11 +269,15 @@ local function MyRoutine()
 	end;
 
 	local function HolyShockFunc(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 85 or (MainAddon.Toggle:GetToggle("ForceHeal") and UnitTarget:HealthPercentage() <= 95) or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy))
+		return (UnitTarget:HealthPercentage() <= 85 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy))
 	end;
 
 	local function WordOfGloryMembersFunc(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 75 or (MainAddon.Toggle:GetToggle("ForceHeal") and UnitTarget:HealthPercentage() <= 80) or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy))
+		return (UnitTarget:HealthPercentage() <= 65 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy))
+	end;
+
+	local function WordOfGloryMembersFunc2(UnitTarget)
+		return (UnitTarget:HealthPercentage() <= 35 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy))
 	end;
 
 	local function BlessingOfSacrificeFunc(UnitTarget)
@@ -285,7 +289,7 @@ local function MyRoutine()
 	end;
 
 	local function FlashOfLightFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 75 or UnitTarget:DebuffUp(S.EnvelopingShadowflame, 30) or UnitTarget:DebuffUp(S.CurseOfEntropy, 30)
+		return UnitTarget:HealthPercentage() <= 85 or UnitTarget:DebuffUp(S.EnvelopingShadowflame, 30) or UnitTarget:DebuffUp(S.CurseOfEntropy, 30)
 	end;
 
 	local function BeaconOfFaithFunc(UnitTarget)
@@ -299,6 +303,7 @@ local function MyRoutine()
 	local function HolyPrismFunc(UnitTarget)
 		return UnitTarget:HealthPercentage() <= 35
 	end;
+	
 
 	S.BlessingOfSummer.offGCD = true
 	S.BlessingOfAutumn.offGCD = true
@@ -318,11 +323,11 @@ local function MyRoutine()
 
 		if Player:AffectingCombat() then
 
-			if S.AvengingWrath:IsCastable() and HealingEngine:MembersUnderPercentage(50) >= 4 then
+			if S.AvengingWrath:IsCastable() and HealingEngine:MembersUnderPercentage(60, nil, 30) >= 4 then
 				if Cast(S.AvengingWrath) then return end
 			end
 
-			if S.AvengingCrusader:IsCastable() and HealingEngine:MembersUnderPercentage(50) >= 4 then
+			if S.AvengingCrusader:IsCastable() and HealingEngine:MembersUnderPercentage(60, nil, 30) >= 4 then
 				if Cast(S.AvengingCrusader) then return end
 			end
 
@@ -413,7 +418,14 @@ local function MyRoutine()
 			if Cast(S.WordOfGlory, Player) then return end
 		end
 
-		if S.BeaconOfVirtue:IsCastable() and (HealingEngine:MembersUnderPercentage(75, nil, 30) >= 4 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3) then		
+		if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) and not S.LightOfTheMartyr:IsAvailable() then
+			if S.Consecration:IsCastable() and Player:AffectingCombat() and not Player:IsMoving() and Player:BuffDown(S.ConsecrationBuff) then
+				if Cast(S.Consecration) then return end
+			end
+			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, WordOfGloryMembersFunc2) then return end
+		end
+
+		if S.BeaconOfVirtue:IsCastable() and (HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3) then		
 			if Cast(S.BeaconOfVirtue, Player) then return end
 		end
 
@@ -425,11 +437,11 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.BeaconOfLight, HEALERS, BeaconOfLightFunc) then return end
 		end
 
-		if S.HolyPrism:IsReady() and TargetIsValid() and (HealingEngine:MembersUnderPercentage(75, nil, 30) >= 4 and Player:HolyPower() <= 4 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3) then
+		if S.HolyPrism:IsReady() and Target:IsSpellInRange(S.HolyPrism) and TargetIsValid() and (HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 and Player:HolyPower() <= 4 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3) then
 			if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
 		end
 
-		if S.DivineToll:IsCastable() and (HealingEngine:MembersUnderPercentage(75, nil, 30) >= 4 and Player:HolyPower() <= 2 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3) then
+		if S.DivineToll:IsCastable() and (HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 and Player:HolyPower() <= 2 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3) then
 			if Cast(S.DivineToll, Player) then return end
 		end
 		
@@ -483,7 +495,7 @@ local function MyRoutine()
 			
 		end
 
-		if S.FlashOfLight:IsCastable() and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable()) then
+		if S.FlashOfLight:IsCastable() and not Target:IsInMeleeRange(5) and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable()) then
 			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, FlashOfLightFunc) then return end
 		end
 
