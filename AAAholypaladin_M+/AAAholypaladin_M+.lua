@@ -209,6 +209,7 @@ local function MyRoutine()
 		SacredWeaponBuff = Spell(432502),
 		EnvelopingShadowflame = Spell(451224),
 		CurseOfEntropy = Spell(450095),
+		Aurora = Spell(439760),
 		
 	}
 	
