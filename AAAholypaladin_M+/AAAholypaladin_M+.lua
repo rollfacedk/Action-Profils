@@ -285,7 +285,7 @@ local function MyRoutine()
 	end;
 
 	local function FlashOfLightFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 90 or UnitTarget:DebuffUp(S.EnvelopingShadowflame, 30) or UnitTarget:DebuffUp(S.CurseOfEntropy, 30)
+		return UnitTarget:HealthPercentage() <= 75 or UnitTarget:DebuffUp(S.EnvelopingShadowflame, 30) or UnitTarget:DebuffUp(S.CurseOfEntropy, 30)
 	end;
 
 	local function BeaconOfFaithFunc(UnitTarget)
@@ -484,7 +484,7 @@ local function MyRoutine()
 			
 		end
 
-		if S.FlashOfLight:IsCastable() and not Target:IsInMeleeRange(5) and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable()) then
+		if S.FlashOfLight:IsCastable() and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable()) then
 			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, FlashOfLightFunc) then return end
 		end
 

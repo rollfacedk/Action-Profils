@@ -492,7 +492,7 @@ local function MyRoutine()
 			
 		end
 
-		if S.FlashOfLight:IsCastable() and not Target:IsInMeleeRange(5) and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable()) then
+		if S.FlashOfLight:IsCastable() and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable()) then
 			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, FlashOfLightFunc) then return end
 		end
 
