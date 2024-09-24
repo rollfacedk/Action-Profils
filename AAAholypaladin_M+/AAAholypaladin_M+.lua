@@ -276,10 +276,6 @@ local function MyRoutine()
 		return (UnitTarget:HealthPercentage() <= 75 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy))
 	end;
 
-	local function WordOfGloryMembersFunc2(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 45 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy))
-	end;
-
 	local function BlessingOfSacrificeFunc(UnitTarget)
 		return UnitTarget:HealthPercentage() <= 35 and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:BuffDown(S.WardOfFacelessIereBuff) and UnitTarget:BuffDown(S.BlessingOfSacrifice) and UnitTarget:GUID() ~= Player:GUID()
 	end;
@@ -418,11 +414,15 @@ local function MyRoutine()
 			if Cast(S.WordOfGlory, Player) then return end
 		end
 
-		if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) and not S.LightOfTheMartyr:IsAvailable() then
+		if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) then
 			if S.Consecration:IsCastable() and Player:AffectingCombat() and not Player:IsMoving() and Player:BuffDown(S.ConsecrationBuff) then
 				if Cast(S.Consecration) then return end
 			end
-			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, WordOfGloryMembersFunc2) then return end
+			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, WordOfGloryMembersFunc) then return end
+		end
+
+		if S.HolyPrism:IsReady() and Player:HolyPower() <= 2 then
+			if MainAddon.CastCycleAlly(S.HolyPrism, MEMBERS, HolyPrismFunc) then return end
 		end
 
 		if S.BeaconOfVirtue:IsCastable() and (HealingEngine:MembersUnderPercentage(80, nil, 30) >= 3 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3) then		
@@ -447,17 +447,6 @@ local function MyRoutine()
 		
 		if S.HolyShock:IsCastable() and ((Player:HolyPower() <= 4 and Player:BuffDown(S.RisingSunlightBuff) or Player:HolyPower() <= 2) or HealingAbsorbList()) then
 			if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, HolyShockFunc) then return end
-		end
-
-		if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) then
-			if S.Consecration:IsCastable() and Player:AffectingCombat() and not Player:IsMoving() and Player:BuffDown(S.ConsecrationBuff) then
-				if Cast(S.Consecration) then return end
-			end
-			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, WordOfGloryMembersFunc) then return end
-		end
-
-		if S.HolyPrism:IsReady() and Player:HolyPower() <= 2 then
-			if MainAddon.CastCycleAlly(S.HolyPrism, MEMBERS, HolyPrismFunc) then return end
 		end
 
 		if TargetIsValid() then
