@@ -386,24 +386,24 @@ local function MyRoutine()
 			end
 		end
 
-		if HealingEngine.IsHealingNPC(MouseOver) and not HealingEngine.IsHealingNPC(Focus) then
-			MainAddon.SetTopColor(1, "Focus Mouseover")
-		end;
-		if HealingEngine.IsHealingNPC(Focus) and Focus:HealthPercentage() < 100 then
+		-- if HealingEngine.IsHealingNPC(MouseOver) and not HealingEngine.IsHealingNPC(Focus) then
+		-- 	MainAddon.SetTopColor(1, "Focus Mouseover")
+		-- end;
+		-- if HealingEngine.IsHealingNPC(Focus) and Focus:HealthPercentage() < 100 then
 
-			if S.HolyShock:IsCastable(Focus) and (Player:HolyPower() <= 4 and Player:BuffDown(S.RisingSunlightBuff) or Player:HolyPower() <= 2) then
-				if MainAddon.CastAlly(S.HolyShock, Focus) then
-					return 
-				end
-			end
+		-- 	if S.HolyShock:IsCastable(Focus) and (Player:HolyPower() <= 4 and Player:BuffDown(S.RisingSunlightBuff) or Player:HolyPower() <= 2) then
+		-- 		if MainAddon.CastAlly(S.HolyShock, Focus) then
+		-- 			return 
+		-- 		end
+		-- 	end
 
-			if S.WordOfGlory:IsCastable(Focus) then
-				if MainAddon.CastAlly(S.WordOfGlory, Focus) then
-					return 
-				end
-			end
+		-- 	if S.WordOfGlory:IsCastable(Focus) then
+		-- 		if MainAddon.CastAlly(S.WordOfGlory, Focus) then
+		-- 			return 
+		-- 		end
+		-- 	end
 			
-		end
+		-- end
 
 		-- Healing	
 
@@ -419,7 +419,7 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.BeaconOfLight, HEALERS, BeaconOfLightFunc) then return end
 		end
 
-		if S.HolyPrism:IsReady() and Target:IsSpellInRange(S.HolyPrism) and TargetIsValid() and (HealingEngine:MembersUnderPercentage(80, nil, 30) >= 3 and Player:HolyPower() <= 4 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3) then
+		if S.HolyPrism:IsReady() and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) and Target:IsSpellInRange(S.HolyPrism) and TargetIsValid() and (HealingEngine:MembersUnderPercentage(80, nil, 30) >= 3 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3) then
 			if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
 		end
 
@@ -434,6 +434,10 @@ local function MyRoutine()
 			if Cast(S.WordOfGlory, Player) then return end
 		end
 
+		if S.HolyShock:IsCastable() and ((Player:HolyPower() <= 4 and Player:BuffDown(S.RisingSunlightBuff) or Player:HolyPower() <= 2) or HealingAbsorbList()) then
+			if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, HolyShockFunc) then return end
+		end
+
 		if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) then
 			if S.Consecration:IsCastable() and Player:AffectingCombat() and not Player:IsMoving() and Player:BuffDown(S.ConsecrationBuff) then
 				if Cast(S.Consecration) then return end
@@ -441,12 +445,8 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, WordOfGloryMembersFunc) then return end
 		end
 
-		if S.HolyPrism:IsReady() and Player:HolyPower() <= 2 then
+		if S.HolyPrism:IsReady() and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) then
 			if MainAddon.CastCycleAlly(S.HolyPrism, MEMBERS, HolyPrismFunc) then return end
-		end
-
-		if S.HolyShock:IsCastable() and ((Player:HolyPower() <= 4 and Player:BuffDown(S.RisingSunlightBuff) or Player:HolyPower() <= 2) or HealingAbsorbList()) then
-			if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, HolyShockFunc) then return end
 		end
 
 		if TargetIsValid() then
