@@ -278,9 +278,9 @@ local function MyRoutine()
 		-- use_items
 		local ItemToUse, ItemSlot, ItemRange = Player:GetUseableItems(OnUseExcludes)
 		if ItemToUse then
-		  local DisplayStyle = Settings.CommonsDS.DisplayStyle.Trinkets
+		  local DisplayStyle = true
 		  local IsTrinket = ItemSlot == 13 or ItemSlot == 14
-		  if not IsTrinket then DisplayStyle = Settings.CommonsDS.DisplayStyle.Items end
+		  if not IsTrinket then DisplayStyle = true end
 		  if (IsTrinket) or (not IsTrinket) and Target:IsInRange(ItemRange) then
 			if Cast(ItemToUse) then return "Generic use_items for " .. ItemToUse:Name(); end
 		  end
