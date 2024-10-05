@@ -177,6 +177,11 @@ local function MyRoutine()
 		ModerateStagger                       = Spell(124274),
 		LightStagger                          = Spell(124275),
 
+
+
+
+		ViviciousVivication = Spell(388812),
+
 		
 	}
 
@@ -193,6 +198,10 @@ local function MyRoutine()
 		TreacherousTransmitter                = Item(221023, {13, 14}),
 		-- Other On-Use Items
 		Djaruun                               = Item(202569, {16}),
+
+
+
+		
 		
 	}
 
@@ -263,6 +272,10 @@ local function MyRoutine()
 		  if MissingHP > ExpelHarmHeal * 0.9 or Player:HealthPercentage() <= 100 / 2 then
 			if Cast(S.ExpelHarm) then return "Expel Harm (defensives)"; end
 		  end
+		end
+
+		if S.Vivify:IsCastable() and S.ViviciousVivication:IsAvailable() and Player:HealthPercentage() <= 60 then
+			if Cast(S.Vivify, Player) then return end
 		end
 
 		if S.DampenHarm:IsCastable() and Player:BuffDown(S.FortifyingBrewBuff) and Player:HealthPercentage() <= 35 then
