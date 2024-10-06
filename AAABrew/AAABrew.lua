@@ -376,6 +376,10 @@ local function MyRoutine()
 		-- end
 		-- end
 		if TargetIsValid() then
+
+			if S.TouchofDeath:IsReady() then
+				if Cast(S.TouchofDeath) then return ""; end
+			end
 			-- call_action_list,name=race_actions
 			if true then
 			local ShouldReturn = RaceActions(); if ShouldReturn then return ShouldReturn; end
