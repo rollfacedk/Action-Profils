@@ -274,8 +274,8 @@ local function MyRoutine()
 		  end
 		end
 
-		if S.Vivify:IsCastable() and S.ViviciousVivication:IsAvailable() and Player:HealthPercentage() <= 60 then
-			if Cast(S.Vivify, Player) then return end
+		if S.Vivify:IsCastable() and S.ViviciousVivication:IsAvailable() and Player:HealthPercentage() <= 65 then
+			if Cast(S.Vivify) then return end
 		end
 
 		if S.DampenHarm:IsCastable() and Player:BuffDown(S.FortifyingBrewBuff) and Player:HealthPercentage() <= 35 then
