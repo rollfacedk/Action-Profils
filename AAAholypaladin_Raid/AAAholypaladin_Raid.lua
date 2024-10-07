@@ -166,7 +166,7 @@ local function MyRoutine()
 		Veneration = Spell(392938),
 		BreakingDawn = Spell(387879),
 		SecondSunrise = Spell(200482),
-		AvengingCrusader = MultiSpell(216331, 31884), --Multi
+		AvengingCrusader = Spell(216331), --Multi
 		DivineGlimpse = Spell(387805),
 		TowerOfRadiance = Spell(231642),
 		BoundlessSalvation = Spell(392951),
@@ -272,7 +272,7 @@ local function MyRoutine()
 	end;
 
 	local function WordOfGloryMembersFunc(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 75 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
+		return (UnitTarget:HealthPercentage() <= 65 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
 	end;
 
 	local function WordOfGloryMembersFunc2(UnitTarget)

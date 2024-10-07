@@ -166,7 +166,7 @@ local function MyRoutine()
 		Veneration = Spell(392938),
 		BreakingDawn = Spell(387879),
 		SecondSunrise = Spell(200482),
-		AvengingCrusader = MultiSpell(216331, 31884), --Multi
+		AvengingCrusader = Spell(216331), --Multi
 		DivineGlimpse = Spell(387805),
 		TowerOfRadiance = Spell(231642),
 		BoundlessSalvation = Spell(392951),
@@ -272,7 +272,7 @@ local function MyRoutine()
 	end;
 
 	local function WordOfGloryMembersFunc(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 85 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
+		return (UnitTarget:HealthPercentage() <= 80 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
 	end;
 
 	local function WordOfGloryMembersFunc2(UnitTarget)
@@ -360,7 +360,7 @@ local function MyRoutine()
 			end
 
 			if S.BlessingOfSacrifice:IsCastable() then
-				if MainAddon.CastCycleAlly(S.BlessingOfSacrifice, TANKS, BlessingOfSacrificeFunc) then return end
+				if MainAddon.CastCycleAlly(S.BlessingOfSacrifice, Members, BlessingOfSacrificeFunc) then return end
 			end
 		end
 
@@ -428,6 +428,9 @@ local function MyRoutine()
 			end
 		end
 
+		if S.HolyLight:IsCastable() and Player:BuffUp(S.DivineFavorBuff) and Player:BuffUp(S.InfusionOfLightBuff) and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable()) then
+			if MainAddon.CastCycleAlly(S.HolyLight, MEMBERS, WordOfGloryMembersFunc) then return end
+		end
 
 		if S.Consecration:IsCastable() and Player:AffectingCombat() and (not Player:IsMoving() or Target:IsInMeleeRange(5) and not Target:IsMoving()) and Player:BuffDown(S.ConsecrationBuff) then
 			if Cast(S.Consecration) then return end
@@ -440,6 +443,10 @@ local function MyRoutine()
 			if S.HolyShock:IsReady() and TargetIsValid() and Target:IsSpellInRange(S.HolyShock) then
 				if MainAddon.SetTopColor(6, "Holy Shock Enemy") then return end
 			end
+		end
+
+		if S.HolyPrism:IsReady() and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) then
+			if MainAddon.CastCycleAlly(S.HolyPrism, MEMBERS, WordOfGloryMembersFunc2) then return end
 		end
 
 		if S.Judgment:IsReady() and S.TruthPrevails:IsAvailable() and TargetIsValid() and Target:IsSpellInRange(S.Judgment) and Player:HolyPower() <= 4 then
@@ -462,15 +469,7 @@ local function MyRoutine()
 			if Cast(S.HammerOfWrath) then return end
 		end
 
-		if S.HolyPrism:IsReady() and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) then
-			if MainAddon.CastCycleAlly(S.HolyPrism, MEMBERS, WordOfGloryMembersFunc2) then return end
-		end
-
-		if S.HolyLight:IsCastable() and Player:BuffUp(S.DivineFavorBuff) and Player:BuffUp(S.InfusionOfLightBuff) and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable()) then
-			if MainAddon.CastCycleAlly(S.HolyLight, MEMBERS, WordOfGloryMembersFunc) then return end
-		end
-
-		if S.FlashOfLight:IsCastable() and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable()) then
+		if S.FlashOfLight:IsCastable() and not Target:IsInMeleeRange(5) and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable()) then
 			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, HolyShockFunc) then return end
 		end
 
