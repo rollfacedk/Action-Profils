@@ -268,7 +268,7 @@ local function MyRoutine()
 	end;
 
 	local function HolyShockFunc(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 95 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
+		return (UnitTarget:HealthPercentage() <= 90 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
 	end;
 
 	local function WordOfGloryMembersFunc(UnitTarget)
@@ -280,7 +280,7 @@ local function MyRoutine()
 	end;
 
 	local function BlessingOfSacrificeFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 35 and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:BuffDown(S.WardOfFacelessIereBuff) and UnitTarget:BuffDown(S.BlessingOfSacrifice) and UnitTarget:GUID() ~= Player:GUID()
+		return UnitTarget:HealthPercentage() <= 35 and UnitTarget:GUID() ~= Player:GUID()
 	end;
 
 	local function BlessingOfProtectionFunc(UnitTarget)
@@ -360,7 +360,7 @@ local function MyRoutine()
 			end
 
 			if S.BlessingOfSacrifice:IsCastable() then
-				if MainAddon.CastCycleAlly(S.BlessingOfSacrifice, Members, BlessingOfSacrificeFunc) then return end
+				if MainAddon.CastCycleAlly(S.BlessingOfSacrifice, MEMBERS, BlessingOfSacrificeFunc) then return end
 			end
 		end
 
