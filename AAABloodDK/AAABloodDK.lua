@@ -350,7 +350,7 @@ local function MyRoutine()
 			if Cast(S.Lichborne) then return "Lichborne"; end
 		end
 		-- Vampiric Blood
-		if S.VampiricBlood:IsCastable() and IsTanking and (Player:HealthPercentage() <= 30 and Player:BuffDown(S.VampiricBloodBuff) and Player:BuffDown(S.IceboundFortitudeBuff)) then
+		if S.VampiricBlood:IsCastable() and IsTanking and (Player:HealthPercentage() <= 50 and Player:BuffDown(S.VampiricBloodBuff) and Player:BuffDown(S.IceboundFortitudeBuff)) then
 		  if Cast(S.VampiricBlood) then return "vampiric_blood defensives 14"; end
 		end
 		-- Icebound Fortitude
