@@ -430,6 +430,10 @@ local function MyRoutine()
 			end
 		end
 
+		if S.HolyLight:IsCastable() and not Target:IsInMeleeRange(5) and (Player:BuffUp(S.DivineFavorBuff) and Player:BuffUp(S.InfusionOfLightBuff)) and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable()) then
+			if MainAddon.CastCycleAlly(S.HolyLight, MEMBERS, HolyLightFunc) then return end
+		end
+
 		if S.FlashOfLight:IsCastable() and not Target:IsInMeleeRange(5) and Player:BuffUp(S.InfusionOfLightBuff) and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable())  then
 			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, WordOfGloryMembersFunc) then return end
 		end
