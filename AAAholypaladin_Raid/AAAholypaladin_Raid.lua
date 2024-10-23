@@ -467,6 +467,10 @@ local function MyRoutine()
 			end
 		end
 
+		if S.Consecration:IsCastable() and Player:AffectingCombat() and not Player:IsMoving() and Player:BuffDown(S.ConsecrationBuff) then
+			if Cast(S.Consecration) then return end
+		end
+
 		if Player:HolyPower() >= 5 then
 			if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) then
 				if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, WordOfGloryMembersFunc) then return end
@@ -483,10 +487,6 @@ local function MyRoutine()
 		if S.HolyLight:IsCastable() and not Target:IsInMeleeRange(5) and (Player:BuffUp(S.DivineFavorBuff) and Player:BuffUp(S.InfusionOfLightBuff)) and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable()) then
 			if MainAddon.CastCycleAlly(S.HolyLight, MEMBERS, WordOfGloryMembersFunc2) then return end
 		end
-
-		-- if S.Consecration:IsCastable() and Player:AffectingCombat() and not Player:IsMoving() and Player:BuffDown(S.ConsecrationBuff) then
-		-- 	if Cast(S.Consecration) then return end
-		-- end
 
 		if ((Player:HolyPower() <= 4 and Player:BuffDown(S.RisingSunlightBuff) or Player:HolyPower() <= 2))  then
 			if S.HolyShock:IsCastable() then
