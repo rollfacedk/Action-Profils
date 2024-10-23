@@ -1,5 +1,5 @@
 local function MyRoutine()
-	local Author = 'Holy Paladin Raid'
+	local Author = 'Holy Paladin M+'
 	local SpecID = 65 --Unholy  --https://wowpedia.fandom.com/wiki/API_GetSpecializationInfo
 
 	--HR HEADER
@@ -100,7 +100,7 @@ local function MyRoutine()
 		-- Paladin
 		ImprovedCleanse = Spell(393024),
 		HallowedGround = Spell(377043),
-		LayOnHands = Spell(633),
+		LayOnHands = MultiSpell(633, 471195),
 		Repentance = Spell(20066), --Multi
 		AurasOfTheResolute = Spell(385633),
 		AurasOfSwiftVengeance = Spell(385639),
@@ -293,12 +293,16 @@ local function MyRoutine()
 		MainAddon:Print('This is my own addon =), Hurray.')
 	end
 
+	local function AvengingCrusaderWOG(UnitTarget)
+		return UnitTarget:HealthPercentage() <= 35 and UnitTarget:DebuffDown(S.ForberanceDebuff)
+	end;
+
 	local function LayOnHandsFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 25 and UnitTarget:DebuffUp(S.ForberanceDebuff)
+		return UnitTarget:HealthPercentageFlat() <= 25 and UnitTarget:DebuffDown(S.ForberanceDebuff)
 	end;
 
 	local function HolyShockFunc(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 75 )
+		return (UnitTarget:HealthPercentage() <= 75)
 	end;
 
 	local function WordOfGloryMembersFunc(UnitTarget)
@@ -306,23 +310,23 @@ local function MyRoutine()
 	end;
 
 	local function WordOfGloryMembersFunc2(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 45)
+		return (UnitTarget:HealthPercentage() <= 50)
 	end;
 
 	local function BlessingOfSacrificeFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 30 and UnitTarget:GUID() ~= Player:GUID()
+		return UnitTarget:HealthPercentageFlat() <= 30 and UnitTarget:GUID() ~= Player:GUID()
 	end;
 
 	local function BlessingOfProtectionFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 30 and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:DebuffUp(S.ForberanceDebuff)
+		return UnitTarget:HealthPercentageFlat() <= 30 and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:DebuffUp(S.ForberanceDebuff)
 	end;
 
 	local function HolyPrismFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 45 
+		return UnitTarget:HealthPercentage() <= 35
 	end;
 
 	local function HolyLightFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 45 
+		return UnitTarget:HealthPercentage() <= 50
 	end;
 	
 
@@ -374,7 +378,11 @@ local function MyRoutine()
 			end
 
 			if S.LayOnHands:IsCastable() then
-				if MainAddon.CastCycleAlly(S.LayOnHands, MEMBERS, LayOnHandsFunc) then return "LOH TANKS" end
+				if MainAddon.CastCycleAlly(S.LayOnHands, HEALERS, LayOnHandsFunc) then return "LOH TANKS" end
+			end
+
+			if S.LayOnHands:IsCastable() then
+				if MainAddon.CastCycleAlly(S.LayOnHands, TANKS, LayOnHandsFunc) then return "LOH TANKS" end
 			end
 
 			if S.BlessingOfProtection:IsCastable() then
@@ -404,7 +412,7 @@ local function MyRoutine()
 		if Player:BuffUp(S.AvengingCrusader) then
 
 			if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) then
-				if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, WordOfGloryMembersFunc2) then return end
+				if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, AvengingCrusaderWOG) then return end
 			end
 
 			if S.Judgment:IsReady() and TargetIsValid() and Target:IsSpellInRange(S.Judgment) then

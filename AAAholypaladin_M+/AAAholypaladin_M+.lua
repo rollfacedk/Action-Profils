@@ -100,7 +100,7 @@ local function MyRoutine()
 		-- Paladin
 		ImprovedCleanse = Spell(393024),
 		HallowedGround = Spell(377043),
-		LayOnHands = Spell(633),
+		LayOnHands = MultiSpell(633, 471195),
 		Repentance = Spell(20066), --Multi
 		AurasOfTheResolute = Spell(385633),
 		AurasOfSwiftVengeance = Spell(385639),
@@ -293,8 +293,12 @@ local function MyRoutine()
 		MainAddon:Print('This is my own addon =), Hurray.')
 	end
 
+	local function AvengingCrusaderWOG(UnitTarget)
+		return UnitTarget:HealthPercentage() <= 50 and UnitTarget:DebuffDown(S.ForberanceDebuff)
+	end;
+
 	local function LayOnHandsFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 25 and UnitTarget:DebuffUp(S.ForberanceDebuff)
+		return UnitTarget:HealthPercentageFlat() <= 25 and UnitTarget:DebuffDown(S.ForberanceDebuff)
 	end;
 
 	local function HolyShockFunc(UnitTarget)
@@ -302,19 +306,19 @@ local function MyRoutine()
 	end;
 
 	local function WordOfGloryMembersFunc(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 80 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
+		return (UnitTarget:HealthPercentage() <= 85 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
 	end;
 
 	local function WordOfGloryMembersFunc2(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 60)
+		return (UnitTarget:HealthPercentage() <= 60 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
 	end;
 
 	local function BlessingOfSacrificeFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 30 and UnitTarget:GUID() ~= Player:GUID()
+		return UnitTarget:HealthPercentageFlat() <= 30 and UnitTarget:GUID() ~= Player:GUID()
 	end;
 
 	local function BlessingOfProtectionFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 30 and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:DebuffUp(S.ForberanceDebuff)
+		return UnitTarget:HealthPercentageFlat() <= 30 and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:DebuffUp(S.ForberanceDebuff)
 	end;
 
 	local function HolyPrismFunc(UnitTarget)
@@ -429,7 +433,7 @@ local function MyRoutine()
 			end
 		end
 
-		if HealingEngine:MembersUnderPercentage(80, nil, 30) >= 3 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.VoidRift, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3 or HealingEngine:DebuffTotal(S.CorruptedCoating, 30) >= 3  then		
+		if HealingEngine:MembersUnderPercentage(85, nil, 30) >= 3 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.VoidRift, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3 or HealingEngine:DebuffTotal(S.CorruptedCoating, 30) >= 3  then		
 			if S.HolyPrism:IsReady() and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) and Target:IsSpellInRange(S.HolyPrism) and TargetIsValid() then
 				if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
 			end
