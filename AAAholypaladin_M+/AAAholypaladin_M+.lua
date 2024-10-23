@@ -463,9 +463,9 @@ local function MyRoutine()
 			end
 		end
 
-		if S.Consecration:IsCastable() and Target:IsInMeleeRange(8) and Player:AffectingCombat() and not Player:IsMoving() and Target:DebuffDown(S.ConsecrationDebuff) then
-			if Cast(S.Consecration) then return end
-		end
+		-- if S.Consecration:IsCastable() and Target:IsInMeleeRange(8) and Player:AffectingCombat() and not Player:IsMoving() and Target:DebuffDown(S.ConsecrationDebuff) then
+		-- 	if Cast(S.Consecration) then return end
+		-- end
 
 		if Player:HolyPower() >= 5 then
 			if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) then
