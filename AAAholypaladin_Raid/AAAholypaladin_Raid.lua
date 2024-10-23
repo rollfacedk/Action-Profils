@@ -66,6 +66,7 @@ local function MyRoutine()
 		ConcentrationAura = Spell(317920),
 		Consecration = Spell(26573),
 		ConsecrationBuff = Spell(188370),
+		ConsecrationDebuff = Spell(204242),
 		CrusaderAura = Spell(32223),
 		CrusaderStrike = Spell(35395),
 		DevotionAura = Spell(465),
@@ -467,7 +468,7 @@ local function MyRoutine()
 			end
 		end
 
-		if S.Consecration:IsCastable() and Player:AffectingCombat() and not Player:IsMoving() and Player:BuffDown(S.ConsecrationBuff) then
+		if S.Consecration:IsCastable() and Target:IsInMeleeRange(8) and Player:AffectingCombat() and not Player:IsMoving() and Target:DebuffDown(S.ConsecrationDebuff) then
 			if Cast(S.Consecration) then return end
 		end
 

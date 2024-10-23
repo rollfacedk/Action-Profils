@@ -463,7 +463,7 @@ local function MyRoutine()
 			end
 		end
 
-		if S.Consecration:IsCastable() and Player:AffectingCombat() and not Player:IsMoving() and Player:BuffDown(S.ConsecrationBuff) then
+		if S.Consecration:IsCastable() and Target:IsInMeleeRange(8) and Player:AffectingCombat() and not Player:IsMoving() and Target:DebuffDown(S.ConsecrationDebuff) then
 			if Cast(S.Consecration) then return end
 		end
 
