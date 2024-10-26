@@ -65,6 +65,7 @@ local function MyRoutine()
 		BlindingLight = Spell(115750),
 		ConcentrationAura = Spell(317920),
 		Consecration = Spell(26573),
+		ConsecrationDebuff = Spell(204242),
 		ConsecrationBuff = Spell(188370),
 		CrusaderAura = Spell(32223),
 		CrusaderStrike = Spell(35395),
@@ -217,6 +218,10 @@ local function MyRoutine()
 		VoidRift = Spell(440313),
 		Eating = MultiSpell(456574, 167152),
 		PutridWaters = Spell(275014),
+		SunSear = Spell(431413),
+		BlessedAssuranceBuff = Spell(433019),
+		BlessedAssurance = Spell(433015),
+
 
 
 
@@ -234,6 +239,9 @@ local function MyRoutine()
 		SleepWalk = Spell(360806),
 		Hex = Spell(51514),
 		RingofFrost = Spell(113724),
+		VenomVolley = Spell(432227),
+		
+
 	
 	}
 	
@@ -350,6 +358,10 @@ local function MyRoutine()
 			if Cast(S.DevotionAura) then return end
 		end
 
+		if S.Cleanse:IsCastable() and Player:DebuffUp(S.VenomVolley) then
+			if Cast(S.Cleanse, Player) then return end
+		end
+
 		if Player:AffectingCombat() then
 			if S.BlessingOfWinter:IsCastable() then
 				if Cast(S.BlessingOfWinter, Player) then return end
@@ -407,29 +419,47 @@ local function MyRoutine()
 
 		if Player:BuffUp(S.AvengingCrusader) then
 
+			if S.Judgment:IsReady() and TargetIsValid() and Target:IsSpellInRange(S.Judgment) then
+				if Cast(S.Judgment) then return end
+			end
+
+			if S.CrusaderStrike:IsReady() and TargetIsValid() and Target:IsInMeleeRange(5) and S.BlessedAssurance:IsAvailable() and Player:BuffUp(S.BlessedAssuranceBuff) then
+				if Cast(S.CrusaderStrike) then return end
+			end
+
 			if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) then
 				if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, WordOfGloryMembersFunc2) then return end
 			end
 
-			if S.Judgment:IsReady() and TargetIsValid() and Target:IsSpellInRange(S.Judgment) then
-				if Cast(S.Judgment) then return end
+			if S.ShieldOfTheRighteous:IsReady() and TargetIsValid() and Target:IsInMeleeRange(5) and S.BlessedAssurance:IsAvailable() and Player:BuffDown(S.BlessedAssuranceBuff) then
+				if Cast(S.ShieldOfTheRighteous) then return end
 			end
 
 			if S.CrusaderStrike:IsReady() and TargetIsValid() and Target:IsInMeleeRange(5) then
 				if Cast(S.CrusaderStrike) then return end
 			end
 
-			if ((Player:HolyPower() <= 4 and Player:BuffDown(S.RisingSunlightBuff) or Player:HolyPower() <= 2))  then
-				if S.HolyShock:IsCastable() then
-					if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, HolyShockFunc) then return end
-				end 
-				if S.HolyShock:IsReady() and S.HolyShock:ChargesFractional() >= 1.8 and TargetIsValid() and Target:IsSpellInRange(S.HolyShock) then
-					if MainAddon.SetTopColor(6, "Holy Shock Enemy") then return end
+			if S.ShieldOfTheRighteous:IsReady() and TargetIsValid() and Target:IsInMeleeRange(5) then
+				if Cast(S.ShieldOfTheRighteous) then return end
+			end
+
+			if Player:AffectingCombat() and (Player:BuffDown(S.HolyBulwarkBuff) and Player:BuffDown(S.SacredWeaponBuff) or S.HolyBulwark:ChargesFractional() >= 1.9 or S.SacredWeapon:ChargesFractional() >= 1.9)  then
+				if S.HolyBulwark:IsCastable() then
+					if Cast(S.HolyBulwark, Player) then return end
+				end
+	
+				if S.SacredWeapon:IsCastable() then
+					if Cast(S.SacredWeapon, Player) then return end
 				end
 			end
 
-			if S.ShieldOfTheRighteous:IsReady() and TargetIsValid() and Target:IsInMeleeRange(5) then
-				if Cast(S.ShieldOfTheRighteous) then return end
+			if ((Player:HolyPower() <= 4 and Player:BuffDown(S.RisingSunlightBuff) or Player:HolyPower() <= 1))  then
+				if S.HolyShock:IsCastable() then
+					if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, HolyShockFunc) then return end
+				end 
+				if S.HolyShock:IsReady() and TargetIsValid() and Target:IsSpellInRange(S.HolyShock) then
+					if MainAddon.SetTopColor(6, "Holy Shock Enemy") then return end
+				end
 			end
 		end
 
@@ -453,26 +483,13 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.BarrierOfFaith, MEMBERS, WordOfGloryMembersFunc2) then return end
 		end
 
-		if Player:AffectingCombat() and (Player:BuffDown(S.HolyBulwarkBuff) or Player:BuffDown(S.SacredWeaponBuff))  then
-			if S.HolyBulwark:IsCastable() and (S.HolyBulwark:ChargesFractional() >= 1.9) then
+		if Player:AffectingCombat() and (Player:BuffDown(S.HolyBulwarkBuff) and Player:BuffDown(S.SacredWeaponBuff) or S.HolyBulwark:ChargesFractional() >= 1.9 or S.SacredWeapon:ChargesFractional() >= 1.9)  then
+			if S.HolyBulwark:IsCastable() then
 				if Cast(S.HolyBulwark, Player) then return end
 			end
 
-			if S.SacredWeapon:IsCastable() and (S.SacredWeapon:ChargesFractional() >= 1.9) then
+			if S.SacredWeapon:IsCastable() then
 				if Cast(S.SacredWeapon, Player) then return end
-			end
-		end
-
-		-- if S.Consecration:IsCastable() and Target:IsInMeleeRange(8) and Player:AffectingCombat() and not Player:IsMoving() and Target:DebuffDown(S.ConsecrationDebuff) then
-		-- 	if Cast(S.Consecration) then return end
-		-- end
-
-		if Player:HolyPower() >= 5 then
-			if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) then
-				if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, WordOfGloryMembersFunc) then return end
-			end
-			if S.ShieldOfTheRighteous:IsReady() and not MainAddon.Toggle:GetToggle("ForceHeal") and TargetIsValid() and Target:IsInMeleeRange(5) then
-				if Cast(S.ShieldOfTheRighteous) then return end
 			end
 		end
 
@@ -484,11 +501,11 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.HolyLight, MEMBERS, WordOfGloryMembersFunc2) then return end
 		end
 
-		if ((Player:HolyPower() <= 4 and Player:BuffDown(S.RisingSunlightBuff) or Player:HolyPower() <= 2))  then
+		if ((Player:HolyPower() <= 4 and Player:BuffDown(S.RisingSunlightBuff) or Player:HolyPower() <= 1))  then
 			if S.HolyShock:IsCastable() then
 				if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, HolyShockFunc) then return end
 			end 
-			if S.HolyShock:IsReady() and S.HolyShock:ChargesFractional() >= 1.8 and TargetIsValid() and Target:IsSpellInRange(S.HolyShock) then
+			if S.HolyShock:IsReady() and TargetIsValid() and Target:IsSpellInRange(S.HolyShock) then
 				if MainAddon.SetTopColor(6, "Holy Shock Enemy") then return end
 			end
 		end
@@ -519,6 +536,19 @@ local function MyRoutine()
 
 		if S.HammerOfWrath:IsReady() and TargetIsValid() and Target:IsSpellInRange(S.HammerOfWrath) and Player:HolyPower() <= 4  then
 			if Cast(S.HammerOfWrath) then return end
+		end
+
+		if S.Consecration:IsCastable() and Target:IsInMeleeRange(8) and Player:AffectingCombat() and not Player:IsMoving() and Target:DebuffDown(S.ConsecrationDebuff) then
+			if Cast(S.Consecration) then return end
+		end
+
+		if Player:HolyPower() >= 5 then
+			if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) then
+				if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, WordOfGloryMembersFunc) then return end
+			end
+			if S.ShieldOfTheRighteous:IsReady() and not MainAddon.Toggle:GetToggle("ForceHeal") and TargetIsValid() and Target:IsInMeleeRange(5) then
+				if Cast(S.ShieldOfTheRighteous) then return end
+			end
 		end
 
 		if S.FlashOfLight:IsCastable() and not Target:IsInMeleeRange(5) and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable())  then
