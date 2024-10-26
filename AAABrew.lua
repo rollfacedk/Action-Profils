@@ -290,13 +290,12 @@ local function MyRoutine()
 	local function ItemActions()
 		-- use_items
 		local ItemToUse, ItemSlot, ItemRange = Player:GetUseableItems(OnUseExcludes)
-		if ItemToUse then
-		  local DisplayStyle = true
-		  local IsTrinket = ItemSlot == 13 or ItemSlot == 14
-		  if not IsTrinket then DisplayStyle = true end
-		  if (IsTrinket) or (not IsTrinket) and Target:IsInRange(ItemRange) then
-			if Cast(ItemToUse) then return "Generic use_items for " .. ItemToUse:Name(); end
-		  end
+		  if ItemToUse and Target:IsInRange(ItemRange) then
+			local DisplayStyle = true
+			if ItemSlot ~= 13 and ItemSlot ~= 14 then DisplayStyle = true end
+			if ((ItemSlot == 13 or ItemSlot == 14) and true) or (ItemSlot ~= 13 and ItemSlot ~= 14 and true) then
+			  if Cast(ItemToUse) then return "Generic use_items for " .. ItemToUse:Name(); end
+			end
 		end
 	end
 
