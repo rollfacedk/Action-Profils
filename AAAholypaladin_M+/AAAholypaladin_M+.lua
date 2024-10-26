@@ -419,16 +419,16 @@ local function MyRoutine()
 
 		if Player:BuffUp(S.AvengingCrusader) then
 
+			if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) then
+				if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, WordOfGloryMembersFunc2) then return end
+			end
+
 			if S.Judgment:IsReady() and TargetIsValid() and Target:IsSpellInRange(S.Judgment) then
 				if Cast(S.Judgment) then return end
 			end
 
 			if S.CrusaderStrike:IsReady() and TargetIsValid() and Target:IsInMeleeRange(5) and S.BlessedAssurance:IsAvailable() and Player:BuffUp(S.BlessedAssuranceBuff) then
 				if Cast(S.CrusaderStrike) then return end
-			end
-
-			if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) then
-				if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, WordOfGloryMembersFunc2) then return end
 			end
 
 			if S.ShieldOfTheRighteous:IsReady() and TargetIsValid() and Target:IsInMeleeRange(5) and S.BlessedAssurance:IsAvailable() and Player:BuffDown(S.BlessedAssuranceBuff) then
@@ -462,6 +462,7 @@ local function MyRoutine()
 				end
 			end
 		end
+
 
 		if HealingEngine:MembersUnderPercentage(85, nil, 30) >= 3 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.VoidRift, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3 or HealingEngine:DebuffTotal(S.CorruptedCoating, 30) >= 3  then		
 			if S.HolyPrism:IsReady() and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) and Target:IsSpellInRange(S.HolyPrism) and TargetIsValid() then
