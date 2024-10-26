@@ -427,14 +427,6 @@ local function MyRoutine()
 				if Cast(S.Judgment) then return end
 			end
 
-			if S.CrusaderStrike:IsReady() and TargetIsValid() and Target:IsInMeleeRange(5) and S.BlessedAssurance:IsAvailable() and Player:BuffUp(S.BlessedAssuranceBuff) then
-				if Cast(S.CrusaderStrike) then return end
-			end
-
-			if S.ShieldOfTheRighteous:IsReady() and TargetIsValid() and Target:IsInMeleeRange(5) and S.BlessedAssurance:IsAvailable() and Player:BuffDown(S.BlessedAssuranceBuff) then
-				if Cast(S.ShieldOfTheRighteous) then return end
-			end
-
 			if S.CrusaderStrike:IsReady() and TargetIsValid() and Target:IsInMeleeRange(5) then
 				if Cast(S.CrusaderStrike) then return end
 			end
