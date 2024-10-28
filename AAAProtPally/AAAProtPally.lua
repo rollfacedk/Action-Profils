@@ -561,7 +561,7 @@ local function MyRoutine()
 		-- end
 
 		if S.Judgment:IsCastable() and MouseOver:IsSpellInRange(S.Judgment) and not MouseOver:AffectingCombat() and not MouseOver:IsAPlayer() then
-			if Cast(S.Judgment) then return "Heroic Throw"; end
+			if Cast(S.Judgment, MouseOver) then return "Heroic Throw"; end
 		end
 
 		Enemies8y = Player:GetEnemiesInMeleeRange(8)
