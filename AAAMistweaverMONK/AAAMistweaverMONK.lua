@@ -280,7 +280,7 @@ local function MyRoutine()
 	end;
 	
 	local function SoothingMistFunc(UnitTarget)
-		return UnitTarget:HealthPercentageFlat() <= 65
+		return UnitTarget:HealthPercentageFlat() <= 90
 
 	end;
 
@@ -340,7 +340,7 @@ local function MyRoutine()
 		end
 
 		if Player:IsChanneling(S.SoothingMist)then
-			if Focus:HealthPercentage() >= 85 then
+			if Focus:HealthPercentage() >= 99 then
 				if MainAddon.SetTopColor(1, "Stop Casting") then end
 			end
 		end
@@ -405,6 +405,24 @@ local function MyRoutine()
 			if Cast(S.Revival) then return end
 		end
 
+		
+		if not Target:IsInMeleeRange(5) then
+
+			if Focus:BuffDown(S.EnvelopingMist) and Player:IsChanneling(S.SoothingMist) and Focus:HealthPercentage() <= 55 then
+				local SpecialColor = "Soothing Mist and Enveloping Mist"
+				MainAddon.SetTopTexture(6, SpecialColor)
+				return "Soothing Mist + EnvelopingMist - Healing NPC"
+			end
+
+			if Player:IsChanneling(S.SoothingMist)  then
+				if MainAddon.SetTopTexture(6, "Soothing Mist and Vivify") then return end
+			end
+
+			if S.SoothingMist:IsCastable() then
+				if MainAddon.CastCycleAlly(S.SoothingMist, MEMBERS, SoothingMistFunc) then return end
+			end
+		end
+
 		if S.EnvelopingMist:IsCastable()  then
 			if Player:BuffDown(S.ThunderFocusTea) and S.ThunderFocusTea:IsCastable() then
 				if MainAddon.CastCycleAlly(S.ThunderFocusTea, MEMBERS, ThunderFocusTeaFunc) then return end
@@ -462,24 +480,6 @@ local function MyRoutine()
 
 			if S.TigerPalm:IsReady() then
 				if Cast(S.TigerPalm) then return end
-			end
-		end
-
-
-		if not Target:IsInMeleeRange(5) then
-
-			if Focus:BuffDown(S.EnvelopingMist) and Player:IsChanneling(S.SoothingMist) and Focus:HealthPercentage() <= 55 then
-				local SpecialColor = "Soothing Mist and Enveloping Mist"
-				MainAddon.SetTopTexture(6, SpecialColor)
-				return "Soothing Mist + EnvelopingMist - Healing NPC"
-			end
-
-			if Player:IsChanneling(S.SoothingMist)  then
-				if MainAddon.SetTopTexture(6, "Soothing Mist and Vivify") then return end
-			end
-
-			if S.SoothingMist:IsCastable() then
-				if MainAddon.CastCycleAlly(S.SoothingMist, MEMBERS, SoothingMistFunc) then return end
 			end
 		end
 
