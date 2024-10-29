@@ -264,7 +264,7 @@ local function MyRoutine()
 	end;
 
 	local function EnvelopingMistFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 75 and UnitTarget:BuffDown(S.EnvelopingMist)
+		return UnitTarget:HealthPercentage() <= 65 and UnitTarget:BuffDown(S.EnvelopingMist) and Player:BuffUp(S.ThunderFocusTea)
 	end;
 
 	local function EnvelopingMistFunc2(UnitTarget)
@@ -294,6 +294,9 @@ local function MyRoutine()
 	--- ===== Rotation Variables =====
 	local Enemies5y
 	local EnemiesCount5
+
+	S.ThunderFocusTea.offGCD = true
+	S.LifeCocoon.offGCD = true
 	
 	local function MainRotation()
 
@@ -342,24 +345,12 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.LifeCocoon, MEMBERS, LifeCocoonFunc) then return "" end
 		end
 
-		if S.EnvelopingMist:IsCastable() and Player:BuffUp(S.ThunderFocusTea)  then
-			if MainAddon.CastCycleAlly(S.EnvelopingMist, MEMBERS, EnvelopingMistFunc) then return "" end
-		end
-
-		if Player:BuffDown(S.ThunderFocusTea) and S.ThunderFocusTea:IsCastable() then
-			if MainAddon.CastCycleAlly(S.ThunderFocusTea, MEMBERS, ThunderFocusTeaFunc) then return end
-		end
-
 		if S.ExpelHarm:IsCastable() and Player:HealthPercentageFlat() <= 65 then
 			if Cast(S.ExpelHarm, Player) then return end
 		end
 
 		if S.FortifyingBrew:IsCastable() and Player:HealthPercentageFlat() <= 35 then
 			if Cast(S.FortifyingBrew) then return end
-		end
-
-		if S.Vivify:IsCastable() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffUp(S.VivaciousVivificationBuff) then
-			if MainAddon.CastCycleAlly(S.Vivify, MEMBERS, VivifyFunc) then return "vivify" end
 		end
 
 		if S.SheilunsGift:IsCastable() and not MW.Chiji.Active and S.SheilunsGift:Count() >= 5 and HealingEngine:MembersUnderPercentage(85, nil, 40) >= 3 then
@@ -372,7 +363,7 @@ local function MyRoutine()
 				if MainAddon.CastCycleAlly(S.EnvelopingMist, MEMBERS, EnvelopingMistFunc2) then return "" end
 			end
 
-			if S.JadefireStomp:IsCastable() and Player:AffectingCombat() and not Player:IsMoving() and Player:BuffDown(S.AwakenedFaelineBuff) then
+			if S.JadefireStomp:IsCastable() and Player:AffectingCombat() and Player:BuffDown(S.AwakenedFaelineBuff) then
 				if Cast( S.JadefireStomp) then return "Chiji combo" end
 			end
 
@@ -409,6 +400,17 @@ local function MyRoutine()
 			if Cast(S.Revival) then return end
 		end
 
+		if S.EnvelopingMist:IsCastable()  then
+			if Player:BuffDown(S.ThunderFocusTea) and S.ThunderFocusTea:IsCastable() then
+				if MainAddon.CastCycleAlly(S.ThunderFocusTea, MEMBERS, ThunderFocusTeaFunc) then return end
+			end
+			if MainAddon.CastCycleAlly(S.EnvelopingMist, MEMBERS, EnvelopingMistFunc) then return "" end
+		end
+
+		if S.Vivify:IsCastable() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffUp(S.VivaciousVivificationBuff) then
+			if MainAddon.CastCycleAlly(S.Vivify, MEMBERS, VivifyFunc) then return "vivify" end
+		end
+
 		if S.EnvelopingMist:IsCastable() and Player:BuffStack(S.InvokeChiJiBuff) >= 3  then
 			if MainAddon.CastCycleAlly(S.EnvelopingMist, MEMBERS, EnvelopingMistFunc2) then return "" end
 		end
@@ -429,15 +431,15 @@ local function MyRoutine()
 			if Cast(S.ChiBurst) then return end
 		end
 
+		if S.TouchofDeath:IsReady() and TargetIsValid() then
+			if Cast(S.TouchofDeath) then return end
+		end
+
+		if S.JadefireStomp:IsCastable() and TargetIsValid() and Target:IsInMeleeRange(10) and Player:AffectingCombat() and Player:BuffDown(S.AwakenedFaelineBuff) then
+			if Cast( S.JadefireStomp) then return end
+		end
+
 		if TargetIsValid() and Target:IsInMeleeRange(5)  then
-
-			if S.TouchofDeath:IsReady() then
-				if Cast(S.TouchofDeath) then return end
-			end
-
-			if S.JadefireStomp:IsCastable() and Player:AffectingCombat() and not Player:IsMoving() and Player:BuffDown(S.AwakenedFaelineBuff) then
-				if Cast( S.JadefireStomp) then return end
-			end
 
 			if EnemiesCount5 >= 4 or Player:BuffUp(S.DanceofChijiBuff) then
 				if S.SpinningCraneKick:IsReady() then
@@ -466,15 +468,16 @@ local function MyRoutine()
 
 	local WWOldIsCastable
     WWOldIsCastable = HL.AddCoreOverride("Spell.IsCastable",
-            function(self, ignoreSettings, ignoreMovement, BypassRecovery)
+            function(self, ignoreSettings, ignoreMovement, bypassRecovery, ignoreChannel)
 
+			
 				if self == S.EnvelopingMist then
 					if Player:IsMoving() and (Player:BuffUp(S.ThunderFocusTea) or Player:BuffStack(S.InvokeChiJiBuff) == 3) then
-						return true, "moving"
+						ignoreMovement = true
 					end
 				end
 
-                local BaseCheck, Reason = WWOldIsCastable(self, ignoreSettings, ignoreMovement, BypassRecovery)
+                local BaseCheck, Reason = WWOldIsCastable(self, ignoreSettings, ignoreMovement, bypassRecovery, ignoreChannel)
                 return BaseCheck, Reason
             end
     , 270);
