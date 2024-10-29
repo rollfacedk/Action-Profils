@@ -203,8 +203,8 @@ local function MyRoutine()
 	MainAddon.SetCustomConfig(Author, SpecID, Unholy_Config)
 
 	local function Init()
-		message( 'This profile is on BETA. It doesnt do soothing mist yet. Please use this on lower keys for now', 1)
-		MainAddon:Print('BETA')
+		message( 'RollfaceX', 1)
+		MainAddon:Print('Rolly polly olly')
 	end
 
 	
@@ -255,6 +255,10 @@ local function MyRoutine()
 	, "UNIT_DIED"
 	)
 
+	local function SoothingMistFunc(UnitTarget)
+		return UnitTarget:HealthPercentage() <= 50
+	end;
+
 	local function RenewingMistFunc(UnitTarget)
 		return UnitTarget:BuffDown(S.RenewingMistBuff)
 	end;
@@ -276,7 +280,7 @@ local function MyRoutine()
 	end;
 	
 	local function SoothingMistFunc(UnitTarget)
-		return UnitTarget:HealthPercentageFlat() <= 35
+		return UnitTarget:HealthPercentageFlat() <= 65
 
 	end;
 
@@ -329,17 +333,18 @@ local function MyRoutine()
 
 		if Player:IsChanneling(S.ManaTea) then
 			if not Player:IsInRaidArea() then
-				if MainAddon.AllyLowestHP() <= 75 then
+				if HealingEngine.LowestHP(true, 40) <= 50 or Player:ManaPercentage() >= 95 then
 					MainAddon.SetTopColor(1, "Stop Casting")
 				end
 			end;
 		end
 
-		-- if Player:IsChanneling(S.SoothingMist)then
-		-- 	if Focus:HealthPercentage() >= 75 then
-		-- 		if MainAddon.SetTopColor(1, "Stop Casting") then return " why" end
-		-- 	end
-		-- end
+		if Player:IsChanneling(S.SoothingMist)then
+			if Focus:HealthPercentage() >= 85 then
+				if MainAddon.SetTopColor(1, "Stop Casting") then end
+			end
+		end
+
 
 		if S.LifeCocoon:IsCastable() and Player:AffectingCombat() then
 			if MainAddon.CastCycleAlly(S.LifeCocoon, MEMBERS, LifeCocoonFunc) then return "" end
@@ -460,6 +465,24 @@ local function MyRoutine()
 			end
 		end
 
+
+		if not Target:IsInMeleeRange(5) then
+
+			if Focus:BuffDown(S.EnvelopingMist) and Player:IsChanneling(S.SoothingMist) and Focus:HealthPercentage() <= 55 then
+				local SpecialColor = "Soothing Mist and Enveloping Mist"
+				MainAddon.SetTopTexture(6, SpecialColor)
+				return "Soothing Mist + EnvelopingMist - Healing NPC"
+			end
+
+			if Player:IsChanneling(S.SoothingMist)  then
+				if MainAddon.SetTopTexture(6, "Soothing Mist and Vivify") then return end
+			end
+
+			if S.SoothingMist:IsCastable() then
+				if MainAddon.CastCycleAlly(S.SoothingMist, MEMBERS, SoothingMistFunc) then return end
+			end
+		end
+
 		
 	end
 
@@ -468,9 +491,7 @@ local function MyRoutine()
 
 	local WWOldIsCastable
     WWOldIsCastable = HL.AddCoreOverride("Spell.IsCastable",
-            function(self, ignoreSettings, ignoreMovement, bypassRecovery, ignoreChannel)
-
-			
+            function(self, ignoreSettings, ignoreMovement, bypassRecovery, ignoreChannel)		
 				if self == S.EnvelopingMist then
 					if Player:IsMoving() and (Player:BuffUp(S.ThunderFocusTea) or Player:BuffStack(S.InvokeChiJiBuff) == 3) then
 						ignoreMovement = true
