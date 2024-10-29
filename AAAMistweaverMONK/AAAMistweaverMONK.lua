@@ -339,8 +339,15 @@ local function MyRoutine()
 		-- end
 
 		if S.LifeCocoon:IsCastable() and Player:AffectingCombat() then
-			MainAddon.SetTopColor(1, "Stop Casting")
 			if MainAddon.CastCycleAlly(S.LifeCocoon, MEMBERS, LifeCocoonFunc) then return "" end
+		end
+
+		if S.EnvelopingMist:IsCastable() and Player:BuffUp(S.ThunderFocusTea)  then
+			if MainAddon.CastCycleAlly(S.EnvelopingMist, MEMBERS, EnvelopingMistFunc) then return "" end
+		end
+
+		if Player:BuffDown(S.ThunderFocusTea) and S.ThunderFocusTea:IsCastable() then
+			if MainAddon.CastCycleAlly(S.ThunderFocusTea, MEMBERS, ThunderFocusTeaFunc) then return end
 		end
 
 		if S.ExpelHarm:IsCastable() and Player:HealthPercentageFlat() <= 65 then
@@ -400,14 +407,6 @@ local function MyRoutine()
 
 		if S.Revival:IsCastable() and not MW.Chiji.Active and (HealingEngine:MembersUnderPercentage(60, nil, 40) >= 4 or HealingEngine:MembersUnderPercentage(35, nil, 40) >= 3) then
 			if Cast(S.Revival) then return end
-		end
-
-		if S.EnvelopingMist:IsCastable() and Player:BuffUp(S.ThunderFocusTea)  then
-			if MainAddon.CastCycleAlly(S.EnvelopingMist, MEMBERS, EnvelopingMistFunc) then return "" end
-		end
-
-		if Player:BuffDown(S.ThunderFocusTea) and S.ThunderFocusTea:IsCastable() then
-			if MainAddon.CastCycleAlly(S.ThunderFocusTea, MEMBERS, ThunderFocusTeaFunc) then return end
 		end
 
 		if S.EnvelopingMist:IsCastable() and Player:BuffStack(S.InvokeChiJiBuff) >= 3  then
