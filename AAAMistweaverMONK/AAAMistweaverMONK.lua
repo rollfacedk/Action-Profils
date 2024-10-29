@@ -339,6 +339,7 @@ local function MyRoutine()
 		-- end
 
 		if S.LifeCocoon:IsCastable() and Player:AffectingCombat() then
+			MainAddon.SetTopColor(1, "Stop Casting")
 			if MainAddon.CastCycleAlly(S.LifeCocoon, MEMBERS, LifeCocoonFunc) then return "" end
 		end
 
