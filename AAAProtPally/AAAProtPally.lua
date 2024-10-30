@@ -225,7 +225,7 @@ local function MyRoutine()
 	end;
 
 	local function BlessingOfProtectionFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 30 and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:BuffDown(S.BlessingOfSacrifice)
+		return UnitTarget:HealthPercentage() <= 30 and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:DebuffUp(S.ForberanceDebuff)
 	end;
 
 	--- ===== Helper Functions =====
@@ -258,11 +258,16 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.BlessingOfSacrifice, MEMBERS, BlessingOfSacrificeFunc) then return end
 		end
 
-		if S.LayonHands:IsCastable() and Player:HealthPercentage() < 25 then
-			if Cast(S.LayonHands) then return end
+		if S.LayonHands:IsCastable() and S.DivineShield:CooldownDown() and Player:HealthPercentage() <= 25 then
+			if Cast(S.LayonHands, Player) then return end
 		end
+
 		if S.LayonHands:IsCastable() then
 			if MainAddon.CastCycleAlly(S.LayonHands, HEALERS, LayonHANDSFunc) then return end
+		end
+
+		if S.LayonHands:IsCastable() then
+			if MainAddon.CastCycleAlly(S.LayonHands, DPS, LayonHANDSFunc) then return end
 		end
 
 		if S.BlessingOfProtection:IsCastable() then
@@ -280,10 +285,6 @@ local function MyRoutine()
 		if S.ArdentDefender:IsCastable() and (Player:HealthPercentage() <= 50 and Player:BuffDown(S.GuardianofAncientKingsBuff)) then
 		  if Cast(S.ArdentDefender) then return "ardent_defender defensive 6"; end
 		end
-
-		-- if S.Consecration:IsCastable() and (Player:BuffRemains(S.ConsecrationBuff) <= 3 or Player:BuffDown(S.ConsecrationBuff)) then
-		-- 	if Cast(S.Consecration) then return "consecration standard 30"; end
-		-- end
 
 		if S.WordofGlory:IsCastable() and (Player:HealthPercentage() <= 60) then
 		  if (Player:BuffUp(S.DivinePurposeBuff) or Player:BuffUp(S.ShiningLightFreeBuff)) then
@@ -560,9 +561,9 @@ local function MyRoutine()
 		-- 	if Cast(S.RiteofAdjuration) then return end
 		-- end
 
-		-- if S.Judgment:IsCastable() and MouseOver:IsSpellInRange(S.Judgment) and not MouseOver:AffectingCombat() and not MouseOver:IsAPlayer() then
-			-- if Cast(S.Judgment, MouseOver) then return "Heroic Throw"; end
-		-- end
+		if S.Judgment:IsCastable() and MouseOver:IsSpellInRange(S.Judgment) and not MouseOver:AffectingCombat() and not MouseOver:IsAPlayer() then
+			if Cast(S.Judgment, MouseOver) then return "Heroic Throw"; end
+		end
 
 		Enemies8y = Player:GetEnemiesInMeleeRange(8)
 		Enemies30y = Player:GetEnemiesInRange(30)
