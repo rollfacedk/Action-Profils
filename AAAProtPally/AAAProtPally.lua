@@ -258,7 +258,7 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.BlessingOfSacrifice, MEMBERS, BlessingOfSacrificeFunc) then return end
 		end
 
-		if S.LayonHands:IsCastable() and S.DivineShield:CooldownDown() and Player:HealthPercentage() <= 25 then
+		if S.LayonHands:IsCastable() and Player:DebuffDown(S.ForberanceDebuff) and S.DivineShield:CooldownRemains() >= 25 and Player:HealthPercentage() <= 25 then
 			if Cast(S.LayonHands, Player) then return end
 		end
 
