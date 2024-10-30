@@ -305,7 +305,7 @@ local function MyRoutine()
 	end;
 
 	local function HolyShockFunc(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 80)
+		return (UnitTarget:HealthPercentage() <= 95)
 	end;
 
 	local function WordOfGloryMembersFunc(UnitTarget)
@@ -340,6 +340,7 @@ local function MyRoutine()
 	S.AvengingCrusader.offGCD = true
 	S.AvengingWrath.offGCD = true
 	S.DevotionAura.offGCD = true
+	S.LayOnHands.offGCD = true
 
 	local function MainRotation()
 
@@ -389,25 +390,25 @@ local function MyRoutine()
 			end
 
 			if S.BlessingOfProtection:IsCastable() then
-				if MainAddon.CastCycleAlly(S.BlessingOfProtection, DPS, BlessingOfProtectionFunc) then return end
-			end
-
-			if S.BlessingOfProtection:IsCastable() then
 				if MainAddon.CastCycleAlly(S.BlessingOfProtection, HEALERS, BlessingOfProtectionFunc) then return end
 			end
 
 			if S.BlessingOfSacrifice:IsCastable() then
-				if MainAddon.CastCycleAlly(S.BlessingOfSacrifice, MEMBERS, BlessingOfSacrificeFunc) then return end
+				if MainAddon.CastCycleAlly(S.BlessingOfSacrifice, HEALERS, BlessingOfSacrificeFunc) then return end
+			end
+
+			if S.BlessingOfSacrifice:IsCastable() then
+				if MainAddon.CastCycleAlly(S.BlessingOfSacrifice, TANKS, BlessingOfSacrificeFunc) then return end
 			end
 		end
 
 		if Player:AffectingCombat() then
 
-			if S.AvengingWrath:IsCastable() and HealingEngine:MembersUnderPercentage(60, nil, 30) >= 4 then
+			if S.AvengingWrath:IsCastable() and HealingEngine:MembersUnderPercentage(65, nil, 30) >= 4 then
 				if Cast(S.AvengingWrath) then return end
 			end
 
-			if S.AvengingCrusader:IsCastable() and HealingEngine:MembersUnderPercentage(60, nil, 30) >= 4 then
+			if S.AvengingCrusader:IsCastable() and HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 then
 				if Cast(S.AvengingCrusader) then return end
 			end
 		end
@@ -420,6 +421,10 @@ local function MyRoutine()
 
 			if S.Judgment:IsReady() and TargetIsValid() and Target:IsSpellInRange(S.Judgment) then
 				if Cast(S.Judgment) then return end
+			end
+
+			if S.ShieldOfTheRighteous:IsReady() and TargetIsValid() and Target:IsInMeleeRange(5) and Player:BuffUp(S.BlessedAssuranceBuff) and S.BlessedAssurance:IsAvailable() then
+				if Cast(S.ShieldOfTheRighteous) then return end
 			end
 
 			if S.CrusaderStrike:IsReady() and TargetIsValid() and Target:IsInMeleeRange(5) then
@@ -450,7 +455,7 @@ local function MyRoutine()
 			end
 		end
 
-		if HealingEngine:MembersUnderPercentage(75, nil, 30) >= 4 then		
+		if Player:BuffDown(S.AvengingCrusader) and HealingEngine:MembersUnderPercentage(75, nil, 40) >= 5 then		
 			if S.HolyPrism:IsReady() and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) and Target:IsSpellInRange(S.HolyPrism) and TargetIsValid() then
 				if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
 			end

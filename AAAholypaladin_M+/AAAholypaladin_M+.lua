@@ -101,7 +101,7 @@ local function MyRoutine()
 		-- Paladin
 		ImprovedCleanse = Spell(393024),
 		HallowedGround = Spell(377043),
-		LayOnHands = MultiSpell(633, 471195),
+		LayonHands = MultiSpell(633, 471195),
 		Repentance = Spell(20066), --Multi
 		AurasOfTheResolute = Spell(385633),
 		AurasOfSwiftVengeance = Spell(385639),
@@ -318,7 +318,7 @@ local function MyRoutine()
 	end;
 
 	local function WordOfGloryMembersFunc2(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 60 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
+		return (UnitTarget:HealthPercentage() <= 50 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
 	end;
 
 	local function BlessingOfSacrificeFunc(UnitTarget)
@@ -330,11 +330,11 @@ local function MyRoutine()
 	end;
 
 	local function HolyPrismFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 60 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating)
+		return UnitTarget:HealthPercentage() <= 50 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating)
 	end;
 
 	local function HolyLightFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 60 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating)
+		return UnitTarget:HealthPercentage() <= 50 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating)
 	end;
 	
 
@@ -345,6 +345,7 @@ local function MyRoutine()
 	S.AvengingCrusader.offGCD = true
 	S.AvengingWrath.offGCD = true
 	S.DevotionAura.offGCD = true
+	S.LayonHands.offGCD = true
 
 	local function MainRotation()
 
@@ -389,8 +390,8 @@ local function MyRoutine()
 				if Cast(S.DivineShield) then return end
 			end
 
-			if S.LayOnHands:IsCastable() then
-				if MainAddon.CastCycleAlly(S.LayOnHands, MEMBERS, LayOnHandsFunc) then return "LOH TANKS" end
+			if S.LayonHands:IsCastable() then
+				if MainAddon.CastCycleAlly(S.LayonHands, MEMBERS, LayOnHandsFunc) then return "LOH TANKS" end
 			end
 
 			if S.BlessingOfProtection:IsCastable() then
@@ -408,11 +409,11 @@ local function MyRoutine()
 
 		if Player:AffectingCombat() then
 
-			if S.AvengingWrath:IsCastable() and HealingEngine:MembersUnderPercentage(60, nil, 30) >= 4 then
+			if S.AvengingWrath:IsCastable() and HealingEngine:MembersUnderPercentage(65, nil, 30) >= 4 then
 				if Cast(S.AvengingWrath) then return end
 			end
 
-			if S.AvengingCrusader:IsCastable() and HealingEngine:MembersUnderPercentage(60, nil, 30) >= 4 then
+			if S.AvengingCrusader:IsCastable() and HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 then
 				if Cast(S.AvengingCrusader) then return end
 			end
 		end
@@ -425,6 +426,10 @@ local function MyRoutine()
 
 			if S.Judgment:IsReady() and TargetIsValid() and Target:IsSpellInRange(S.Judgment) then
 				if Cast(S.Judgment) then return end
+			end
+
+			if S.ShieldOfTheRighteous:IsReady() and TargetIsValid() and Target:IsInMeleeRange(5) and Player:BuffUp(S.BlessedAssuranceBuff) and S.BlessedAssurance:IsAvailable() then
+				if Cast(S.ShieldOfTheRighteous) then return end
 			end
 
 			if S.CrusaderStrike:IsReady() and TargetIsValid() and Target:IsInMeleeRange(5) then
@@ -456,7 +461,7 @@ local function MyRoutine()
 		end
 
 
-		if HealingEngine:MembersUnderPercentage(85, nil, 30) >= 3 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.VoidRift, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3 or HealingEngine:DebuffTotal(S.CorruptedCoating, 30) >= 3  then		
+		if Player:BuffDown(S.AvengingCrusader) and HealingEngine:MembersUnderPercentage(85, nil, 30) >= 3 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.VoidRift, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3 or HealingEngine:DebuffTotal(S.CorruptedCoating, 30) >= 3  then		
 			if S.HolyPrism:IsReady() and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) and Target:IsSpellInRange(S.HolyPrism) and TargetIsValid() then
 				if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
 			end
@@ -511,12 +516,12 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.HolyLight, MEMBERS, WordOfGloryMembersFunc2) then return end
 		end
 
-		if S.HammerOfWrath:IsReady() and S.Veneration:IsAvailable() and TargetIsValid() and Target:IsSpellInRange(S.HammerOfWrath) and Player:HolyPower() <= 4  then
-			if Cast(S.HammerOfWrath) then return end
-		end
-
 		if S.Judgment:IsReady() and S.TruthPrevails:IsAvailable() and TargetIsValid() and Target:IsSpellInRange(S.Judgment) and Player:HolyPower() <= 4  then
 			if Cast(S.Judgment) then return end
+		end
+
+		if S.HammerOfWrath:IsReady() and S.Veneration:IsAvailable() and TargetIsValid() and Target:IsSpellInRange(S.HammerOfWrath) and Player:HolyPower() <= 4  then
+			if Cast(S.HammerOfWrath) then return end
 		end
 
 		if S.CrusaderStrike:IsReady() and TargetIsValid() and Target:IsInMeleeRange(5) and Player:HolyPower() <= 4  then
