@@ -409,11 +409,11 @@ local function MyRoutine()
 
 		if Player:AffectingCombat() then
 
-			if S.AvengingWrath:IsCastable() and HealingEngine:MembersUnderPercentage(65, nil, 30) >= 4 then
+			if S.AvengingWrath:IsCastable() and HealingEngine:MembersUnderPercentage(65, nil, 30) >= 5 then
 				if Cast(S.AvengingWrath) then return end
 			end
 
-			if S.AvengingCrusader:IsCastable() and HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 then
+			if S.AvengingCrusader:IsCastable() and Target:IsInMeleeRange(5) and HealingEngine:MembersUnderPercentage(65, nil, 30) >= 5 and Player:BuffDown(S.BeaconOfVirtue) and and Player:BuffDown(S.AvengingCrusader) then
 				if Cast(S.AvengingCrusader) then return end
 			end
 		end

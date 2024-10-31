@@ -237,6 +237,7 @@ local function MyRoutine()
 		SleepWalk = Spell(360806),
 		Hex = Spell(51514),
 		RingofFrost = Spell(113724),
+		
 	
 	}
 	
@@ -408,7 +409,7 @@ local function MyRoutine()
 				if Cast(S.AvengingWrath) then return end
 			end
 
-			if S.AvengingCrusader:IsCastable() and HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 then
+			if S.AvengingCrusader:IsCastable() and Target:IsInMeleeRange(5) and HealingEngine:MembersUnderPercentage(65, nil, 30) >= 3 and Player:BuffDown(S.BeaconOfVirtue) and and Player:BuffDown(S.AvengingCrusader) then
 				if Cast(S.AvengingCrusader) then return end
 			end
 		end
