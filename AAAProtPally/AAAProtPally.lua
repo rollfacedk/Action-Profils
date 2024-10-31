@@ -73,7 +73,7 @@ local function MyRoutine()
 		AvengingWrath                         = Spell(31884),
 		HammerofWrath                         = Spell(24275),
 		HolyAvenger                           = Spell(105809),
-		LayonHands                            = Spell(633),
+		LayonHands 			      =	MultiSpell(633, 471195),
 		OfDuskandDawn                         = Spell(409441),
 		Seraphim                              = Spell(152262),
 		VengefulWrath                         = Spell(406835),
