@@ -160,6 +160,7 @@ local function MyRoutine()
 		BlessedAssurance                     = Spell(433015),
 		DivineGuidanceBuff                   = Spell(433106),
 		Hammerfall                           = Spell(432463),
+		ForberanceDebuff = Spell(25771),
 	
 	}
 
@@ -247,6 +248,11 @@ local function MyRoutine()
 	--- ===== CastTargetIf Filter Functions =====
 	local function EvaluateTargetIfFilterJudgment(TargetUnit)
 		return TargetUnit:DebuffRemains(S.JudgmentDebuff)
+	end
+	-- Pull mob
+
+	local function Pullmobfunc(TargetUnit)
+		return TargetUnit:DebuffRemains(S.JudgmentDebuff) and not TargetUnit:AffectingCombat() and not TargetUnit:IsAPlayer()
 	end
 
 	local function Defensives()
@@ -561,9 +567,9 @@ local function MyRoutine()
 		-- 	if Cast(S.RiteofAdjuration) then return end
 		-- end
 
-		if S.Judgment:IsCastable() and MouseOver:IsSpellInRange(S.Judgment) and not MouseOver:AffectingCombat() and not MouseOver:IsAPlayer() then
-			if Cast(S.Judgment, MouseOver) then return "Heroic Throw"; end
-		end
+		-- if S.Judgment:IsCastable() then
+		-- 	if CastCycle(S.Judgment, Enemies30y, Pullmobfunc) then return "pull mob"; end
+		-- end
 
 		Enemies8y = Player:GetEnemiesInMeleeRange(8)
 		Enemies30y = Player:GetEnemiesInRange(30)
