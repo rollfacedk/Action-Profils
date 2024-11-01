@@ -412,7 +412,7 @@ local function MyRoutine()
 		
 		if not Target:IsInMeleeRange(5) then
 
-			if S.Vivify:IsCastable() and Player:BuffDown(S.ThunderFocusTea) then
+			if S.Vivify:IsCastable() and Player:BuffDown(S.ThunderFocusTea) and not S.SoothingMist:IsAvailable() then
 				if MainAddon.CastCycleAlly(S.Vivify, MEMBERS, VivifyFunc2) then return "vivify2" end
 			end
 
