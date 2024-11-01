@@ -267,6 +267,10 @@ local function MyRoutine()
 		return UnitTarget:HealthPercentage() <= 65
 	end;
 
+	local function VivifyFunc2(UnitTarget)
+		return UnitTarget:HealthPercentage() <= 75
+	end;
+
 	local function EnvelopingMistFunc(UnitTarget)
 		return UnitTarget:HealthPercentage() <= 65 and UnitTarget:BuffDown(S.EnvelopingMist) and Player:BuffUp(S.ThunderFocusTea)
 	end;
@@ -407,6 +411,10 @@ local function MyRoutine()
 
 		
 		if not Target:IsInMeleeRange(5) then
+
+			if S.Vivify:IsCastable() and Player:BuffDown(S.ThunderFocusTea) then
+				if MainAddon.CastCycleAlly(S.Vivify, MEMBERS, VivifyFunc2) then return "vivify2" end
+			end
 
 			if Focus:BuffDown(S.EnvelopingMist) and Player:IsChanneling(S.SoothingMist) and Focus:HealthPercentage() <= 55 then
 				local SpecialColor = "Soothing Mist and Enveloping Mist"
