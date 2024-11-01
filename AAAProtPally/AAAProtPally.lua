@@ -221,6 +221,10 @@ local function MyRoutine()
 		return UnitTarget:HealthPercentage() <= 25
 	end;
 
+	local function LayonHANDSFunc2(UnitTarget)
+		return UnitTarget:HealthPercentage() <= 25 and UnitTarget:DebuffDown(S.ForberanceDebuff) and UnitTarget:GUID() == Player:GUID()
+	end;
+
 	local function BlessingOfSacrificeFunc(UnitTarget)
 		return UnitTarget:HealthPercentage() <= 30 and UnitTarget:GUID() ~= Player:GUID()
 	end;
@@ -264,8 +268,8 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.BlessingOfSacrifice, MEMBERS, BlessingOfSacrificeFunc) then return end
 		end
 
-		if S.LayonHands:IsCastable() and Player:DebuffDown(S.ForberanceDebuff) and S.DivineShield:CooldownRemains() >= 25 and Player:HealthPercentage() <= 25 then
-			if Cast(S.LayonHands, Player) then return end
+		if S.LayonHands:IsCastable() and S.DivineShield:CooldownRemains() >= 25 then
+			if MainAddon.CastCycleAlly(S.LayonHands, TANKS, LayonHANDSFunc2) then return end
 		end
 
 		if S.LayonHands:IsCastable() then
