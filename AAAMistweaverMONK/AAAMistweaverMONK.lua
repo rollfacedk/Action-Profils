@@ -160,6 +160,7 @@ local function MyRoutine()
 		InvokeChiJiBuff = Spell(343820),
 		FortifyingBrew = Spell(115203),
 		ChiBurst = Spell(123986),
+		RushingWindKick = Spell(467307),
 	}
 
 	
@@ -360,6 +361,10 @@ local function MyRoutine()
 
 		if S.FortifyingBrew:IsCastable() and Player:HealthPercentageFlat() <= 35 then
 			if Cast(S.FortifyingBrew) then return end
+		end
+
+		if S.RushingWindKick:IsCastable() and Target:IsInMeleeRange(25) and TargetIsValid() and S.RenewingMist:Charges() == 0 then
+			if Cast(S.RushingWindKick) then return end
 		end
 
 		if S.SheilunsGift:IsCastable() and not MW.Chiji.Active and S.SheilunsGift:Count() >= 5 and HealingEngine:MembersUnderPercentage(85, nil, 40) >= 3 then
