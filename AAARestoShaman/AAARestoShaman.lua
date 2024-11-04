@@ -373,8 +373,7 @@ local function MyRoutine()
 		if Player:BuffDown(S.AncestralGuidance) and 
 			Player:BuffDown(S.Ascendance) and 
 			not TotemFinder(S.HealingTideTotem) and
-			not TotemFinder(S.StoneBulwarkTotem) and
-			not TotemFinder(S.SpiritLinkTotem) then
+			not TotemFinder(S.StoneBulwarkTotem) then
 				
 				if S.AncestralGuidance:IsCastable() and (HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 or HealingEngine:MembersUnderPercentage(85, nil, 30) >= 4) then
 					if Cast(S.AncestralGuidance) then return end
@@ -384,8 +383,6 @@ local function MyRoutine()
 					if Cast(S.HealingTideTotem) then return end
 			elseif S.StoneBulwarkTotem:IsCastable() and CDsON() and (HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 or HealingEngine:MembersUnderPercentage(85, nil, 30) >= 4) then
 					if Cast(S.StoneBulwarkTotem) then return end
-			elseif S.SpiritLinkTotem:IsCastable() and (HealingEngine:MembersUnderPercentage(75, nil, 12) >= 3 or HealingEngine:MembersUnderPercentage(85, nil, 12) >= 4) then
-					if Cast(S.SpiritLinkTotem) then return end
 			end
 			
 		end
