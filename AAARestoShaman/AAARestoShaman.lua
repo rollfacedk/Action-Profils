@@ -444,7 +444,7 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.UnleashLife, MEMBERS, UnleashLifeFunc) then return end
 		end
 
-		if TargetIsValid() and S.MasteroftheElements:IsAvailable() then
+		if TargetIsValid() and S.MasteroftheElements:IsAvailable() and HealingEngine:LowestHP() >= 90 then
 			if S.LavaBurst:IsReady() and (Player:BuffRemains(S.MasteroftheElementsBuff) <= 8) then
 				if Cast(S.LavaBurst) then return end
 			end
