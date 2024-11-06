@@ -308,7 +308,7 @@ local function MyRoutine()
 	end;
 
 	local function HealingSurgeFunc(UnitTarget)
-		return UnitTarget:HealthPercentageFlat() <= 65 
+		return UnitTarget:HealthPercentage() <= 65 
 	end;
 
 	local function UnleashLifeFunc(UnitTarget)
@@ -401,13 +401,11 @@ local function MyRoutine()
 			end
 		end
 
-		-- if Player:AffectingCombat() then
-			-- if (Player:BuffDown(S.HealingRainBuff)) and MouseOver:Exists()  then
-				-- if Cast(S.SurgingTotem) then return end
-			-- elseif S.TotemicProjection:IsCastable() and MouseOver:Exists() then
-				-- if Cast(S.TotemicProjection) then return end
-			-- end
-		-- end
+		 if Player:AffectingCombat() then
+			 if (Player:BuffDown(S.HealingRainBuff)) and MouseOver:Exists()  then
+				 if Cast(S.SurgingTotem) then return end
+			 end
+		 end
 
 		if (HealingEngine:MembersUnderPercentage(85, nil, 30) >= 3 and Player:BuffUp(S.HighTideBuff) or HealingEngine:MembersUnderPercentage(50, nil, 30) >= 3) or 
 			(Player:BuffUp(S.HighTideBuff) and (HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.VoidRift, 30) >= 3 or 
