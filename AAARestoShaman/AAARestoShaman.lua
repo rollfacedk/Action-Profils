@@ -304,11 +304,11 @@ local function MyRoutine()
 	end;
 
 	local function HealingWaveFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 80 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating)
+		return UnitTarget:HealthPercentage() <= 75 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating)
 	end;
 
 	local function HealingSurgeFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 65 
+		return UnitTarget:HealthPercentage() <= 50 
 	end;
 
 	local function UnleashLifeFunc(UnitTarget)
