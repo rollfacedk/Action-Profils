@@ -400,7 +400,7 @@ local function MyRoutine()
 
 		if Player:AffectingCombat() then
 
-			if S.AvengingWrath:IsCastable() and HealingEngine:MembersUnderPercentage(65, nil, 30) >= 5 then
+			if S.AvengingWrath:IsCastable() and HealingEngine:MembersUnderPercentage(65, nil, 30) >= 4 then
 				if Cast(S.AvengingWrath) then return end
 			end
 
