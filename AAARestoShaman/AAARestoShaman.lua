@@ -308,7 +308,7 @@ local function MyRoutine()
 	end;
 
 	local function HealingSurgeFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 50 
+		return UnitTarget:HealthPercentageFlat() <= 50 
 	end;
 
 	local function UnleashLifeFunc(UnitTarget)
@@ -428,10 +428,9 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.HealingSurge, MEMBERS, HealingSurgeFunc) then return end
 		end
 
-		if S.HealingStreamTotem:IsCastable() and HealingEngine.LowestHP(true, 30) <= 95 and S.HealingStreamTotem:ChargesFractional() >= 1.8  then
-			
-			if Cast(S.HealingStreamTotem) then return end
-		end
+		-- if S.HealingStreamTotem:IsCastable() and HealingEngine.LowestHP(true, 30) <= 95 and S.HealingStreamTotem:ChargesFractional() >= 1.8 and not Player:BuffUp(S.LivelyTotems)  then
+		-- 	if Cast(S.HealingStreamTotem) then return end
+		-- end
 
 		if S.CloudburstTotem:IsCastable() and S.CloudburstTotem:ChargesFractional() >= 1.8 and not TotemFinder(S.CloudburstTotem) and HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 then
 			if Cast(S.CloudburstTotem) then return end
@@ -441,7 +440,7 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.UnleashLife, MEMBERS, UnleashLifeFunc) then return end
 		end
 
-		if TargetIsValid() and S.MasteroftheElements:IsAvailable() and HealingEngine:LowestHP() >= 90 then
+		if TargetIsValid() and S.MasteroftheElements:IsAvailable() and HealingEngine:LowestHP() >= 75 then
 			if S.LavaBurst:IsReady() and (Player:BuffRemains(S.MasteroftheElementsBuff) <= 8) then
 				if Cast(S.LavaBurst) then return end
 			end
@@ -476,7 +475,7 @@ local function MyRoutine()
 			end
 		end
 
-		if TargetIsValid() and not MainAddon.Toggle:GetToggle("ForceHeal") and HealingEngine:LowestHP() >= 90 then
+		if TargetIsValid() and not MainAddon.Toggle:GetToggle("ForceHeal") and HealingEngine:LowestHP() >= 75 then
 			if S.ChainLightning:IsReady() and EnemiesCount10ySplash >= 2 then
 				if Cast(S.ChainLightning) then return end
 			end
