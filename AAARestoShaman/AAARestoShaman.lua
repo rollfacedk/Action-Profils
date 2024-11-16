@@ -46,6 +46,7 @@ local function MyRoutine()
 	local WeaponEnchant = GetWeaponEnchantInfo;
 
 
+
 	--ALL SPELLS ARE LOCATED ON Rotations/CLASS_SPELL.lua, if one is missing tells us about it.
 	local S = {
 
@@ -267,6 +268,11 @@ local function MyRoutine()
 
 	TANKS, HEALERS, MEMBERS, DPS, PRIORITY = HealingEngine:Fetch()
 
+	MainAddon.Toggle.Special["ForceHeal"] = {
+		Icon = MainAddon.GetTexture(S.HealingSurge),
+		Name = "Force Heal",
+		Description = "Avoid wasting HP on dps spells."
+	}
 	local function Init()
 		message( 'Shammy Sallamy', 1)
 		MainAddon:Print('RollfaceX')
