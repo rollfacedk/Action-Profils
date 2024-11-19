@@ -1,5 +1,5 @@
 local function MyRoutine()
-	local Author = 'CASTER'
+	local Author = 'Cast Weaving'
 	local SpecID = 270 --Unholy  --https://wowpedia.fandom.com/wiki/API_GetSpecializationInfo
 
 	--HR HEADER
@@ -287,7 +287,7 @@ local function MyRoutine()
 	end;
 
 	local function EnvelopingMistSoothingFunc(UnitTarget)
-		return UnitTarget:BuffDown(S.EnvelopingMist) and (UnitTarget:HealthPercentage() <= 85 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
+		return UnitTarget:BuffDown(S.EnvelopingMist) and (UnitTarget:HealthPercentage() <= 65 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
 	end;
 
 	local function VivifySoothingFunc(UnitTarget)
@@ -382,7 +382,7 @@ local function MyRoutine()
 
 		if Player:BuffDown(S.Yulonbaby) and (HealingEngine:MembersUnderPercentage(85, nil, 40) >= 3 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.VoidRift, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3 or HealingEngine:DebuffTotal(S.CorruptedCoating, 30) >= 3) then
 	
-			if S.SheilunsGift:CooldownUp() and not Player:IsMoving() and S.SheilunsGift:Count() >= 5 and HealingEngine:LowestHP() >= 30 then
+			if S.SheilunsGift:CooldownUp() and not Player:IsMoving() and S.SheilunsGift:Count() >= 10 and HealingEngine:LowestHP() >= 30 then
 				if  Cast(S.SheilunsGift, Player) then return end
 			end
 			
@@ -395,7 +395,7 @@ local function MyRoutine()
 			end
 		end
 
-		if TargetIsValid() and Target:IsInMeleeRange(5) and HealingEngine:LowestHP() > 85  then
+		if TargetIsValid() and Target:IsInMeleeRange(5) and HealingEngine:LowestHP() > 75  then
 
 			if Player:IsChanneling(S.SoothingMist)then			
 				if MainAddon.SetTopColor(1, "Stop Casting") then end			
@@ -440,8 +440,8 @@ local function MyRoutine()
 			if CastCycleAlly(S.Vivify, MEMBERS, VivifyEmergencyFunc) then return "vivify" end
 		end
 		
-		if S.EnvelopingMist:CooldownUp() and Player:IsChanneling(S.SoothingMist) and not Player:PrevGCD(1,S.EnvelopingMist) and not Player:PrevGCD(2,S.EnvelopingMist) and not Player:PrevGCD(3,S.EnvelopingMist) then
-			if CastCycleAlly(S.EnvelopingMist, TANKS, EnvelopingMistSoothingFunc) then return "vivify" end
+		if S.EnvelopingMist:CooldownUp() and Player:IsChanneling(S.SoothingMist) and S.EnvelopingMist:TimeSinceLastDisplay() >= S.EnvelopingMist:MaxDuration() then
+			if CastCycleAlly(S.EnvelopingMist, MEMBERS, Test) then return "vivify" end
 		end
 		
 		if S.Vivify:CooldownUp() and Player:IsChanneling(S.SoothingMist) then
