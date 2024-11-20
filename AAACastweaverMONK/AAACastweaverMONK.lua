@@ -272,7 +272,7 @@ local function MyRoutine()
 	end;
 
 	local function SoothingMistFunc(UnitTarget)
-		return UnitTarget:HealthPercentageFlat() <= 90 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating)
+		return UnitTarget:HealthPercentageFlat() <= 90 or Player:AffectingCombat()
 
 	end;
 
@@ -287,7 +287,7 @@ local function MyRoutine()
 	end;
 
 	local function EnvelopingMistSoothingFunc(UnitTarget)
-		return UnitTarget:BuffDown(S.EnvelopingMist) and (UnitTarget:HealthPercentage() <= 65 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
+		return UnitTarget:BuffDown(S.EnvelopingMist) and (UnitTarget:HealthPercentage() <= 75 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
 	end;
 
 	local function VivifySoothingFunc(UnitTarget)
@@ -441,7 +441,7 @@ local function MyRoutine()
 		end
 		
 		if S.EnvelopingMist:CooldownUp() and Player:IsChanneling(S.SoothingMist) and S.EnvelopingMist:TimeSinceLastDisplay() >= S.EnvelopingMist:MaxDuration() then
-			if CastCycleAlly(S.EnvelopingMist, MEMBERS, Test) then return "vivify" end
+			if CastCycleAlly(S.EnvelopingMist, TANKS, EnvelopingMistSoothingFunc) then return "vivify" end
 		end
 		
 		if S.Vivify:CooldownUp() and Player:IsChanneling(S.SoothingMist) then
