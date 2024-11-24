@@ -181,6 +181,7 @@ local function MyRoutine()
 
 
 		ViviciousVivication = Spell(388812),
+		ViviciousVivicationBuff = Spell(392883),
 
 		
 	}
@@ -274,7 +275,7 @@ local function MyRoutine()
 		  end
 		end
 
-		if S.Vivify:IsCastable() and S.ViviciousVivication:IsAvailable() and Player:HealthPercentage() <= 65 then
+		if S.Vivify:IsCastable() and S.ViviciousVivication:IsAvailable() and Player:BuffUp(S.ViviciousVivicationBuff) and Player:HealthPercentage() <= 65 then
 			if Cast(S.Vivify) then return end
 		end
 
