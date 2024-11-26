@@ -293,7 +293,7 @@ local function MyRoutine()
 	end;
 
 	local function SoothingMistFunc(UnitTarget)
-		return UnitTarget:HealthPercentageFlat() <= 99 
+		return UnitTarget:HealthPercentageFlat() <= 99 or UnitTarget:HealthPercentageFlat() <= 100 and MainAddon.Toggle:GetToggle("ForceHeal")
 
 	end;
 
