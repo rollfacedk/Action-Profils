@@ -442,6 +442,7 @@ local function MyRoutine()
 		end
 
 		if not Player:IsInRaid() then
+
 			if S.LifeCocoon:CooldownUp() and Player:AffectingCombat() then
 				if CastCycleAlly(S.LifeCocoon, MEMBERS, LifeCocoonFunc) then return "" end
 			end
@@ -593,7 +594,7 @@ local function MyRoutine()
 				end
 
 				if S.RenewingMist:CooldownUp() then
-					if S.ThunderFocusTea:CooldownUp() and not MainAddon.Config.GetSetting('rollfaceX', 'Caster') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) then
+					if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('rollfaceX', 'Caster') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) then
 						if Cast(S.ThunderFocusTea) then return end
 					end
 					if CastCycleAlly(S.RenewingMist, MEMBERS, RenewingMistFunc) then return end
