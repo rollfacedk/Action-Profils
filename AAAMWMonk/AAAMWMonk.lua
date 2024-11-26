@@ -547,7 +547,7 @@ local function MyRoutine()
 					if CastCycleAlly(S.Vivify, MEMBERS, VivifySoothingFunc) then return "vivify" end
 				end
 		
-				if not Target:IsInMeleeRange(5) or MainAddon.Config.GetSetting('rollfaceX', 'Caster') and HealingEngine:LowestHP() >= 75 or MainAddon.Toggle:GetToggle("ForceHeal") then
+				if not Target:IsInMeleeRange(5) or MainAddon.Config.GetSetting('rollfaceX', 'Caster') and HealingEngine:LowestHP() <= 75 or MainAddon.Toggle:GetToggle("ForceHeal") then
 					if S.SoothingMist:CooldownUp() and not Player:IsMoving() and not Player:IsChanneling(S.SoothingMist) then
 						if CastCycleAlly(S.SoothingMist, MEMBERS, SoothingMistFunc) then return end
 					end
@@ -769,7 +769,7 @@ local function MyRoutine()
 					if CastCycleAlly(S.Vivify, MEMBERS, VivifySoothingFunc) then return "vivify" end
 				end
 		
-				if not Target:IsInMeleeRange(5) or MainAddon.Config.GetSetting('rollfaceX', 'Caster') and HealingEngine:LowestHP() >= 75 or MainAddon.Toggle:GetToggle("ForceHeal") then
+				if not Target:IsInMeleeRange(5) or MainAddon.Config.GetSetting('rollfaceX', 'Caster') and HealingEngine:LowestHP() <= 75 or MainAddon.Toggle:GetToggle("ForceHeal") then
 					if S.SoothingMist:CooldownUp() and not Player:IsMoving() and not Player:IsChanneling(S.SoothingMist) then
 						if CastCycleAlly(S.SoothingMist, MEMBERS, SoothingMistFunc) then return end
 					end
