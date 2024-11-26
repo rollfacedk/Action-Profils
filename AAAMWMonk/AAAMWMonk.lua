@@ -293,7 +293,7 @@ local function MyRoutine()
 	end;
 
 	local function SoothingMistFunc(UnitTarget)
-		return UnitTarget:HealthPercentageFlat() <= 99 or UnitTarget:HealthPercentageFlat() <= 100 and MainAddon.Toggle:GetToggle("ForceHeal")
+		return UnitTarget:HealthPercentageFlat() <= 99 
 
 	end;
 
@@ -429,7 +429,7 @@ local function MyRoutine()
 		end
 
 		if Player:IsChanneling(S.SoothingMist) and not MainAddon.Toggle:GetToggle("ForceHeal") then
-			if HealingEngine:LowestHP() > 75 and Target:IsInMeleeRange(5) or HealingEngine:LowestHP() > 99 then
+			if Target:IsInMeleeRange(5) and HealingEngine:LowestHP() > 99 then
 				if MainAddon.SetTopColor(1, "Stop Casting") then end
 			end
 		end
