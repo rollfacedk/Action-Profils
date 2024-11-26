@@ -429,7 +429,7 @@ local function MyRoutine()
 		end
 
 		if Player:IsChanneling(S.SoothingMist) and not MainAddon.Toggle:GetToggle("ForceHeal") then
-			if HealingEngine:LowestHP() > 75 and S.PeerIntoPeace:IsAvailable() and Target:IsInMeleeRange(5) then
+			if HealingEngine:LowestHP() > 75 and Target:IsInMeleeRange(5) or HealingEngine:LowestHP() > 99 then
 				if MainAddon.SetTopColor(1, "Stop Casting") then end
 			end
 		end
@@ -477,6 +477,9 @@ local function MyRoutine()
 					end
 
 					if S.RisingSunKick:IsReady() and Target:IsInMeleeRange(5) then
+						if Player:BuffDown(S.ThunderFocusTea) and S.ThunderFocusTea:CooldownUp() then
+							if Cast(S.ThunderFocusTea) then return end
+						end
 						if Cast(S.RisingSunKick) then return end
 					end
 			
@@ -558,7 +561,7 @@ local function MyRoutine()
 					return 
 				end
 
-				if S.Vivify:CooldownUp() and Player:IsChanneling(S.SoothingMist) and Focus:HealthPercentage() <= 85 then
+				if S.Vivify:CooldownUp() and Player:IsChanneling(S.SoothingMist) and Focus:HealthPercentage() <= 90 then
 					MainAddon.SetTopTexture(6, "Soothing Mist and Vivify")
 					return
 				end
@@ -626,6 +629,9 @@ local function MyRoutine()
 				end
 
 				if S.RisingSunKick:IsReady() and Target:IsInMeleeRange(5) then
+					if Player:BuffDown(S.ThunderFocusTea) and S.ThunderFocusTea:CooldownUp() then
+						if Cast(S.ThunderFocusTea) then return end
+					end
 					if Cast(S.RisingSunKick) then return end
 				end
 		
@@ -694,7 +700,7 @@ local function MyRoutine()
 
 					if S.RisingSunKick:IsReady() and Target:IsInMeleeRange(5) then
 						if Player:BuffDown(S.ThunderFocusTea) and S.ThunderFocusTea:CooldownUp() then
-							if MainAddon.CastCycleAlly(S.ThunderFocusTea, MEMBERS, ThunderFocusTeaFunc) then return end
+							if Cast(S.ThunderFocusTea) then return end
 						end
 						if Cast(S.RisingSunKick) then return end
 					end
@@ -846,7 +852,7 @@ local function MyRoutine()
 
 				if S.RisingSunKick:IsReady() and Target:IsInMeleeRange(5) then
 					if Player:BuffDown(S.ThunderFocusTea) and S.ThunderFocusTea:CooldownUp() then
-						if MainAddon.CastCycleAlly(S.ThunderFocusTea, MEMBERS, ThunderFocusTeaFunc) then return end
+						if Cast(S.ThunderFocusTea) then return end
 					end
 					if Cast(S.RisingSunKick) then return end
 				end
