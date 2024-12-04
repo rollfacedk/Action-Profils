@@ -144,7 +144,7 @@ local function MyRoutine()
 		SheilunsGift = Spell(399491),
 		ManaTea = Spell(115294),
 		ChiHarmony = Spell(448392),
-		SecretInfusion = Spell(388497),
+		SecretInfusion = Spell(388491),
 		RisingMist = Spell(274909),
 		JadefireStomp = Spell(388193),
 		SummonJadeSerpentStatue = Spell(115313),
@@ -492,7 +492,7 @@ local function MyRoutine()
 			if TargetIsValid() then
 
 				if S.RenewingMist:CooldownUp() then
-					if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Renewing') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
+					if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Renewing') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusionBuff) then
 						if CastCycleAlly(S.ThunderFocusTea, MEMBERS, RenewingMistFunc) then return end
 					end
 					if CastCycleAlly(S.RenewingMist, MEMBERS, RenewingMistFunc) then return "Renewing2" end
@@ -503,7 +503,7 @@ local function MyRoutine()
 				end
 
 				if S.RisingSunKick:IsReady() and S.RisingMist:IsAvailable() and (Target:IsInMeleeRange(5) or Target:IsInRange(20) and S.RushingWingKick:IsAvailable()) then
-					if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Risingsun') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
+					if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Risingsun') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusionBuff) then
 						if Cast(S.ThunderFocusTea) then return end
 					end
 					if Cast(S.RisingSunKick) then return end
@@ -516,7 +516,7 @@ local function MyRoutine()
 				end
 
 				if S.RisingSunKick:IsReady() and (Target:IsInMeleeRange(5) or Target:IsInRange(20) and S.RushingWingKick:IsAvailable()) then
-					if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Risingsun') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
+					if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Risingsun') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusionBuff) then
 						if Cast(S.ThunderFocusTea) then return end
 					end
 					if Cast(S.RisingSunKick) then return end
@@ -587,13 +587,13 @@ local function MyRoutine()
 
 		if S.PeerIntoPeace:IsAvailable() then
 			if S.RenewingMist:CooldownUp() and Focus:IsSpellInRange(S.RenewingMist) and MainAddon.Config.GetSetting('MWRollface', 'Caster') and (HealingEngine:LowestHP(true, 40) >= 50 or Player:IsMoving()) and Focus:BuffDown(S.RenewingMistBuff) then
-				if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Renewing') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
+				if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Renewing') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusionBuff) then
 					if Cast(S.ThunderFocusTea) then return end
 				end
 				if Cast(S.RenewingMist, Focus) then return end
 			end
 			if S.RushingWingKick:CooldownUp() and S.RisingMist:IsAvailable() and (HealingEngine:LowestHP(true, 40) >= 50 or Player:IsMoving()) and Player:AffectingCombat() and MainAddon.Config.GetSetting('MWRollface', 'Caster') and (Target:IsInMeleeRange(5) or S.RushingWingKick:IsAvailable()) then
-				if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Risingsun') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
+				if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Risingsun') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusionBuff) then
 					if Cast(S.ThunderFocusTea) then return end
 				end
 				if Cast(S.RushingWingKick) then return end
@@ -642,7 +642,7 @@ local function MyRoutine()
 			end
 
 			if S.EnvelopingMist:IsCastable() then
-				if S.ThunderFocusTea:IsCastable() and MainAddon.Config.GetSetting('MWRollface', 'Enveloping') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
+				if S.ThunderFocusTea:IsCastable() and MainAddon.Config.GetSetting('MWRollface', 'Enveloping') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusionBuff) then
 					if MainAddon.CastCycleAlly(S.ThunderFocusTea, MEMBERS, ThunderFocusTeaFunc) then return end
 				end
 				if MainAddon.CastCycleAlly(S.EnvelopingMist, MEMBERS, EnvelopingMistThunderFocusFunc) then return "" end
@@ -653,7 +653,7 @@ local function MyRoutine()
 			end
 
 			if S.RenewingMist:IsCastable() then
-				if S.ThunderFocusTea:IsCastable() and MainAddon.Config.GetSetting('MWRollface', 'Renewing') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
+				if S.ThunderFocusTea:IsCastable() and MainAddon.Config.GetSetting('MWRollface', 'Renewing') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusionBuff) then
 					if CastCycleAlly(S.ThunderFocusTea, MEMBERS, RenewingMistFunc) then return end
 				end
 				if CastCycleAlly(S.RenewingMist, MEMBERS, RenewingMistFunc) then return "Renewing2" end
@@ -692,7 +692,7 @@ local function MyRoutine()
 			end
 
 			if S.RisingSunKick:IsReady()  and S.RisingMist:IsAvailable() and (Target:IsInMeleeRange(5) or Target:IsInRange(20) and S.RushingWingKick:IsAvailable()) then
-				if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Risingsun') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
+				if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Risingsun') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusionBuff) then
 					if Cast(S.ThunderFocusTea) then return end
 				end
 				if Cast(S.RisingSunKick) then return end
@@ -705,7 +705,7 @@ local function MyRoutine()
 			end
 
 			if S.RisingSunKick:IsReady() and (Target:IsInMeleeRange(5) or Target:IsInRange(20) and S.RushingWingKick:IsAvailable()) then
-				if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Risingsun') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
+				if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Risingsun') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusionBuff) then
 					if Cast(S.ThunderFocusTea) then return end
 				end
 				if Cast(S.RisingSunKick) then return end
