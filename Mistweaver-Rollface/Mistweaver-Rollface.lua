@@ -536,28 +536,52 @@ local function MyRoutine()
 			if CastCycleAlly(S.EnvelopingMist, MEMBERS, EnvelopingMistSoothingRAMPFunc) then return "vivify" end
 		end
 
-		if Player:BuffDown(S.Yulonbaby) and not MW.Chiji.Active and 
-			(HealingEngine:MembersUnderPercentage(85, nil, 40) >= 4 or 
-			HealingEngine:MembersUnderPercentage(75, nil, 40) >= 3 or
-			HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or 
-			HealingEngine:DebuffTotal(S.VoidRift, 30) >= 3 or 
-			HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3 or 
-			HealingEngine:DebuffTotal(S.CorruptedCoating, 30) >= 3) then
+		if Player:IsInRaid() then
+			if Player:BuffDown(S.Yulonbaby) and not MW.Chiji.Active and 
+				HealingEngine:MembersUnderPercentage(75, nil, 40) >= 5 then
 
-			if S.SheilunsGift:CooldownUp() and not Player:IsMoving() and S.SheilunsGift:Count() >= 6 then
-				if MainAddon.CastCycleAlly(S.SheilunsGift, MEMBERS, Test) then return "vivify" end
-			end
+				if S.SheilunsGift:CooldownUp() and not Player:IsMoving() and S.SheilunsGift:Count() >= 6 then
+					if MainAddon.CastCycleAlly(S.SheilunsGift, MEMBERS, Test) then return "vivify" end
+				end
 
-			if S.InvokeChiJiTheRedCrane:CooldownUp() then
-				if Cast(S.InvokeChiJiTheRedCrane) then return end
-			end
-			
-			if S.InvokeYulonTheJadeSerpent:CooldownUp() then
-				if Cast(S.InvokeYulonTheJadeSerpent) then return end
-			end
+				if S.InvokeChiJiTheRedCrane:CooldownUp() then
+					if Cast(S.InvokeChiJiTheRedCrane) then return end
+				end
+				
+				if S.InvokeYulonTheJadeSerpent:CooldownUp() then
+					if Cast(S.InvokeYulonTheJadeSerpent) then return end
+				end
 
-			if S.CelestialConduit:CooldownUp() then
-				if Cast(S.CelestialConduit) then return end
+				if S.CelestialConduit:CooldownUp() then
+					if Cast(S.CelestialConduit) then return end
+				end
+			end
+		end
+
+		if not Player:IsInRaid() then
+			if Player:BuffDown(S.Yulonbaby) and not MW.Chiji.Active and 
+				(HealingEngine:MembersUnderPercentage(75, nil, 40) >= 3 or
+				HealingEngine:MembersUnderPercentage(85, nil, 40) >= 4 or
+				HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or 
+				HealingEngine:DebuffTotal(S.VoidRift, 30) >= 3 or 
+				HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3 or 
+				HealingEngine:DebuffTotal(S.CorruptedCoating, 30) >= 3) then
+
+				if S.SheilunsGift:CooldownUp() and not Player:IsMoving() and S.SheilunsGift:Count() >= 6 then
+					if MainAddon.CastCycleAlly(S.SheilunsGift, MEMBERS, Test) then return "vivify" end
+				end
+
+				if S.InvokeChiJiTheRedCrane:CooldownUp() then
+					if Cast(S.InvokeChiJiTheRedCrane) then return end
+				end
+				
+				if S.InvokeYulonTheJadeSerpent:CooldownUp() then
+					if Cast(S.InvokeYulonTheJadeSerpent) then return end
+				end
+
+				if S.CelestialConduit:CooldownUp() then
+					if Cast(S.CelestialConduit) then return end
+				end
 			end
 		end
 
