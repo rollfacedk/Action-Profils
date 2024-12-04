@@ -349,11 +349,11 @@ local function MyRoutine()
 	end;
 
 	local function VivifyNoSoothingFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 75 
+		return UnitTarget:HealthPercentage() <= 85 
 	end;
 
 	local function VivifyFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 50 
+		return UnitTarget:HealthPercentage() <= 65 
 	end;
 
 	local function SoothingMistFunc(UnitTarget)
@@ -637,6 +637,10 @@ local function MyRoutine()
 
 		if not Player:IsChanneling(S.SoothingMist) then	
 
+			if S.Vivify:IsCastable() and Player:BuffUp(S.VivaciousVivificationBuff) then
+				if CastCycleAlly(S.Vivify, MEMBERS, VivifyFunc) then return "vivify" end
+			end
+
 			if S.EnvelopingMist:IsCastable() then
 				if S.ThunderFocusTea:IsCastable() and MainAddon.Config.GetSetting('MWRollface', 'Enveloping') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
 					if MainAddon.CastCycleAlly(S.ThunderFocusTea, MEMBERS, ThunderFocusTeaFunc) then return end
@@ -648,10 +652,6 @@ local function MyRoutine()
 				if MainAddon.CastCycleAlly(S.EnvelopingMist, MEMBERS, StrengthoftheBlackOxFunc) then return "" end
 			end
 
-			if S.Vivify:IsCastable() and Player:BuffUp(S.VivaciousVivificationBuff) then
-				if CastCycleAlly(S.Vivify, MEMBERS, VivifyFunc) then return "vivify" end
-			end
-
 			if S.RenewingMist:IsCastable() then
 				if S.ThunderFocusTea:IsCastable() and MainAddon.Config.GetSetting('MWRollface', 'Renewing') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
 					if CastCycleAlly(S.ThunderFocusTea, MEMBERS, RenewingMistFunc) then return end
@@ -659,7 +659,7 @@ local function MyRoutine()
 				if CastCycleAlly(S.RenewingMist, MEMBERS, RenewingMistFunc) then return "Renewing2" end
 			end
 
-			if not Target:IsInMeleeRange(5) then
+			if not Target:IsInMeleeRange(5) or MainAddon.Toggle:GetToggle("ForceHeal") then
 				if S.Vivify:IsCastable() and not S.SoothingMist:IsAvailable() then
 					if CastCycleAlly(S.Vivify, MEMBERS, VivifyNoSoothingFunc) then return "vivify" end
 				end
