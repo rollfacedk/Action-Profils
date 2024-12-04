@@ -345,7 +345,7 @@ local function MyRoutine()
 	end;
 
 	local function RenewingMistFunc(UnitTarget)
-		return UnitTarget:BuffDown(S.RenewingMistBuff) or UnitTarget:BuffRemains(S.RenewingMistBuff) < 8 and UnitTarget:HealthPercentage() <= 65 and S.ChiHarmony:IsAvailable()
+		return UnitTarget:BuffDown(S.RenewingMistBuff)
 	end;
 
 	local function VivifyNoSoothingFunc(UnitTarget)
@@ -493,7 +493,7 @@ local function MyRoutine()
 
 				if S.RenewingMist:CooldownUp() then
 					if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Renewing') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
-						if Cast(S.ThunderFocusTea) then return end
+						if CastCycleAlly(S.ThunderFocusTea, MEMBERS, RenewingMistFunc) then return end
 					end
 					if CastCycleAlly(S.RenewingMist, MEMBERS, RenewingMistFunc) then return "Renewing2" end
 				end
@@ -613,21 +613,21 @@ local function MyRoutine()
 
 		if not Player:IsChanneling(S.SoothingMist) then	
 
-			if S.RenewingMist:CooldownUp() then
-				if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Renewing') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
-					if Cast(S.ThunderFocusTea) then return end
+			if S.RenewingMist:IsCastable() then
+				if S.ThunderFocusTea:IsCastable() and MainAddon.Config.GetSetting('MWRollface', 'Renewing') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
+					if CastCycleAlly(S.ThunderFocusTea, MEMBERS, RenewingMistFunc) then return end
 				end
 				if CastCycleAlly(S.RenewingMist, MEMBERS, RenewingMistFunc) then return "Renewing2" end
 			end
 
-			if S.EnvelopingMist:CooldownUp() then
-				if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Enveloping') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
-					if MainAddon.CastCycleAlly(S.EnvelopingMist, MEMBERS, ThunderFocusTeaFunc) then return end
+			if S.EnvelopingMist:IsCastable() then
+				if S.ThunderFocusTea:IsCastable() and MainAddon.Config.GetSetting('MWRollface', 'Enveloping') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
+					if MainAddon.CastCycleAlly(S.ThunderFocusTea, MEMBERS, ThunderFocusTeaFunc) then return end
 				end
 				if MainAddon.CastCycleAlly(S.EnvelopingMist, MEMBERS, EnvelopingMistThunderFocusFunc) then return "" end
 			end
 	
-			if S.EnvelopingMist:CooldownUp() and not Player:IsMoving() and Player:BuffUp(S.StrengthoftheBlackOxBuff) then
+			if S.EnvelopingMist:IsCastable() and not Player:IsMoving() and Player:BuffUp(S.StrengthoftheBlackOxBuff) then
 				if MainAddon.CastCycleAlly(S.EnvelopingMist, MEMBERS, StrengthoftheBlackOxFunc) then return "" end
 			end
 
