@@ -144,7 +144,7 @@ local function MyRoutine()
 		SheilunsGift = Spell(399491),
 		ManaTea = Spell(115294),
 		ChiHarmony = Spell(448392),
-		SecretInfusion = Spell(388491),
+		SecretInfusion = Spell(388497),
 		RisingMist = Spell(274909),
 		JadefireStomp = Spell(388193),
 		SummonJadeSerpentStatue = Spell(115313),
