@@ -613,13 +613,6 @@ local function MyRoutine()
 
 		if not Player:IsChanneling(S.SoothingMist) then	
 
-			if S.RenewingMist:IsCastable() then
-				if S.ThunderFocusTea:IsCastable() and MainAddon.Config.GetSetting('MWRollface', 'Renewing') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
-					if CastCycleAlly(S.ThunderFocusTea, MEMBERS, RenewingMistFunc) then return end
-				end
-				if CastCycleAlly(S.RenewingMist, MEMBERS, RenewingMistFunc) then return "Renewing2" end
-			end
-
 			if S.EnvelopingMist:IsCastable() then
 				if S.ThunderFocusTea:IsCastable() and MainAddon.Config.GetSetting('MWRollface', 'Enveloping') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
 					if MainAddon.CastCycleAlly(S.ThunderFocusTea, MEMBERS, ThunderFocusTeaFunc) then return end
@@ -635,11 +628,19 @@ local function MyRoutine()
 				if CastCycleAlly(S.Vivify, MEMBERS, VivifyFunc) then return "vivify" end
 			end
 
+			if S.RenewingMist:IsCastable() then
+				if S.ThunderFocusTea:IsCastable() and MainAddon.Config.GetSetting('MWRollface', 'Renewing') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusion) then
+					if CastCycleAlly(S.ThunderFocusTea, MEMBERS, RenewingMistFunc) then return end
+				end
+				if CastCycleAlly(S.RenewingMist, MEMBERS, RenewingMistFunc) then return "Renewing2" end
+			end
+
 			if not Target:IsInMeleeRange(5) then
 				if S.Vivify:IsCastable() and not S.SoothingMist:IsAvailable() then
 					if CastCycleAlly(S.Vivify, MEMBERS, VivifyNoSoothingFunc) then return "vivify" end
 				end
 			end
+
 		end
 	
 		if S.ManaTea:CooldownUp() and (HealingEngine:LowestHP(true, 40) > 75 or not Player:IsInParty()) and S.ManaTea:Count() >= 10 and Player:ManaPercentage() <= 75 then
