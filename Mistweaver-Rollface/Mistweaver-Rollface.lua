@@ -357,8 +357,7 @@ local function MyRoutine()
 	end;
 
 	local function SoothingMistFunc(UnitTarget)
-		return UnitTarget:BuffDown(S.SoothingMist) and (UnitTarget:HealthPercentageFlat() <= 99 or UnitTarget:HealthPercentageFlat() <= 100 and MainAddon.Toggle:GetToggle("ForceHeal")) or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating)
-
+		return UnitTarget:BuffDown(S.SoothingMist) and (UnitTarget:HealthPercentageFlat() <= 99 or UnitTarget:HealthPercentageFlat() <= 100 and MainAddon.Toggle:GetToggle("ForceHeal")) and (UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
 	end;
 
 	local function LifeCocoonFunc(UnitTarget)
