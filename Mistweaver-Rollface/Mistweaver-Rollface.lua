@@ -365,7 +365,7 @@ local function MyRoutine()
 	end;
 
 	local function EnvelopingInvokeChiJiBuffFunc(UnitTarget)
-		return UnitTarget:BuffDown(S.EnvelopingMist, nil, true) and UnitTarget:HealthPercentage() <= 65
+		return UnitTarget:BuffDown(S.EnvelopingMist, nil, true)
 	end;
 
 	local function EnvelopingStrengthoftheBlackOxBuffBuffFunc(UnitTarget)
