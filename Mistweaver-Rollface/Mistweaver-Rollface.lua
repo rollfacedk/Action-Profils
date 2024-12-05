@@ -394,7 +394,7 @@ local function MyRoutine()
 	end;
 
 	local function SoothingMistNotPeerintoMistFunc(UnitTarget)
-		return UnitTarget:HealthPercentageFlat() <= 75 and UnitTarget:BuffDown(S.SoothingMist)
+		return UnitTarget:HealthPercentageFlat() <= 99 and UnitTarget:BuffDown(S.SoothingMist)
 	end;
 
 	--- ===== Rotation Variables =====
@@ -449,7 +449,7 @@ local function MyRoutine()
 		end
 
 		if Player:IsChanneling(S.SoothingMist) and not S.PeerIntoPeace:IsAvailable() then
-			if Focus:HealthPercentageFlat() > 75 or Target:IsInMeleeRange(5) then
+			if Focus:HealthPercentageFlat() > 99 or Target:IsInMeleeRange(5) then
 				if MainAddon.SetTopColor(1, "Stop Casting") then end
 			end
 		end
