@@ -443,7 +443,7 @@ local function MyRoutine()
 		end
 
 		if Player:IsChanneling(S.SoothingMist) and not MainAddon.Toggle:GetToggle("ForceHeal") then
-			if Focus:HealthPercentageFlat() > 99 then
+			if Focus:HealthPercentageFlat() > 99 or not (Focus:DebuffUp(S.EnvelopingShadowflame) or Focus:DebuffUp(S.VoidRift) or Focus:DebuffUp(S.CurseOfEntropy) or Focus:DebuffUp(S.CorruptedCoating)) then
 				if MainAddon.SetTopColor(1, "Stop Casting") then end
 			end
 		end
