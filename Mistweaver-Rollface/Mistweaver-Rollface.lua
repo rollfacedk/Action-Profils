@@ -381,7 +381,7 @@ local function MyRoutine()
 	end;
 
 	local function StrengthoftheBlackOxFunc(UnitTarget)
-		return UnitTarget:BuffDown(S.EnvelopingMist, nil, true) and (UnitTarget:HealthPercentage() <= 65 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
+		return UnitTarget:BuffDown(S.EnvelopingMist, nil, true) and (UnitTarget:HealthPercentage() <= 75 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating))
 	end;
 
 	local function ThunderFocusTeaFunc(UnitTarget)
@@ -559,8 +559,7 @@ local function MyRoutine()
 
 		if not Player:IsInRaid() then
 			if Player:BuffDown(S.Yulonbaby) and not MW.Chiji.Active and 
-				(HealingEngine:MembersUnderPercentage(75, nil, 40) >= 3 or
-				HealingEngine:MembersUnderPercentage(85, nil, 40) >= 4 or
+				(HealingEngine:MembersUnderPercentage(85, nil, 40) >= 3 or
 				HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or 
 				HealingEngine:DebuffTotal(S.VoidRift, 30) >= 3 or 
 				HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3 or 
