@@ -442,7 +442,7 @@ local function MyRoutine()
 		end
 
 		if Player:IsChanneling(S.SoothingMist) and not MainAddon.Toggle:GetToggle("ForceHeal") then
-			if Focus:HealthPercentageFlat() > 99 then
+			if Focus:HealthPercentageFlat() > 99 and Focus:DebuffDown(S.EnvelopingShadowflame) and Focus:DebuffDown(S.VoidRift) and Focus:DebuffDown(S.CurseOfEntropy) and Focus:DebuffDown(S.CorruptedCoating) then
 				if MainAddon.SetTopColor(1, "Stop Casting") then end
 			end
 		end
@@ -565,7 +565,7 @@ local function MyRoutine()
 				HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3 or 
 				HealingEngine:DebuffTotal(S.CorruptedCoating, 30) >= 3) then
 
-				if S.SheilunsGift:CooldownUp() and not Player:IsMoving() and S.SheilunsGift:Count() >= 6 then
+				if S.SheilunsGift:CooldownUp() and HealingEngine:LowestHP(true, 40) >= 30 and not Player:IsMoving() and S.SheilunsGift:Count() >= 6 then
 					if MainAddon.CastCycleAlly(S.SheilunsGift, MEMBERS, Test) then return "vivify" end
 				end
 
