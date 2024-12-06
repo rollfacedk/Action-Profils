@@ -639,8 +639,8 @@ local function MyRoutine()
 				if CastCycleAlly(S.Vivify, MEMBERS, VivifyFunc) then return "vivify" end
 			end
 
-			if S.EnvelopingMist:IsCastable() then
-				if S.ThunderFocusTea:IsCastable() and MainAddon.Config.GetSetting('MWRollface', 'Enveloping') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusionBuff) then
+			if S.EnvelopingMist:IsCastable() and MainAddon.Config.GetSetting('RollfaceXMW', 'Enveloping') then
+				if S.ThunderFocusTea:IsCastable() and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusionBuff) then
 					if MainAddon.CastCycleAlly(S.ThunderFocusTea, MEMBERS, ThunderFocusTeaFunc) then return end
 				end
 				if MainAddon.CastCycleAlly(S.EnvelopingMist, MEMBERS, EnvelopingMistThunderFocusFunc) then return "" end
