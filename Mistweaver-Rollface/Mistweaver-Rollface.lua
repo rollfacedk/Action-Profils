@@ -170,7 +170,7 @@ local function MyRoutine()
 		JadeEmpowerment = Spell(467317),
 		JadefireTeachingBuff = Spell(388026),
 		JadefireTeaching = Spell(467293),
-		SecretInfusionBuff = Spell(388497),
+		SecretInfusionBuff = MultiSpell(388497, 388498, 388500),
 		PoolOfMist = Spell(173841),
 
 		--
