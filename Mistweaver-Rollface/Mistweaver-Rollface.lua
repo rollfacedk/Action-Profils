@@ -549,7 +549,7 @@ local function MyRoutine()
 		end
 
 		if not Player:IsInRaid() or Player:BuffDown(S.ThunderFocusTea) then
-			if S.RenewingMist:CooldownUp() and ((HealingEngine:LowestHP(true, 40) >= 50 and S.PeerIntoPeace:IsAvailable()) or (not Player:IsChanneling(S.SoothingMist) and not S.PeerIntoPeace:IsAvailable()) or Player:IsMoving()) then
+			if S.RenewingMist:CooldownUp() and ((HealingEngine:LowestHP(true, 40) >= 80 and S.PeerIntoPeace:IsAvailable()) or (not Player:IsChanneling(S.SoothingMist) and not S.PeerIntoPeace:IsAvailable()) or Player:IsMoving()) then
 				if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Renewing') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusionCritBuff) and Player:BuffDown(S.SecretInfusionHasteBuff) and Player:BuffDown(S.SecretInfusionMasteryBuff) and Player:BuffDown(S.SecretInfusionVersBuff) then
 					if CastCycleAlly(S.ThunderFocusTea, MEMBERS, RenewingMistFunc) then return end
 				end
@@ -723,13 +723,13 @@ local function MyRoutine()
 		-- Soothing Mist
 		if S.PeerIntoPeace:IsAvailable() then
 
-			if MainAddon.Config.GetSetting('MWRollface', 'Caster') and (Focus:HealthPercentageFlat() > 50 or Player:IsMoving()) then
-				-- if S.RenewingMist:CooldownUp() and Focus:BuffDown(S.RenewingMistBuff) and Focus:IsSpellInRange(S.RenewingMist) then
-				-- 	if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Renewing') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusionCritBuff) and Player:BuffDown(S.SecretInfusionHasteBuff) and Player:BuffDown(S.SecretInfusionMasteryBuff) and Player:BuffDown(S.SecretInfusionVersBuff) then
-				-- 		if Cast(S.ThunderFocusTea) then return end
-				-- 	end
-				-- 	if Cast(S.RenewingMist, Focus) then return "" end
-				-- end
+			if MainAddon.Config.GetSetting('MWRollface', 'Caster') and (Focus:HealthPercentageFlat() > 60 or Player:IsMoving()) then
+				if S.RenewingMist:CooldownUp() and Focus:BuffDown(S.RenewingMistBuff) and Focus:IsSpellInRange(S.RenewingMist) then
+					if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Renewing') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusionCritBuff) and Player:BuffDown(S.SecretInfusionHasteBuff) and Player:BuffDown(S.SecretInfusionMasteryBuff) and Player:BuffDown(S.SecretInfusionVersBuff) then
+						if Cast(S.ThunderFocusTea) then return end
+					end
+					if Cast(S.RenewingMist, Focus) then return "" end
+				end
 				if S.RushingWingKick:CooldownUp() and Player:AffectingCombat() and not Target:IsInMeleeRange(5) then
 					if S.ThunderFocusTea:CooldownUp() and MainAddon.Config.GetSetting('MWRollface', 'Risingsun') and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusionCritBuff) and Player:BuffDown(S.SecretInfusionHasteBuff) and Player:BuffDown(S.SecretInfusionMasteryBuff) and Player:BuffDown(S.SecretInfusionVersBuff) then
 						if Cast(S.ThunderFocusTea) then return end
@@ -739,7 +739,7 @@ local function MyRoutine()
 			end
 
 			if S.Vivify:CooldownUp() and Player:IsChanneling(S.SoothingMist) then	
-				if S.EnvelopingMist:CooldownUp() and CDsON() and Focus:BuffDown(S.EnvelopingMist, nil, true) and Player:IsChanneling(S.SoothingMist) and (Focus:HealthPercentage() <= 50 or Player:BuffUp(S.Yulonbaby) or Focus:DebuffUp(S.EnvelopingShadowflame) or Focus:DebuffUp(S.VoidRift) or Focus:DebuffUp(S.CurseOfEntropy) or Focus:DebuffUp(S.CorruptedCoating) or Focus:DebuffUp(S.Putridwaters1) or Focus:DebuffUp(S.Putridwaters2)) then
+				if S.EnvelopingMist:CooldownUp() and CDsON() and Focus:BuffDown(S.EnvelopingMist, nil, true) and Player:IsChanneling(S.SoothingMist) and (Focus:HealthPercentage() <= 60 or Player:BuffUp(S.Yulonbaby) or Focus:DebuffUp(S.EnvelopingShadowflame) or Focus:DebuffUp(S.VoidRift) or Focus:DebuffUp(S.CurseOfEntropy) or Focus:DebuffUp(S.CorruptedCoating) or Focus:DebuffUp(S.Putridwaters1) or Focus:DebuffUp(S.Putridwaters2)) then
 					MainAddon.SetTopTexture(6, "Soothing Mist and Enveloping Mist")
 					return
 				end	
