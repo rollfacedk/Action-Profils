@@ -316,6 +316,10 @@ local function MyRoutine()
 			end
 		end
 
+    if S.Consecration:IsCastable() and (Player:BuffDown(S.ConsecrationBuff)) then
+		  if Cast(S.Consecration) then return "consecration Defensive"; end
+		end
+
 	end
 
 	local function Cooldowns()
