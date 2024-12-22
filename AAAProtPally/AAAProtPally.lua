@@ -316,7 +316,7 @@ local function MyRoutine()
 			end
 		end
 
-    if S.Consecration:IsCastable() and (Player:BuffDown(S.ConsecrationBuff)) then
+    if S.Consecration:IsCastable() and not Player:IsMoving() and (Player:BuffDown(S.ConsecrationBuff)) then
 		  if Cast(S.Consecration) then return "consecration Defensive"; end
 		end
 
@@ -449,7 +449,7 @@ local function MyRoutine()
 		  if CastTargetIf(S.Judgment, Enemies30y, "min", EvaluateTargetIfFilterJudgment) then return "judgment standard 20";  end
 		end
 		-- consecration,if=buff.divine_guidance.stack=5
-		if S.Consecration:IsCastable() and (Player:BuffStack(S.DivineGuidanceBuff) == 5) then
+		if S.Consecration:IsCastable() and not Player:IsMoving() and (Player:BuffStack(S.DivineGuidanceBuff) == 5) then
 		  if Cast(S.Consecration) then return "consecration standard 30"; end
 		end
 		-- hammer_of_wrath
@@ -487,7 +487,7 @@ local function MyRoutine()
 		  if Cast(S.AvengersShield) then return "avengers_shield standard 28"; end
 		end
 		-- consecration,if=!consecration.up
-		if S.Consecration:IsCastable() and (Player:BuffDown(S.ConsecrationBuff)) then
+		if S.Consecration:IsCastable() and not Player:IsMoving() and (Player:BuffDown(S.ConsecrationBuff)) then
 		  if Cast(S.Consecration) then return "consecration standard 30"; end
 		end
 		-- eye_of_tyr,if=(talent.inmost_light.enabled&raid_event.adds.in>=45|spell_targets.shield_of_the_righteous>=3)&!talent.lights_deliverance.enabled
@@ -533,7 +533,7 @@ local function MyRoutine()
 		  if Cast(S.ArcaneTorrent) then return "arcane_torrent standard 58"; end
 		end
 		-- consecration
-		if S.Consecration:IsCastable() then
+		if S.Consecration:IsCastable() and not Player:IsMoving() then
 		  if Cast(S.Consecration) then return "consecration standard 60"; end
 		end
 	end
