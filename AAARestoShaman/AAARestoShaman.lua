@@ -423,7 +423,7 @@ local function MyRoutine()
 			end
 
 			if S.ChainHeal:IsCastable() and Player:BuffUp(S.TidalWaves) then
-				if S.NaturesSwiftness:IsCastable() and Player:BuffDown(S.NaturesSwiftness) and HealingEngine:MembersUnderPercentage(65, nil, 30) >= 3 then
+				if S.NaturesSwiftness:IsCastable() and Player:BuffDown(S.NaturesSwiftness) and HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 then
 					if Cast(S.NaturesSwiftness) then return end
 				end
 				if MainAddon.CastCycleAlly(S.ChainHeal, MEMBERS, TargetFunc) then return end
