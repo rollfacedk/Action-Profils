@@ -1,4 +1,8 @@
 local function MyRoutine()
+	local Author = 'Restoration Shaman 11.1 Rework'
+	local SpecID = 264 --Unholy  --https://wowpedia.fandom.com/wiki/API_GetSpecializationInfo
+
+	local function MyRoutine()
 	local Author = 'Restoration Shaman'
 	local SpecID = 264 --Unholy  --https://wowpedia.fandom.com/wiki/API_GetSpecializationInfo
 
@@ -168,9 +172,10 @@ local function MyRoutine()
 		Riptide = Spell(61295),
 		HealingTideTotem = Spell(108280),
 		SpiritLinkTotem = Spell(98008),
+		SpiritLinkTotemBuff = Spell(325174),
 		PrimordialWave = MultiSpell(375982, 428332),
 		UnleashLife = Spell(73685),
-		HealingRain = Spell(73920),
+		HealingRain = MultiSpell(73920, 444995),
 		HealingRainBuff = MultiSpell(73920, 456366),
 		AcidRain = Spell(378443),
 		ManaTideTotem = Spell(16191),
@@ -279,7 +284,7 @@ local function MyRoutine()
 	end
 
 	local function TargetFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() < 100
+		return UnitTarget:HealthPercentage() < 100 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating)
 	end;
 
 	local function TotemFinder(Totem)
@@ -306,15 +311,15 @@ local function MyRoutine()
 	end;
 
 	local function RiptideFunc(UnitTarget)
-		return UnitTarget:BuffDown(S.Riptide) and UnitTarget:HealthPercentage() <= 100
+		return UnitTarget:BuffDown(S.Riptide)
 	end;
 
 	local function HealingWaveFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 75 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating)
+		return UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating)
 	end;
 
 	local function HealingSurgeFunc(UnitTarget)
-		return UnitTarget:HealthPercentageFlat() <= 50 
+		return UnitTarget:HealthPercentage() <= 75
 	end;
 
 	local function UnleashLifeFunc(UnitTarget)
@@ -323,7 +328,7 @@ local function MyRoutine()
 	
 	local function MainRotation()
 
-		if Player:IsCasting() then return end
+		-- if Player:IsCasting() then return end
 
 		TANKS, HEALERS, MEMBERS, DPS, PRIORITY = HealingEngine:Fetch()
 
@@ -339,7 +344,7 @@ local function MyRoutine()
 			if Cast(S.AstralShift) then return end
 		end
 
-		if S.EarthElemental:IsCastable() and Player:AffectingCombat() and Player:IsTankingAoE(40) and Player:HealthPercentageFlat() <= 65 then
+		if S.EarthElemental:IsCastable() and Player:AffectingCombat() and Player:IsTankingAoE(40) and Player:HealthPercentageFlat() <= 80 then
 			if Cast(S.EarthElemental) then return end
 		end
 
@@ -376,13 +381,25 @@ local function MyRoutine()
 
 		end
 
-		if Player:BuffDown(S.AncestralGuidance) and 
-			Player:BuffDown(S.Ascendance) and 
+		-- if Player:BuffDown(S.Ascendance) and 
+		-- 	not TotemFinder(S.HealingTideTotem)
+		-- 	and Player:BuffDown(S.SpiritLinkTotemBuff) then
+				
+			
+		-- 	if S.Ascendance:IsCastable() then 
+		-- 		if Cast(S.Ascendance) then return end
+		-- 	elseif S.HealingTideTotem:IsCastable() then
+		-- 		if Cast(S.HealingTideTotem) then return end
+		-- 	elseif S.SpiritLinkTotem:IsCastable() then
+		-- 		if Cast(S.SpiritLinkTotem, Player) then return end
+		-- 	end
+			
+		-- end
+
+		if Player:BuffDown(S.Ascendance) and 
 			not TotemFinder(S.HealingTideTotem) then
 				
-				if S.AncestralGuidance:IsCastable() and (HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 or HealingEngine:MembersUnderPercentage(85, nil, 30) >= 4) then
-					if Cast(S.AncestralGuidance) then return end
-			elseif S.Ascendance:IsCastable() and (HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 or HealingEngine:MembersUnderPercentage(85, nil, 30) >= 4) then 
+			if S.Ascendance:IsCastable() and (HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 or HealingEngine:MembersUnderPercentage(85, nil, 30) >= 4) then 
 					if Cast(S.Ascendance) then return end
 			elseif S.HealingTideTotem:IsCastable() and (HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 or HealingEngine:MembersUnderPercentage(85, nil, 30) >= 4) then
 					if Cast(S.HealingTideTotem) then return end
@@ -390,7 +407,7 @@ local function MyRoutine()
 			
 		end
 
-		if S.TotemicRecall:IsCastable() and (S.CloudburstTotem:Charges() == 0 or S.HealingStreamTotem:Charges() == 0) and HealingEngine:MembersUnderPercentage(65, nil, 30) >= 3 then
+		if S.TotemicRecall:IsCastable() and (S.CloudburstTotem:Charges() == 0 or S.HealingStreamTotem:Charges() == 0) and HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 then
 			if Cast(S.TotemicRecall) then return end
 		end
 
@@ -404,16 +421,16 @@ local function MyRoutine()
 			end
 		end
 
-		 if Player:AffectingCombat() then
-			 if (Player:BuffDown(S.HealingRainBuff)) and MouseOver:Exists()  then
-				 if Cast(S.SurgingTotem) then return end
+		if Player:AffectingCombat() and HealingEngine.LowestHP(true, 30) >= 50 then
+			 if S.HealingRain:IsCastable() and (Player:BuffDown(S.HealingRainBuff)) then
+				 if Cast(S.HealingRain) then return end
 			 end
-		 end
+		end
 
-		if (HealingEngine:MembersUnderPercentage(85, nil, 30) >= 3 and Player:BuffUp(S.HighTideBuff) or HealingEngine:MembersUnderPercentage(50, nil, 30) >= 3) or 
-			(Player:BuffUp(S.HighTideBuff) and (HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.VoidRift, 30) >= 3 or 
-			HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3 or HealingEngine:DebuffTotal(S.CorruptedCoating, 30) >= 3)) then
-
+		if (HealingEngine:MembersUnderPercentage(80, nil, 30) >= 3) or 
+			HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.VoidRift, 30) >= 3 or 
+			HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3 or HealingEngine:DebuffTotal(S.CorruptedCoating, 30) >= 3 then
+			
 			if S.HealingStreamTotem:IsCastable() and S.LivelyTotems:IsAvailable() then
 				if Cast(S.HealingStreamTotem) then return end
 			end
@@ -423,20 +440,29 @@ local function MyRoutine()
 			end
 
 			if S.ChainHeal:IsCastable() and Player:BuffUp(S.TidalWaves) then
-				if S.NaturesSwiftness:IsCastable() and Player:BuffDown(S.NaturesSwiftness) and HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 then
-					if Cast(S.NaturesSwiftness) then return end
-				end
 				if MainAddon.CastCycleAlly(S.ChainHeal, MEMBERS, TargetFunc) then return end
 			end
 		end
 
-		if S.HealingSurge:IsCastable() and Player:BuffUp(S.TidalWaves) then
-			if MainAddon.CastCycleAlly(S.HealingSurge, MEMBERS, HealingSurgeFunc) then return end
+		if S.Riptide:IsCastable() and Player:BuffDown(S.TidalWaves) and (Player:BuffDown(S.GhostWolf) or Player:AffectingCombat()) then
+			if MainAddon.CastCycleAlly(S.Riptide, MEMBERS, RiptideFunc) then return end
 		end
 
-		-- if S.HealingStreamTotem:IsCastable() and HealingEngine.LowestHP(true, 30) <= 95 and S.HealingStreamTotem:ChargesFractional() >= 1.8 and not Player:BuffUp(S.LivelyTotems)  then
-		-- 	if Cast(S.HealingStreamTotem) then return end
-		-- end
+		if TargetIsValid() and S.MasteroftheElements:IsAvailable() then
+			if S.LavaBurst:IsReady() and Player:BuffUp(S.LavaSurgeProc) and (Player:BuffRemains(S.MasteroftheElementsBuff) <= 8 or Player:BuffStack(S.MasteroftheElementsBuff) < 2 ) then
+				if Cast(S.LavaBurst) then return end
+			end
+		end
+
+		if S.HealingSurge:IsCastable() then
+			if Focus:HealthPercentage() <= 75 then
+				if Player:IsCasting(S.LightningBolt) or Player:IsCasting(S.ChainLightning) or Player:IsCasting(S.LavaBurst) then
+					if MainAddon.SetTopColor(1, "Stop Casting") then return end
+				end
+			end
+			if MainAddon.CastCycleAlly(S.HealingSurge, MEMBERS, HealingSurgeFunc) then return end
+		end
+		
 
 		if S.CloudburstTotem:IsCastable() and S.CloudburstTotem:ChargesFractional() >= 1.8 and not TotemFinder(S.CloudburstTotem) and HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 then
 			if Cast(S.CloudburstTotem) then return end
@@ -446,18 +472,14 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.UnleashLife, MEMBERS, UnleashLifeFunc) then return end
 		end
 
-		if TargetIsValid() and S.MasteroftheElements:IsAvailable() and HealingEngine:LowestHP() >= 75 then
-			if S.LavaBurst:IsReady() and (Player:BuffRemains(S.MasteroftheElementsBuff) <= 8) then
-				if Cast(S.LavaBurst) then return end
-			end
-		end
-
 		if S.HealingWave:IsCastable() and Player:BuffUp(S.TidalWaves) then
 			if MainAddon.CastCycleAlly(S.HealingWave, MEMBERS, HealingWaveFunc) then return end
 		end
-
-		if S.Riptide:IsCastable() and (Player:AffectingCombat() or HealingEngine:LowestHP() < 100) and Player:BuffDown(S.TidalWaves) then
-			if MainAddon.CastCycleAlly(S.Riptide, MEMBERS, RiptideFunc) then return end
+		
+		if TargetIsValid() and S.MasteroftheElements:IsAvailable() then
+			if S.LavaBurst:IsReady() and (Player:BuffRemains(S.MasteroftheElementsBuff) <= 8 or Player:BuffStack(S.MasteroftheElementsBuff) < 2 ) then
+				if Cast(S.LavaBurst) then return end
+			end
 		end
 
 		if S.WaterShield:IsCastable() and Player:BuffDown(S.WaterShieldBuff) then
@@ -481,7 +503,13 @@ local function MyRoutine()
 			end
 		end
 
-		if TargetIsValid() and not MainAddon.Toggle:GetToggle("ForceHeal") and HealingEngine:LowestHP() >= 75 then
+		if not Player:AffectingCombat() then
+			if S.GhostWolf:IsCastable() and Player:BuffDown(S.GhostWolf) and not Player:IsCasting() then 
+				if Cast(S.GhostWolf) then return end
+			end
+		end
+
+		if TargetIsValid() and not MainAddon.Toggle:GetToggle("ForceHeal") then
 			if S.ChainLightning:IsReady() and EnemiesCount10ySplash >= 2 then
 				if Cast(S.ChainLightning) then return end
 			end
@@ -501,7 +529,9 @@ local function MyRoutine()
 	MainAddon.SetCustomAPL(Author, SpecID, MainRotation, Init)
 
 	local IsCastable;
-	IsCastable = HL.AddCoreOverride("Spell.IsCastable", function(self, ignoreSettings, ignoreMovement, bypassRecovery, ignoreChannel)
+	IsCastable = HL.AddCoreOverride("Spell.IsCastable", 
+		function(self, ignoreSettings, ignoreMovement, bypassRecovery, ignoreChannel)
+			
 		if Player:IsMoving() and Player:BuffUp(S.SpiritwalkersGrace) then
 			ignoreMovement = true
 		end;
@@ -513,7 +543,27 @@ local function MyRoutine()
 		if MainAddon.Toggle:GetToggle("PrimalTideCorePooling") and S.PrimalTideCore:IsAvailable() and self == S.Riptide then
 			return false, 'Pooling for PrimalTideCorePooling'
 		end;
-		if self == S.HealingSurge or self == S.HealingWave or self == S.ChainHeal then
+		if self == S.HealingWave then
+			if Player:IsCasting(self) then
+				return false, "Casting"
+			end
+		end;
+		if self == S.HealingSurge then
+			if Player:IsCasting(self) then
+				return false, "Casting"
+			end
+		end;
+		if self == S.ChainHeal then
+			if Player:IsCasting(self) then
+				return false, "Casting"
+			end
+		end;
+		if self == S.LightningBolt then
+			if Player:IsCasting(self) then
+				return false, "Casting"
+			end
+		end;
+		if self == S.ChainLightning then
 			if Player:IsCasting(self) then
 				return false, "Casting"
 			end
