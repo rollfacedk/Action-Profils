@@ -319,6 +319,10 @@ local function MyRoutine()
 		return UnitTarget:HealthPercentage() <= 75
 	end;
 
+	local function HealingSurgeFunc2(UnitTarget)
+		return UnitTarget:HealthPercentage() <= 35
+	end;
+
 	local function UnleashLifeFunc(UnitTarget)
 		return UnitTarget:HealthPercentage() <= 95 or UnitTarget:DebuffUp(S.EnvelopingShadowflame) or UnitTarget:DebuffUp(S.VoidRift) or UnitTarget:DebuffUp(S.CurseOfEntropy) or UnitTarget:DebuffUp(S.CorruptedCoating)
 	end;
@@ -445,6 +449,10 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.Riptide, MEMBERS, RiptideFunc) then return end
 		end
 
+		if S.HealingSurge:IsCastable() and Player:BuffUp(S.TidalWaves) then
+			if MainAddon.CastCycleAlly(S.HealingSurge, MEMBERS, HealingSurgeFunc2) then return end
+		end
+
 		if TargetIsValid() and S.MasteroftheElements:IsAvailable() then
 			if S.LavaBurst:IsReady() and (Player:BuffRemains(S.MasteroftheElementsBuff) <= 8 or Player:BuffStack(S.MasteroftheElementsBuff) < 2 and Player:BuffUp(S.LavaSurgeProc)) then
 				if Cast(S.LavaBurst) then return end
@@ -455,7 +463,6 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.HealingSurge, MEMBERS, HealingSurgeFunc) then return end
 		end
 		
-
 		if S.CloudburstTotem:IsCastable() and S.CloudburstTotem:ChargesFractional() >= 1.8 and not TotemFinder(S.CloudburstTotem) and HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 then
 			if Cast(S.CloudburstTotem) then return end
 		end
