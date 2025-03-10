@@ -275,7 +275,7 @@ local function MyRoutine()
 		Description = "Avoid wasting HP on dps spells."
 	}
 	local function Init()
-		message( '11.1 Season 2 Shaman. Avoid the talent Downpour, instead use Tidebringer', 1)
+		message( '11.1 Season 2 Shaman. Avoid using the Downpour talent use Tidebringer instead.', 1)
 		MainAddon:Print('RollfaceX')
 	end
 
