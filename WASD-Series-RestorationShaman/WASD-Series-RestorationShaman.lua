@@ -335,7 +335,7 @@ local function MyRoutine()
 	end;
 
 	local function HealingSurgeFunc2(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 35
+		return UnitTarget:HealthPercentage() <= 50
 	end;
 
 	local function ChainHealNaturesSwiftnessFunc(UnitTarget)
