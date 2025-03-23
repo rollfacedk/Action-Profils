@@ -285,7 +285,7 @@ local function MyRoutine()
 		MainAddon:Print('RollfaceX')
 	end
 
-		--- ===== Rotation Variables =====
+	--- ===== Rotation Variables =====
 	local HasMainHandEnchant, HasOffHandEnchant
 	local MHEnchantTimeRemains, OHEnchantTimeRemains
 	local MHEnchantID, OHEnchantID
@@ -1531,9 +1531,7 @@ local function MyRoutine()
 	
 	local function MainRotation()
 
-		if MainAddon.TargetIsValid() then
-			MainAddon:Print('RollfaceX')
-		end
+	
 
 		if Player:AffectingCombat() and (Target:IsDeadOrGhost() or not Target:IsEnemy()) then
 			MainAddon.SetTopColor(1, "Target Enemy")
@@ -1623,7 +1621,7 @@ local function MyRoutine()
 
 		end
 
-		if S.EarthElemental:IsCastable() and Player:AffectingCombat() and Player:IsTankingAoE(40) and Player:HealthPercentageFlat() <= 80 then
+		if S.EarthElemental:IsCastable() and Player:AffectingCombat() and Player:IsTankingAoE(10) and Player:HealthPercentageFlat() <= 65 then
 			if Cast(S.EarthElemental) then return end
 		end
 
@@ -1735,3 +1733,4 @@ local function TryLoading ()
     end)
 end
 TryLoading()
+
