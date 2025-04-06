@@ -297,7 +297,7 @@ local function MyRoutine()
 	MainAddon.SetCustomConfig(Author, SpecID, Unholy_Config)
 
 	local function Init()
-		message( 'I made this, do you like it?', 1)
+		message( 'Good for 11.1', 1)
 		MainAddon:Print('This is my own addon =), Hurray.')
 	end
 
@@ -467,26 +467,22 @@ local function MyRoutine()
 			end
 		end
 
-		
-		if S.HolyPrism:IsReady() and HealingEngine:MembersUnderPercentage(65, nil, 30) >= 3 and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) and Target:IsSpellInRange(S.HolyPrism) and TargetIsValid() then
-			if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
-		end
-
-		if S.DivineToll:IsCastable() and Player:HolyPower() <= 2 and HealingEngine:MembersUnderPercentage(65, nil, 30) >= 3 then
-			if Cast(S.DivineToll, Player) then return end
-		end
-
-		if S.HolyPrism:IsReady() and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) then
-			if MainAddon.CastCycleAlly(S.HolyPrism, MEMBERS, WordOfGloryMembersFunc3) then return end
-		end
 
 		if Player:BuffDown(S.BeaconOfVirtue) and Player:BuffDown(S.AvengingCrusader) and (HealingEngine:MembersUnderPercentage(85, nil, 30) >= 3 or HealingEngine:DebuffTotal(S.EnvelopingShadowflame, 30) >= 3 or HealingEngine:DebuffTotal(S.VoidRift, 30) >= 3 or HealingEngine:DebuffTotal(S.CurseOfEntropy, 30) >= 3 or HealingEngine:DebuffTotal(S.CorruptedCoating, 30) >= 3)  then		
 			if S.AvengingCrusader:IsCastable() then
 				if Cast(S.AvengingCrusader) then return end
 			end
-			if S.BeaconOfVirtue:IsCastable() then		
+			if S.BeaconOfVirtue:IsCastable() and Player:HolyPower() > 2 then		
 				if Cast(S.BeaconOfVirtue, Player) then return end
 			end
+		end
+
+		if S.HolyPrism:IsReady() and HealingEngine:MembersUnderPercentage(85, nil, 30) >= 3 and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) and Target:IsSpellInRange(S.HolyPrism) and TargetIsValid() then
+			if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
+		end
+
+		if S.DivineToll:IsCastable() and Player:HolyPower() <= 2 and HealingEngine:MembersUnderPercentage(85, nil, 30) >= 3 then
+			if Cast(S.DivineToll, Player) then return end
 		end
 
 		if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) then
@@ -495,6 +491,10 @@ local function MyRoutine()
 
 		if S.BarrierOfFaith:IsReady() and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) then
 			if MainAddon.CastCycleAlly(S.BarrierOfFaith, MEMBERS, WordOfGloryMembersFunc2) then return end
+		end
+
+		if S.HolyPrism:IsReady() and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) then
+			if MainAddon.CastCycleAlly(S.HolyPrism, MEMBERS, WordOfGloryMembersFunc3) then return end
 		end
 
 		if Player:AffectingCombat() and (Player:BuffDown(S.HolyBulwarkBuff) and Player:BuffDown(S.SacredWeaponBuff) or S.HolyBulwark:ChargesFractional() >= 1.9 or S.SacredWeapon:ChargesFractional() >= 1.9)  then
