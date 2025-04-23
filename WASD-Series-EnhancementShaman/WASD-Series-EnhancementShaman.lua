@@ -577,7 +577,7 @@ local function MyRoutine()
 		end
 		-- ascendance,if=(dot.flame_shock.ticking|!talent.primordial_wave.enabled|!talent.ashen_catalyst.enabled)
 		if S.Ascendance:IsCastable() and (Target:DebuffUp(S.FlameShockDebuff) or not S.PrimordialWave:IsAvailable() or not S.AshenCatalyst:IsAvailable()) then
-		  if Cast(S.Ascendancee) then return "ascendance single 14"; end
+		  if Cast(S.Ascendance) then return "ascendance single 14"; end
 		end
 		-- windstrike,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>0&ti_lightning_bolt
 		-- Note: Duplicate of windstrike single 8.
