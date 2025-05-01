@@ -589,8 +589,6 @@ local function MyRoutine()
 		end
 	end
 
-	S.KillCommand:SetGeneric(253, "Generic8")
-	S.CounterShot:SetGeneric(253, "Generic9")
 	S.BarbedShot.Range = 40 
 	S.CobraShot.Range = 40
 	S.MultiShot.Range = 40
