@@ -687,11 +687,11 @@ local function MyRoutine()
 			local ShouldReturn = Trinkets(); if ShouldReturn then return ShouldReturn; end
 		  end
 			-- call_action_list,name=st,if=active_enemies<2|!talent.beast_cleave&active_enemies<3
-			if PetEnemiesMixedCount < 2 or not S.BeastCleave:IsAvailable() and PetEnemiesMixedCount < 3 then
+			if Enemies40yCount < 2 or not S.BeastCleave:IsAvailable() and PetEnemiesMixedCount < 3 then
 				local ShouldReturn = ST(); if ShouldReturn then return ShouldReturn; end
 			end
 			-- call_action_list,name=cleave,if=active_enemies>2|talent.beast_cleave&active_enemies>1
-			if PetEnemiesMixedCount > 2 or S.BeastCleave:IsAvailable() and PetEnemiesMixedCount > 1 then
+			if Enemies40yCount > 2 or S.BeastCleave:IsAvailable() and PetEnemiesMixedCount > 1 then
 				local ShouldReturn = Cleave(); if ShouldReturn then return ShouldReturn; end
 			end
 		  -- Manually added pet healing
