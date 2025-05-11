@@ -155,6 +155,8 @@ local function MyRoutine()
 		ShiningLightFreeBuff                  = Spell(327510),
 		-- Debuffs
 		ForberanceDebuff = Spell(25771),
+		BlessingOfProtection = Spell(1022),
+		BlessingOfSacrifice = Spell(6940),
 	
 	}
 
@@ -517,7 +519,8 @@ local function MyRoutine()
 	end
 
 	
-
+	S.DevotionAura.offGCD = true
+	S.ShieldoftheRighteous.offGCD = true
 	local function Standard()
 		-- call_action_list,name=hammer_of_light,if=talent.lights_guidance.enabled&(cooldown.eye_of_tyr.remains<2|buff.hammer_of_light_ready.up)&(!talent.redoubt.enabled|buff.redoubt.stack>=2|!talent.bastion_of_light.enabled)&!buff.hammer_of_light_free.up
 		if S.LightsGuidance:IsAvailable() and (S.EyeofTyr:CooldownRemains() < 2 or S.HammerofLight:IsLearned()) and (not S.Redoubt:IsAvailable() or Player:BuffStack(S.RedoubtBuff) >= 2 or not S.BastionofLight:IsAvailable()) and S.HammerofLight:Cost() > 0 then
