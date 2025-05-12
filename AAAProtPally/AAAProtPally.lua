@@ -381,13 +381,18 @@ local function MyRoutine()
 		  local LastCast = mathmin(S.ShieldoftheRighteous:TimeSinceLastCast(), S.WordofGlory:TimeSinceLastCast())
 		  RighteousProtectorICD = mathmax(0, 1 - mathmin(S.ShieldoftheRighteous:TimeSinceLastCast(), S.WordofGlory:TimeSinceLastCast()))
 		end
-		if S.ShieldoftheRighteous:IsReady() and (not S.HammerofLight:IsCastable()) and (
-		  (Player:BuffUp(S.LuckoftheDrawBuff) and ((Player:HolyPower() + Player:JudgmentPower() >= 5) or (not S.RighteousProtector:IsAvailable() or RighteousProtectorICD == 0))) or
-		  (Player:HasTier("TWW2", 4) and ((Player:HolyPower() + Player:JudgmentPower() > 5) or (Player:HolyPower() + Player:JudgmentPower() >= 5 and RighteousProtectorICD == 0))) or
-		  (not Player:HasTier("TWW2", 4) and (not S.RighteousProtector:IsAvailable() or RighteousProtectorICD == 0))
-		) then
-		  if Cast(S.ShieldoftheRighteous) then return "shield_of_the_righteous standard 8"; end
-		end
+		-- if S.ShieldoftheRighteous:IsReady() and (not S.HammerofLight:IsCastable()) and (
+		--   (Player:BuffUp(S.LuckoftheDrawBuff) and ((Player:HolyPower() + Player:JudgmentPower() >= 5) or (not S.RighteousProtector:IsAvailable() or RighteousProtectorICD == 0))) or
+		--   (Player:HasTier("TWW2", 4) and ((Player:HolyPower() + Player:JudgmentPower() > 5) or (Player:HolyPower() + Player:JudgmentPower() >= 5 and RighteousProtectorICD == 0))) or
+		--   (not Player:HasTier("TWW2", 4) and (not S.RighteousProtector:IsAvailable() or RighteousProtectorICD == 0))
+		-- ) then
+		--   if Cast(S.ShieldoftheRighteous) then return "shield_of_the_righteous standard 8"; end
+		-- end
+		if S.ShieldoftheRighteous:IsReady() and ((not S.RighteousProtector:IsAvailable() or RighteousProtectorICD == 0) and not S.HammerofLight:IsLearned()) then
+			if Cast(S.ShieldoftheRighteous) then
+				return "shield_of_the_righteous standard 8"
+			end
+		end; 
 		-- judgment,target_if=min:debuff.judgment.remains,if=spell_targets.shield_of_the_righteous>3&buff.bulwark_of_righteous_fury.stack>=3&holy_power<3
 		if S.Judgment:IsReady() and (EnemiesCount8y > 3 and Player:BuffStack(S.BulwarkofRighteousFuryBuff) >= 3 and Player:HolyPower() < 3) then
 		  if CastTargetIf(S.Judgment, Enemies30y, "min", EvaluateTargetIfFilterJudgment, not Target:IsSpellInRange(S.Judgment)) then return "judgment standard 10"; end
@@ -599,81 +604,6 @@ local function MyRoutine()
 	
 	MainAddon.SetCustomAPL(Author, SpecID, APL, Init)
 	
-	local ProtPalBuffUp
-	ProtPalBuffUp = HL.AddCoreOverride("Player.BuffUp",
-	function(self, Spell, AnyCaster, BypassRecovery)
-	local BaseCheck = ProtPalBuffUp(self, Spell, AnyCaster, BypassRecovery)
-	if Spell == SpellProt.AvengingWrathBuff and SpellProt.Sentinel:IsAvailable() then
-		return Player:BuffUp(SpellProt.SentinelBuff)
-	else
-		return BaseCheck
-	end
-	end
-	, 66)
-
-	local ProtPalBuffRemains
-	ProtPalBuffRemains = HL.AddCoreOverride("Player.BuffRemains",
-	function(self, Spell, AnyCaster, BypassRecovery)
-		local BaseCheck = ProtPalBuffRemains(self, Spell, AnyCaster, BypassRecovery)
-		if Spell == SpellProt.AvengingWrathBuff and SpellProt.Sentinel:IsAvailable() then
-		return Player:BuffRemains(SpellProt.SentinelBuff)
-		else
-		return BaseCheck
-		end
-	end
-	, 66)
-
-	local ProtPalCDRemains
-	ProtPalCDRemains = HL.AddCoreOverride("Spell.CooldownRemains",
-	function(self, BypassRecovery)
-		local BaseCheck = ProtPalCDRemains(self, BypassRecovery)
-		if self == SpellProt.AvengingWrath and SpellProt.Sentinel:IsAvailable() then
-		return SpellProt.Sentinel:CooldownRemains()
-		else
-		return BaseCheck
-		end
-	end
-	, 66)
-
-	local ProtPalIsAvail
-	ProtPalIsAvail = HL.AddCoreOverride("Spell.IsAvailable",
-	function(self, CheckPet)
-		local BaseCheck = ProtPalIsAvail(self, CheckPet)
-		if self == SpellProt.AvengingWrath and SpellProt.Sentinel:IsAvailable() then
-		return SpellProt.Sentinel:IsAvailable()
-		else
-		return BaseCheck
-		end
-	end
-	, 66)
-
-	local ProtPalIsCastable
-	ProtPalIsCastable = HL.AddCoreOverride("Spell.IsCastable",
-	function (self, BypassRecovery, Range, AoESpell, ThisUnit, Offset)
-		local BaseCheck = ProtPalIsCastable(self, BypassRecovery, Range, AoESpell, ThisUnit, Offset)
-		if self == SpellProt.RiteofAdjuration then
-		return BaseCheck and Player:BuffDown(SpellProt.RiteofAdjurationBuff)
-		elseif self == SpellProt.RiteofSanctification then
-		return BaseCheck and Player:BuffDown(SpellProt.RiteofSanctificationBuff)
-		else
-		return BaseCheck
-		end
-	end
-	, 66)
-
-	HL.AddCoreOverride("Player.JudgmentPower",
-	function(self)
-		local JP = 1
-		if Player:BuffUp(SpellProt.AvengingWrathBuff) or Player:BuffUp(SpellProt.SentinelBuff) then
-		JP = JP + 1
-		end
-		if Player:BuffUp(SpellProt.BastionofLightBuff) then
-		JP = JP + 2
-		end
-		return JP
-	end
-	, 66)
-
 end
 
 --Loop to wait for the addon to be ready!
