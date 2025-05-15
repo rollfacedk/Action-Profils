@@ -384,23 +384,23 @@ local function MyRoutine()
 			if Cast(S.DevotionAura) then return end
 		end
 
-		if Player:IsInDelve() then
-			if S.BeaconOfLight:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfLightBuff) == 0 then
-				if CastCycleAlly(S.BeaconOfLight, MEMBERS, Beacons) then return end
-			end
-			if S.BeaconOfFaith:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfFaithBuff) == 0 then
-				if Cast(S.BeaconOfFaith, Player) then return end
-			end
-		end
+		-- if Player:IsInDelve() then
+		-- 	if S.BeaconOfLight:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfLightBuff) == 0 then
+		-- 		if CastCycleAlly(S.BeaconOfLight, MEMBERS, Beacons) then return end
+		-- 	end
+		-- 	if S.BeaconOfFaith:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfFaithBuff) == 0 then
+		-- 		if Cast(S.BeaconOfFaith, Player) then return end
+		-- 	end
+		-- end
 
-		if Player:IsInParty() then
-			if S.BeaconOfLight:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfLightBuff) == 0 then
-				if CastCycleAlly(S.BeaconOfLight, TANKS, Beacons) then return end
-			end
-			if S.BeaconOfFaith:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfFaithBuff) == 0 then
-				if CastCycleAlly(S.BeaconOfFaith, DPS, Beacons) then return end
-			end
-		end
+		-- if Player:IsInParty() then
+		-- 	if S.BeaconOfLight:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfLightBuff) == 0 then
+		-- 		if CastCycleAlly(S.BeaconOfLight, TANKS, Beacons) then return end
+		-- 	end
+		-- 	if S.BeaconOfFaith:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfFaithBuff) == 0 then
+		-- 		if CastCycleAlly(S.BeaconOfFaith, DPS, Beacons) then return end
+		-- 	end
+		-- end
 
 		-- blessing
 		if S.BlessingOfWinter:IsCastable() then
