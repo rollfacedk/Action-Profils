@@ -1,0 +1,593 @@
+local function MyRoutine()
+	local Author = 'WSAD - Holy Paladin'
+	local SpecID = 65 --Unholy  --https://wowpedia.fandom.com/wiki/API_GetSpecializationInfo
+
+	--HR HEADER
+	-- Addon
+	local MainAddon = MainAddon
+	-- HeroDBC
+	local DBC = HeroDBC.DBC
+	-- HeroLib
+	local HL = HeroLibEx
+	local Cache = HeroCache
+	---@type Unit
+	local Unit = HL.Unit
+	---@type Unit
+	local Player = Unit.Player
+	---@type Unit
+	local Target = Unit.Target
+	---@type Unit
+	local Arena = Unit.Arena
+	---@type Unit
+	local Party = Unit.Party
+	---@type Pet
+	local Pet = Unit.Pet
+	---@type Spell
+	local Spell = HL.Spell
+	local MultiSpell = HL.MultiSpell
+	local MouseOver = Unit.MouseOver
+	local Focus = Unit.Focus
+	local Item = HL.Item
+	local HealingEngine = MainAddon.HealingEngine
+	-- HeroRotation
+	local Cast = MainAddon.Cast
+	local CastCycle = MainAddon.CastCycle
+	local CastTargetIf = MainAddon.CastTargetIf
+	local AoEON = MainAddon.AoEON
+	local CDsON = MainAddon.CDsON
+	local CastCycleAlly = MainAddon.CastCycleAlly;
+	local CastTargetIfAlly = MainAddon.CastTargetIfAlly;
+	local CastCycle = MainAddon.CastCycle;
+	local CastAlly = MainAddon.CastAlly;
+	local Settings = MainAddon.Config.GetClassSetting;
+	local TANKS, HEALERS, MEMBERS, DPS, PRIORITY;
+
+
+	--ALL SPELLS ARE LOCATED ON Rotations/CLASS_SPELL.lua, if one is missing tells us about it.
+	local S = {
+		
+		-- Racials
+		AncestralCall = Spell(274738),
+		ArcanePulse = Spell(260364),
+		ArcaneTorrent = Spell(50613),
+		BagofTricks = Spell(312411),
+		Berserking = Spell(26297),
+		BloodFury = Spell(20572),
+		Fireblood = Spell(265221),
+		GiftoftheNaaru = Spell(59542),
+		LightsJudgment = Spell(255647),
+	
+		-- Common
+		AvengingWrath = Spell(31884),
+		BlessingOfFreedom = Spell(1044),
+		BlessingOfProtection = Spell(1022),
+		BlessingOfSacrifice = Spell(6940),
+		BlindingLight = Spell(115750),
+		ConcentrationAura = Spell(317920),
+		Consecration = Spell(26573),
+		ConsecrationDebuff = Spell(204242),
+		ConsecrationBuff = Spell(188370),
+		CrusaderAura = Spell(32223),
+		CrusaderStrike = Spell(35395),
+		DevotionAura = Spell(465),
+		DivineShield = Spell(642),
+		DivineSteed = Spell(190784),
+		FlashOfLight = Spell(19750),
+		HammerOfJustice = Spell(853),
+		HammerOfWrath = Spell(24275),
+		HandOfReckoning = Spell(62124),
+		Intercession = Spell(391054),
+		Judgment = Spell(275773),
+		Redemption = Spell(7328),
+		RetributionAura = Spell(183435),
+		SenseUndead = Spell(5502),
+		ShieldOfTheRighteous = Spell(415091),
+		WordOfGlory = Spell(85673),
+		Absolution = Spell(212056),
+		AuraMastery = Spell(31821),
+		BeaconOfLight = Spell(53563),
+		Cleanse = Spell(4987),
+		DivineFavor = Spell(460422),
+		DivineFavorBuff = Spell(210294),
+		DivineProtection = Spell(498),
+		DivineToll = Spell(375576),
+		HolyLight = Spell(82326),
+		HolyShock = Spell(20473),
+		LightOfDawn = Spell(85222),
+		LightOfTheMartyr = Spell(183998), --OTHER
+		LightOfTheMartyrDebuff = Spell(448005),
+		JudgmentDebuff = Spell(197277),
+	
+		-- Paladin
+		ImprovedCleanse = Spell(393024),
+		HallowedGround = Spell(377043),
+		LayonHands = MultiSpell(633, 471195),
+		Repentance = Spell(20066), --Multi
+		AurasOfTheResolute = Spell(385633),
+		AurasOfSwiftVengeance = Spell(385639),
+		FistOfJustice = Spell(234299),
+		Rebuke = Spell(96231),
+		Cavalier = Spell(230332),
+		SacrificeOfTheJust = Spell(384820), --Multi
+		Recompense = Spell(384914), --Multi
+		JudgmentOfLight = Spell(183778),
+		HolyAegis = Spell(385515),
+		GoldenPath = Spell(377128),
+		SealOfMercy = Spell(384897),
+		SealOfClarity = Spell(384815),
+		Afterimage = Spell(385414),
+		UnbreakableSpirit = Spell(114154),
+		ImprovedBlessingOfProtection = Spell(384909),
+		DivinePurpose = Spell(223817), --Multi
+		HolyAvenger = Spell(105809), --Multi
+		SealOfAlacrity = Spell(385425),
+		Seraphim = Spell(152262), --Multi
+		SealOfMight = Spell(385450),
+		AspirationOfDivinity = Spell(385416),
+		SealOfOrder = Spell(385129),
+		OfDuskAndDawn = Spell(385125),
+		ZealotSParagon = Spell(391142),
+		SealOfTheCrusader = Spell(385728),
+		Obduracy = Spell(385427),
+		Incandescence = Spell(385464), --Multi
+		TouchOfLight = Spell(385349), --Multi
+		SealOfReprisal = Spell(377053),
+		TurnEvil = Spell(10326),
+		SeasonedWarhorse = Spell(376996), --Multi
+		SealOfTheTemplar = Spell(377016), --Multi
+		GreaterJudgment = Spell(231644),
+	
+		-- Holy
+		Daybreak = Spell(414170),
+		HandOfDivinity = Spell(414273),
+		BeaconOfFaith = Spell(156910), --Multi
+		BeaconOfVirtue = Spell(200025), --Multi
+		EchoingBlessings = Spell(387801),
+		ImbuedInfusions = Spell(392961),
+		BarrierOfFaith = Spell(148039),
+		MaraadSDyingBreath = Spell(388018),
+		UntemperedDedication = Spell(387814),
+		RuleOfLaw = Spell(214202),
+		SavedByTheLight = Spell(157047),
+		UnendingLight = Spell(387998), --Multi
+		BestowFaith = Spell(223306), --Multi
+		UnwaveringSpirit = Spell(392911), --Multi
+		ProtectionOfTyr = Spell(200430), --Multi
+		MomentOfCompassion = Spell(387786), --Multi
+		ResplendentLight = Spell(392902), --Multi
+		Illumination = Spell(387993), --Multi
+		DivineInsight = Spell(392914), --Multi
+		TirionSDevotion = Spell(392928),
+		RadiantOnslaught = Spell(231667),
+		EmpyrealWard = Spell(387791),
+		ShiningSavior = Spell(388005),
+		LightSHammer = Spell(114158), --Multi
+		HolyPrism = Spell(114165), --Multi
+		DivineRevelations = Spell(387808),
+		CommandingLight = Spell(387781),
+		Veneration = Spell(392938),
+		BreakingDawn = Spell(387879),
+		SecondSunrise = Spell(200482),
+		AvengingCrusader = Spell(216331), --Multi
+		DivineGlimpse = Spell(387805),
+		TowerOfRadiance = Spell(231642),
+		BoundlessSalvation = Spell(392951),
+		TyrSDeliverance = Spell(200652),
+		TyrSDeliveranceBuff = Spell(200654),
+		PowerOfTheSilverHand = Spell(200474),
+		RelentlessInquisitor = Spell(383388),
+		InflorescenceOfTheSunwell = Spell(392907), --Multi
+		EmpyreanLegacy = Spell(387170), --Multi
+		Awakening = Spell(248033),
+		BlessingOfSummer = Spell(388007),
+		CrusaderSMight = Spell(196926),
+		GlimmerOfLight = Spell(287269),
+		DivineResonance = Spell(387893),
+	
+		--Buffs
+		InfusionOfLightBuff = Spell(54149),
+		EmpyreanLegacyBuff = Spell(387178),
+		BeaconOfFaithBuff = Spell(156910),
+		BeaconOfLightBuff = Spell(53563),
+		DivinePurposeBuff = Spell(223819),
+		GlimmerBuff = Spell(287280),
+		OfDuskandDawn = Spell(385125),
+		UnendingLightBuff = Spell(394709),
+		DawnBuff = Spell(385127),
+		DuskBuff = Spell(385126),
+		BlessingOfAutumn = Spell(388010),
+		BlessingOfWinter = Spell(388011),
+		BlessingOfSpring = Spell(388013),
+		Pool                                  = Spell(999910),
+	
+		--Debuffs
+		ForberanceDebuff = Spell(25771),
+		RisingSunlightBuff = Spell(414204),
+		WardOfFacelessIereBuff = Spell(401238),
+		RighteousJudgment = Spell(414113),
+		HolyInfusion = Spell(414214),
+		EternalFlame = Spell(156322),
+		HolyBulwark = Spell(432459),
+		HolyBulwarkBuff = Spell(432496),
+		SacredWeapon = Spell(432472),
+		SacredWeaponBuff = Spell(432502),
+		EnvelopingShadowflame = Spell(451224),
+		CurseOfEntropy = Spell(450095),
+		CorruptedCoating = Spell(442285),
+		Aurora = Spell(439760),
+		TruthPrevails = Spell(461273),
+		VoidRift = Spell(440313),
+		Eating = MultiSpell(456574, 167152),
+		PutridWaters = Spell(275014),
+		SunSear = Spell(431413),
+		BlessedAssuranceBuff = Spell(433019),
+		BlessedAssurance = Spell(433015),
+
+
+
+
+		--PVP Debuff
+		Imprison = Spell(217832),
+		TurnEvil = Spell(10326),
+		HammerofJustice = Spell(853),
+		Repentance = Spell(20066),
+		Polymorph = Spell(118),
+		PsychicScream = Spell(8122),
+		Fear = Spell(5782),
+		HowlofTerror = Spell(5484),
+		MortalCoil = Spell(6789),
+		FreezingTrap = Spell(187650),
+		SleepWalk = Spell(360806),
+		Hex = Spell(51514),
+		RingofFrost = Spell(113724),
+		VenomVolley = Spell(432227),
+		SignetOfPrioryBuff = Spell(443531),
+
+
+		DebuffsNeedsHealing = MultiSpell(443969, 1218308),
+		
+
+	
+	}
+	
+	local I = { SignetOfPriory = Item(219308, {13, 14}),}
+	local OnUseExcludes = {
+		I.SignetOfPriory:ID()
+	}
+	
+	-- local function TargetIsValid()
+	-- 	return (Player:AffectingCombat() and Target:Exists() and 
+	-- 	Player:CanAttack(Target) and not Target:IsDeadOrGhost() and 
+	-- 	(Target:AffectingCombat() or Target:HealthPercentage() < 100)) or Target:IsDummy()
+	-- end
+
+	--GUI CONFIG
+	--GUI CONFIG
+	local UnholyColor = 'f4acba'
+	local Unholy_Config = {
+		-- --YO CHANGE THIS TO
+		-- key = 'AUTHOR_MyConfigSample',
+		-- title = 'rollfaceX',
+		-- subtitle = '1.0',
+		-- width = 300,
+		-- height = 250,
+		-- profiles = true,
+		-- config = {
+		-- 	{ type = 'header', text = 'rollfaceX', size = 24, align = 'Center', color = UnholyColor},
+		-- 	{ type = 'spacer' },{ type = 'ruler' },{ type = 'spacer' },
+		-- 	{ type = 'header', text = 'Defensives',  color = UnholyColor },
+		-- 	{ type = 'checkspin', text = 'Divine Protection', key = 'divineprotection', min = 1, max = 100, default = 50},
+		-- 	{ type = 'checkspin', text = 'Divine Shield', key = 'divineshield', min = 1, max = 100, default = 30},
+		-- 	{ type = 'checkspin', text = 'Blessing of Protection', key = 'bop', min = 1, max = 100, default = 30},
+		-- 	{ type = 'checkspin', text = 'LOH Tanks and Healers ONLY', key = 'loh', min = 1, max = 100, default = 30},
+		-- 	{ type = 'checkspin', text = 'LOH Everyone', key = 'loh', min = 1, max = 100, default = 30},
+		-- 	{ type = 'spacer' },{ type = 'ruler' },{ type = 'spacer' },
+		-- 	{ type = 'header', text = 'Single Target Heal',  color = UnholyColor },
+		-- 	{ type = 'checkspin', text = 'Holy Shock', key = 'holyshock', min = 1, max = 100, default = 90},
+		-- 	{ type = 'checkspin', text = 'Holy Prism / Barrier of Faith', key = 'holyprism', min = 1, max = 100, default = 60},
+		-- 	{ type = 'checkspin', text = 'Holy Light', key = 'holylight', min = 1, max = 100, default = 60},
+		-- 	{ type = 'checkspin', text = 'Word of Glory Filler', key = 'wordofgloryfil', min = 1, max = 100, default = 80},
+		-- 	{ type = 'checkspin', text = 'Word of Glory Emergency', key = 'wordofgloryem', min = 1, max = 100, default = 60},
+		-- 	{ type = 'checkspin', text = 'Flash of Light', key = 'flashoflight', min = 1, max = 100, default = 90},
+		-- 	{ type = 'spacer' },{ type = 'ruler' },{ type = 'spacer' },
+		-- 	{ type = 'header', text = 'AOE Heals / Cds',  color = UnholyColor },
+		-- 	{ type = 'checkspin', text = 'Aoe Targets', key = 'aoetargets', min = 1, max = 5, default = 3},
+		-- 	{ type = 'checkspin', text = 'Aura Mastery', key = 'auramasteryhp', min = 1, max = 100, default = 60},
+
+		-- -- 	{ type = 'checkspin', text = 'Death Strike: Deficit', key = 'deficitds', min = 1, max = 100, default = 20},
+		-- -- 	{ type = 'checkspin', text = 'Death Strike: Emergency', key = 'dsemergency', min = 1, max = 100, default = 50},
+		-- -- 	{ type = 'checkspin', text = 'Icebound Fortitude', key = 'ibfortitude', min = 1, max = 100, default = 30},
+		-- -- 	{ type = 'checkspin', text = 'Rune Tap', key = 'runetap', min = 1, max = 100, default = 35},
+		-- -- 	{ type = 'checkspin', text = 'Vampiric Blood', key = 'vp', min = 1, max = 100, default = 50},
+		-- -- 	{ type = 'spacer' },
+		-- -- 	{ type = 'header', text = 'Class',  color = UnholyColor },
+		-- -- 	{ type = 'checkbox', text = 'Lichborne (Anti-Fear)', key = 'lichborne', default = true},
+		-- }
+	}
+	MainAddon.SetCustomConfig(Author, SpecID, Unholy_Config)
+
+	local function Init()
+		message( 'Please, use beacon of light/faith manually for now. it may be bugged.', 1)
+		MainAddon:Print('This is my own addon =), Hurray.')
+	end
+
+	local function LowestHealthTarget(UnitTarget)
+		return UnitTarget:HealthPercentage() <= 100
+	end;
+
+	local function LayOnHandsFunc(UnitTarget)
+		return UnitTarget:HealthPercentageFlat() <= 25 and UnitTarget:DebuffDown(S.ForberanceDebuff)
+	end;
+
+	local function HolyShockFunc(UnitTarget)
+		return (UnitTarget:HealthPercentage() <= 95)
+	end;
+
+	local function DangerHeal(UnitTarget)
+		return (UnitTarget:HealthPercentage() <= 65)
+	end;
+
+	local function MustHeal(UnitTarget)
+		return (UnitTarget:HealthPercentage() <= 75 or UnitTarget:DebuffUp(S.DebuffsNeedsHealing) and UnitTarget:HealthPercentage() <= 85)
+	end;
+
+	local function FillerHeal(UnitTarget)
+		return (UnitTarget:HealthPercentage() <= 85)
+	end;
+
+	local function BlessingOfSacrificeFunc(UnitTarget)
+		return UnitTarget:HealthPercentageFlat() <= 35 and UnitTarget:GUID() ~= Player:GUID()
+	end;
+
+	local function BlessingOfProtectionFunc(UnitTarget)
+		return UnitTarget:HealthPercentageFlat() <= 30 and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:DebuffDown(S.ForberanceDebuff)
+	end;
+
+	local function Beacons(UnitTarget)
+		return UnitTarget:BuffDown(S.BeaconOfFaithBuff) and UnitTarget:BuffDown(S.BeaconOfLightBuff) and UnitTarget:HealthPercentage() <= 100 and UnitTarget:GUID() ~= Player:GUID()
+	end;
+
+	-- S.BlessingOfSummer.offGCD = true
+	-- S.BlessingOfAutumn.offGCD = true
+	-- S.BlessingOfSpring.offGCD = true
+	-- S.BlessingOfWinter.offGCD = true
+	-- S.AvengingWrath.offGCD = true
+	-- S.DevotionAura.offGCD = true
+	-- S.LayonHands.offGCD = true
+
+	local function Trinkets()
+		if Player:BuffRemains(S.AvengingWrath) > 12 or Player:BuffRemains(S.AvengingCrusader) > 8 then
+		  local ItemToUse, ItemSlot, ItemRange = Player:GetUseableItems(OnUseExcludes)
+		  if ItemToUse and Target:IsInRange(ItemRange) then
+			local DisplayStyle = true
+			if ItemSlot ~= 13 and ItemSlot ~= 14 then DisplayStyle = true end
+			if ((ItemSlot == 13 or ItemSlot == 14) and true) or (ItemSlot ~= 13 and ItemSlot ~= 14 and true) then
+			  if Cast(ItemToUse) then return "Generic use_items for " .. ItemToUse:Name(); end
+			end
+		  end
+		end
+	end
+
+	local function MainRotation()
+
+		if Player:AffectingCombat() and (Target:IsDeadOrGhost() and not Target:IsAPlayer()) then
+			MainAddon.SetTopColor(1, "Target Enemy")
+		end
+
+		TANKS, HEALERS, MEMBERS, DPS, PRIORITY = HealingEngine:Fetch()
+
+		if Player:IsCasting() then
+			if Cast(S.Pool) then return end
+		end
+
+		if S.DevotionAura:IsCastable() and Player:BuffDown(S.DevotionAura) then
+			if Cast(S.DevotionAura) then return end
+		end
+
+		if Player:IsInDelve() then
+			if S.BeaconOfLight:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfLightBuff) == 0 then
+				if CastCycleAlly(S.BeaconOfLight, MEMBERS, Beacons) then return end
+			end
+			if S.BeaconOfFaith:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfFaithBuff) == 0 then
+				if Cast(S.BeaconOfFaith, Player) then return end
+			end
+		end
+
+		if Player:IsInParty() then
+			if S.BeaconOfLight:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfLightBuff) == 0 then
+				if CastCycleAlly(S.BeaconOfLight, TANKS, Beacons) then return end
+			end
+			if S.BeaconOfFaith:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfFaithBuff) == 0 then
+				if CastCycleAlly(S.BeaconOfFaith, DPS, Beacons) then return end
+			end
+		end
+
+		-- blessing
+		if S.BlessingOfWinter:IsCastable() then
+			if Cast(S.BlessingOfWinter, Player) then return end
+		end
+
+		-- utility defensive
+		if Player:AffectingCombat() then
+
+			if Player:BuffDown(S.DivineProtection) and Player:BuffDown(S.DivineShield) and Player:HealthPercentage() <= 45 then
+				if S.DivineProtection:IsCastable() then
+					if Cast(S.DivineProtection) then return end
+				end
+
+				if S.DivineShield:IsCastable() then
+					if Cast(S.DivineShield) then return end
+				end
+			end
+
+			if S.LayonHands:IsCastable() then
+				if MainAddon.CastCycleAlly(S.LayonHands, MEMBERS, LayOnHandsFunc) then return "LOH TANKS" end
+			end
+
+			if S.BlessingOfProtection:IsCastable() then
+				if MainAddon.CastCycleAlly(S.BlessingOfProtection, DPS, BlessingOfProtectionFunc) then return end
+			end
+
+			if S.BlessingOfProtection:IsCastable() then
+				if MainAddon.CastCycleAlly(S.BlessingOfProtection, HEALERS, BlessingOfProtectionFunc) then return end
+			end
+
+			if S.BlessingOfSacrifice:IsCastable() then
+				if MainAddon.CastCycleAlly(S.BlessingOfSacrifice, MEMBERS, BlessingOfSacrificeFunc) then return end
+			end
+		end
+
+		-- CDS
+		local ShouldReturn = Trinkets(); if ShouldReturn then return ShouldReturn; end
+		if Player:AffectingCombat() and HealingEngine:MembersUnderPercentage(65, nil, 40) >= 3 and Player:BuffDown(S.AvengingWrath) and Player:BuffDown(S.TyrSDeliveranceBuff) and Player:BuffDown(S.SignetOfPrioryBuff) then
+			if S.AvengingWrath:IsCastable() then
+				if Cast(S.AvengingWrath) then return end
+			end
+			if I.SignetOfPriory:IsEquippedAndReady()  then
+				if Cast(I.SignetOfPriory) then return end
+			end
+			if S.TyrSDeliverance:IsCastable() then
+				if Cast(S.TyrSDeliverance) then return end
+			end
+		end
+		if S.AuraMastery:IsCastable() and HealingEngine:MembersUnderPercentage(65, nil, 40) >= 4 then
+			if Cast(S.AuraMastery) then return end
+		end
+
+		-- AOE Healing
+		if HealingEngine:MembersUnderPercentage(85, nil, 30) >= 3 or HealingEngine:MembersUnderPercentage(85, nil, 30) >= 2 and Player:IsInDelve() then
+				if Player:AffectingCombat() then
+					if S.BlessingOfSummer:IsCastable() then
+						if Cast(S.BlessingOfSummer, Player) then return end
+					end
+
+					if S.BlessingOfAutumn:IsCastable() then
+						if Cast(S.BlessingOfAutumn, Player) then return end
+					end
+
+					if S.BlessingOfSpring:IsCastable() then
+						if Cast(S.BlessingOfSpring, Player) then return end
+					end
+				end
+
+			if Player:BuffDown(S.BeaconOfVirtue) and Player:BuffDown(S.AvengingCrusader) then		
+				if S.BeaconOfVirtue:IsCastable() and Player:HolyPower() > 2 then		
+					if Cast(S.BeaconOfVirtue, Player) then return end
+				end
+			end
+
+			if S.DivineToll:IsCastable() and Player:HolyPower() <= 2 then
+				if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, LowestHealthTarget) then return end
+			end
+
+			if S.HolyPrism:IsReady() and Target:IsSpellInRange(S.HolyPrism) and MainAddon.TargetIsValid() then
+				if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
+			end
+		end
+
+		-- Must Heal		
+		if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) then
+			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, MustHeal) then return end
+		end
+
+		-- Danger Heal
+		if S.HolyPrism:IsReady() and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) then
+			if MainAddon.CastCycleAlly(S.HolyPrism, MEMBERS, DangerHeal) then return end
+		end
+
+		if S.BarrierOfFaith:IsReady() and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) then
+			if MainAddon.CastCycleAlly(S.BarrierOfFaith, MEMBERS, DangerHeal) then return end
+		end
+
+		if S.DivineToll:IsReady() and (Player:HolyPower() <= 2) then
+			if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, DangerHeal) then return end
+		end
+
+		-- Sacred weapons
+		if Player:AffectingCombat() and (Player:BuffDown(S.HolyBulwarkBuff) and Player:BuffDown(S.SacredWeaponBuff) or S.HolyBulwark:ChargesFractional() >= 1.9 or S.SacredWeapon:ChargesFractional() >= 1.9)  then
+			if S.HolyBulwark:IsCastable() then
+				if Cast(S.HolyBulwark, Player) then return end
+			end
+
+			if S.SacredWeapon:IsCastable() then
+				if Cast(S.SacredWeapon, Player) then return end
+			end
+		end
+
+		-- Single target Healing/DPS
+		if S.Judgment:IsReady() and S.CrusaderSMight:IsAvailable() and MainAddon.TargetIsValid() and Target:IsSpellInRange(S.Judgment) and Player:HolyPower() <= 4  then
+			if Cast(S.Judgment) then return end
+		end
+
+		if (Player:HolyPower() <= 4 and S.HolyShock:ChargesFractional() >= 1.8) then
+			if S.HolyShock:IsCastable() then
+				if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, HolyShockFunc) then return end
+			end 
+			if S.HolyShock:IsReady() and MainAddon.TargetIsValid() and Target:IsSpellInRange(S.HolyShock) then
+				if MainAddon.SetTopColor(6, "Holy Shock Enemy") then return end
+			end
+		end
+
+		if S.HammerOfWrath:IsReady() and S.Veneration:IsAvailable() and MainAddon.TargetIsValid() and Target:IsSpellInRange(S.HammerOfWrath) and Player:HolyPower() <= 4  then
+			if Cast(S.HammerOfWrath) then return end
+		end
+
+		if S.CrusaderStrike:IsReady() and MainAddon.TargetIsValid() and Target:IsInMeleeRange(5) and Player:HolyPower() <= 4  then
+			if Cast(S.CrusaderStrike) then return end
+		end
+
+		if (Player:HolyPower() <= 4) then
+			if S.HolyShock:IsCastable() then
+				if CastCycleAlly(S.HolyShock, MEMBERS, HolyShockFunc) then return end
+			end 
+			if S.HolyShock:IsReady() and MainAddon.TargetIsValid() and Target:IsSpellInRange(S.HolyShock) then
+				if MainAddon.SetTopColor(6, "Holy Shock Enemy") then return end
+			end
+		end
+
+		if S.Judgment:IsReady() and MainAddon.TargetIsValid() and Target:IsSpellInRange(S.Judgment) and Player:HolyPower() <= 4  then
+			if Cast(S.Judgment) then return end
+		end
+
+		if S.HammerOfWrath:IsReady() and MainAddon.TargetIsValid() and Target:IsSpellInRange(S.HammerOfWrath) and Player:HolyPower() <= 4  then
+			if Cast(S.HammerOfWrath) then return end
+		end
+
+		if Player:HolyPower() >= 5 then
+			if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) then
+				if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, FillerHeal) then return end
+			end
+			if S.ShieldOfTheRighteous:IsReady() and MainAddon.TargetIsValid() and Target:IsInMeleeRange(5) then
+				if Cast(S.ShieldOfTheRighteous) then return end
+			end
+		end
+
+		if S.HolyLight:IsCastable() and Player:BuffUp(S.DivineFavorBuff) and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable()) then
+			if MainAddon.CastCycleAlly(S.HolyLight, MEMBERS, MustHeal) then return end
+		end
+
+		if S.FlashOfLight:IsCastable() and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable())  then
+			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, HolyShockFunc) then return end
+		end
+
+		if S.Consecration:IsCastable() and Target:DebuffDown(S.ConsecrationDebuff) and MainAddon.TargetIsValid() and Target:IsInMeleeRange(5) then
+			if Cast(S.Consecration) then return end
+		end
+
+	end
+
+	
+	MainAddon.SetCustomAPL(Author, SpecID, MainRotation, Init)
+end
+
+--Loop to wait for the addon to be ready!
+local function TryLoading ()
+    C_Timer.After(1, function()
+		if MainAddon then
+			MyRoutine()
+		else
+			TryLoading()
+		end
+    end)
+end
+TryLoading()
