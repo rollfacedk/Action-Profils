@@ -1,5 +1,5 @@
 local function MyRoutine()
-	local Author = 'WSAD - Holy Paladin'
+	local Author = 'Ellesmere - Holy Pally'
 	local SpecID = 65 --Unholy  --https://wowpedia.fandom.com/wiki/API_GetSpecializationInfo
 
 	--HR HEADER
@@ -320,7 +320,7 @@ local function MyRoutine()
 	end;
 
 	local function HolyShockFunc(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 95)
+		return (UnitTarget:HealthPercentage() <= 90)
 	end;
 
 	local function DangerHeal(UnitTarget)
@@ -384,23 +384,23 @@ local function MyRoutine()
 			if Cast(S.DevotionAura) then return end
 		end
 
-		-- if Player:IsInDelve() then
-		-- 	if S.BeaconOfLight:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfLightBuff) == 0 then
-		-- 		if CastCycleAlly(S.BeaconOfLight, MEMBERS, Beacons) then return end
-		-- 	end
-		-- 	if S.BeaconOfFaith:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfFaithBuff) == 0 then
-		-- 		if Cast(S.BeaconOfFaith, Player) then return end
-		-- 	end
-		-- end
+		if Player:IsInDelve() then
+			if S.BeaconOfLight:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfLightBuff) == 0 then
+				if CastCycleAlly(S.BeaconOfLight, MEMBERS, Beacons) then return end
+			end
+			if S.BeaconOfFaith:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfFaithBuff) == 0 then
+				if Cast(S.BeaconOfFaith, Player) then return end
+			end
+		end
 
-		-- if Player:IsInParty() then
-		-- 	if S.BeaconOfLight:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfLightBuff) == 0 then
-		-- 		if CastCycleAlly(S.BeaconOfLight, TANKS, Beacons) then return end
-		-- 	end
-		-- 	if S.BeaconOfFaith:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfFaithBuff) == 0 then
-		-- 		if CastCycleAlly(S.BeaconOfFaith, DPS, Beacons) then return end
-		-- 	end
-		-- end
+		if Player:IsInParty() then
+			if S.BeaconOfLight:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfLightBuff) == 0 then
+				if CastCycleAlly(S.BeaconOfLight, TANKS, Beacons) then return end
+			end
+			if S.BeaconOfFaith:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfFaithBuff) == 0 then
+				if CastCycleAlly(S.BeaconOfFaith, DPS, Beacons) then return end
+			end
+		end
 
 		-- blessing
 		if S.BlessingOfWinter:IsCastable() then
@@ -455,7 +455,7 @@ local function MyRoutine()
 		end
 
 		-- AOE Healing
-		if HealingEngine:MembersUnderPercentage(85, nil, 30) >= 3 or HealingEngine:MembersUnderPercentage(85, nil, 30) >= 2 and Player:IsInDelve() then
+		if HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 or HealingEngine:MembersUnderPercentage(75, nil, 30) >= 2 and Player:IsInDelve() then
 				if Player:AffectingCombat() then
 					if S.BlessingOfSummer:IsCastable() then
 						if Cast(S.BlessingOfSummer, Player) then return end
@@ -566,7 +566,7 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.HolyLight, MEMBERS, MustHeal) then return end
 		end
 
-		if S.FlashOfLight:IsCastable() and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable())  then
+		if S.FlashOfLight:IsCastable() and not Target:IsInMeleeRange(5) and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable())  then
 			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, HolyShockFunc) then return end
 		end
 
