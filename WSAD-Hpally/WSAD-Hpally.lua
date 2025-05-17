@@ -82,7 +82,7 @@ local function MyRoutine()
 		RetributionAura = Spell(183435),
 		SenseUndead = Spell(5502),
 		ShieldOfTheRighteous = Spell(415091),
-		WordOfGlory = Spell(85673),
+		WordOfGlory = MultiSpell(85673, 156322),
 		Absolution = Spell(212056),
 		AuraMastery = Spell(31821),
 		BeaconOfLight = Spell(53563),
@@ -255,11 +255,11 @@ local function MyRoutine()
 		I.SignetOfPriory:ID()
 	}
 	
-	-- local function TargetIsValid()
-	-- 	return (Player:AffectingCombat() and Target:Exists() and 
-	-- 	Player:CanAttack(Target) and not Target:IsDeadOrGhost() and 
-	-- 	(Target:AffectingCombat() or Target:HealthPercentage() < 100)) or Target:IsDummy()
-	-- end
+	local function RollyfaceTargetIsValid()
+		return (Player:AffectingCombat() and Target:Exists() and 
+		Player:CanAttack(Target) and not Target:IsDeadOrGhost() and 
+		(Target:AffectingCombat() or Target:HealthPercentage() < 100)) or Target:IsDummy()
+	end
 
 	--GUI CONFIG
 	--GUI CONFIG
@@ -370,6 +370,26 @@ local function MyRoutine()
 
 	local function MainRotation()
 
+		-- if Player:IsFriend(Target) then
+		-- 	if S.WordOfGlory:IsCastable() and Focus:HealthPercentage() < 100 then
+		-- 		if CastAlly(S.WordOfGlory, Focus) then return end
+		-- 	end
+		-- 	if not S.WordOfGlory:IsCastable() then
+		-- 		if S.HolyPrism:IsCastable() and Focus:HealthPercentage() < 100 then
+		-- 			if CastAlly(S.HolyPrism, Focus) then return end
+		-- 		end
+		-- 		if S.DivineToll:IsCastable() and Focus:HealthPercentage() < 100 then
+		-- 			if CastAlly(S.DivineToll, Focus) then return end
+		-- 		end
+		-- 	end
+		-- 	if S.HolyShock:IsCastable() and Focus:HealthPercentage() < 100 then
+		-- 		if CastAlly(S.HolyShock, Focus) then return end
+		-- 	end
+		-- 	if S.FlashOfLight:IsCastable() and Focus:HealthPercentage() < 100 then
+		-- 		if CastAlly(S.FlashOfLight, Focus) then return end
+		-- 	end
+		-- end
+
 		if Player:AffectingCombat() and (Target:IsDeadOrGhost() and not Target:IsAPlayer()) then
 			MainAddon.SetTopColor(1, "Target Enemy")
 		end
@@ -439,7 +459,7 @@ local function MyRoutine()
 
 		-- CDS
 		local ShouldReturn = Trinkets(); if ShouldReturn then return ShouldReturn; end
-		if Player:AffectingCombat() and HealingEngine:MembersUnderPercentage(65, nil, 40) >= 3 and Player:BuffDown(S.AvengingWrath) and Player:BuffDown(S.TyrSDeliveranceBuff) and Player:BuffDown(S.SignetOfPrioryBuff) then
+		if Player:AffectingCombat() and HealingEngine:MembersUnderPercentage(75, nil, 40) >= 4 and Player:BuffDown(S.AvengingWrath) and Player:BuffDown(S.TyrSDeliveranceBuff) and Player:BuffDown(S.SignetOfPrioryBuff) then
 			if S.AvengingWrath:IsCastable() then
 				if Cast(S.AvengingWrath) then return end
 			end
@@ -450,12 +470,12 @@ local function MyRoutine()
 				if Cast(S.TyrSDeliverance) then return end
 			end
 		end
-		if S.AuraMastery:IsCastable() and HealingEngine:MembersUnderPercentage(65, nil, 40) >= 4 then
+		if S.AuraMastery:IsCastable() and HealingEngine:MembersUnderPercentage(75, nil, 40) >= 4 then
 			if Cast(S.AuraMastery) then return end
 		end
 
 		-- AOE Healing
-		if HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 or HealingEngine:MembersUnderPercentage(75, nil, 30) >= 2 and Player:IsInDelve() then
+		if HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 or HealingEngine:DebuffTotal(S.DebuffsNeedsHealing, 30) >= 3 and HealingEngine:MembersUnderPercentage(85, nil, 30) >= 3 then
 				if Player:AffectingCombat() then
 					if S.BlessingOfSummer:IsCastable() then
 						if Cast(S.BlessingOfSummer, Player) then return end
@@ -469,38 +489,35 @@ local function MyRoutine()
 						if Cast(S.BlessingOfSpring, Player) then return end
 					end
 				end
+			
+			if S.BeaconOfVirtue:IsCastable() and S.WordOfGlory:IsCastable() then		
+				if Cast(S.BeaconOfVirtue, Player) then return end
+			end
 
-			if Player:BuffDown(S.BeaconOfVirtue) and Player:BuffDown(S.AvengingCrusader) then		
-				if S.BeaconOfVirtue:IsCastable() and Player:HolyPower() > 2 then		
-					if Cast(S.BeaconOfVirtue, Player) then return end
+			if not S.WordOfGlory:IsCastable() then
+				if S.HolyPrism:IsReady() and Target:IsSpellInRange(S.HolyPrism) and RollyfaceTargetIsValid() then
+					if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
+				end
+
+				if S.DivineToll:IsCastable() then
+					if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, LowestHealthTarget) then return end
 				end
 			end
-
-			if S.DivineToll:IsCastable() and Player:HolyPower() <= 2 then
-				if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, LowestHealthTarget) then return end
-			end
-
-			if S.HolyPrism:IsReady() and Target:IsSpellInRange(S.HolyPrism) and MainAddon.TargetIsValid() then
-				if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
-			end
-		end
-
-		-- Must Heal		
-		if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) then
-			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, MustHeal) then return end
 		end
 
 		-- Danger Heal
-		if S.HolyPrism:IsReady() and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) then
-			if MainAddon.CastCycleAlly(S.HolyPrism, MEMBERS, DangerHeal) then return end
-		end
+		if not S.WordOfGlory:IsCastable() then
+			if S.HolyPrism:IsReady() and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) then
+				if MainAddon.CastCycleAlly(S.HolyPrism, MEMBERS, DangerHeal) then return end
+			end
 
-		if S.BarrierOfFaith:IsReady() and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) then
-			if MainAddon.CastCycleAlly(S.BarrierOfFaith, MEMBERS, DangerHeal) then return end
+			if S.BarrierOfFaith:IsReady() and (not S.Aurora:IsAvailable() or Player:BuffDown(S.DivinePurposeBuff)) then
+				if MainAddon.CastCycleAlly(S.BarrierOfFaith, MEMBERS, DangerHeal) then return end
+			end
 		end
-
-		if S.DivineToll:IsReady() and (Player:HolyPower() <= 2) then
-			if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, DangerHeal) then return end
+		-- Must Heal		
+		if (S.WordOfGlory:IsCastable()) then
+			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, MustHeal) then return end
 		end
 
 		-- Sacred weapons
@@ -515,7 +532,7 @@ local function MyRoutine()
 		end
 
 		-- Single target Healing/DPS
-		if S.Judgment:IsReady() and S.CrusaderSMight:IsAvailable() and MainAddon.TargetIsValid() and Target:IsSpellInRange(S.Judgment) and Player:HolyPower() <= 4  then
+		if S.Judgment:IsReady() and S.CrusaderSMight:IsAvailable() and RollyfaceTargetIsValid() and Target:IsSpellInRange(S.Judgment) and Player:HolyPower() <= 4  then
 			if Cast(S.Judgment) then return end
 		end
 
@@ -523,16 +540,16 @@ local function MyRoutine()
 			if S.HolyShock:IsCastable() then
 				if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, HolyShockFunc) then return end
 			end 
-			if S.HolyShock:IsReady() and MainAddon.TargetIsValid() and Target:IsSpellInRange(S.HolyShock) then
+			if S.HolyShock:IsReady() and RollyfaceTargetIsValid() and Target:IsSpellInRange(S.HolyShock) then
 				if MainAddon.SetTopColor(6, "Holy Shock Enemy") then return end
 			end
 		end
 
-		if S.HammerOfWrath:IsReady() and S.Veneration:IsAvailable() and MainAddon.TargetIsValid() and Target:IsSpellInRange(S.HammerOfWrath) and Player:HolyPower() <= 4  then
+		if S.HammerOfWrath:IsReady() and S.Veneration:IsAvailable() and RollyfaceTargetIsValid() and Target:IsSpellInRange(S.HammerOfWrath) and Player:HolyPower() <= 4  then
 			if Cast(S.HammerOfWrath) then return end
 		end
 
-		if S.CrusaderStrike:IsReady() and MainAddon.TargetIsValid() and Target:IsInMeleeRange(5) and Player:HolyPower() <= 4  then
+		if S.CrusaderStrike:IsReady() and RollyfaceTargetIsValid() and Target:IsInMeleeRange(5) and Player:HolyPower() <= 4  then
 			if Cast(S.CrusaderStrike) then return end
 		end
 
@@ -540,24 +557,24 @@ local function MyRoutine()
 			if S.HolyShock:IsCastable() then
 				if CastCycleAlly(S.HolyShock, MEMBERS, HolyShockFunc) then return end
 			end 
-			if S.HolyShock:IsReady() and MainAddon.TargetIsValid() and Target:IsSpellInRange(S.HolyShock) then
+			if S.HolyShock:IsReady() and RollyfaceTargetIsValid() and Target:IsSpellInRange(S.HolyShock) then
 				if MainAddon.SetTopColor(6, "Holy Shock Enemy") then return end
 			end
 		end
 
-		if S.Judgment:IsReady() and MainAddon.TargetIsValid() and Target:IsSpellInRange(S.Judgment) and Player:HolyPower() <= 4  then
+		if S.Judgment:IsReady() and RollyfaceTargetIsValid() and Target:IsSpellInRange(S.Judgment) and Player:HolyPower() <= 4  then
 			if Cast(S.Judgment) then return end
 		end
 
-		if S.HammerOfWrath:IsReady() and MainAddon.TargetIsValid() and Target:IsSpellInRange(S.HammerOfWrath) and Player:HolyPower() <= 4  then
+		if S.HammerOfWrath:IsReady() and RollyfaceTargetIsValid() and Target:IsSpellInRange(S.HammerOfWrath) and Player:HolyPower() <= 4  then
 			if Cast(S.HammerOfWrath) then return end
 		end
 
-		if Player:HolyPower() >= 5 then
-			if (S.WordOfGlory:IsCastable() or S.EternalFlame:IsCastable()) then
+		if Player:HolyPower() == 5 then
+			if (S.WordOfGlory:IsCastable()) then
 				if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, FillerHeal) then return end
 			end
-			if S.ShieldOfTheRighteous:IsReady() and MainAddon.TargetIsValid() and Target:IsInMeleeRange(5) then
+			if S.ShieldOfTheRighteous:IsReady() and RollyfaceTargetIsValid() and Target:IsInMeleeRange(5) then
 				if Cast(S.ShieldOfTheRighteous) then return end
 			end
 		end
@@ -566,11 +583,15 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.HolyLight, MEMBERS, MustHeal) then return end
 		end
 
+		if S.DivineToll:IsReady() and not S.WordOfGlory:IsCastable() then
+			if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, DangerHeal) then return end
+		end	
+
 		if S.FlashOfLight:IsCastable() and not Target:IsInMeleeRange(5) and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable())  then
 			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, HolyShockFunc) then return end
 		end
 
-		if S.Consecration:IsCastable() and Target:DebuffDown(S.ConsecrationDebuff) and MainAddon.TargetIsValid() and Target:IsInMeleeRange(5) then
+		if S.Consecration:IsCastable() and Target:DebuffDown(S.ConsecrationDebuff) and RollyfaceTargetIsValid() and Target:IsInMeleeRange(5) then
 			if Cast(S.Consecration) then return end
 		end
 
