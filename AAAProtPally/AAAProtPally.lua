@@ -395,7 +395,7 @@ local function MyRoutine()
 		end; 
 		-- judgment,target_if=min:debuff.judgment.remains,if=spell_targets.shield_of_the_righteous>3&buff.bulwark_of_righteous_fury.stack>=3&holy_power<3
 		if S.Judgment:IsReady() and (EnemiesCount8y > 3 and Player:BuffStack(S.BulwarkofRighteousFuryBuff) >= 3 and Player:HolyPower() < 3) then
-		  if CastTargetIf(S.Judgment, Enemies30y, "min", EvaluateTargetIfFilterJudgment, not Target:IsSpellInRange(S.Judgment)) then return "judgment standard 10"; end
+		  if Cast(S.Judgment, not Target:IsSpellInRange(S.Judgment)) then return "judgment standard 10"; end
 		end
 		-- avengers_shield,if=!buff.bulwark_of_righteous_fury.up&talent.bulwark_of_righteous_fury.enabled&spell_targets.shield_of_the_righteous>=3
 		if S.AvengersShield:IsCastable() and (Player:BuffDown(S.BulwarkofRighteousFuryBuff) and S.BulwarkofRighteousFury:IsAvailable() and EnemiesCount8y >= 3) then
@@ -417,7 +417,7 @@ local function MyRoutine()
 		end
 		-- judgment,target_if=min:debuff.judgment.remains,if=charges>=2|full_recharge_time<=gcd.max
 		if S.Judgment:IsReady() and (S.Judgment:Charges() >= 2 or S.Judgment:FullRechargeTime() <= Player:GCD() + 0.25) then
-		  if CastTargetIf(S.Judgment, Enemies30y, "min", EvaluateTargetIfFilterJudgment, not Target:IsSpellInRange(S.Judgment)) then return "judgment standard 20";  end
+			if Cast(S.Judgment, not Target:IsSpellInRange(S.Judgment)) then return "judgment standard 20";  end
 		end
 		-- consecration,if=buff.divine_guidance.stack=5
 		if S.Consecration:IsCastable() and (Player:BuffStack(S.DivineGuidanceBuff) == 5) then
@@ -441,7 +441,7 @@ local function MyRoutine()
 		end
 		-- judgment,target_if=min:debuff.judgment.remains,if=(buff.avenging_wrath.up&talent.hammer_and_anvil.enabled)
 		if S.Judgment:IsReady() and (Player:BuffUp(S.AvengingWrathBuff) and S.HammerandAnvil:IsAvailable()) then
-		  if CastTargetIf(S.Judgment, Enemies30y, "min", EvaluateTargetIfFilterJudgment, not Target:IsSpellInRange(S.Judgment)) then return "judgment standard 32"; end
+			if Cast(S.Judgment, not Target:IsSpellInRange(S.Judgment)) then return "judgment standard 32"; end
 		end
 		-- holy_armaments,if=next_armament=holy_bulwark&charges=2
 		if S.HolyBulwark:IsCastable() and (S.HolyBulwark:Charges() == 2) then
@@ -449,7 +449,7 @@ local function MyRoutine()
 		end
 		-- judgment,target_if=min:debuff.judgment.remains
 		if S.Judgment:IsReady() then
-		  if CastTargetIf(S.Judgment, Enemies30y, "min", EvaluateTargetIfFilterJudgment, not Target:IsSpellInRange(S.Judgment)) then return "judgment standard 36"; end
+			if Cast(S.Judgment, not Target:IsSpellInRange(S.Judgment)) then return "judgment standard 36"; end
 		end
 		-- avengers_shield,if=!buff.shake_the_heavens.up&talent.shake_the_heavens.enabled
 		if S.AvengersShield:IsCastable() and (Player:BuffDown(S.ShaketheHeavensBuff) and S.ShaketheHeavens:IsAvailable()) then
@@ -600,8 +600,6 @@ local function MyRoutine()
 		  if Cast(S.Pool) then return "Wait/Pool Resources"; end
 		end
 	end
-
-	
 	MainAddon.SetCustomAPL(Author, SpecID, APL, Init)
 	
 end
