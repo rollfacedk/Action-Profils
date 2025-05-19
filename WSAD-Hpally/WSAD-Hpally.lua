@@ -1,6 +1,6 @@
 local function MyRoutine()
 	local Author = 'Ellesmere - Holy Pally'
-	local SpecID = 65 --Unholy  --https://wowpedia.fandom.com/wiki/API_GetSpecializationInfo
+		local SpecID = 65 --Unholy  --https://wowpedia.fandom.com/wiki/API_GetSpecializationInfo
 
 	--HR HEADER
 	-- Addon
@@ -266,6 +266,10 @@ local function MyRoutine()
 		return RollyfaceTargetIsValid() and Target:NPCID() == 210271 or MainAddon.TargetIsValid()
 	end
 
+	local function DuringAvengingCrusader()
+		return Player:BuffUp(S.AvengingCrusader) and ((S.CrusaderStrike:IsReady() and Target:IsInMeleeRange(5)) or (S.Judgment:IsReady() and Target:IsSpellInRange(S.Judgment)))
+	end
+
 	--GUI CONFIG
 	--GUI CONFIG
 	local UnholyColor = 'f4acba'
@@ -427,6 +431,15 @@ local function MyRoutine()
 			end
 		end
 
+		if Player:IsInRaid() then
+			if S.BeaconOfLight:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfLightBuff) == 0 then
+				if CastCycleAlly(S.BeaconOfLight, TANKS, Beacons) then return end
+			end
+			if S.BeaconOfFaith:IsCastable() and HealingEngine:BuffTotal(S.BeaconOfFaithBuff) == 0 then
+				if CastCycleAlly(S.BeaconOfFaith, TANKS, Beacons) then return end
+			end
+		end
+
 		-- blessing
 		if S.BlessingOfWinter:IsCastable() then
 			if Cast(S.BlessingOfWinter, Player) then return end
@@ -496,6 +509,17 @@ local function MyRoutine()
 				if Cast(S.BlessingOfSpring, Player) then return end
 			end
 		end
+
+		-- Sacred weapons
+		if Player:AffectingCombat() and (Player:BuffDown(S.HolyBulwarkBuff) and Player:BuffDown(S.SacredWeaponBuff) or S.HolyBulwark:ChargesFractional() >= 1.8 or S.SacredWeapon:ChargesFractional() >= 1.8)  then
+			if S.HolyBulwark:IsCastable() then
+				if Cast(S.HolyBulwark, Player) then return end
+			end
+			if S.SacredWeapon:IsCastable() then
+				if Cast(S.SacredWeapon, Player) then return end
+			end
+		end
+
 		-- During Avenging Crusader rotation
 		if Player:BuffUp(S.AvengingCrusader) then
 			if S.Judgment:IsReady() and S.CrusaderSMight:IsAvailable() and TargetOk() and Target:IsSpellInRange(S.Judgment) then
@@ -504,46 +528,30 @@ local function MyRoutine()
 			if S.CrusaderStrike:IsReady() and TargetOk() and Target:IsInMeleeRange(5) then
 				if Cast(S.CrusaderStrike) then return end
 			end
-	
-		end
-
-		-- Sacred weapons
-		if Player:AffectingCombat() and (Player:BuffDown(S.HolyBulwarkBuff) and Player:BuffDown(S.SacredWeaponBuff) or S.HolyBulwark:ChargesFractional() >= 1.8 or S.SacredWeapon:ChargesFractional() >= 1.8)  then
-			if S.HolyBulwark:IsCastable() then
-				if Cast(S.HolyBulwark, Player) then return end
-			end
-			if S.SacredWeapon:IsCastable() then
-				if Cast(S.SacredWeapon, Player) then return end
-			end
-		end
-
-		-- Sacred weapons
-		if Player:AffectingCombat() and (Player:BuffDown(S.HolyBulwarkBuff) and Player:BuffDown(S.SacredWeaponBuff) or S.HolyBulwark:ChargesFractional() >= 1.8 or S.SacredWeapon:ChargesFractional() >= 1.8)  then
-			if S.HolyBulwark:IsCastable() then
-				if Cast(S.HolyBulwark, Player) then return end
-			end
-			if S.SacredWeapon:IsCastable() then
-				if Cast(S.SacredWeapon, Player) then return end
-			end
-		end
-
-		-- Must Heal		
-		if (S.WordOfGlory:IsCastable()) then
-			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, MustHeal) then return end
 		end
 
 		-- AOE Healing
 		if HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 or HealingEngine:DebuffTotal(S.DebuffsNeedsHealing, 30) >= 3 and HealingEngine:MembersUnderPercentage(85, nil, 30) >= 3 then					
 			if S.BeaconOfVirtue:IsCastable() and S.WordOfGlory:IsCastable() then		
 				if Cast(S.BeaconOfVirtue, Player) then return end
-			end			
-			if S.HolyPrism:IsReady() and Target:IsSpellInRange(S.HolyPrism) and TargetOk() then
-				if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
+			end	
+			if not S.WordOfGlory:IsCastable() then		
+				if S.HolyPrism:IsReady() and Target:IsSpellInRange(S.HolyPrism) and TargetOk() then
+					if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
+				end
+				if S.DivineToll:IsCastable() then
+					if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, LowestHealthTarget) then return end
+				end	
 			end
-			if S.DivineToll:IsCastable() then
-				if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, LowestHealthTarget) then return end
-			end
-				
+		end
+
+		-- Must Heal	
+		if (S.LightOfDawn:IsCastable() and Player:IsInRaidArea() and HealingEngine:MembersUnderPercentage(75, nil, 30) >= 5) then
+			if Cast(S.LightOfDawn) then return end
+		end	
+
+		if (S.WordOfGlory:IsCastable()) then
+			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, MustHeal) then return end
 		end
 
 		-- Danger Heal	
