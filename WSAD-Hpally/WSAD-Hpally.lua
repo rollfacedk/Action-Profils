@@ -102,7 +102,7 @@ local function MyRoutine()
 		DivineGuidance = Spell(460822),
 		ImprovedCleanse = Spell(393024),
 		HallowedGround = Spell(377043),
-		LayonHands = MultiSpell(633, 471195),
+		LayONHands = Spell(633, 471195),
 		Repentance = Spell(20066), --Multi
 		AurasOfTheResolute = Spell(385633),
 		AurasOfSwiftVengeance = Spell(385639),
@@ -325,11 +325,11 @@ local function MyRoutine()
 	end;
 
 	local function LayOnHandsFunc(UnitTarget)
-		return UnitTarget:HealthPercentageFlat() <= 20
+		return UnitTarget:HealthPercentageFlat() <= 100
 	end;
 
 	local function HolyShockFunc(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 90)
+		return (UnitTarget:HealthPercentage() <= 85)
 	end;
 
 	local function DangerHeal(UnitTarget)
@@ -458,8 +458,8 @@ local function MyRoutine()
 				end
 			end
 
-			if S.LayonHands:IsCastable() then
-				if MainAddon.CastCycleAlly(S.LayonHands, MEMBERS, LayOnHandsFunc) then return "LOH TANKS" end
+			if S.LayONHands:IsCastable() then
+				if MainAddon.CastCycleAlly(S.LayONHands , MEMBERS, LayOnHandsFunc) then return "LOH TANKS" end
 			end
 
 			if S.BlessingOfProtection:IsCastable() then
@@ -553,10 +553,6 @@ local function MyRoutine()
 
 		-- Danger Heal
 		if not S.WordOfGlory:IsCastable() then	
-			if S.DivineToll:IsReady() then
-				if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, DangerHeal) then return end
-			end	
-
 			if S.HolyPrism:IsReady() then
 				if MainAddon.CastCycleAlly(S.HolyPrism, MEMBERS, DangerHeal) then return end
 			end
@@ -564,6 +560,10 @@ local function MyRoutine()
 			if S.BarrierOfFaith:IsReady() then
 				if MainAddon.CastCycleAlly(S.BarrierOfFaith, MEMBERS, DangerHeal) then return end
 			end
+
+			if S.DivineToll:IsReady() then
+				if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, DangerHeal) then return end
+			end	
 		end
 
 		-- Must Heal	
@@ -591,7 +591,7 @@ local function MyRoutine()
 			if S.HolyShock:IsCastable() then
 				if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, HolyShockFunc) then return end
 			end 
-			if S.HolyShock:IsReady() and TargetOk() and Target:IsSpellInRange(S.HolyShock) then
+			if S.HolyShock:IsReady() and S.HolyShock:ChargesFractional() >= 1.8 and TargetOk() and Target:IsSpellInRange(S.HolyShock) then
 				if MainAddon.SetTopColor(6, "Holy Shock Enemy") then return end
 			end
 		end
