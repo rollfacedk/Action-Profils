@@ -1,5 +1,5 @@
 local function MyRoutine()
-	local Author = 'WSAD - Holy Paladin'
+	local Author = 'Ellesmere - Holly Pally'
 	local SpecID = 65 --Unholy  --https://wowpedia.fandom.com/wiki/API_GetSpecializationInfo
 
 	--HR HEADER
