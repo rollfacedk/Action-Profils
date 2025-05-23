@@ -1,5 +1,5 @@
 local function MyRoutine()
-	local Author = 'Ellesmere - Holy Pally'
+	local Author = 'WSAD - Holy Paladin'
 	local SpecID = 65 --Unholy  --https://wowpedia.fandom.com/wiki/API_GetSpecializationInfo
 
 	--HR HEADER
@@ -102,7 +102,7 @@ local function MyRoutine()
 		DivineGuidance = Spell(460822),
 		ImprovedCleanse = Spell(393024),
 		HallowedGround = Spell(377043),
-		LayONHands = Spell(633, 471195),
+		LayONHands = MultiSpell(633, 471195),
 		Repentance = Spell(20066), --Multi
 		AurasOfTheResolute = Spell(385633),
 		AurasOfSwiftVengeance = Spell(385639),
