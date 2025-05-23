@@ -325,7 +325,7 @@ local function MyRoutine()
 	end;
 
 	local function LayOnHandsFunc(UnitTarget)
-		return UnitTarget:HealthPercentageFlat() <= 100
+		return UnitTarget:HealthPercentageFlat() <= 20
 	end;
 
 	local function HolyShockFunc(UnitTarget)
