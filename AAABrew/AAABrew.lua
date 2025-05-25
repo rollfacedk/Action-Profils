@@ -48,9 +48,9 @@ local function MyRoutine()
 	end
 	local mathmin    = math.min
 
-	local function TargetIsValid()
-		return (Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and (Target:AffectingCombat() or Target:HealthPercentage() < 100)) or Target:IsDummy()
-	end
+	-- local function TargetIsValid()
+	-- 	return (Player:AffectingCombat() and Target:Exists() and Player:CanAttack(Target) and not Target:IsDeadOrGhost() and (Target:AffectingCombat() or Target:HealthPercentage() < 100)) or Target:IsDummy()
+	-- end
 
 	--ALL SPELLS ARE LOCATED ON Rotations/CLASS_SPELL.lua, if one is missing tells us about it.
 	local S = {
@@ -375,7 +375,7 @@ local function MyRoutine()
 		-- 	if Cast(PotionSelected, nil, Settings.CommonsDS.DisplayStyle.Potions) then return "potion main 4"; end
 		-- end
 		-- end
-		if TargetIsValid() then
+		if MainAddon.TargetIsValid() then
 
 			if S.TouchofDeath:IsReady() then
 				if Cast(S.TouchofDeath) then return ""; end
