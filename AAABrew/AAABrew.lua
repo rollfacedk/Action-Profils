@@ -255,7 +255,9 @@ local function MyRoutine()
 		--   if Cast(S.CelestialBrew, nil, Settings.Brewmaster.DisplayStyle.CelestialBrew) then return "Celestial Brew"; end
 		-- end
 		if (Player:DebuffUp(S.HeavyStagger) or Player:DebuffUp(S.ModerateStagger)) and Player:BuffDown(S.CelestialBrew) and Player:HealthPercentage() <= 70 then
-			if S.PurifyingBrew:IsCastable() then
+			if S.ExpelHarm:IsReady() and (S.ExpelHarm:Count() > 4) then
+				if Cast(S.ExpelHarm) then return end
+			elseif S.PurifyingBrew:IsCastable() then
 				if Cast(S.PurifyingBrew) then return "Purifying Brew"; end
 			elseif S.CelestialBrew:IsCastable() and S.PurifyingBrew:Charges() == 0 then
 				if Cast(S.CelestialBrew) then return "Celestial Brew"; end
@@ -264,20 +266,16 @@ local function MyRoutine()
 			end
 		end
 
-		if S.ExpelHarm:IsReady() and Player:HealthPercentage() <= 100 then
-		  local ExpelHarmMod = (S.StrengthofSpirit:IsAvailable()) and (1 + (1 - Player:HealthPercentage() / 100) * 100) or 1
-		  local HealingSphereValue = Player:AttackPowerDamageMod() * 3
-		  local ExpelHarmHeal = (GetSpellBonusDamage(4) * 1.2 * ExpelHarmMod) + (S.ExpelHarm:Count() * HealingSphereValue)
-		  local MissingHP = Player:MaxHealth() - Player:Health()
-		  -- Allow us to "waste" 10% of the Expel Harm heal amount.
-		  if MissingHP > ExpelHarmHeal * 0.9 or Player:HealthPercentage() <= 100 / 2 then
-			if Cast(S.ExpelHarm) then return "Expel Harm (defensives)"; end
-		  end
-		end
-
-		if S.Vivify:IsCastable() and S.ViviciousVivication:IsAvailable() and Player:BuffUp(S.ViviciousVivicationBuff) and Player:HealthPercentage() <= 65 then
-			if Cast(S.Vivify) then return end
-		end
+		-- if S.ExpelHarm:IsReady() and Player:HealthPercentage() <= 100 then
+		--   local ExpelHarmMod = (S.StrengthofSpirit:IsAvailable()) and (1 + (1 - Player:HealthPercentage() / 100) * 100) or 1
+		--   local HealingSphereValue = Player:AttackPowerDamageMod() * 3
+		--   local ExpelHarmHeal = (GetSpellBonusDamage(4) * 1.2 * ExpelHarmMod) + (S.ExpelHarm:Count() * HealingSphereValue)
+		--   local MissingHP = Player:MaxHealth() - Player:Health()
+		--   -- Allow us to "waste" 10% of the Expel Harm heal amount.
+		--   if MissingHP > ExpelHarmHeal * 0.9 or Player:HealthPercentage() <= 100 / 2 then
+		-- 	if Cast(S.ExpelHarm) then return "Expel Harm (defensives)"; end
+		--   end
+		-- end
 
 		if S.DampenHarm:IsCastable() and Player:BuffDown(S.FortifyingBrewBuff) and Player:HealthPercentage() <= 35 then
 		  if Cast(S.DampenHarm) then return "Dampen Harm"; end
@@ -285,7 +283,9 @@ local function MyRoutine()
 		if S.FortifyingBrew:IsCastable() and Player:BuffDown(S.DampenHarmBuff) and Player:HealthPercentage() <= 25 then
 		  if Cast(S.FortifyingBrew) then return "Fortifying Brew"; end
 		end
-
+		if S.Vivify:IsCastable() and S.ViviciousVivication:IsAvailable() and Player:BuffUp(S.ViviciousVivicationBuff) and Player:HealthPercentage() <= 65 then
+			if Cast(S.Vivify) then return end
+		end
 	end
 
 	local function ItemActions()
@@ -366,7 +366,7 @@ local function MyRoutine()
 		end
 		-- expel_harm,if=buff.gift_of_the_ox.stack>4
 		-- if S.ExpelHarm:IsReady() and (S.ExpelHarm:Count() > 4) then
-		-- if Cast(S.ExpelHarm, Settings.Brewmaster.GCDasOffGCD.ExpelHarm, nil, not Target:IsInRange(20)) then return "expel_harm main 2"; end
+		-- if Cast(S.ExpelHarm, not Target:IsInRange(20)) then return "expel_harm main 2"; end
 		-- end
 		-- potion
 		-- if Settings.Commons.Enabled.Potions then
