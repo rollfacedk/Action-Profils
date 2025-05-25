@@ -600,6 +600,18 @@ local function MyRoutine()
 		end
 	end
 	MainAddon.SetCustomAPL(Author, SpecID, APL, Init)
+	HL.AddCoreOverride("Player.JudgmentPower",
+	function(self)
+		local JP = 1
+		if Player:BuffUp(S.AvengingWrathBuff) or Player:BuffUp(S.SentinelBuff) then
+		JP = JP + 1
+		end
+		if Player:BuffUp(S.BastionofLightBuff) then
+		JP = JP + 2
+		end
+		return JP
+	end
+	, 66)
 	
 end
 
