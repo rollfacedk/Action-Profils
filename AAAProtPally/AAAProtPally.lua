@@ -1,5 +1,5 @@
 local function MyRoutine()
-	local Author = 'WSAD - Protection Paladin'
+	local Author = 'WSAD - Protection Paladin--Copy'
 	local SpecID = 66 --Unholy  --https://wowpedia.fandom.com/wiki/API_GetSpecializationInfo
 
 	--HR HEADER
@@ -157,6 +157,7 @@ local function MyRoutine()
 		ForberanceDebuff = Spell(25771),
 		BlessingOfProtection = Spell(1022),
 		BlessingOfSacrifice = Spell(6940),
+		Sanctuary = Spell(379021),
 	
 	}
 
@@ -215,7 +216,7 @@ local function MyRoutine()
 	local VarSanctificationMaxStack = 5
 
 	local function WordofGloryFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 60
+		return UnitTarget:HealthPercentage() <= 75
 	end;
 
 	local function LayonHANDSFunc(UnitTarget)
@@ -223,15 +224,15 @@ local function MyRoutine()
 	end;
 
 	local function LayonHANDSFunc2(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 25 and UnitTarget:DebuffDown(S.ForberanceDebuff) and UnitTarget:GUID() == Player:GUID()
+		return UnitTarget:HealthPercentageFlat() <= 25 and UnitTarget:DebuffDown(S.ForberanceDebuff) and UnitTarget:GUID() == Player:GUID()
 	end;
 
 	local function BlessingOfSacrificeFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 30 and UnitTarget:GUID() ~= Player:GUID()
+		return UnitTarget:HealthPercentageFlat() <= 30 and UnitTarget:GUID() ~= Player:GUID()
 	end;
 
 	local function BlessingOfProtectionFunc(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 30 and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:DebuffDown(S.ForberanceDebuff)
+		return UnitTarget:HealthPercentageFlat() <= 30 and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:DebuffDown(S.ForberanceDebuff)
 	end;
 
 	-- File Locals
@@ -296,12 +297,6 @@ local function MyRoutine()
 		  if Cast(S.ArdentDefender) then return "ardent_defender defensive 6"; end
 		end
 
-		if S.WordofGlory:IsCastable() and (Player:HealthPercentage() <= 60) then
-		  if (Player:BuffUp(S.DivinePurposeBuff) or Player:BuffUp(S.ShiningLightFreeBuff)) then
-			if Cast(S.WordofGlory) then return "word_of_glory defensive 8"; end
-		  end
-		end
-
 		if S.ShieldoftheRighteous:IsReady() and (Player:BuffRefreshable(S.ShieldoftheRighteousBuff) and (ActiveMitigationNeeded)) then
 		  if Cast(S.ShieldoftheRighteous) then return "shield_of_the_righteous defensive 14"; end
 		end
@@ -310,13 +305,13 @@ local function MyRoutine()
 			if Cast(S.DivineShield) then return end
 		end
 
-		if S.WordofGlory:IsCastable() and Player:HealthPercentage() > 85 then
+		if S.WordofGlory:IsCastable() and (Player:HealthPercentage() <= 60) then
 			if (Player:BuffUp(S.DivinePurposeBuff) or Player:BuffUp(S.ShiningLightFreeBuff)) then
-				if MainAddon.CastCycleAlly(S.WordofGlory, MEMBERS, WordofGloryFunc) then return end
+			  if Cast(S.WordofGlory, Player) then return "word_of_glory defensive 8"; end
 			end
 		end
 
-    	if S.Consecration:IsCastable() and not Player:IsMoving() and (Player:BuffDown(S.ConsecrationBuff)) then
+    	if S.Consecration:IsCastable() and (not Player:IsMoving() or S.Sanctuary:IsAvailable()) and (Player:BuffDown(S.ConsecrationBuff)) then
 		  if Cast(S.Consecration) then return "consecration Defensive"; end
 		end
 		
@@ -360,7 +355,7 @@ local function MyRoutine()
 	local function Standard()
 		-- judgment,target_if=min:debuff.judgment.remains,if=charges>=2|full_recharge_time<=gcd.max
 		if S.Judgment:IsReady() and (S.Judgment:Charges() >= 2 or S.Judgment:FullRechargeTime() <= Player:GCD()) then
-		  if CastTargetIf(S.Judgment, Enemies30y, "min", EvaluateTargetIfFilterJudgment, not Target:IsSpellInRange(S.Judgment)) then return "judgment standard 2"; end
+		  if Cast(S.Judgment, not Target:IsSpellInRange(S.Judgment)) then return "judgment standard 2"; end
 		end
 		-- hammer_of_light,if=buff.hammer_of_light_free.remains<2|buff.shake_the_heavens.remains<1|!buff.shake_the_heavens.up|cooldown.eye_of_tyr.remains<1.5|fight_remains<2
 		if S.HammerofLight:IsReady() and (Player:BuffRemains(S.LightsDeliveranceBuff) < 2 or Player:BuffRemains(S.ShaketheHeavensBuff) < 1 or Player:BuffDown(S.ShaketheHeavensBuff) or S.EyeofTyr:CooldownRemains() < 1.5 or BossFightRemains < 2) then
@@ -381,13 +376,13 @@ local function MyRoutine()
 		  local LastCast = mathmin(S.ShieldoftheRighteous:TimeSinceLastCast(), S.WordofGlory:TimeSinceLastCast())
 		  RighteousProtectorICD = mathmax(0, 1 - mathmin(S.ShieldoftheRighteous:TimeSinceLastCast(), S.WordofGlory:TimeSinceLastCast()))
 		end
-		-- if S.ShieldoftheRighteous:IsReady() and (not S.HammerofLight:IsCastable()) and (
-		--   (Player:BuffUp(S.LuckoftheDrawBuff) and ((Player:HolyPower() + Player:JudgmentPower() >= 5) or (not S.RighteousProtector:IsAvailable() or RighteousProtectorICD == 0))) or
-		--   (Player:HasTier("TWW2", 4) and ((Player:HolyPower() + Player:JudgmentPower() > 5) or (Player:HolyPower() + Player:JudgmentPower() >= 5 and RighteousProtectorICD == 0))) or
-		--   (not Player:HasTier("TWW2", 4) and (not S.RighteousProtector:IsAvailable() or RighteousProtectorICD == 0))
-		-- ) then
-		--   if Cast(S.ShieldoftheRighteous) then return "shield_of_the_righteous standard 8"; end
-		-- end
+		if S.ShieldoftheRighteous:IsReady() and (not S.HammerofLight:IsCastable()) and (
+		  (Player:BuffUp(S.LuckoftheDrawBuff) and ((Player:HolyPower() + Player:JudgmentPower() >= 5) or (not S.RighteousProtector:IsAvailable() or RighteousProtectorICD == 0))) or
+		  (Player:HasTier("TWW2", 4) and ((Player:HolyPower() + Player:JudgmentPower() > 5) or (Player:HolyPower() + Player:JudgmentPower() >= 5 and RighteousProtectorICD == 0))) or
+		  (not Player:HasTier("TWW2", 4) and (not S.RighteousProtector:IsAvailable() or RighteousProtectorICD == 0))
+		) then
+		  if Cast(S.ShieldoftheRighteous) then return "shield_of_the_righteous standard 8"; end
+		end
 		if S.ShieldoftheRighteous:IsReady() and ((not S.RighteousProtector:IsAvailable() or RighteousProtectorICD == 0) and not S.HammerofLight:IsLearned()) then
 			if Cast(S.ShieldoftheRighteous) then
 				return "shield_of_the_righteous standard 8"
@@ -549,6 +544,10 @@ local function MyRoutine()
 	end
 
 	local function APL()
+
+		if Player:AffectingCombat() and (Target:IsDeadOrGhost() and not Target:IsAPlayer()) then
+			MainAddon.SetTopColor(1, "Target Enemy")
+		end
 
 		if S.DevotionAura:IsCastable() and Player:BuffDown(S.DevotionAura) then
 			if Cast(S.DevotionAura) then return end
