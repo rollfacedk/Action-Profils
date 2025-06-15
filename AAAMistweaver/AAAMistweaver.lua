@@ -489,7 +489,7 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.EnvelopingMist, MEMBERS, EnvelopingMistFunction) then return "" end
 		end
 
-		if S.Vivify:IsCastable() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffUp(S.VivaciousVivificationBuff) then
+		if S.Vivify:IsCastable() and Player:BuffUp(S.VivaciousVivificationBuff) then
 			if CastCycleAlly(S.Vivify, MEMBERS, VivifyFunction) then return end
 		end
 
@@ -497,7 +497,7 @@ local function MyRoutine()
 			if Cast(S.ManaTea) then return end
 		end
 
-		if S.RenewingMist:IsCastable() and Player:BuffDown(S.ThunderFocusTea) then
+		if S.RenewingMist:IsCastable()  then
 			if CastCycleAlly(S.RenewingMist, MEMBERS, RenewingMistFunction) then return "Renewing2" end
 		end
 
@@ -523,7 +523,7 @@ local function MyRoutine()
 
 
 			-- rising_sun_kick,if=talent.secret_infusion&buff.thunder_focus_tea.up
-			if S.RisingSunKick:IsReady() and Target:IsInMeleeRange(5) and Player:BuffUp(S.ThunderFocusTea) then
+			if S.RisingSunKick:IsReady() and Target:IsInMeleeRange(5) and S.SecretInfusion:IsAvailable() and Player:BuffUp(S.ThunderFocusTea) then
 				if Cast(S.RisingSunKick) then return end
 			end
 			
