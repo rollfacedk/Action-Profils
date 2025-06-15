@@ -434,8 +434,7 @@ local function MyRoutine()
 		end
 
 		if Player:IsChanneling(S.ManaTea) or 
-			Player:IsChanneling(S.CelestialConduit) or 
-			Player:IsChanneling(S.CracklingJadeLightning) or 
+			Player:IsChanneling(S.CelestialConduit) or  
 			Player:IsCasting(S.SheilunsGift) or
 			(not Player:AffectingCombat() and Player:IsCasting()) then
 			return
@@ -463,12 +462,12 @@ local function MyRoutine()
 
 		if HealingEngine:MembersUnderPercentage(75, nil, 40) >= 3 and Player:BuffDown(S.Yulonbaby) and not MW.Chiji.Active then
 
-			if S.CracklingJadeLightning:IsCastable() and not Player:PrevGCD(1,S.CracklingJadeLightning) and MainAddon.TargetIsValid() and not Player:IsMoving() and Target:IsSpellInRange(S.CracklingJadeLightning) and Player:BuffUp(S.JadefireTeachingBuff) and Player:BuffUp(S.JadeEmpowerment) and not Player:PrevGCD(1,S.CracklingJadeLightning) then
-				if Cast(S.CracklingJadeLightning) then return end
-			end
-
 			if S.SheilunsGift:IsCastable() and HealingEngine:LowestHP(true, 40) >= 35 and not Player:IsMoving() and S.SheilunsGift:Count() >= 8 then
 				if MainAddon.CastCycleAlly(S.SheilunsGift, MEMBERS, LowestTargetFunction) then return end
+			end
+
+			if S.CracklingJadeLightning:IsCastable() and not Player:PrevGCD(1,S.CracklingJadeLightning) and MainAddon.TargetIsValid() and not Player:IsMoving() and Target:IsSpellInRange(S.CracklingJadeLightning) and Player:BuffUp(S.JadefireTeachingBuff) and Player:BuffUp(S.JadeEmpowerment) and not Player:PrevGCD(1,S.CracklingJadeLightning) then
+				if Cast(S.CracklingJadeLightning) then return end
 			end
 	
 		end
@@ -509,7 +508,7 @@ local function MyRoutine()
 			end
 
 		
-			if S.JadefireStomp:IsReady() and Target:IsInMeleeRange(20) and ((Player:BuffDown(S.JadefireTeachingBuff) and S.JadefireTeaching:IsAvailable()) or Player:BuffDown(S.JadefireStomp) or (Player:BuffDown(S.AwakenedFaelineBuff) and S.AwakenedFaeline:IsAvailable())) then
+			if S.JadefireStomp:IsReady() and Target:IsInMeleeRange(20) and ((Player:BuffRemains(S.JadefireTeachingBuff) <= 3 and S.JadefireTeaching:IsAvailable()) or Player:BuffRemains(S.JadefireStomp) <= 3 or (Player:BuffDown(S.AwakenedFaelineBuff) and S.AwakenedFaeline:IsAvailable())) then
 				if Cast(S.JadefireStomp) then return end
 			end
 
