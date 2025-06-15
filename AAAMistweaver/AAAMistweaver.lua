@@ -523,7 +523,7 @@ local function MyRoutine()
 
 
 			-- rising_sun_kick,if=talent.secret_infusion&buff.thunder_focus_tea.up
-			if S.RisingSunKick:IsReady() and Target:IsInMeleeRange(5) and Player:BuffUp(S.ThunderFocusTea) and Player:BuffUp(S.SecretInfusionBuff) then
+			if S.RisingSunKick:IsReady() and Target:IsInMeleeRange(5) and Player:BuffUp(S.ThunderFocusTea) then
 				if Cast(S.RisingSunKick) then return end
 			end
 			
