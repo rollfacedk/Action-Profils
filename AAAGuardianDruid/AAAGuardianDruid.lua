@@ -486,6 +486,7 @@ local function MyRoutine()
 		end
 
 		if Player:BuffDown(S.BearForm) then
+			if Cast(S.BearForm) then return end
 		end
 	  
 		if true then
