@@ -278,24 +278,28 @@ local function MyRoutine()
 	end
 
 	local function Defensives()
-		if Player:HealthPercentage() < Settings.Guardian.FrenziedRegenHP and S.FrenziedRegeneration:IsReady() and Player:BuffDown(S.FrenziedRegenerationBuff) and not Player:HealingAbsorbed() then
+		if Player:HealthPercentage() < 55 and S.FrenziedRegeneration:IsReady() and Player:BuffDown(S.FrenziedRegenerationBuff) then
 		  if Cast(S.FrenziedRegeneration) then return "frenzied_regeneration defensive 2"; end
 		end
-		if S.Regrowth:IsCastable() and Player:BuffUp(S.DreamofCenariusBuff) and (Player:BuffDown(S.PoPHealBuff) and Player:HealthPercentage() < 65 or Player:BuffUp(S.PoPHealBuff) and Player:HealthPercentage() < 45) then
+		if S.Regrowth:IsCastable() and Player:BuffUp(S.DreamofCenariusBuff) and (Player:BuffDown(S.PoPHealBuff) and Player:HealthPercentage() < 55 or Player:BuffUp(S.PoPHealBuff) and Player:HealthPercentage() < 45) then
 		  if Cast(S.Regrowth) then return "regrowth defensive 4"; end
 		end
-		if S.Renewal:IsCastable() and Player:HealthPercentage() < 45 then
+		if S.Renewal:IsCastable() and Player:HealthPercentage() < 55 then
 		  if Cast(S.Renewal) then return "renewal defensive 6"; end
 		end
 		if S.Ironfur:IsReady() and (Player:BuffDown(S.IronfurBuff) or Player:BuffStack(S.IronfurBuff) < 2 and Player:BuffRefreshable(S.Ironfur)) then
 		  if Cast(S.Ironfur) then return "ironfur defensive 8"; end
 		end
-		if S.Barkskin:IsCastable() and (Player:HealthPercentage() < Settings.Guardian.BarkskinHP and Player:BuffDown(S.IronfurBuff) or Player:HealthPercentage() < Settings.Guardian.BarkskinHP * 0.75) then
-		  if Cast(S.Barkskin) then return "barkskin defensive 10"; end
+
+		if Player:BuffDown(S.IronfurBuff) and Player:BuffDown(S.SurvivalInstincts) then
+			if S.Barkskin:IsCastable() and (Player:HealthPercentage() < 30) then
+				if Cast(S.Barkskin) then return "barkskin defensive 10"; end
+			end
+			if S.SurvivalInstincts:IsCastable() and (Player:HealthPercentage() < 30) then
+				if Cast(S.SurvivalInstincts) then return "survival_instincts defensive 12"; end
+			end
 		end
-		if S.SurvivalInstincts:IsCastable() and (Player:HealthPercentage() < 30) then
-		  if Cast(S.SurvivalInstincts) then return "survival_instincts defensive 12"; end
-		end
+
 		if S.BristlingFur:IsCastable() and (Player:Rage() < 40 and S.RageoftheSleeper:CooldownRemains() > 8) then
 		  if Cast(S.BristlingFur) then return "bristling_fur defensive 14"; end
 		end
