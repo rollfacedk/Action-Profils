@@ -282,7 +282,7 @@ local function MyRoutine()
 		  if Cast(S.FrenziedRegeneration) then return "frenzied_regeneration defensive 2"; end
 		end
 		if S.Regrowth:IsCastable() and Player:BuffUp(S.DreamofCenariusBuff) and (Player:BuffDown(S.PoPHealBuff) and Player:HealthPercentage() < 55 or Player:BuffUp(S.PoPHealBuff) and Player:HealthPercentage() < 45) then
-		  if Cast(S.Regrowth) then return "regrowth defensive 4"; end
+		  if Cast(S.Regrowth, Player) then return "regrowth defensive 4"; end
 		end
 		if S.Renewal:IsCastable() and Player:HealthPercentage() < 55 then
 		  if Cast(S.Renewal) then return "renewal defensive 6"; end
@@ -483,6 +483,9 @@ local function MyRoutine()
 		  Enemies8yCount = #Enemies8y
 		else
 		  Enemies8yCount = 1
+		end
+
+		if Player:BuffDown(S.BearForm) then
 		end
 	  
 		if true then
