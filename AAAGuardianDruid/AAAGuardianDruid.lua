@@ -291,8 +291,8 @@ local function MyRoutine()
 		  if Cast(S.Ironfur) then return "ironfur defensive 8"; end
 		end
 
-		if Player:BuffDown(S.IronfurBuff) and Player:BuffDown(S.SurvivalInstincts) then
-			if S.Barkskin:IsCastable() and (Player:HealthPercentage() < 30) then
+		if Player:BuffDown(S.Barkskin) and Player:BuffDown(S.SurvivalInstincts) then
+			if S.Barkskin:IsCastable() and (Player:HealthPercentage() < 50) then
 				if Cast(S.Barkskin) then return "barkskin defensive 10"; end
 			end
 			if S.SurvivalInstincts:IsCastable() and (Player:HealthPercentage() < 30) then
