@@ -165,6 +165,7 @@ local function MyRoutine()
 		DanceofChijiBuff = Spell(438443),
 		InvokeChiJiBuff = Spell(343820),
 		FortifyingBrew = Spell(115203),
+		FortifyingBrewBuff = Spell(120954),
 		ChiBurst = Spell(123986),
 		AspectOfHarmony = Spell(450508),
 		AspectOfHarmonyBuff = MultiSpell(450521, 450531),
@@ -186,6 +187,7 @@ local function MyRoutine()
 		CorruptedCoating = Spell(442285),
 		Putridwaters1 = Spell(274911),
 		Putridwaters2 = Spell(275014),
+		MendingProliferation = Spell(274909),
 
 
 
@@ -355,6 +357,17 @@ local function MyRoutine()
 	, "UNIT_DIED"
 	)
 
+	local function RangedTargetCount(range)
+		local EnemiesTable = Player:GetEnemiesInRange(range)
+		local TarCount = 1
+		for _, Enemy in pairs(EnemiesTable) do
+			if Enemy:GUID() ~= Target:GUID() and ((not Enemy:HasPvEImmunity() and Enemy:AffectingCombat()) or Enemy:IsDummy()) then
+				TarCount = TarCount + 1
+			end
+		end
+		return TarCount
+	end
+
 
 	
 	--- ===== Rotation Variables =====
@@ -369,11 +382,15 @@ local function MyRoutine()
 	end;
 
 	local function SoothingMistFunction(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 75
+		return UnitTarget:HealthPercentageFlat() <= 75
 	end;
 
 	local function VivifyFunction(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 50
+		return UnitTarget:HealthPercentage() <= 75
+	end;
+
+	local function VivifyFunction2(UnitTarget)
+		return UnitTarget:HealthPercentage() <= 75
 	end;
 
 	local function LifeCocoonFunction(UnitTarget)
@@ -381,6 +398,10 @@ local function MyRoutine()
 	end;
 
 	local function EnvelopingMistFunction(UnitTarget)
+		return UnitTarget:HealthPercentage() <= 55 and UnitTarget:BuffDown(S.EnvelopingMist)
+	end;
+
+	local function EnvelopingMistFunction2(UnitTarget)
 		return UnitTarget:HealthPercentage() <= 65 and UnitTarget:BuffDown(S.EnvelopingMist)
 	end;
 
@@ -421,16 +442,20 @@ local function MyRoutine()
 
 		if Player:IsChanneling(S.ManaTea) then
 		
-			if HealingEngine:LowestHP(true, 40) <= 65 and not Player:IsInRaidArea() or Player:ManaPercentage() >= 99 then
+			if HealingEngine:LowestHP(true, 40) <= 60 and not Player:IsInRaidArea() or Player:ManaPercentage() >= 98 then
 				MainAddon.SetTopColor(1, "Stop Casting")
 			end
 		
 		end
 
 		if Player:IsChanneling(S.SoothingMist) then
-			if Focus:HealthPercentage() > 75 then
+			if Focus:HealthPercentageFlat() > 75 then
 				if MainAddon.SetTopColor(1, "Stop Casting") then end
 			end
+		end
+
+		if Player:IsChanneling(S.CelestialConduit) and HealingEngine:LowestHP(true, 40) <= 30 then
+			MainAddon.SetTopColor(1, "Stop Casting")
 		end
 
 		if Player:IsChanneling(S.ManaTea) or 
@@ -440,40 +465,104 @@ local function MyRoutine()
 			return
 		end
 
-		if Player:IsChanneling(S.CracklingJadeLightning) then
-			return
+		-- if Player:IsChanneling(S.CracklingJadeLightning) then
+		-- 	return
+		-- end
+
+		if S.ExpelHarm:IsCastable() and Player:HealthPercentageFlat() <= 55 then
+			if Cast(S.ExpelHarm, Player) then return end
 		end
 
 		if S.LifeCocoon:CooldownUp() and Player:AffectingCombat() then
 			if CastCycleAlly(S.LifeCocoon, MEMBERS, LifeCocoonFunction) then return "" end
 		end
 
-		if S.ExpelHarm:IsCastable() and Player:HealthPercentageFlat() <= 50 and not Player:IsChanneling(S.SoothingMist) then
-			if Cast(S.ExpelHarm, Player) then return end
+		if Player:BuffDown(S.FortifyingBrewBuff) and Player:BuffDown(S.DiffuseMagic) and Player:HealthPercentageFlat() <= 30 then
+			if S.FortifyingBrew:IsCastable() then
+				if Cast(S.FortifyingBrew) then return end
+			end
+
+			if S.DiffuseMagic:IsCastable() then
+				if Cast(S.DiffuseMagic) then return end
+			end
 		end
 
-		-- if S.FortifyingBrew:IsCastable() and Player:HealthPercentageFlat() <= 25 then
-		-- 	if Cast(S.FortifyingBrew) then return end
-		-- end
-
-		if S.Revival:IsCastable() and not MW.Chiji.Active and (HealingEngine:MembersUnderPercentage(55, nil, 40) >= 4) then
+		if S.Revival:IsCastable() and (HealingEngine:MembersUnderPercentage(55, nil, 40) >= 4) then
 			if Cast(Spell(115310)) then return end
 		end
 
-		if HealingEngine:MembersUnderPercentage(75, nil, 40) >= 3 and Player:BuffDown(S.Yulonbaby) and not MW.Chiji.Active then
-
-			if S.SheilunsGift:IsCastable() and HealingEngine:LowestHP(true, 40) >= 35 and not Player:IsMoving() and S.SheilunsGift:Count() >= 8 then
-				if MainAddon.CastCycleAlly(S.SheilunsGift, MEMBERS, LowestTargetFunction) then return end
-			end
-
-			if S.CracklingJadeLightning:IsCastable() and not Player:PrevGCD(1,S.CracklingJadeLightning) and MainAddon.TargetIsValid() and not Player:IsMoving() and Target:IsSpellInRange(S.CracklingJadeLightning) and Player:BuffUp(S.JadefireTeachingBuff) and Player:BuffUp(S.JadeEmpowerment) and not Player:PrevGCD(1,S.CracklingJadeLightning) then
-				if Cast(S.CracklingJadeLightning) then return end
-			end
-	
+		if S.JadefireStomp:IsReady() and Player:AffectingCombat() and Target:IsInMeleeRange(20) and ((Player:BuffRemains(S.JadefireTeachingBuff) <= 3 and S.JadefireTeaching:IsAvailable()) or Player:BuffRemains(S.JadefireStomp) <= 3 or (Player:BuffDown(S.AwakenedFaelineBuff) and S.AwakenedFaeline:IsAvailable())) then
+			if Cast(S.JadefireStomp) then return end
 		end
 
-		if Player:BuffDown(S.Yulonbaby) and not MW.Chiji.Active and 
-			(HealingEngine:MembersUnderPercentage(65, nil, 40) >= 4) then
+		if S.RenewingMist:IsCastable()  then
+			if CastCycleAlly(S.RenewingMist, MEMBERS, RenewingMistFunction) then return "Renewing2" end
+		end
+		
+		if MainAddon.TargetIsValid() and MW.Chiji.Active then
+
+			if S.EnvelopingMist:IsCastable() and (Player:BuffStack(S.InvokeChiJiBuff) >= 2) then
+				if MainAddon.CastCycleAlly(S.EnvelopingMist, MEMBERS, EnvelopingMistFunction2) then return "" end
+			end
+
+			if S.TouchofDeath:IsReady() and Target:IsInMeleeRange(5) and (Target:Health() <= Player:MaxHealth() or Target:HealthPercentage() <= 15 and S.ImprovedTouchofDeath:IsAvailable()) then
+				if Cast(S.TouchofDeath) then return end
+			end
+
+
+			if S.RisingSunKick:IsReady() and Target:IsInMeleeRange(5) then
+				if S.ThunderFocusTea:IsCastable() and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffStack(S.JadeEmpowerment) < 2 and Player:BuffDown(S.SecretInfusionCritBuff) and Player:BuffDown(S.SecretInfusionHasteBuff) and Player:BuffDown(S.SecretInfusionMasteryBuff) and Player:BuffDown(S.SecretInfusionVersBuff) then
+					if Cast(S.ThunderFocusTea) then return end
+				end
+			end
+			
+			-- rising_sun_kick,if=talent.secret_infusion&buff.thunder_focus_tea.up
+			if S.RisingSunKick:IsReady() and Target:IsInMeleeRange(5) and S.SecretInfusion:IsAvailable() and Player:BuffUp(S.ThunderFocusTea) then
+				if Cast(S.RisingSunKick) then return end
+			end
+			
+			-- spinning_crane_kick,if=buff.dance_of_chiji.up
+			if Player:BuffUp(S.DanceofChijiBuff) and Target:IsInMeleeRange(8) then
+				if S.SpinningCraneKick:IsReady() then
+					if Cast(S.SpinningCraneKick) then return end
+				end
+			end
+
+			-- chi_burst,if=active_enemies>=2
+
+			-- crackling_jade_lightning,if=buff.jade_empowerment.up
+			
+			-- jadefire_stomp,if=active_enemies>=4&active_enemies<=10
+			
+ 
+			-- spinning_crane_kick,if=active_enemies>=4
+			if EnemiesCount5 >= 4 and Target:IsInMeleeRange(8) then
+				if S.SpinningCraneKick:IsReady() then
+					if Cast(S.SpinningCraneKick) then return end
+				end
+			end
+
+			-- jadefire_stomp,if=buff.jadefire_stomp.down
+			
+
+			-- rising_sun_kick,if=active_enemies<=2
+			if S.RisingSunKick:IsCastable() and Target:IsInMeleeRange(5) and EnemiesCount5 <= 2 then
+				if Cast(S.RisingSunKick) then return end
+			end
+			
+			-- blackout_kick,if=buff.teachings_of_the_monastery.stack>=3&(active_enemies>=2|cooldown.rising_sun_kick.remains>gcd)
+			if S.BlackoutKick:IsCastable() and Target:IsInMeleeRange(5) and Player:BuffStack(S.TeachingsoftheMonasteryBuff) >= 3 and (EnemiesCount5 >= 2 or S.RisingSunKick:CooldownRemains() > Player:GCD() ) then
+				if Cast(S.BlackoutKick) then return end
+			end
+			
+			-- tiger_palm
+			if S.TigerPalm:IsCastable() and Target:IsInMeleeRange(5) then
+				if Cast(S.TigerPalm) then return end
+			end
+			
+		end
+
+		if (HealingEngine:MembersUnderPercentage(75, nil, 40) >= 4) then
 
 			if S.InvokeChiJiTheRedCrane:IsCastable() then
 				if Cast(S.InvokeChiJiTheRedCrane) then return end
@@ -483,8 +572,20 @@ local function MyRoutine()
 				if Cast(S.CelestialConduit) then return end
 			end
 		end
-	
-		if S.EnvelopingMist:IsCastable() and Player:BuffDown(S.ThunderFocusTea) and (Player:BuffStack(S.InvokeChiJiBuff) >= 3 or Player:BuffUp(S.StrengthoftheBlackOxBuff)) then
+		
+		if (HealingEngine:MembersUnderPercentage(85, nil, 40) >= 3) then
+
+			if S.CracklingJadeLightning:IsCastable() and not Player:PrevGCD(1,S.SheilunsGift) and RangedTargetCount(40) >= 2 and MainAddon.TargetIsValid() and not Player:IsMoving() and Target:IsSpellInRange(S.CracklingJadeLightning) and Player:BuffUp(S.JadefireTeachingBuff) and Player:BuffUp(S.JadeEmpowerment) and not Player:PrevGCD(1,S.CracklingJadeLightning) then
+				if Cast(S.CracklingJadeLightning) then return end
+			end
+
+			if S.SheilunsGift:IsCastable() and HealingEngine:LowestHP(true, 40) >= 35 and not Player:IsMoving() and S.SheilunsGift:Count() >= 8 then
+				if MainAddon.CastCycleAlly(S.SheilunsGift, MEMBERS, LowestTargetFunction) then return end
+			end
+
+		end
+
+		if S.EnvelopingMist:IsCastable() and (Player:BuffStack(S.InvokeChiJiBuff) >= 2 or Player:BuffUp(S.StrengthoftheBlackOxBuff)) then
 			if MainAddon.CastCycleAlly(S.EnvelopingMist, MEMBERS, EnvelopingMistFunction) then return "" end
 		end
 
@@ -492,35 +593,27 @@ local function MyRoutine()
 			if CastCycleAlly(S.Vivify, MEMBERS, VivifyFunction) then return end
 		end
 
-		if S.ManaTea:IsCastable() and (HealingEngine:LowestHP(true, 40) > 75 or not Player:IsInParty()) and S.ManaTea:Count() >= 10 and Player:ManaPercentage() <= 75 then
+		if S.Vivify:IsCastable() and Player:IsInRaidArea() and Player:BuffUp(S.VivaciousVivificationBuff) then
+			if CastCycleAlly(S.Vivify, MEMBERS, VivifyFunction2) then return end
+		end
+
+		if S.ManaTea:IsCastable() and (Player:BuffDown(S.Yulonbaby) and not MW.Chiji.Active or not Target:IsInMeleeRange(5)) and (HealingEngine:LowestHP(true, 40) > 65 or not Player:IsInParty()) and S.ManaTea:Count() >= 10 and Player:ManaPercentage() <= 55 then
 			if Cast(S.ManaTea) then return end
 		end
 
-		if S.RenewingMist:IsCastable()  then
-			if CastCycleAlly(S.RenewingMist, MEMBERS, RenewingMistFunction) then return "Renewing2" end
-		end
-
-	
 		if MainAddon.TargetIsValid() then
 
 			if S.TouchofDeath:IsReady() and Target:IsInMeleeRange(5) and (Target:Health() <= Player:MaxHealth() or Target:HealthPercentage() <= 15 and S.ImprovedTouchofDeath:IsAvailable()) then
 				if Cast(S.TouchofDeath) then return end
 			end
 
-		
-			if S.JadefireStomp:IsReady() and Target:IsInMeleeRange(20) and ((Player:BuffRemains(S.JadefireTeachingBuff) <= 3 and S.JadefireTeaching:IsAvailable()) or Player:BuffRemains(S.JadefireStomp) <= 3 or (Player:BuffDown(S.AwakenedFaelineBuff) and S.AwakenedFaeline:IsAvailable())) then
-				if Cast(S.JadefireStomp) then return end
-			end
-
 
 			if S.RisingSunKick:IsReady() and Target:IsInMeleeRange(5) then
-				if S.ThunderFocusTea:IsCastable() and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffDown(S.SecretInfusionCritBuff) and Player:BuffDown(S.SecretInfusionHasteBuff) and Player:BuffDown(S.SecretInfusionMasteryBuff) and Player:BuffDown(S.SecretInfusionVersBuff) then
+				if S.ThunderFocusTea:IsCastable() and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffStack(S.JadeEmpowerment) < 2 and Player:BuffDown(S.SecretInfusionCritBuff) and Player:BuffDown(S.SecretInfusionHasteBuff) and Player:BuffDown(S.SecretInfusionMasteryBuff) and Player:BuffDown(S.SecretInfusionVersBuff) then
 					if Cast(S.ThunderFocusTea) then return end
 				end
 			end
 			
-
-
 			-- rising_sun_kick,if=talent.secret_infusion&buff.thunder_focus_tea.up
 			if S.RisingSunKick:IsReady() and Target:IsInMeleeRange(5) and S.SecretInfusion:IsAvailable() and Player:BuffUp(S.ThunderFocusTea) then
 				if Cast(S.RisingSunKick) then return end
@@ -539,14 +632,13 @@ local function MyRoutine()
 			end
 
 			-- crackling_jade_lightning,if=buff.jade_empowerment.up
-			if S.CracklingJadeLightning:IsReady() and not Player:PrevGCD(1,S.CracklingJadeLightning) and not Player:IsMoving() and Target:IsSpellInRange(S.CracklingJadeLightning) and Player:BuffStack(S.JadeEmpowerment) == 2 then
-				if Cast(S.CracklingJadeLightning) then return end
+			if S.ThunderFocusTea:CooldownRemains() <= 8 then
+				if S.CracklingJadeLightning:IsCastable() and not Player:IsMoving() and Target:IsSpellInRange(S.CracklingJadeLightning) and Player:BuffStack(S.JadeEmpowerment) == 2 then
+					if Cast(S.CracklingJadeLightning) then return end
+				end
 			end
-
 			-- jadefire_stomp,if=active_enemies>=4&active_enemies<=10
-			-- if S.JadefireStomp:IsReady() and Target:IsInMeleeRange(12) and EnemiesCount5 >= 2 and EnemiesCount5 <= 10 then
-			-- 	if Cast(S.JadefireStomp) then return end
-			-- end
+			
  
 			-- spinning_crane_kick,if=active_enemies>=4
 			if EnemiesCount5 >= 4 and Target:IsInMeleeRange(8) then
@@ -556,9 +648,7 @@ local function MyRoutine()
 			end
 
 			-- jadefire_stomp,if=buff.jadefire_stomp.down
-			-- if S.JadefireStomp:IsReady() and Target:IsInMeleeRange(12) and Player:BuffDown(S.JadefireStomp) then
-			-- 	if Cast(S.JadefireStomp) then return end
-			-- end
+			
 
 			-- rising_sun_kick,if=active_enemies<=2
 			if S.RisingSunKick:IsCastable() and Target:IsInMeleeRange(5) and EnemiesCount5 <= 2 then
@@ -574,12 +664,11 @@ local function MyRoutine()
 			if S.TigerPalm:IsCastable() and Target:IsInMeleeRange(5) then
 				if Cast(S.TigerPalm) then return end
 			end
-	
 			
 		end
 
 		-- Soothing Mist			
-		if S.EnvelopingMist:CooldownUp() and Focus:BuffDown(S.EnvelopingMist, nil, true) and Player:IsChanneling(S.SoothingMist) and (Focus:HealthPercentage() <= 55) then
+		if S.EnvelopingMist:CooldownUp() and Focus:BuffDown(S.EnvelopingMist, nil, true) and Player:IsChanneling(S.SoothingMist) and (Focus:HealthPercentage() <= 45) then
 			MainAddon.SetTopTexture(6, "Soothing Mist and Enveloping Mist")
 			return 
 		end
@@ -591,9 +680,8 @@ local function MyRoutine()
 		
 		if S.SoothingMist:IsCastable() and not Player:IsChanneling(S.SoothingMist) then
 			if CastCycleAlly(S.SoothingMist, MEMBERS, SoothingMistFunction) then return end
-		end				
+		end	
 		
-	
 	end
 
 
@@ -601,52 +689,52 @@ local function MyRoutine()
 	MainAddon.SetCustomAPL(Author, SpecID, MainRotation, Init)
 
 	local WWOldIsCastable
- WWOldIsCastable = HL.AddCoreOverride("Spell.IsCastable",
- function(self, ignoreSettings, ignoreMovement, bypassRecovery, ignoreChannel)		
-				if self == S.EnvelopingMist then
-					if Player:IsMoving() and (Player:BuffUp(S.ThunderFocusTea) or Player:BuffStack(S.InvokeChiJiBuff) == 3) then
-						ignoreMovement = true
-					end
-				end
+	WWOldIsCastable = HL.AddCoreOverride("Spell.IsCastable",
+	function(self, ignoreSettings, ignoreMovement, bypassRecovery, ignoreChannel)		
+		if self == S.EnvelopingMist then
+			if Player:IsMoving() and (Player:BuffUp(S.ThunderFocusTea) or Player:BuffStack(S.InvokeChiJiBuff) == 3) then
+				ignoreMovement = true
+			end
+		end
 
-				if self == S.CracklingJadeLightning then
-					if Player:IsChanneling(self) then
-						return false, "Casting"
-					end
-				end;
+		if self == S.CracklingJadeLightning then
+			if Player:IsChanneling(self) then
+				return false, "Casting"
+			end
+		end;
 
-				if self == S.Vivify then
-					if Player:IsCasting(self) then
-						return false, "Casting"
-					end
-				end;
+		if self == S.Vivify then
+			if Player:IsCasting(self) then
+				return false, "Casting"
+			end
+		end;
 
-				if self == S.EnvelopingMist then
-					if Player:IsCasting(self) then
-						return false, "Casting"
-					end
-				end;
+		if self == S.EnvelopingMist then
+			if Player:IsCasting(self) then
+				return false, "Casting"
+			end
+		end;
 
 
-				if self == S.SheilunsGift then
-					if Player:IsCasting(self) then
-						return false, "Casting"
-					end
-				end;
+		if self == S.SheilunsGift then
+			if Player:IsCasting(self) then
+				return false, "Casting"
+			end
+		end;
 
-				-- if self == S.Vivify and Player:IsChanneling(S.SoothingMist) then
-				-- 	ignoreChannel = true
-				-- end
+		-- if self == S.Vivify and Player:IsChanneling(S.SoothingMist) then
+		-- 	ignoreChannel = true
+		-- end
 
-				-- if self == S.EnvelopingMist and Player:IsChanneling(S.SoothingMist) then
-				-- 	ignoreChannel = true
-				-- end
+		-- if self == S.EnvelopingMist and Player:IsChanneling(S.SoothingMist) then
+		-- 	ignoreChannel = true
+		-- end
 				
 
- local BaseCheck, Reason = WWOldIsCastable(self, ignoreSettings, ignoreMovement, bypassRecovery, ignoreChannel)
- return BaseCheck, Reason
- end
- , 270);
+		local BaseCheck, Reason = WWOldIsCastable(self, ignoreSettings, ignoreMovement, bypassRecovery, ignoreChannel)
+		return BaseCheck, Reason
+	end
+	, 270);
 
 end
 
