@@ -254,15 +254,16 @@ local function MyRoutine()
 		-- if S.CelestialBrew:IsCastable() and (Player:BuffDown(S.BlackoutComboBuff) and Player:IncomingDamageTaken(1999) > (UnitHealthMax("player") * 0.1 + Player:StaggerLastTickDamage(4)) and Player:BuffStack(S.ElusiveBrawlerBuff) < 2) then
 		--   if Cast(S.CelestialBrew, nil, Settings.Brewmaster.DisplayStyle.CelestialBrew) then return "Celestial Brew"; end
 		-- end
-		if (Player:DebuffUp(S.HeavyStagger) or Player:DebuffUp(S.ModerateStagger)) and Player:BuffDown(S.CelestialBrew) and Player:HealthPercentage() <= 80 then
-			if S.ExpelHarm:IsReady() and (S.ExpelHarm:Count() > 4) then
-				if Cast(S.ExpelHarm) then return end
-			elseif S.PurifyingBrew:IsCastable() then
+		if (Player:DebuffUp(S.HeavyStagger) or Player:DebuffUp(S.ModerateStagger)) and Player:BuffDown(S.CelestialBrew) and Player:HealthPercentage() <= 85 then
+			
+			if S.PurifyingBrew:IsCastable() then
 				if Cast(S.PurifyingBrew) then return "Purifying Brew"; end
 			elseif S.CelestialBrew:IsCastable() and S.PurifyingBrew:Charges() == 0 then
 				if Cast(S.CelestialBrew) then return "Celestial Brew"; end
 			elseif S.BlackOxBrew:IsCastable() and S.PurifyingBrew:Charges() == 0 then
 				if Cast(S.BlackOxBrew) then return "Black Ox Brew"; end
+			elseif S.ExpelHarm:IsReady() and (S.ExpelHarm:Count() > 4) then
+				if Cast(S.ExpelHarm) then return end
 			end
 		end
 
