@@ -390,7 +390,11 @@ local function MyRoutine()
 	end;
 
 	local function HardCastEnvelopingMistFunction(UnitTarget)
-		return UnitTarget:HealthPercentage() <= 55 and UnitTarget:BuffDown(S.EnvelopingMist) and Player:BuffDown(S.LifeCocoon)
+		return UnitTarget:HealthPercentage() <= 65 and UnitTarget:BuffDown(S.EnvelopingMist) and Player:BuffDown(S.LifeCocoon)
+	end;
+
+	local function HardCastEnvelopingMistFunction2(UnitTarget)
+		return UnitTarget:HealthPercentage() <= 75 and UnitTarget:BuffDown(S.EnvelopingMist) and Player:BuffDown(S.LifeCocoon)
 	end;
 
 	local function RenewingMistFunction(UnitTarget)
@@ -475,7 +479,6 @@ local function MyRoutine()
 			if Cast(Spell(115310)) then return end
 		end
 
-
 		if S.CracklingJadeLightning:IsCastable() and MainAddon.TargetIsValid() and not Player:IsMoving() and Target:IsSpellInRange(S.CracklingJadeLightning) and Player:BuffUp(S.JadefireTeachingBuff) and Player:BuffUp(S.JadeEmpowerment) and not Player:PrevGCD(1,S.CracklingJadeLightning) then
 			if Cast(S.CracklingJadeLightning) then return end
 		end
@@ -505,7 +508,6 @@ local function MyRoutine()
 
 		end
 
-
 		if S.ExpelHarm:CooldownUp() and Player:HealthPercentageFlat() <= 50 and not Player:IsChanneling(S.SoothingMist) then
 			if Cast(S.ExpelHarm, Player) then return end
 		end
@@ -524,6 +526,14 @@ local function MyRoutine()
 					if Cast(S.ThunderFocusTea) then return end
 				end
 				if Cast(S.RisingSunKick) then return end
+			end
+
+			if S.Vivify:IsCastable() and Player:BuffUp(S.VivaciousVivificationBuff) then
+				if CastCycleAlly(S.Vivify, MEMBERS, VivifyFunction) then return end
+			end
+
+			if S.EnvelopingMist:IsCastable() and Player:BuffUp(S.Yulonbaby) then
+				if CastCycleAlly(S.EnvelopingMist, MEMBERS, HardCastEnvelopingMistFunction2) then return end
 			end
 
 			if S.EnvelopingMist:IsCastable() and Player:BuffUp(S.StrengthoftheBlackOxBuff) then
