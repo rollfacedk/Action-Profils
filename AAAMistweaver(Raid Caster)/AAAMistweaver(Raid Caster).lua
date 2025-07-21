@@ -480,7 +480,7 @@ local function MyRoutine()
 			if Cast(S.CracklingJadeLightning) then return end
 		end
 
-		if (HealingEngine:MembersUnderPercentage(85, nil, 40) >= 4 and Player:AffectingCombat()) then
+		if (HealingEngine:MembersUnderPercentage(85, nil, 40) >= 3 and Player:AffectingCombat()) then
 
 			if S.SheilunsGift:CooldownUp() and HealingEngine:LowestHP(true, 40) >= 25 and not Player:IsMoving() and S.SheilunsGift:Count() >= 8 then
 				if MainAddon.CastTargetIfAlly(S.SheilunsGift, MEMBERS,"min", LowestTargetFunction) then return end
