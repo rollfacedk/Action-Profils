@@ -520,16 +520,16 @@ local function MyRoutine()
 			if S.RenewingMist:IsCastable() then
 				if CastCycleAlly(S.RenewingMist, MEMBERS, RenewingMistFunction) then return "Renewing3" end
 			end
+			
+			if S.Vivify:IsCastable() and Player:BuffUp(S.VivaciousVivificationBuff) then
+				if CastCycleAlly(S.Vivify, MEMBERS, VivifyFunction) then return end
+			end
 
 			if S.RisingSunKick:IsCastable() and Player:AffectingCombat() then
 				if S.ThunderFocusTea:IsCastable() and Player:AffectingCombat() and Player:BuffDown(S.ThunderFocusTea) and Player:BuffStack(S.JadeEmpowerment) < 2 and Player:BuffDown(S.SecretInfusionCritBuff) and Player:BuffDown(S.SecretInfusionHasteBuff) and Player:BuffDown(S.SecretInfusionMasteryBuff) and Player:BuffDown(S.SecretInfusionVersBuff) then
 					if Cast(S.ThunderFocusTea) then return end
 				end
 				if Cast(S.RisingSunKick) then return end
-			end
-
-			if S.Vivify:IsCastable() and Player:BuffUp(S.VivaciousVivificationBuff) then
-				if CastCycleAlly(S.Vivify, MEMBERS, VivifyFunction) then return end
 			end
 
 			if S.EnvelopingMist:IsCastable() and Player:BuffUp(S.Yulonbaby) then
