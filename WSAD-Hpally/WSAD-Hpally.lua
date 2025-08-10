@@ -247,7 +247,10 @@ local function MyRoutine()
 
 		DebuffsNeedsHealing = MultiSpell(443969, 1218308),
 		HolyArmament = Spell(432459),
-		
+		RiteofAdjuration                     = Spell(433583),
+  		RiteofSanctification                 = Spell(433568),
+		RiteofAdjurationBuff                 = Spell(433584),
+		RiteofSanctificationBuff             = Spell(433550),
 
 	
 	}
@@ -256,6 +259,8 @@ local function MyRoutine()
 	local OnUseExcludes = {
 	
 	}
+
+
 	
 	local function RollyfaceTargetIsValid()
 		return (Player:AffectingCombat() and Target:Exists() and 
@@ -331,8 +336,8 @@ local function MyRoutine()
 		return UnitTarget:HealthPercentageFlat() <= 20 and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:BuffDown(S.BlessingOfSacrifice) 
 	end;
 
-	local function HolyShockFunc(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 85)
+	local function TEST(UnitTarget)
+		return (UnitTarget:HealthPercentage() <= 100)
 	end;
 
 	local function MustHeal(UnitTarget)
@@ -359,13 +364,6 @@ local function MyRoutine()
 		return UnitTarget:HealthPercentage() <= 100 and UnitTarget:BuffDown(S.BeaconOfLightBuff) and UnitTarget:BuffDown(S.BeaconOfFaithBuff)
 	end;
 
-	-- S.BlessingOfSummer.offGCD = true
-	-- S.BlessingOfAutumn.offGCD = true
-	-- S.BlessingOfSpring.offGCD = true
-	-- S.BlessingOfWinter.offGCD = true
-	-- S.AvengingWrath.offGCD = true
-	-- S.DevotionAura.offGCD = true
-	-- S.LayonHands.offGCD = true
 
 	local function Trinkets()
 		if Player:BuffRemains(S.AvengingWrath) > 12 or Player:BuffRemains(S.AvengingCrusader) > 8 then
@@ -381,27 +379,16 @@ local function MyRoutine()
 	end
 
 	local function MainRotation()
+		if not Player:AffectingCombat() then
+			if S.RiteofAdjuration:IsCastable() and Player:BuffDown(S.RiteofAdjurationBuff) then
+				MainAddon.SetTopColor(1, "Rite of Adjuration/Sanctification")
+			end
 
-		-- if Player:IsFriend(Target) then
-		-- 	if S.WordOfGlory:IsCastable() and Focus:HealthPercentage() < 100 then
-		-- 		if CastAlly(S.WordOfGlory, Focus) then return end
-		-- 	end
-		-- 	if not S.WordOfGlory:IsCastable() then
-		-- 		if S.HolyPrism:IsCastable() and Focus:HealthPercentage() < 100 then
-		-- 			if CastAlly(S.HolyPrism, Focus) then return end
-		-- 		end
-		-- 		if S.DivineToll:IsCastable() and Focus:HealthPercentage() < 100 then
-		-- 			if CastAlly(S.DivineToll, Focus) then return end
-		-- 		end
-		-- 	end
-		-- 	if S.HolyShock:IsCastable() and Focus:HealthPercentage() < 100 then
-		-- 		if CastAlly(S.HolyShock, Focus) then return end
-		-- 	end
-		-- 	if S.FlashOfLight:IsCastable() and Focus:HealthPercentage() < 100 then
-		-- 		if CastAlly(S.FlashOfLight, Focus) then return end
-		-- 	end
-		-- end
-
+			if S.RiteofSanctification:IsCastable() and Player:BuffDown(S.RiteofSanctificationBuff) then
+				MainAddon.SetTopColor(1, "Rite of Adjuration/Sanctification")
+			end
+		end
+		
 		if Player:AffectingCombat() and (Target:IsDeadOrGhost() and not Target:IsAPlayer()) then
 			MainAddon.SetTopColor(1, "Target Enemy")
 		end
@@ -486,11 +473,16 @@ local function MyRoutine()
 	
 		end
 
+
 		-- Healing
 		if Player:IsInRaid() and HealingEngine:MembersUnderPercentage(85, nil, 40) >= 5  then
 			if S.LightOfDawn:IsCastable() then
 				if Cast(S.LightOfDawn) then return end
 			end
+		end
+
+		if S.FlashOfLight:IsCastable() and Player:BuffUp(S.InfusionOfLightBuff) and ((Player:HolyPower() <= 4 and S.TowerOfRadiance:IsAvailable()) or not S.TowerOfRadiance:IsAvailable())  then
+			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, MustHeal) then return end
 		end
 
 		if (Player:HolyPower() <= 2 and Player:BuffUp(S.RisingSunlightBuff)) then
@@ -501,10 +493,6 @@ local function MyRoutine()
 
 		if S.HolyLight:IsCastable() and Player:BuffUp(S.DivineFavorBuff) and Player:BuffUp(S.InfusionOfLightBuff) and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable()) then
 			if MainAddon.CastCycleAlly(S.HolyLight, MEMBERS, MustHeal) then return end
-		end
-	
-		if S.FlashOfLight:IsCastable() and Player:BuffUp(S.InfusionOfLightBuff) and ((Player:HolyPower() <= 4 and S.TowerOfRadiance:IsAvailable()) or not S.TowerOfRadiance:IsAvailable())  then
-			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, MustHeal) then return end
 		end
 
 		if (S.WordOfGlory:IsCastable()) then
@@ -527,7 +515,7 @@ local function MyRoutine()
 
 		if (Player:HolyPower() <= 4) then
 			if S.HolyShock:IsCastable() then
-				if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, HolyShockFunc) then return end
+				if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, MustHeal) then return end
 			end 
 		end
 
@@ -585,6 +573,7 @@ local function MyRoutine()
 		end
 	
 		if S.FlashOfLight:IsCastable() and Player:BuffDown(S.InfusionOfLightBuff) and not Player:IsMoving() and ((Player:HolyPower() <= 4 and S.TowerOfRadiance:IsAvailable()) or (not S.TowerOfRadiance:IsAvailable() and not Target:IsInMeleeRange(5)))  then
+			if Player:IsCasting() then return end
 			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, MustHeal) then return end
 		end
 
@@ -598,20 +587,27 @@ local function MyRoutine()
 	MainAddon.SetCustomAPL(Author, SpecID, MainRotation, Init)
 	local IsCastable;
 	IsCastable = HL.AddCoreOverride("Spell.IsCastable", 
-		function(self, ignoreSettings, ignoreMovement, bypassRecovery, ignoreChannel)
-		
-		
-
-
-		if self == S.FlashOfLight or self == S.HolyLight then
-			if Player:IsCasting(self) then
-				return false
-			end
-		end;
-
-
-	
-
+		function(self, ignoreSettings, ignoreMovement, bypassRecovery, ignoreChannel)		
+			if self == S.FlashOfLight then
+				if Player:IsCasting(S.FlashOfLight) then
+					return false, "Already casting it."
+				end
+			end;
+			if self == S.HolyLight then
+				if Player:IsCasting(S.HolyLight) then
+					return false, "Already casting it."
+				end
+			end;
+			if self == S.RiteofAdjuration then
+				if Player:IsCasting(S.RiteofAdjuration) then
+					return false, "Already casting it."
+				end
+			end;
+			if self == S.RiteofSanctification then
+				if Player:IsCasting(S.RiteofSanctification) then
+					return false, "Already casting it."
+				end
+			end;
 		local BaseCheck, Reason = IsCastable(self, ignoreSettings, ignoreMovement, bypassRecovery, ignoreChannel)
 		return BaseCheck, Reason
 	end, 65)
