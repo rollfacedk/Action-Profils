@@ -1,5 +1,5 @@
 local function MyRoutine()
-	local Author = 'WSAD - Holy Paladin'
+	local Author = 'Rollface - Holy Paladin 11.2'
 	local SpecID = 65 --Unholy  --https://wowpedia.fandom.com/wiki/API_GetSpecializationInfo
 
 	--HR HEADER
@@ -332,11 +332,19 @@ local function MyRoutine()
 	end;
 
 	local function HolyShockFunc(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 90)
+		return (UnitTarget:HealthPercentage() <= 85)
 	end;
 
 	local function MustHeal(UnitTarget)
-		return (UnitTarget:HealthPercentage() <= 55)
+		return (UnitTarget:HealthPercentage() <= 75)
+	end;
+
+	local function MustHeal2(UnitTarget)
+		return (UnitTarget:HealthPercentageFlat() <= 50)
+	end;
+
+	local function MustHeal3(UnitTarget)
+		return (UnitTarget:HealthPercentageFlat() <= 65)
 	end;
 
 	local function BlessingOfSacrificeFunc(UnitTarget)
@@ -398,7 +406,6 @@ local function MyRoutine()
 			MainAddon.SetTopColor(1, "Target Enemy")
 		end
 		
-
 		TANKS, HEALERS, MEMBERS, DPS, PRIORITY = HealingEngine:Fetch()
 
 		if S.DevotionAura:IsCastable() and Player:BuffDown(S.DevotionAura) then
@@ -437,16 +444,6 @@ local function MyRoutine()
 
 		end
 
-		-- Sacred weapons
-		if Player:AffectingCombat() and (Player:BuffDown(S.HolyBulwarkBuff) and Player:BuffDown(S.SacredWeaponBuff) or S.HolyBulwark:ChargesFractional() >= 1.8 or S.SacredWeapon:ChargesFractional() >= 1.8)  then
-			if S.HolyBulwark:IsCastable() then
-				if Cast(S.HolyBulwark, Player) then return end
-			end
-			if S.SacredWeapon:IsCastable() then
-				if Cast(S.SacredWeapon, Player) then return end
-			end
-		end
-
 		-- CDS
 		local ShouldReturn = Trinkets(); if ShouldReturn then return ShouldReturn; end
 		if Player:AffectingCombat() and HealingEngine:MembersUnderPercentage(75, nil, 40) >= 4  then
@@ -471,9 +468,9 @@ local function MyRoutine()
 			end
 		end
 
-		if HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3  then	
+		if HealingEngine:MembersUnderPercentage(75, nil, 40) >= 2  then	
 					
-			if S.BeaconOfVirtue:IsCastable() and Player:BuffDown(S.AvengingCrusader) and S.WordOfGlory:IsCastable() then		
+			if S.BeaconOfVirtue:IsCastable() and Player:BuffDown(S.AvengingCrusader) then		
 				if Cast(S.BeaconOfVirtue, Player) then return end
 			end	
 
@@ -481,12 +478,12 @@ local function MyRoutine()
 				if S.HolyPrism:IsReady() then
 					if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
 				end
-			end
-			
+			end	
+
 			if S.DivineToll:IsReady() and Player:HolyPower() < 3 then
-				if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal) then return end
+				if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, LowestHealthTarget) then return end
 			end
-			
+	
 		end
 
 		-- Healing
@@ -496,30 +493,36 @@ local function MyRoutine()
 			end
 		end
 
-		if S.Judgment:IsReady() and S.CrusaderSMight:IsAvailable() and Player:BuffUp(S.InfusionOfLightBuff) and TargetOk() and Target:IsSpellInRange(S.Judgment) and Player:HolyPower() <= 4  then
-			if Cast(S.Judgment) then return end
+		if (Player:HolyPower() <= 2 and Player:BuffUp(S.RisingSunlightBuff)) then
+			if S.HolyShock:IsCastable() then
+				if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, HolyShockFunc) then return end
+			end 
 		end
 
 		if S.HolyLight:IsCastable() and Player:BuffUp(S.DivineFavorBuff) and Player:BuffUp(S.InfusionOfLightBuff) and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable()) then
 			if MainAddon.CastCycleAlly(S.HolyLight, MEMBERS, MustHeal) then return end
 		end
+	
+		if S.FlashOfLight:IsCastable() and Player:BuffUp(S.InfusionOfLightBuff) and ((Player:HolyPower() <= 4 and S.TowerOfRadiance:IsAvailable()) or not S.TowerOfRadiance:IsAvailable())  then
+			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, MustHeal) then return end
+		end
 
 		if (S.WordOfGlory:IsCastable()) then
-			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, MustHeal) then return end
+			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, MustHeal3) then return end
 		end
 
 		if (Player:BuffDown(S.DivinePurposeBuff) or not S.Aurora:IsAvailable()) then
 			if S.HolyPrism:IsReady() then
-				if MainAddon.CastCycleAlly(S.HolyPrism, MEMBERS, MustHeal) then return end
+				if MainAddon.CastCycleAlly(S.HolyPrism, MEMBERS, MustHeal2) then return end
 			end
 
 			if S.BarrierOfFaith:IsReady() then
-				if MainAddon.CastCycleAlly(S.BarrierOfFaith, MEMBERS, MustHeal) then return end
+				if MainAddon.CastCycleAlly(S.BarrierOfFaith, MEMBERS, MustHeal2) then return end
 			end
 		end
 
 		if S.DivineToll:IsReady() then
-			if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal) then return end
+			if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal2) then return end
 		end
 
 		if (Player:HolyPower() <= 4) then
@@ -529,52 +532,60 @@ local function MyRoutine()
 		end
 
 
-		-- 5 holy power spend
-		if Player:HolyPower() == 5 then
-
-			if S.ShieldOfTheRighteous:IsCastable() then
-				if Cast(S.ShieldOfTheRighteous) then return end
+		-- Sacred weapons
+		if Player:AffectingCombat() and (Player:BuffDown(S.HolyBulwarkBuff) and Player:BuffDown(S.SacredWeaponBuff) or S.HolyBulwark:ChargesFractional() >= 1.8 or S.SacredWeapon:ChargesFractional() >= 1.75)  then
+			if S.HolyBulwark:IsCastable() then
+				if Cast(S.HolyBulwark, Player) then return end
 			end
-
+			if S.SacredWeapon:IsCastable() then
+				if Cast(S.SacredWeapon, Player) then return end
+			end
 		end
 
-		-- DPS Rotation
-		-- if S.DivineToll:IsReady() and TargetOk() and Player:HolyPower() < 3 then
-		-- 	if MainAddon.SetTopColor(6, "Divine Toll Enemy") then return end
-		-- end
 
-		-- if S.HolyPrism:IsReady() and TargetOk() and Player:BuffDown(S.DivinePurposeBuff) then
-		-- 	if Cast(S.HolyPrism, Player) then return end
-		-- end
+		if S.Judgment:IsReady() and TargetOk() and Target:IsSpellInRange(S.Judgment) and (Player:HolyPower() <= 3 or Player:HolyPower() <= 4 and Player:BuffDown(S.InfusionOfLightBuff))  then
+			if Cast(S.Judgment) then return end
+		end
+
+		if ((Player:HolyPower() <= 4 or (Player:HolyPower() <= 2 and Player:BuffUp(S.RisingSunlightBuff)))) then 
+			if S.HolyShock:IsReady() and TargetOk() and Target:IsSpellInRange(S.HolyShock) then
+				if MainAddon.SetTopColor(6, "Holy Shock Enemy") then return end
+			end
+		end
 
 		if S.HammerOfWrath:IsReady() and S.Veneration:IsAvailable() and TargetOk() and Target:IsSpellInRange(S.HammerOfWrath) and Player:HolyPower() <= 4  then
 			if Cast(S.HammerOfWrath) then return end
 		end
 
-		if S.Judgment:IsReady() and S.CrusaderSMight:IsAvailable() and Player:BuffDown(S.InfusionOfLightBuff) and TargetOk() and Target:IsSpellInRange(S.Judgment) and Player:HolyPower() <= 4  then
-			if Cast(S.Judgment) then return end
-		end
-
-		if S.CrusaderStrike:IsReady() and TargetOk() and Target:IsInMeleeRange(5) and Player:HolyPower() <= 4  then
-			if Cast(S.CrusaderStrike) then return end
-		end
-
-		if S.Judgment:IsReady() and TargetOk() and Target:IsSpellInRange(S.Judgment) and Player:HolyPower() <= 4  then
-			if Cast(S.Judgment) then return end
+		if S.CrusaderSMight:IsAvailable() then
+			if S.CrusaderStrike:IsReady() and TargetOk() and Target:IsInMeleeRange(5) and Player:HolyPower() <= 4  then
+				if Cast(S.CrusaderStrike) then return end
+			end
 		end
 
 		if S.HammerOfWrath:IsReady() and TargetOk() and Target:IsSpellInRange(S.HammerOfWrath) and Player:HolyPower() <= 4  then
 			if Cast(S.HammerOfWrath) then return end
 		end
 
-		if (Player:HolyPower() <= 4) then 
-			if S.HolyShock:IsReady() and TargetOk() and Target:IsSpellInRange(S.HolyShock) then
-				if MainAddon.SetTopColor(6, "Holy Shock Enemy") then return end
+
+		if S.CrusaderStrike:IsReady() and TargetOk() and Target:IsInMeleeRange(5) and Player:HolyPower() <= 4  then
+			if Cast(S.CrusaderStrike) then return end
+		end
+
+		if Player:HolyPower() == 5 or (Player:BuffUp(S.InfusionOfLightBuff) and S.Judgment:CooldownRemains() <= 1 * Player:GCD() and Player:HolyPower() >= 4) or (Player:BuffUp(S.RisingSunlightBuff) and S.HolyShock:CooldownRemains() <= 1 * Player:GCD() and Player:HolyPower() >= 2) then
+
+			if (S.WordOfGlory:IsCastable()) then
+				if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, MustHeal) then return end
 			end
+	
+			if S.ShieldOfTheRighteous:IsCastable() then
+				if Cast(S.ShieldOfTheRighteous) then return end
+			end
+
 		end
 	
-		if S.FlashOfLight:IsCastable() and not Player:IsMoving() and ((Player:HolyPower() <= 4 and S.TowerOfRadiance:IsAvailable()) or (not S.TowerOfRadiance:IsAvailable() and not Target:IsInMeleeRange(5)))  then
-			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, LowestHealthTarget) then return end
+		if S.FlashOfLight:IsCastable() and Player:BuffDown(S.InfusionOfLightBuff) and not Player:IsMoving() and ((Player:HolyPower() <= 4 and S.TowerOfRadiance:IsAvailable()) or (not S.TowerOfRadiance:IsAvailable() and not Target:IsInMeleeRange(5)))  then
+			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, MustHeal) then return end
 		end
 
 		if S.Consecration:IsCastable() and (Target:BuffDown(S.ConsecrationDebuff) or Player:BuffUp(S.DivineGuidance)) and TargetOk() and Target:IsInMeleeRange(5) then
@@ -590,22 +601,22 @@ local function MyRoutine()
 		function(self, ignoreSettings, ignoreMovement, bypassRecovery, ignoreChannel)
 		
 		
-		if self == S.HolyLight then
+
+
+		if self == S.FlashOfLight or self == S.HolyLight then
 			if Player:IsCasting(self) then
 				return false
 			end
 		end;
 
-		if self == S.FlashOfLight then
-			if Player:IsCasting(self) then
-				return false
-			end
-		end;
+
 	
 
 		local BaseCheck, Reason = IsCastable(self, ignoreSettings, ignoreMovement, bypassRecovery, ignoreChannel)
 		return BaseCheck, Reason
 	end, 65)
+
+	
 end
 
 --Loop to wait for the addon to be ready!
