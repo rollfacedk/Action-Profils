@@ -345,10 +345,6 @@ local function MyRoutine()
 	end;
 
 	local function MustHeal2(UnitTarget)
-		return (UnitTarget:HealthPercentageFlat() <= 50)
-	end;
-
-	local function MustHeal3(UnitTarget)
 		return (UnitTarget:HealthPercentageFlat() <= 65)
 	end;
 
@@ -496,7 +492,7 @@ local function MyRoutine()
 		end
 
 		if (S.WordOfGlory:IsCastable()) then
-			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, MustHeal3) then return end
+			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, MustHeal2) then return end
 		end
 
 		if (Player:BuffDown(S.DivinePurposeBuff) or not S.Aurora:IsAvailable()) then
@@ -510,7 +506,7 @@ local function MyRoutine()
 		end
 
 		if S.DivineToll:IsReady() then
-			if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal2) then return end
+			if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal3) then return end
 		end
 
 		if (Player:HolyPower() <= 4) then
@@ -574,7 +570,7 @@ local function MyRoutine()
 	
 		if S.FlashOfLight:IsCastable() and Player:BuffDown(S.InfusionOfLightBuff) and not Player:IsMoving() and ((Player:HolyPower() <= 4 and S.TowerOfRadiance:IsAvailable()) or (not S.TowerOfRadiance:IsAvailable() and not Target:IsInMeleeRange(5)))  then
 			if Player:IsCasting() then return end
-			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, MustHeal) then return end
+			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, MustHeal2) then return end
 		end
 
 		if S.Consecration:IsCastable() and (Target:BuffDown(S.ConsecrationDebuff) or Player:BuffUp(S.DivineGuidance)) and TargetOk() and Target:IsInMeleeRange(5) then
