@@ -509,12 +509,6 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal3) then return end
 		end
 
-		if (Player:HolyPower() <= 4) then
-			if S.HolyShock:IsCastable() then
-				if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, MustHeal) then return end
-			end 
-		end
-
 
 		-- Sacred weapons
 		if Player:AffectingCombat() and (Player:BuffDown(S.HolyBulwarkBuff) and Player:BuffDown(S.SacredWeaponBuff) or S.HolyBulwark:ChargesFractional() >= 1.8 or S.SacredWeapon:ChargesFractional() >= 1.75)  then
@@ -531,12 +525,18 @@ local function MyRoutine()
 			if Cast(S.Judgment) then return end
 		end
 
-		if ((Player:HolyPower() <= 4 or (Player:HolyPower() <= 2 and Player:BuffUp(S.RisingSunlightBuff)))) then 
-			if S.HolyShock:IsReady() and TargetOk() and Target:IsSpellInRange(S.HolyShock) then
-				if MainAddon.SetTopColor(6, "Holy Shock Enemy") then return end
+		if S.HolyShock:IsCastable() then
+			if (Player:HolyPower() <= 4) and Player:BuffDown(S.RisingSunlightBuff) then
+				if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, MustHeal) then return end	
+			end
+
+			if ((Player:HolyPower() <= 4 or (Player:HolyPower() <= 2 and Player:BuffUp(S.RisingSunlightBuff)))) then 
+				if TargetOk() and Target:IsSpellInRange(S.HolyShock) then
+					if MainAddon.SetTopColor(6, "Holy Shock Enemy") then return end
+				end
 			end
 		end
-
+		
 		if S.HammerOfWrath:IsReady() and S.Veneration:IsAvailable() and TargetOk() and Target:IsSpellInRange(S.HammerOfWrath) and Player:HolyPower() <= 4  then
 			if Cast(S.HammerOfWrath) then return end
 		end
