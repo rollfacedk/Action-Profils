@@ -251,6 +251,7 @@ local function MyRoutine()
   		RiteofSanctification                 = Spell(433568),
 		RiteofAdjurationBuff                 = Spell(433584),
 		RiteofSanctificationBuff             = Spell(433550),
+	
 
 	
 	}
@@ -375,12 +376,12 @@ local function MyRoutine()
 	end
 
 	local function MainRotation()
-		if not Player:AffectingCombat() then
-			if S.RiteofAdjuration:IsCastable() and Player:BuffDown(S.RiteofAdjurationBuff) then
+		if not Player:AffectingCombat() and S.HolyArmament:IsAvailable() then
+			if S.RiteofAdjuration:IsCastable() and S.RiteofAdjuration:IsAvailable() and Player:BuffDown(S.RiteofAdjurationBuff) then
 				MainAddon.SetTopColor(1, "Rite of Adjuration/Sanctification")
 			end
 
-			if S.RiteofSanctification:IsCastable() and Player:BuffDown(S.RiteofSanctificationBuff) then
+			if S.RiteofSanctification:IsCastable() and S.RiteofSanctification:IsAvailable() and Player:BuffDown(S.RiteofSanctificationBuff) then
 				MainAddon.SetTopColor(1, "Rite of Adjuration/Sanctification")
 			end
 		end
@@ -451,24 +452,29 @@ local function MyRoutine()
 			end
 		end
 
-		if HealingEngine:MembersUnderPercentage(75, nil, 40) >= 2  then	
-					
-			if S.BeaconOfVirtue:IsCastable() and Player:BuffDown(S.AvengingCrusader) then		
-				if Cast(S.BeaconOfVirtue, Player) then return end
-			end	
+		if AoEON() then
+			if HealingEngine:MembersUnderPercentage(75, nil, 40) >= 2 then	
+						
+				if S.BeaconOfVirtue:IsCastable() and Player:BuffDown(S.AvengingCrusader) then		
+					if Cast(S.BeaconOfVirtue, Player) then return end
+				end	
 
-			if (Player:BuffDown(S.DivinePurposeBuff) or not S.Aurora:IsAvailable()) then
-				if S.HolyPrism:IsReady() then
-					if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
-				end
-			end	
-
-			if S.DivineToll:IsReady() and Player:HolyPower() < 3 then
-				if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, LowestHealthTarget) then return end
 			end
-	
-		end
 
+			if HealingEngine:MembersUnderPercentage(75, nil, 40) >= 3 and (Player:BuffDown(S.BeaconOfVirtue) or not S.BeaconOfVirtue:IsAvailable()) then
+				
+				if (Player:BuffDown(S.DivinePurposeBuff) or not S.Aurora:IsAvailable()) then
+					if S.HolyPrism:IsReady() then
+						if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
+					end
+				end
+
+				if S.DivineToll:IsReady() then
+					if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal) then return end
+				end
+
+			end
+		end
 
 		-- Healing
 		if Player:IsInRaid() and HealingEngine:MembersUnderPercentage(85, nil, 40) >= 5  then
@@ -492,10 +498,14 @@ local function MyRoutine()
 		end
 
 		if (S.WordOfGlory:IsCastable()) then
-			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, MustHeal2) then return end
+			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, MustHeal) then return end
 		end
 
 		if (Player:BuffDown(S.DivinePurposeBuff) or not S.Aurora:IsAvailable()) then
+			if S.HolyPrism:IsReady() and HealingEngine:MembersUnderPercentage(75, nil, 40) >= 3 then
+				if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
+			end
+
 			if S.HolyPrism:IsReady() then
 				if MainAddon.CastCycleAlly(S.HolyPrism, MEMBERS, MustHeal2) then return end
 			end
@@ -506,7 +516,7 @@ local function MyRoutine()
 		end
 
 		if S.DivineToll:IsReady() then
-			if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal3) then return end
+			if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal2) then return end
 		end
 
 
@@ -557,21 +567,15 @@ local function MyRoutine()
 		end
 
 		if Player:HolyPower() == 5 or (Player:BuffUp(S.InfusionOfLightBuff) and S.Judgment:CooldownRemains() <= 1 * Player:GCD() and Player:HolyPower() >= 4) or (Player:BuffUp(S.RisingSunlightBuff) and S.HolyShock:CooldownRemains() <= 1 * Player:GCD() and Player:HolyPower() >= 2) then
-
-			if (S.WordOfGlory:IsCastable()) then
-				if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, MustHeal) then return end
-			end
-	
 			if S.ShieldOfTheRighteous:IsCastable() then
 				if Cast(S.ShieldOfTheRighteous) then return end
 			end
-
 		end
 	
-		if S.FlashOfLight:IsCastable() and Player:BuffDown(S.InfusionOfLightBuff) and not Player:IsMoving() and ((Player:HolyPower() <= 4 and S.TowerOfRadiance:IsAvailable()) or (not S.TowerOfRadiance:IsAvailable() and not Target:IsInMeleeRange(5)))  then
-			if Player:IsCasting() then return end
-			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, MustHeal2) then return end
-		end
+		-- if S.FlashOfLight:IsCastable() and Player:BuffDown(S.InfusionOfLightBuff) and not Player:IsMoving() and ((Player:HolyPower() <= 4 and S.TowerOfRadiance:IsAvailable()) or (not S.TowerOfRadiance:IsAvailable() and not Target:IsInMeleeRange(5)))  then
+		-- 	if Player:IsCasting() then return end
+		-- 	if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, MustHeal2) then return end
+		-- end
 
 		if S.Consecration:IsCastable() and (Target:BuffDown(S.ConsecrationDebuff) or Player:BuffUp(S.DivineGuidance)) and TargetOk() and Target:IsInMeleeRange(5) then
 			if Cast(S.Consecration) then return end
