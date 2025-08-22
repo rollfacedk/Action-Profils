@@ -327,6 +327,38 @@ local function MyRoutine()
 		MainAddon:Print('This is my own addon =), Hurray.')
 	end
 
+	-- --- ===== Trinket Variables =====
+	-- local Trinket1, Trinket2
+	-- local VarTrinket1Range, VarTrinket2Range
+	-- local VarTrinketFailures = 0
+	-- local function SetTrinketVariables()
+	-- local T1, T2 = Player:GetTrinketData(OnUseExcludes)
+
+	-- -- If we don't have trinket items, try again in 5 seconds.
+	-- if VarTrinketFailures < 5 and ((T1.ID == 0 or T2.ID == 0) or (T1.SpellID > 0 and not T1.Usable or T2.SpellID > 0 and not T2.Usable)) then
+	-- 	VarTrinketFailures = VarTrinketFailures + 1
+	-- 	Delay(5, function()
+	-- 		SetTrinketVariables()
+	-- 	end
+	-- 	)
+	-- 	return
+	-- end
+	
+
+	-- Trinket1 = T1.Object
+	-- Trinket2 = T2.Object
+
+	-- VarTrinket1Range = T1.Range
+	-- VarTrinket2Range = T2.Range
+	-- end
+	-- SetTrinketVariables()
+
+	-- --- ===== Event Registrations =====
+	-- HL:RegisterForEvent(function()
+	-- 	VarTrinketFailures = 0
+	-- 	SetTrinketVariables()
+	-- end, "PLAYER_EQUIPMENT_CHANGED")
+
 	TANKS, HEALERS, MEMBERS, DPS, PRIORITY = HealingEngine:Fetch()
 
 	local function LowestHealthTarget(UnitTarget)
@@ -349,6 +381,10 @@ local function MyRoutine()
 		return (UnitTarget:HealthPercentageFlat() <= 65)
 	end;
 
+	local function FillerHeal(UnitTarget)
+		return (UnitTarget:HealthPercentageFlat() <= 90)
+	end;
+
 	local function BlessingOfSacrificeFunc(UnitTarget)
 		return UnitTarget:HealthPercentageFlat() <= 35 and UnitTarget:GUID() ~= Player:GUID() and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:BuffDown(S.BlessingOfSacrifice)
 	end;
@@ -361,20 +397,6 @@ local function MyRoutine()
 		return UnitTarget:HealthPercentage() <= 100 and UnitTarget:BuffDown(S.BeaconOfLightBuff) and UnitTarget:BuffDown(S.BeaconOfFaithBuff)
 	end;
 
-
-	local function Trinkets()
-		if Player:BuffRemains(S.AvengingWrath) > 12 or Player:BuffRemains(S.AvengingCrusader) > 8 then
-		  local ItemToUse, ItemSlot, ItemRange = Player:GetUseableItems(OnUseExcludes)
-		  if ItemToUse and Target:IsInRange(ItemRange) then
-			local DisplayStyle = true
-			if ItemSlot ~= 13 and ItemSlot ~= 14 then DisplayStyle = true end
-			if ((ItemSlot == 13 or ItemSlot == 14) and true) or (ItemSlot ~= 13 and ItemSlot ~= 14 and true) then
-			  if Cast(ItemToUse) then return "Generic use_items for " .. ItemToUse:Name(); end
-			end
-		  end
-		end
-	end
-
 	local function MainRotation()
 		if not Player:AffectingCombat() and S.HolyArmament:IsAvailable() then
 			if S.RiteofAdjuration:IsCastable() and S.RiteofAdjuration:IsAvailable() and Player:BuffDown(S.RiteofAdjurationBuff) then
@@ -386,9 +408,9 @@ local function MyRoutine()
 			end
 		end
 		
-		if Player:AffectingCombat() and (Target:IsDeadOrGhost() and not Target:IsAPlayer()) then
-			MainAddon.SetTopColor(1, "Target Enemy")
-		end
+		-- if Player:AffectingCombat() then
+		-- 	MainAddon.SetTopColor(1, "Target Enemy")
+		-- end
 		
 		TANKS, HEALERS, MEMBERS, DPS, PRIORITY = HealingEngine:Fetch()
 
@@ -417,19 +439,25 @@ local function MyRoutine()
 				if MainAddon.CastCycleAlly(S.BlessingOfSacrifice, TANKS, BlessingOfSacrificeFunc) then return end
 			end
 
-			if S.BlessingOfProtection:IsCastable() then
-				if MainAddon.CastCycleAlly(S.BlessingOfProtection, HEALERS, BlessingOfProtectionFunc) then return end
-			end
-			
-
-			if S.BlessingOfProtection:IsCastable() then
-				if MainAddon.CastCycleAlly(S.BlessingOfProtection, DPS, BlessingOfProtectionFunc) then return end
-			end
-
 		end
 
 		-- CDS
-		local ShouldReturn = Trinkets(); if ShouldReturn then return ShouldReturn; end
+	
+
+
+		-- local ItemToUse, ItemSlot, ItemRange = Player:GetUseableItems(OnUseExcludes)
+		--   if ItemToUse then
+		-- 	local DisplayStyle = true
+		-- 	local IsTrinket = ItemSlot == 13 or ItemSlot == 14
+		-- 	if not IsTrinket then DisplayStyle = true end
+		-- 	if (IsTrinket and true) or (not IsTrinket and true) then
+		-- 		if Cast(ItemToUse, DisplayStyle, not Target:IsInRange(ItemRange)) then return "Generic use_items for " .. ItemToUse:Name() .. " main 8"; end
+		-- 	end
+		-- end
+		
+	
+
+
 		if Player:AffectingCombat() and HealingEngine:MembersUnderPercentage(75, nil, 40) >= 4  then
 			if S.AvengingWrath:IsCastable() then
 				if Cast(S.AvengingWrath) then return end
@@ -474,6 +502,7 @@ local function MyRoutine()
 				end
 
 			end
+		
 		end
 
 		-- Healing
@@ -489,13 +518,14 @@ local function MyRoutine()
 
 		if (Player:HolyPower() <= 2 and Player:BuffUp(S.RisingSunlightBuff)) then
 			if S.HolyShock:IsCastable() then
-				if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, HolyShockFunc) then return end
+				if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, MustHeal) then return end
 			end 
 		end
 
 		if S.HolyLight:IsCastable() and Player:BuffUp(S.DivineFavorBuff) and Player:BuffUp(S.InfusionOfLightBuff) and not Player:IsMoving() and (Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable()) then
 			if MainAddon.CastCycleAlly(S.HolyLight, MEMBERS, MustHeal) then return end
 		end
+
 
 		if (S.WordOfGlory:IsCastable()) then
 			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, MustHeal) then return end
@@ -517,6 +547,14 @@ local function MyRoutine()
 
 		if S.DivineToll:IsReady() then
 			if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal2) then return end
+		end
+
+		if S.BlessingOfProtection:IsCastable() then
+			if MainAddon.CastCycleAlly(S.BlessingOfProtection, HEALERS, BlessingOfProtectionFunc) then return end
+		end
+		
+		if S.BlessingOfProtection:IsCastable() then
+			if MainAddon.CastCycleAlly(S.BlessingOfProtection, DPS, BlessingOfProtectionFunc) then return end
 		end
 
 
@@ -566,18 +604,22 @@ local function MyRoutine()
 			if Cast(S.CrusaderStrike) then return end
 		end
 
-		if Player:HolyPower() == 5 or (Player:BuffUp(S.InfusionOfLightBuff) and S.Judgment:CooldownRemains() <= 1 * Player:GCD() and Player:HolyPower() >= 4) or (Player:BuffUp(S.RisingSunlightBuff) and S.HolyShock:CooldownRemains() <= 1 * Player:GCD() and Player:HolyPower() >= 2) then
+		if S.Consecration:IsCastable() and (Player:BuffStack(S.DivineGuidance) == 5) and TargetOk() and Target:IsInMeleeRange(5) then
+			if Cast(S.Consecration) then return end
+		end
+
+		if Player:HolyPower() == 5 or (Player:BuffUp(S.InfusionOfLightBuff) and S.Judgment:CooldownRemains() <= 1 * Player:GCD() and Player:HolyPower() >= 4) or (Player:BuffUp(S.RisingSunlightBuff) and S.HolyShock:CooldownRemains() <= 1 * Player:GCD() and Player:HolyPower() >= 3) then
 			if S.ShieldOfTheRighteous:IsCastable() then
 				if Cast(S.ShieldOfTheRighteous) then return end
 			end
 		end
 	
-		-- if S.FlashOfLight:IsCastable() and Player:BuffDown(S.InfusionOfLightBuff) and not Player:IsMoving() and ((Player:HolyPower() <= 4 and S.TowerOfRadiance:IsAvailable()) or (not S.TowerOfRadiance:IsAvailable() and not Target:IsInMeleeRange(5)))  then
-		-- 	if Player:IsCasting() then return end
-		-- 	if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, MustHeal2) then return end
-		-- end
+		if S.FlashOfLight:IsCastable() and Player:BuffDown(S.InfusionOfLightBuff) and ((Player:HolyPower() <= 4 or not S.TowerOfRadiance:IsAvailable()) and not Target:IsInMeleeRange(5))  then
+			if Player:IsCasting() then return end
+			if MainAddon.CastCycleAlly(S.FlashOfLight, MEMBERS, FillerHeal) then return end
+		end
 
-		if S.Consecration:IsCastable() and (Target:BuffDown(S.ConsecrationDebuff) or Player:BuffUp(S.DivineGuidance)) and TargetOk() and Target:IsInMeleeRange(5) then
+		if S.Consecration:IsCastable() and (Target:BuffDown(S.ConsecrationDebuff)) and TargetOk() and Target:IsInMeleeRange(5) then
 			if Cast(S.Consecration) then return end
 		end
 
