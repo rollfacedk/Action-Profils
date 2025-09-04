@@ -1,5 +1,5 @@
 local function MyRoutine()
-	local Author = 'Rollface - Holy Paladin 11.2'
+	local Author = 'Rollface - Holy Paladin 11.2 | v1.0'
 	local SpecID = 65 --Unholy  --https://wowpedia.fandom.com/wiki/API_GetSpecializationInfo
 
 	--HR HEADER
@@ -323,7 +323,7 @@ local function MyRoutine()
 	MainAddon.SetCustomConfig(Author, SpecID, Unholy_Config)
 
 	local function Init()
-		message( 'Please, use beacon of light/faith manually for now. it may be bugged.', 1)
+		message( 'v1.0 Update: Optimized Avenging Crusader Talent', 1)
 		MainAddon:Print('This is my own addon =), Hurray.')
 	end
 
@@ -462,9 +462,6 @@ local function MyRoutine()
 			if S.AvengingWrath:IsCastable() then
 				if Cast(S.AvengingWrath) then return end
 			end
-			if S.AvengingCrusader:IsCastable() then
-				if Cast(S.AvengingCrusader) then return end
-			end
 			if S.AuraMastery:IsCastable() then
 				if Cast(S.AuraMastery) then return end
 			end
@@ -478,18 +475,26 @@ local function MyRoutine()
 			if S.CrusaderStrike:IsReady() and TargetOk() and Target:IsInMeleeRange(5) then
 				if Cast(S.CrusaderStrike) then return end
 			end
+			if Player:AffectingCombat() and (Player:BuffDown(S.HolyBulwarkBuff) and Player:BuffDown(S.SacredWeaponBuff) or S.HolyBulwark:ChargesFractional() >= 1.8 or S.SacredWeapon:ChargesFractional() >= 1.75)  then
+				if S.HolyBulwark:IsCastable() then
+					if Cast(S.HolyBulwark, Player) then return end
+				end
+				if S.SacredWeapon:IsCastable() then
+					if Cast(S.SacredWeapon, Player) then return end
+				end
+			end
 		end
 
-		if AoEON() then
+		if AoEON() and Player:BuffDown(S.AvengingCrusader) and (Player:BuffDown(S.BeaconOfVirtue) or not S.BeaconOfVirtue:IsAvailable()) then
 			if HealingEngine:MembersUnderPercentage(75, nil, 40) >= 2 then	
 						
-				if S.BeaconOfVirtue:IsCastable() and Player:BuffDown(S.AvengingCrusader) then		
+				if S.BeaconOfVirtue:IsCastable() then		
 					if Cast(S.BeaconOfVirtue, Player) then return end
 				end	
 
 			end
 
-			if HealingEngine:MembersUnderPercentage(75, nil, 40) >= 3 and (Player:BuffDown(S.BeaconOfVirtue) or not S.BeaconOfVirtue:IsAvailable()) then
+			if HealingEngine:MembersUnderPercentage(75, nil, 40) >= 3 then
 				
 				if (Player:BuffDown(S.DivinePurposeBuff) or not S.Aurora:IsAvailable()) then
 					if S.HolyPrism:IsReady() then
@@ -497,8 +502,12 @@ local function MyRoutine()
 					end
 				end
 
-				if S.DivineToll:IsReady() then
+				if S.DivineToll:IsReady() and Player:HolyPower() < 3 then
 					if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal) then return end
+				end
+
+				if S.AvengingCrusader:IsCastable() then
+					if Cast(S.AvengingCrusader) then return end
 				end
 
 			end
