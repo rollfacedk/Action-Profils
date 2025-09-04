@@ -506,7 +506,7 @@ local function MyRoutine()
 					if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal) then return end
 				end
 
-				if S.AvengingCrusader:IsCastable() then
+				if S.AvengingCrusader:IsCastable() and Target:IsInMeleeRange(5) then
 					if Cast(S.AvengingCrusader) then return end
 				end
 
@@ -677,3 +677,4 @@ local function TryLoading ()
     end)
 end
 TryLoading()
+
