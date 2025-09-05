@@ -465,27 +465,32 @@ local function MyRoutine()
 			if S.AuraMastery:IsCastable() then
 				if Cast(S.AuraMastery) then return end
 			end
+
+			if S.AvengingCrusader:IsCastable() and Target:IsInMeleeRange(5) then
+				if Cast(S.AvengingCrusader) then return end
+			end
+
 		end
 		
 		-- During Avenging Crusader rotation
-		if Player:BuffUp(S.AvengingCrusader) then
-			if S.Judgment:IsReady() and TargetOk() and Target:IsSpellInRange(S.Judgment) then
-				if Cast(S.Judgment) then return end
-			end
-			if S.CrusaderStrike:IsReady() and TargetOk() and Target:IsInMeleeRange(5) then
-				if Cast(S.CrusaderStrike) then return end
-			end
-			if Player:AffectingCombat() and (Player:BuffDown(S.HolyBulwarkBuff) and Player:BuffDown(S.SacredWeaponBuff) or S.HolyBulwark:ChargesFractional() >= 1.8 or S.SacredWeapon:ChargesFractional() >= 1.75)  then
-				if S.HolyBulwark:IsCastable() then
-					if Cast(S.HolyBulwark, Player) then return end
-				end
-				if S.SacredWeapon:IsCastable() then
-					if Cast(S.SacredWeapon, Player) then return end
-				end
-			end
-		end
+		-- if Player:BuffUp(S.AvengingCrusader) then
+		-- 	if S.Judgment:IsReady() and TargetOk() and Target:IsSpellInRange(S.Judgment) then
+		-- 		if Cast(S.Judgment) then return end
+		-- 	end
+		-- 	if S.CrusaderStrike:IsReady() and TargetOk() and Target:IsInMeleeRange(5) then
+		-- 		if Cast(S.CrusaderStrike) then return end
+		-- 	end
+		-- 	if Player:AffectingCombat() and (Player:BuffDown(S.HolyBulwarkBuff) and Player:BuffDown(S.SacredWeaponBuff) or S.HolyBulwark:ChargesFractional() >= 1.8 or S.SacredWeapon:ChargesFractional() >= 1.75)  then
+		-- 		if S.HolyBulwark:IsCastable() then
+		-- 			if Cast(S.HolyBulwark, Player) then return end
+		-- 		end
+		-- 		if S.SacredWeapon:IsCastable() then
+		-- 			if Cast(S.SacredWeapon, Player) then return end
+		-- 		end
+		-- 	end
+		-- end
 
-		if AoEON() and Player:BuffDown(S.AvengingCrusader) and (Player:BuffDown(S.BeaconOfVirtue) or not S.BeaconOfVirtue:IsAvailable()) then
+		if AoEON() and (Player:BuffDown(S.BeaconOfVirtue) or not S.BeaconOfVirtue:IsAvailable()) then
 			if HealingEngine:MembersUnderPercentage(75, nil, 40) >= 2 then	
 						
 				if S.BeaconOfVirtue:IsCastable() then		
@@ -504,10 +509,6 @@ local function MyRoutine()
 
 				if S.DivineToll:IsReady() and Player:HolyPower() < 3 then
 					if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal) then return end
-				end
-
-				if S.AvengingCrusader:IsCastable() and Target:IsInMeleeRange(5) then
-					if Cast(S.AvengingCrusader) then return end
 				end
 
 			end
@@ -540,6 +541,7 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, MustHeal) then return end
 		end
 
+		
 		if (Player:BuffDown(S.DivinePurposeBuff) or not S.Aurora:IsAvailable()) then
 			if S.HolyPrism:IsReady() and HealingEngine:MembersUnderPercentage(75, nil, 40) >= 3 then
 				if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
@@ -553,9 +555,10 @@ local function MyRoutine()
 				if MainAddon.CastCycleAlly(S.BarrierOfFaith, MEMBERS, MustHeal2) then return end
 			end
 		end
-
+		
 		if S.DivineToll:IsReady() then
 			if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal2) then return end
+		
 		end
 
 		if S.BlessingOfProtection:IsCastable() then
@@ -580,6 +583,12 @@ local function MyRoutine()
 
 		if S.Judgment:IsReady() and TargetOk() and Target:IsSpellInRange(S.Judgment) and (Player:HolyPower() <= 3 or Player:HolyPower() <= 4 and Player:BuffDown(S.InfusionOfLightBuff))  then
 			if Cast(S.Judgment) then return end
+		end
+
+		if Player:BuffUp(S.AvengingCrusader) then
+			if S.CrusaderStrike:IsReady() and TargetOk() and Target:IsInMeleeRange(5) and Player:HolyPower() <= 4  then
+				if Cast(S.CrusaderStrike) then return end
+			end
 		end
 
 		if S.HolyShock:IsCastable() then
@@ -677,4 +686,3 @@ local function TryLoading ()
     end)
 end
 TryLoading()
-
