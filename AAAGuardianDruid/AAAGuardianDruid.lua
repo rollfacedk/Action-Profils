@@ -368,7 +368,7 @@ local function MyRoutine()
 		end
 		-- ironfur,target_if=!debuff.tooth_and_claw.up,if=!buff.ironfur.up&rage>50&!cooldown.pause_action.remains&variable.If_build=0&!buff.rage_of_the_sleeper.up|rage>90&variable.If_build=0|!debuff.tooth_and_claw.up&!buff.ironfur.up&rage>50&!cooldown.pause_action.remains&variable.If_build=0&!buff.rage_of_the_sleeper.up
 		if S.Ironfur:IsReady() and (Player:BuffDown(S.IronfurBuff) and Player:Rage() > 50 and IsTanking and not VarIFBuild and Player:BuffDown(S.RageoftheSleeper) or Player:Rage() > 90 and not VarIFBuild or Player:BuffDown(S.ToothandClawBuff) and Player:BuffDown(S.IronfurBuff) and Player:Rage() > 50 and IsTanking and not VarIFBuild and Player:BuffDown(S.RageoftheSleeper)) then
-		  if Cast(S.Ironfures) then return "ironfur bear 28"; end
+		  if Cast(S.Ironfur) then return "ironfur bear 28"; end
 		end
 		-- ironfur,if=!buff.ravage.up&((rage>40&variable.If_build=1&cooldown.rage_of_the_sleeper.remains>3&talent.rage_of_the_sleeper.enabled|(buff.incarnation.up|buff.berserk_bear.up)&rage>20&variable.If_build=1&cooldown.rage_of_the_sleeper.remains>3&talent.rage_of_the_sleeper.enabled|rage>90&variable.If_build=1&!talent.fount_of_strength.enabled|rage>110&variable.If_build=1&talent.fount_of_strength.enabled|(buff.incarnation.up|buff.berserk_bear.up)&rage>20&variable.If_build=1&buff.rage_of_the_sleeper.up&talent.rage_of_the_sleeper.enabled))
 		if S.Ironfur:IsReady() and (Player:BuffDown(S.RavageBuffGuardian) and (Player:Rage() > 40 and VarIFBuild and S.RageoftheSleeper:CooldownRemains() > 3 and S.RageoftheSleeper:IsAvailable() or (Player:BuffUp(S.Incarnation) or Player:BuffUp(S.Berserk)) and Player:Rage() > 20 and VarIFBuild and S.RageoftheSleeper:CooldownRemains() > 3 and S.RageoftheSleeper:IsAvailable() or Player:Rage() > 90 and VarIFBuild and not S.FountofStrength:IsAvailable() or Player:Rage() > 110 and VarIFBuild and S.FountofStrength:IsAvailable() or (Player:BuffUp(S.Incarnation) or Player:BuffUp(S.Berserk)) and Player:Rage() > 20 and VarIFBuild and Player:BuffUp(S.RageoftheSleeper) and S.RageoftheSleeper:IsAvailable())) then
@@ -556,3 +556,4 @@ local function TryLoading ()
     end)
 end
 TryLoading()
+
