@@ -324,7 +324,7 @@ local function MyRoutine()
 	MainAddon.SetCustomConfig(Author, SpecID, Unholy_Config)
 
 	local function Init()
-		message( 'v1.1 Update: Optimized Avenging Crusader Talent', 1)
+		message( 'v1.0 Update: Optimized Avenging Crusader Talent', 1)
 		MainAddon:Print('This is my own addon =), Hurray.')
 	end
 
@@ -399,7 +399,7 @@ local function MyRoutine()
 	end;
 
 	local function MainRotation()
-		--MainAddon.CONST.PvE_Dispel[1235060] = { Blacklist=true}
+		-- MainAddon.CONST.PvE_Dispel[1235060] = { Blacklist=true}
 		MainAddon.CONST.PvE_Dispel[30108] = { Blacklist=true}
 		MainAddon.CONST.PvE_Dispel[134914] = { Blacklist=true}
 		
@@ -464,7 +464,7 @@ local function MyRoutine()
 
 
 		if Player:AffectingCombat() and HealingEngine:MembersUnderPercentage(75, nil, 40) >= 4  then
-			if S.AvengingWrath:IsCastable() then
+			if S.AvengingWrath:IsCastable() and Player:BuffDown(S.RisingSunlightBuff) then
 				if Cast(S.AvengingWrath) then return end
 			end
 			if S.AuraMastery:IsCastable() then
@@ -502,11 +502,11 @@ local function MyRoutine()
 				end
 			end
 		
-			if S.DivineToll:IsReady() and Player:HolyPower() < 3 then
+			if S.DivineToll:IsReady() and Player:HolyPower() < 3 and Player:BuffDown(S.RisingSunlightBuff) then
 				if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal) then return end
 			end
 
-			if S.AvengingCrusader:IsCastable() and Target:IsInMeleeRange(5) then
+			if S.AvengingCrusader:IsCastable() and Target:IsInMeleeRange(5) and Player:BuffDown(S.RisingSunlightBuff) then
 				if Cast(S.AvengingCrusader) then return end
 			end
 		end
@@ -556,7 +556,7 @@ local function MyRoutine()
 			end
 			
 			
-			if S.DivineToll:IsReady() then
+			if S.DivineToll:IsReady() and Player:BuffDown(S.RisingSunlightBuff) then
 				if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal2) then return end
 			
 			end
