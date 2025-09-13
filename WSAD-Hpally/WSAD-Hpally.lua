@@ -1,5 +1,5 @@
 local function MyRoutine()
-	local Author = 'Rollface - Holy Paladin 11.2 | v1.0'
+	local Author = 'Rollface - Holy Paladin 11.2 | v1.1'
 	local SpecID = 65 --Unholy  --https://wowpedia.fandom.com/wiki/API_GetSpecializationInfo
 
 	--HR HEADER
@@ -251,6 +251,7 @@ local function MyRoutine()
   		RiteofSanctification                 = Spell(433568),
 		RiteofAdjurationBuff                 = Spell(433584),
 		RiteofSanctificationBuff             = Spell(433550),
+		ShinningRighteousnessBuff             = Spell(414445),
 	
 
 	
@@ -323,7 +324,7 @@ local function MyRoutine()
 	MainAddon.SetCustomConfig(Author, SpecID, Unholy_Config)
 
 	local function Init()
-		message( 'v1.0 Update: Optimized Avenging Crusader Talent', 1)
+		message( 'v1.1 Update: Optimized Avenging Crusader Talent', 1)
 		MainAddon:Print('This is my own addon =), Hurray.')
 	end
 
@@ -366,7 +367,7 @@ local function MyRoutine()
 	end;
 
 	local function LayOnHandsFunc(UnitTarget)
-		return UnitTarget:HealthPercentageFlat() <= 20 and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:BuffDown(S.BlessingOfSacrifice) 
+		return UnitTarget:HealthPercentageFlat() <= 25 and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:BuffDown(S.BlessingOfSacrifice) 
 	end;
 
 	local function TEST(UnitTarget)
@@ -378,7 +379,7 @@ local function MyRoutine()
 	end;
 
 	local function MustHeal2(UnitTarget)
-		return (UnitTarget:HealthPercentageFlat() <= 65)
+		return (UnitTarget:HealthPercentageFlat() <= 50)
 	end;
 
 	local function FillerHeal(UnitTarget)
@@ -390,7 +391,7 @@ local function MyRoutine()
 	end;
 
 	local function BlessingOfProtectionFunc(UnitTarget)
-		return UnitTarget:HealthPercentageFlat() <= 25 and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:BuffDown(S.BlessingOfSacrifice) and UnitTarget:DebuffDown(S.ForberanceDebuff)
+		return UnitTarget:HealthPercentageFlat() <= 35 and UnitTarget:BuffDown(S.BlessingOfProtection) and UnitTarget:BuffDown(S.BlessingOfSacrifice) and UnitTarget:DebuffDown(S.ForberanceDebuff)
 	end;
 
 	local function Beacons(UnitTarget)
@@ -398,6 +399,10 @@ local function MyRoutine()
 	end;
 
 	local function MainRotation()
+		--MainAddon.CONST.PvE_Dispel[1235060] = { Blacklist=true}
+		MainAddon.CONST.PvE_Dispel[30108] = { Blacklist=true}
+		MainAddon.CONST.PvE_Dispel[134914] = { Blacklist=true}
+		
 		if not Player:AffectingCombat() and S.HolyArmament:IsAvailable() then
 			if S.RiteofAdjuration:IsCastable() and S.RiteofAdjuration:IsAvailable() and Player:BuffDown(S.RiteofAdjurationBuff) then
 				MainAddon.SetTopColor(1, "Rite of Adjuration/Sanctification")
@@ -466,53 +471,44 @@ local function MyRoutine()
 				if Cast(S.AuraMastery) then return end
 			end
 
-			if S.AvengingCrusader:IsCastable() and Target:IsInMeleeRange(5) then
-				if Cast(S.AvengingCrusader) then return end
-			end
+			-- if S.AvengingCrusader:IsCastable() and Target:IsInMeleeRange(5) then
+			-- 	if Cast(S.AvengingCrusader) then return end
+			-- end
 
 		end
-		
-		-- During Avenging Crusader rotation
-		-- if Player:BuffUp(S.AvengingCrusader) then
-		-- 	if S.Judgment:IsReady() and TargetOk() and Target:IsSpellInRange(S.Judgment) then
-		-- 		if Cast(S.Judgment) then return end
-		-- 	end
-		-- 	if S.CrusaderStrike:IsReady() and TargetOk() and Target:IsInMeleeRange(5) then
-		-- 		if Cast(S.CrusaderStrike) then return end
-		-- 	end
-		-- 	if Player:AffectingCombat() and (Player:BuffDown(S.HolyBulwarkBuff) and Player:BuffDown(S.SacredWeaponBuff) or S.HolyBulwark:ChargesFractional() >= 1.8 or S.SacredWeapon:ChargesFractional() >= 1.75)  then
-		-- 		if S.HolyBulwark:IsCastable() then
-		-- 			if Cast(S.HolyBulwark, Player) then return end
-		-- 		end
-		-- 		if S.SacredWeapon:IsCastable() then
-		-- 			if Cast(S.SacredWeapon, Player) then return end
-		-- 		end
-		-- 	end
-		-- end
 
-		if AoEON() and (Player:BuffDown(S.BeaconOfVirtue) or not S.BeaconOfVirtue:IsAvailable()) then
-			if HealingEngine:MembersUnderPercentage(75, nil, 40) >= 2 then	
-						
+		if Player:BuffUp(S.AvengingCrusader) and Player:BuffDown(S.BeaconOfVirtue) and HealingEngine:LowestHP(true, 40) >= 50 then
+			if S.Judgment:IsReady() and TargetOk() and Target:IsSpellInRange(S.Judgment)   then
+				if Cast(S.Judgment) then return end
+			end
+			if S.CrusaderStrike:IsReady() and TargetOk() and Target:IsInMeleeRange(5)  then
+				if Cast(S.CrusaderStrike) then return end
+			end	
+		end
+
+		if HealingEngine:MembersUnderPercentage(75, nil, 40) >= 2  then
+			if AoEON() and Player:BuffDown(S.AvengingCrusader) then	
 				if S.BeaconOfVirtue:IsCastable() then		
 					if Cast(S.BeaconOfVirtue, Player) then return end
 				end	
 
-			end
+			end		
+		end
 
-			if HealingEngine:MembersUnderPercentage(75, nil, 40) >= 3 then
-				
-				if (Player:BuffDown(S.DivinePurposeBuff) or not S.Aurora:IsAvailable()) then
-					if S.HolyPrism:IsReady() then
-						if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
-					end
+		if HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 and (Player:BuffDown(S.BeaconOfVirtue) and (Player:BuffDown(S.AvengingCrusader))) then
+			if (Player:BuffDown(S.DivinePurposeBuff) or not S.Aurora:IsAvailable()) then	
+				if S.HolyPrism:IsReady() then
+					if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
 				end
-
-				if S.DivineToll:IsReady() and Player:HolyPower() < 3 then
-					if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal) then return end
-				end
-
 			end
 		
+			if S.DivineToll:IsReady() and Player:HolyPower() < 3 then
+				if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal) then return end
+			end
+
+			if S.AvengingCrusader:IsCastable() and Target:IsInMeleeRange(5) then
+				if Cast(S.AvengingCrusader) then return end
+			end
 		end
 
 		-- Healing
@@ -520,6 +516,10 @@ local function MyRoutine()
 			if S.LightOfDawn:IsCastable() then
 				if Cast(S.LightOfDawn) then return end
 			end
+		end
+
+		if S.WordOfGlory:IsCastable() and (Player:BuffUp(S.ShinningRighteousnessBuff) or Player:BuffUp(S.DivinePurposeBuff)) then
+			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, MustHeal) then return end
 		end
 
 		if S.FlashOfLight:IsCastable() and Player:BuffUp(S.InfusionOfLightBuff) and ((Player:HolyPower() <= 4 and S.TowerOfRadiance:IsAvailable()) or not S.TowerOfRadiance:IsAvailable())  then
@@ -541,9 +541,9 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.WordOfGlory, MEMBERS, MustHeal) then return end
 		end
 
+		if Player:BuffDown(S.AvengingCrusader) then
 		
-		if (Player:BuffDown(S.DivinePurposeBuff) or not S.Aurora:IsAvailable()) then
-			if S.HolyPrism:IsReady() and HealingEngine:MembersUnderPercentage(75, nil, 40) >= 3 then
+			if S.HolyPrism:IsReady() and HealingEngine:LowestHP(true, 40) <= 50 and Player:BuffDown(S.InfusionOfLightBuff) and HealingEngine:MembersUnderPercentage(75, nil, 30) >= 3 then
 				if MainAddon.SetTopColor(6, "Holy Prism Enemy") then return end
 			end
 
@@ -554,13 +554,14 @@ local function MyRoutine()
 			if S.BarrierOfFaith:IsReady() then
 				if MainAddon.CastCycleAlly(S.BarrierOfFaith, MEMBERS, MustHeal2) then return end
 			end
+			
+			
+			if S.DivineToll:IsReady() then
+				if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal2) then return end
+			
+			end
 		end
 		
-		if S.DivineToll:IsReady() then
-			if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal2) then return end
-		
-		end
-
 		if S.BlessingOfProtection:IsCastable() then
 			if MainAddon.CastCycleAlly(S.BlessingOfProtection, HEALERS, BlessingOfProtectionFunc) then return end
 		end
@@ -585,18 +586,12 @@ local function MyRoutine()
 			if Cast(S.Judgment) then return end
 		end
 
-		if Player:BuffUp(S.AvengingCrusader) then
-			if S.CrusaderStrike:IsReady() and TargetOk() and Target:IsInMeleeRange(5) and Player:HolyPower() <= 4  then
-				if Cast(S.CrusaderStrike) then return end
-			end
-		end
-
 		if S.HolyShock:IsCastable() then
 			if (Player:HolyPower() <= 4) and Player:BuffDown(S.RisingSunlightBuff) then
 				if MainAddon.CastCycleAlly(S.HolyShock, MEMBERS, MustHeal) then return end	
 			end
 
-			if ((Player:HolyPower() <= 4 or (Player:HolyPower() <= 2 and Player:BuffUp(S.RisingSunlightBuff)))) then 
+			if (((Player:HolyPower() <= 4 and Player:BuffDown(S.RisingSunlightBuff)) or Player:HolyPower() <= 2)) then 
 				if TargetOk() and Target:IsSpellInRange(S.HolyShock) then
 					if MainAddon.SetTopColor(6, "Holy Shock Enemy") then return end
 				end
@@ -627,7 +622,7 @@ local function MyRoutine()
 		end
 
 		if Player:HolyPower() == 5 or (Player:BuffUp(S.InfusionOfLightBuff) and S.Judgment:CooldownRemains() <= 1 * Player:GCD() and Player:HolyPower() >= 4) or (Player:BuffUp(S.RisingSunlightBuff) and S.HolyShock:CooldownRemains() <= 1 * Player:GCD() and Player:HolyPower() >= 3) then
-			if S.ShieldOfTheRighteous:IsCastable() then
+			if S.ShieldOfTheRighteous:IsReady() and (Target:IsInMeleeRange(5) or Player:BuffDown(S.ShinningRighteousnessBuff)) then
 				if Cast(S.ShieldOfTheRighteous) then return end
 			end
 		end
