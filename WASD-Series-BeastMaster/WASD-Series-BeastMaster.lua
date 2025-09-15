@@ -569,7 +569,7 @@ local function MyRoutine()
 		end
 		-- barbed_shot,target_if=min:dot.barbed_shot.remains,if=full_recharge_time<gcd
 		if S.BarbedShot:IsCastable() and (S.BarbedShot:FullRechargeTime() < Player:GCD()) then
-		  if Everyone.CastTargetIf(S.BarbedShot, Enemies40y, "min", EvaluateTargetIfFilterBarbedShot, nil, not Target:IsSpellInRange(S.BarbedShot)) then return "barbed_shot cleave 4"; end
+		  if CastTargetIf(S.BarbedShot, Enemies40y, "min", EvaluateTargetIfFilterBarbedShot, nil, not Target:IsSpellInRange(S.BarbedShot)) then return "barbed_shot cleave 4"; end
 		end
 		-- Main Target backup
 		if S.BarbedShot:IsCastable() and Target:IsSpellInRange(S.BarbedShot) and (S.BarbedShot:FullRechargeTime() < Player:GCD()) then
@@ -581,7 +581,7 @@ local function MyRoutine()
 		end
 		-- bloodshed
 		if S.Bloodshed:IsCastable() then
-		  if Cast(S.Bloodshed, Settings.BeastMastery.GCDasOffGCD.Bloodshed, nil, not Target:IsSpellInRange(S.Bloodshed)) then return "bloodshed st 10"; end
+		  if Cast(S.Bloodshed, not Target:IsSpellInRange(S.Bloodshed)) then return "bloodshed st 10"; end
 		end
 		-- kill_command,if=charges_fractional>=cooldown.barbed_shot.charges_fractional&!(buff.lead_from_the_front.remains>gcd&buff.lead_from_the_front.remains<gcd*2&!howl_summon.ready&full_recharge_time>gcd)
 		if S.KillCommand:IsReady() and Target:IsSpellInRange(S.KillCommand) and (S.KillCommand:ChargesFractional() >= S.BarbedShot:ChargesFractional() and not (Player:BuffRemains(S.LeadFromTheFrontBuff) > Player:GCD() and Player:BuffRemains(S.LeadFromTheFrontBuff) < Player:GCD() * 2 + 0.5 and not HowlSummonReady() and S.KillCommand:FullRechargeTime() > Player:GCD())) then
@@ -622,8 +622,7 @@ local function MyRoutine()
 		local ItemToUse, _, ItemRange = Player:GetUseableItems(OnUseExcludes, nil, true)
 		if ItemToUse and Target:IsInRange(ItemRange) then
 			if Cast(ItemToUse) then return "Generic use_items for " .. ItemToUse:Name() .. " trinkets 6"; end
-		end
-		
+		end	
 	end
 
 	
