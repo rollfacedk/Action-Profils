@@ -1,5 +1,5 @@
 local function MyRoutine()
-	local Author = 'Rollface - Holy Paladin 11.2 | v1.1'
+	local Author = 'Rollface - Holy Paladin 11.2 | v1.2'
 	local SpecID = 65 --Unholy  --https://wowpedia.fandom.com/wiki/API_GetSpecializationInfo
 
 	--HR HEADER
@@ -274,10 +274,6 @@ local function MyRoutine()
 		return RollyfaceTargetIsValid() and Target:NPCID() == 210271 or MainAddon.TargetIsValid()
 	end
 
-	local function DuringAvengingCrusader()
-		return Player:BuffUp(S.AvengingCrusader) and ((S.CrusaderStrike:IsReady() and Target:IsInMeleeRange(5)) or (S.Judgment:IsReady() and Target:IsSpellInRange(S.Judgment)))
-	end
-
 	--GUI CONFIG
 	--GUI CONFIG
 	local UnholyColor = 'f4acba'
@@ -477,17 +473,18 @@ local function MyRoutine()
 
 		end
 
-		if Player:BuffUp(S.AvengingCrusader) and Player:BuffDown(S.BeaconOfVirtue) and HealingEngine:LowestHP(true, 40) >= 50 then
-			if S.Judgment:IsReady() and TargetOk() and Target:IsSpellInRange(S.Judgment)   then
-				if Cast(S.Judgment) then return end
+		-- Sacred weapons
+		if Player:AffectingCombat()  then
+			if S.HolyBulwark:IsCastable() and S.HolyBulwark:ChargesFractional() >= 1.80 then
+				if Cast(S.HolyBulwark, Player) then return end
 			end
-			if S.CrusaderStrike:IsReady() and TargetOk() and Target:IsInMeleeRange(5)  then
-				if Cast(S.CrusaderStrike) then return end
-			end	
+			if S.SacredWeapon:IsCastable() and S.SacredWeapon:ChargesFractional() >= 1.80 then
+				if Cast(S.SacredWeapon, Player) then return end
+			end
 		end
 
 		if HealingEngine:MembersUnderPercentage(75, nil, 40) >= 2  then
-			if AoEON() and Player:BuffDown(S.AvengingCrusader) then	
+			if AoEON() then	
 				if S.BeaconOfVirtue:IsCastable() then		
 					if Cast(S.BeaconOfVirtue, Player) then return end
 				end	
@@ -506,8 +503,10 @@ local function MyRoutine()
 				if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal) then return end
 			end
 
-			if S.AvengingCrusader:IsCastable() and Target:IsInMeleeRange(5) and Player:BuffDown(S.RisingSunlightBuff) then
-				if Cast(S.AvengingCrusader) then return end
+			if S.DivineToll:CooldownDown() and S.HolyPrism:CooldownDown() then
+				if S.AvengingCrusader:IsCastable() and Target:IsInMeleeRange(5) and Player:BuffDown(S.RisingSunlightBuff) then
+					if Cast(S.AvengingCrusader) then return end
+				end
 			end
 		end
 
@@ -554,11 +553,15 @@ local function MyRoutine()
 			if S.BarrierOfFaith:IsReady() then
 				if MainAddon.CastCycleAlly(S.BarrierOfFaith, MEMBERS, MustHeal2) then return end
 			end
-			
-			
+				
 			if S.DivineToll:IsReady() and Player:BuffDown(S.RisingSunlightBuff) then
 				if MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, MustHeal2) then return end
-			
+			end
+
+			if S.DivineToll:CooldownDown() and S.HolyPrism:CooldownDown() and S.BarrierOfFaith:CooldownDown() then
+				if S.AvengingCrusader:IsCastable() and Target:IsInMeleeRange(5) and Player:BuffDown(S.RisingSunlightBuff) then
+					MainAddon.CastCycleAlly(S.DivineToll, MEMBERS, S.AvengingCrusader)
+				end
 			end
 		end
 		
@@ -570,17 +573,17 @@ local function MyRoutine()
 			if MainAddon.CastCycleAlly(S.BlessingOfProtection, DPS, BlessingOfProtectionFunc) then return end
 		end
 
-
-		-- Sacred weapons
-		if Player:AffectingCombat() and (Player:BuffDown(S.HolyBulwarkBuff) and Player:BuffDown(S.SacredWeaponBuff) or S.HolyBulwark:ChargesFractional() >= 1.8 or S.SacredWeapon:ChargesFractional() >= 1.75)  then
-			if S.HolyBulwark:IsCastable() then
-				if Cast(S.HolyBulwark, Player) then return end
+		if Player:BuffUp(S.AvengingCrusader) then
+			if S.Judgment:IsReady() and TargetOk() and Target:IsSpellInRange(S.Judgment) then
+				if Cast(S.Judgment) then return end
 			end
-			if S.SacredWeapon:IsCastable() then
-				if Cast(S.SacredWeapon, Player) then return end
+	
+			
+			if S.CrusaderStrike:IsReady() and TargetOk() and Target:IsInMeleeRange(5) then
+				if Cast(S.CrusaderStrike) then return end
 			end
+			
 		end
-
 
 		if S.Judgment:IsReady() and TargetOk() and Target:IsSpellInRange(S.Judgment) and (Player:HolyPower() <= 3 or Player:HolyPower() <= 4 and Player:BuffDown(S.InfusionOfLightBuff))  then
 			if Cast(S.Judgment) then return end
@@ -615,6 +618,16 @@ local function MyRoutine()
 
 		if S.CrusaderStrike:IsReady() and TargetOk() and Target:IsInMeleeRange(5) and Player:HolyPower() <= 4  then
 			if Cast(S.CrusaderStrike) then return end
+		end
+
+		-- Sacred weapons
+		if Player:AffectingCombat()  then
+			if S.HolyBulwark:IsCastable() and Player:BuffDown(S.HolyBulwarkBuff) then
+				if Cast(S.HolyBulwark, Player) then return end
+			end
+			if S.SacredWeapon:IsCastable() and Player:BuffDown(S.SacredWeaponBuff) then
+				if Cast(S.SacredWeapon, Player) then return end
+			end
 		end
 
 		if S.Consecration:IsCastable() and (Player:BuffStack(S.DivineGuidance) == 5) and TargetOk() and Target:IsInMeleeRange(5) then
