@@ -222,7 +222,7 @@ local function MyRoutine()
 
 	local function ShouldPressShieldBlock()
 		-- shield_block,if=buff.shield_block.duration<=10
-		return S.ShieldBlock:IsReady() and Player:BuffRemains(S.ShieldBlockBuff) <= 10
+		return IsCurrentlyTanking() and S.ShieldBlock:IsReady() and Player:BuffRemains(S.ShieldBlockBuff) <= 10
 	end
 
 	-- A bit of logic to decide whether to pre-cast-rage-dump on ignore pain.
@@ -264,10 +264,10 @@ local function MyRoutine()
 			if S.ThunderClap:IsCastable() then
 				if Cast(S.ThunderClap) then return "thunder_clap precombat 6"; end
 			end
-		else
-			if S.Charge:IsCastable() and not Target:IsInRange(8) then
-				if Cast(S.Charge, nil, nil, not Target:IsSpellInRange(S.Charge)) then return "charge precombat 8"; end
-			end
+			-- else
+			-- 	if S.Charge:IsCastable() and not Target:IsInRange(8) then
+			-- 		if Cast(S.Charge, nil, nil, not Target:IsSpellInRange(S.Charge)) then return "charge precombat 8"; end
+			-- 	end
 		end
 	end
 
@@ -333,7 +333,7 @@ local function MyRoutine()
 		  if Cast(S.ShieldSlam) then return "shield_slam generic 4"; end
 		end
 		-- execute,if=rage>=70|(rage>=40&cooldown.shield_slam.remains&talent.demolish.enabled|rage>=50&cooldown.shield_slam.remains)|buff.sudden_death.up&talent.sudden_death.enabled
-		if S.Execute:IsReady() and not ShouldPressShieldBlock() and TargetInMeleeRange and (Player:Rage() >= 70 or (Player:Rage() >= 40 and S.ShieldSlam:CooldownDown() and S.Demolish:IsAvailable()  or Player:Rage() >= 50 and S.ShieldSlam:CooldownDown()) or Player:BuffUp(S.SuddenDeathBuff) and S.SuddenDeath:IsAvailable()) then
+		if S.Execute:IsReady() and TargetInMeleeRange and (Player:Rage() >= 70 or (Player:Rage() >= 40 and S.ShieldSlam:CooldownDown() and S.Demolish:IsAvailable()  or Player:Rage() >= 50 and S.ShieldSlam:CooldownDown()) or Player:BuffUp(S.SuddenDeathBuff) and S.SuddenDeath:IsAvailable()) then
 		  if Cast(S.Execute) then return "execute generic 6"; end
 		end
 		-- shield_slam
@@ -365,7 +365,7 @@ local function MyRoutine()
 		  if Cast(S.Revenge) then return "revenge generic 16"; end
 		end
 		-- execute
-		if S.Execute:IsReady() and TargetInMeleeRange and not ShouldPressShieldBlock() then
+		if S.Execute:IsReady() and TargetInMeleeRange then
 		  if Cast(S.Execute) then return "execute generic 18"; end
 		end
 		-- revenge
@@ -596,6 +596,3 @@ local function TryLoading ()
     end)
 end
 TryLoading()
-
-
-
