@@ -456,7 +456,7 @@ local function MyRoutine()
 				end
 			end
 			-- avatar,if=buff.thunder_blast.down|buff.thunder_blast.stack<=2
-			if S.Avatar:IsCastable() and (Player:BuffDown(S.ThunderBlastBuff) or Player:BuffStack(S.ThunderBlastBuff) <= 2) then
+			if S.Avatar:IsCastable() and Player:GetEnemiesRangeTTD() >= 15 and (Player:BuffDown(S.ThunderBlastBuff) or Player:BuffStack(S.ThunderBlastBuff) <= 2) then
 				if Cast(S.Avatar) then return "avatar main 6"; end
 				end
 				-- shield_wall,if=talent.immovable_object.enabled&buff.avatar.down
