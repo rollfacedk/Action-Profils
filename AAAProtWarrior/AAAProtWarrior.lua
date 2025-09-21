@@ -531,7 +531,7 @@ local function MyRoutine()
 			end
 			-- last_stand,if=(target.health.pct>=90&talent.unnerving_focus.enabled|target.health.pct<=20&talent.unnerving_focus.enabled)|talent.bolster.enabled|set_bonus.tier30_2pc|set_bonus.tier30_4pc
 			-- Note: Removed tier30 check. Nobody should still be using it.
-			if IsCurrentlyTanking() and S.LastStand:IsCastable() and Player:BuffDown(S.ShieldWallBuff) and (((Target:HealthPercentage() >= 90 and S.UnnervingFocus:IsAvailable() or Target:HealthPercentage() <= 20 and S.UnnervingFocus:IsAvailable()) or S.Bolster:IsAvailable()) or not S.Bolster:IsAvailable() and Player:HealthPercentage() <= 35) then
+			if S.LastStand:IsCastable() and Player:BuffDown(S.ShieldWallBuff) and (((Target:HealthPercentage() >= 90 and S.UnnervingFocus:IsAvailable() or Target:HealthPercentage() <= 20 and S.UnnervingFocus:IsAvailable()) or S.Bolster:IsAvailable()) or  Player:HealthPercentage() <= 35) then
 				if Cast(S.LastStand) then return "last_stand main 28"; end
 			end
 			-- ravager
@@ -596,4 +596,5 @@ local function TryLoading ()
     end)
 end
 TryLoading()
+
 
