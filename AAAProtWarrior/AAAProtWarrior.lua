@@ -460,7 +460,7 @@ local function MyRoutine()
 				if Cast(S.Avatar) then return "avatar main 6"; end
 				end
 				-- shield_wall,if=talent.immovable_object.enabled&buff.avatar.down
-				if Player:HealthPercentage() <= 35 then
+				if Player:HealthPercentage() <= 35 and Player:BuffDown(S.LastStandBuff) then
 					if S.ShieldWall:IsCastable() and (S.ImmovableObject:IsAvailable() and Player:BuffDown(S.AvatarBuff)) then
 						if Cast(S.ShieldWall) then return "shield_wall main 8"; end
 					end
@@ -596,3 +596,4 @@ local function TryLoading ()
     end)
 end
 TryLoading()
+
