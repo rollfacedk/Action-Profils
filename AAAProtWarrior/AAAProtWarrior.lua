@@ -222,7 +222,7 @@ local function MyRoutine()
 
 	local function ShouldPressShieldBlock()
 		-- shield_block,if=buff.shield_block.duration<=10
-		return IsCurrentlyTanking() and S.ShieldBlock:IsReady() and Player:BuffRemains(S.ShieldBlockBuff) <= 10
+		return S.ShieldBlock:IsReady() and Player:BuffRemains(S.ShieldBlockBuff) <= 10
 	end
 
 	-- A bit of logic to decide whether to pre-cast-rage-dump on ignore pain.
@@ -596,5 +596,6 @@ local function TryLoading ()
     end)
 end
 TryLoading()
+
 
 
